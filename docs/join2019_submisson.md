@@ -1,6 +1,6 @@
 #### Session Title
 
-### A Reliable Development Workflow with CI for Looker
+### Develop LookML Like a Software Engineer: Continuous Integration for Looker
 
 #### Session Abstract
 
