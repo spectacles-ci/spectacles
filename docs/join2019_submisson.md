@@ -28,4 +28,4 @@ Yes.
 
 #### Do the proposed speakers have prior experience presenting at events of this type? Please include links to any public recordings, if available.
 
-Yes. Josh and Dylan are both regular speakers at data-related events. Josh has spoken and taught at a number of events, notably those hosted by The Flatiron School, Dataiku, and New York University. Dylan has also spoken and taught at a number of events, notably those hosted by Looker and DataCouncil. Dylan is also the organiser of the London dbt meetup. 
+Yes. Josh and Dylan are both regular speakers at data-related events. Josh has spoken and taught at a number of events, notably those hosted by The Flatiron School, Dataiku, and New York University. Dylan has also spoken and taught at a number of events, notably those hosted by Looker and DataCouncil. Dylan is the organiser of the London dbt meetup. 
