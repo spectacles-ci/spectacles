@@ -1,4 +1,4 @@
-from typing import Sequence, List, Dict, Any
+from typing import Sequence, List, Dict, Any, Optional
 from utils import compose_url
 import requests
 import logging
@@ -24,7 +24,7 @@ class Fonz:
         self.branch = branch
         self.project = project
         self.client = None
-        self.headers = None
+        self.headers = None # type: Optional[JsonDict]
 
         logging.info('Instantiated Fonz object for url: {}'.format(url))
 
@@ -101,18 +101,16 @@ class Fonz:
         for dimension in lookml_explore.json()['fields']['dimensions']:
             dimensions.append(dimension['name'])
 
-        explore['dimensions'] = dimensions
-
-        return explore
+        return dimensions
 
     def get_dimensions(self, explores: List[JsonDict]) -> List[JsonDict]:
         """Finds the dimensions for all explores"""
         for explore in explores:
-            explore = self.get_explore_dimensions(explore)
+            explore['dimensions'] = self.get_explore_dimensions(explore)
 
         return explores
 
-    def create_query(self, explore: JsonDict) -> str:
+    def create_query(self, explore: JsonDict) -> int:
         """Build a Looker query using all the specified dimensions."""
 
         logging.info('Creating query for {}'.format(explore['explore']))
@@ -131,7 +129,7 @@ class Fonz:
 
         return query_id
 
-    def run_query(self, query_id: int) -> JsonDict:
+    def run_query(self, query_id: int) -> List[JsonDict]:
         """Run a Looker query by ID and return the JSON result."""
 
         logging.info('Running query {}'.format(query_id))
@@ -160,6 +158,6 @@ class Fonz:
         if errors:
             sys.exit(1)
 
-    def validate_content() -> JsonDict:
+    def validate_content(self) -> JsonDict:
         """Validate all content and return any JSON errors."""
         pass
