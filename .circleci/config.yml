@@ -4,7 +4,7 @@
 #
 version: 2
 jobs:
-  build:
+  tests:
     docker:
       - image: circleci/python:3.6.1
 
@@ -38,8 +38,19 @@ jobs:
       # https://pytest.org
       # https://nose.readthedocs.io
       - run:
-          name: run tests
+          name: pycodestyle
           command: |
             . venv/bin/activate
             pycodestyle fonz
+
+      - run:
+          name: mypy
+          command: |
+            . venv/bin/activate
             mypy fonz
+
+      - run:
+          name: mypy
+          command: |
+            . venv/bin/activate
+            pytest
