@@ -12,7 +12,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
 class Fonz:
 
     def __init__(self, url: str, client_id: str, client_secret: str,
-                 project: str, branch: str, port: int, api: str):
+                 port: int, api: str, project: str = None, branch: str = None):
         """Instantiate Fonz and save authentication details and branch."""
         if url[-1] == '/':
             self.url = '{}:{}/api/{}/'.format(url[:-1], port, api)
@@ -42,6 +42,8 @@ class Fonz:
 
         access_token = login.json()['access_token']
         self.headers = {'Authorization': 'token {}'.format(access_token)}
+
+    def update_session(self) -> None:
 
         logging.info('Updating session to use development workspace.')
 
