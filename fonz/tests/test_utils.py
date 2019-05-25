@@ -47,10 +47,8 @@ def test_compose_url_subendpoint_id_int():
 def test_compose_url_no_endpoint():
     with pytest.raises(TypeError) as e:
         utils.compose_url(base)
-    # assert str(e) == "compose_url requires url_base and endpoint."
 
 
 def test_compose_url_no_base():
     with pytest.raises(TypeError) as e:
         utils.compose_url(endpoint=endpoint)
-    # assert str(e) == "compose_url requires url_base and endpoint."
