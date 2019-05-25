@@ -24,7 +24,7 @@ class Fonz:
         self.branch = branch
         self.project = project
         self.client = None
-        self.headers = None # type: Optional[JsonDict]
+        self.headers = None  # type: Optional[JsonDict]
 
         logging.info('Instantiated Fonz object for url: {}'.format(url))
 
