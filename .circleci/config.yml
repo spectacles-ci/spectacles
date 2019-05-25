@@ -20,11 +20,11 @@ jobs:
             - v1-dependencies-
 
       - run:
-          name: install dependencies
+          name: install fonz
           command: |
             python3 -m venv venv
             . venv/bin/activate
-            pip install -r requirements.txt
+            pip install .
 
       - save_cache:
           paths:
@@ -47,7 +47,7 @@ jobs:
           name: pytest
           command: |
             . venv/bin/activate
-            pytest
+            python -m pytest
 
 workflows:
   version: 2
