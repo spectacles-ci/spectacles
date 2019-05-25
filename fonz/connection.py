@@ -1,5 +1,5 @@
 from typing import Sequence, List, Dict, Any, Optional
-from utils import compose_url
+from fonz.utils import compose_url
 import requests
 import logging
 import sys
