@@ -10,11 +10,11 @@ setup(
         'Click',
         'requests',
         'pytest',
-		'requests-mock',
-		'coverage',
-		'mypy',
-		'pycodestyle',
-		'pytest-cov'
+        'requests-mock',
+        'coverage',
+        'mypy',
+        'pycodestyle',
+        'pytest-cov'
     ],
     entry_points='''
         [console_scripts]
