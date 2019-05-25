@@ -1,5 +1,5 @@
 import click
-from connection import Fonz
+from fonz.connection import Fonz
 
 
 @click.group()

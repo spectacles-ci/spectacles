@@ -9,9 +9,6 @@ def compose_url(url_base: str,
                 subendpoint: str = None,
                 subendpointid: Union[str, int] = None) -> str:
 
-    if not url_base or not endpoint:
-        raise Exception('compose_url requires url_base and endpoint.')
-
     url = "{}{}".format(url_base, endpoint)
 
     if endpointid:
