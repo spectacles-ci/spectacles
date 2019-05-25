@@ -22,7 +22,7 @@ class Fonz:
         self.client_id = client_id
         self.client_secret = client_secret
         self.branch = branch
-        self.project = project 
+        self.project = project
         self.client = None
         self.headers = None  # type: Optional[JsonDict]
 
