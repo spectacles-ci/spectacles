@@ -14,7 +14,8 @@ setup(
         'coverage',
         'mypy',
         'pycodestyle',
-        'pytest-cov'
+        'pytest-cov',
+        'coverage'
     ],
     entry_points='''
         [console_scripts]
