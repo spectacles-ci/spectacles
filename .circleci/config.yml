@@ -51,11 +51,12 @@ jobs:
             . venv/bin/activate
             python -m pytest
 
-      - run: coverage
-        command: |
-          coverage run --source fonz -m pytest
-          coverage report
-          coverage html
+      - run: 
+          name: coverage
+          command: |
+            coverage run --source fonz -m pytest
+            coverage report
+            coverage html
 
       - store_artifacts:
           path: htmlcov
