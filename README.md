@@ -1,5 +1,6 @@
 # Fonz
 [![CircleCI](https://circleci.com/gh/dbanalyticsco/Fonz/tree/master.svg?style=svg)](https://circleci.com/gh/dbanalyticsco/Fonz/tree/master)
+[![codecov](https://codecov.io/gh/dbanalyticsco/Fonz/branch/master/graph/badge.svg)](https://codecov.io/gh/dbanalyticsco/Fonz)
 
 Fonz helps verify that your Looker instance functions as expected. Fonz is a diagnostic tool that checks all explore **dimensions for database errors** and **validates Looks and Dashboards**.
 
