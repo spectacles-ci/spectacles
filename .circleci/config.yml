@@ -26,6 +26,7 @@ jobs:
           command: |
             python3 -m venv venv
             . venv/bin/activate
+            pip install -r requirements
             pip install .
 
       - save_cache:
@@ -54,9 +55,9 @@ jobs:
       - run: 
           name: coverage
           command: |
-            $HOME/venv/bin/coverage run --source fonz -m pytest
-            $HOME/venv/bin/coverage report
-            $HOME/venv/bin/coverage html
+            coverage run --source fonz -m pytest
+            coverage report
+            coverage html
 
       - store_artifacts:
           path: htmlcov
