@@ -59,9 +59,13 @@ jobs:
             coverage run --source fonz -m pytest
             coverage report
             coverage html
+            coverage xml
 
       - store_artifacts:
           path: htmlcov
+
+      - codecov/upload:
+          file: coverage.xml
 
 workflows:
   version: 2
