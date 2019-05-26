@@ -2,11 +2,13 @@
 #
 # Check https://circleci.com/docs/2.0/language-python/ for more details
 #
-version: 2
+version: 2.1
+orbs:
+  codecov: codecov/codecov@1.0.2
 jobs:
   test:
     docker:
-      - image: circleci/python:3.6.1
+      - image: circleci/python:3.7.0
 
     working_directory: ~/Fonz
 
@@ -48,6 +50,15 @@ jobs:
           command: |
             . venv/bin/activate
             python -m pytest
+
+      - run: coverage
+        command: |
+          coverage run --source fonz -m pytest
+          coverage report
+          coverage html
+
+      - store_artifacts:
+          path: htmlcov
 
 workflows:
   version: 2
