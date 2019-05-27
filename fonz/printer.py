@@ -81,3 +81,28 @@ def print_stats(errors: int, total: int) -> None:
 
     stats_line = "\nDone. PASS={pass} ERROR={error} TOTAL={total}"
     logger.info(stats_line.format(**stats))
+
+
+def print_progress(
+        iteration: int, total: int, prefix: str = '', suffix: str = '',
+        decimals: int = 1, length: int = 80, fill: str = '█'):
+    """
+    Call in a loop to create terminal progress bar
+    @params:
+        iteration   - Required  : current iteration (Int)
+        total       - Required  : total iterations (Int)
+        prefix      - Optional  : prefix string (Str)
+        suffix      - Optional  : suffix string (Str)
+        decimals    - Optional  : positive number of decimals in percentage
+        length      - Optional  : character length of bar (Int)
+        fill        - Optional  : bar fill character (Str)
+    """
+    percent = ("{0:." + str(decimals) + "f}").format(
+        100 * (iteration / float(total)))
+
+    filledLength = int(length * iteration // total)
+    bar = fill * filledLength + '-' * (length - filledLength)
+    print('\r%s |%s| %s%% %s' % (prefix, bar, percent, suffix), end='\r')
+    # Print New Line on Complete
+    if iteration == total:
+        print('\n')

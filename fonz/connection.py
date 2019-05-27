@@ -2,7 +2,8 @@ from typing import Sequence, List, Dict, Any, Optional
 from fonz.utils import compose_url
 from fonz.logger import GLOBAL_LOGGER as logger
 from fonz.printer import (
-    print_start, print_fail, print_pass, print_error, print_stats)
+    print_start, print_fail, print_pass, print_error,
+    print_stats, print_progress)
 import requests
 import sys
 
@@ -105,9 +106,15 @@ class Fonz:
 
     def get_dimensions(self, explores: List[JsonDict]) -> List[JsonDict]:
         """Finds the dimensions for all explores"""
-        for explore in explores:
-            explore['dimensions'] = self.get_explore_dimensions(explore)
 
+        total = len(explores)
+        print_progress(0, total, prefix='Finding Dimensions')
+
+        for index, explore in enumerate(explores):
+            explore['dimensions'] = self.get_explore_dimensions(explore)
+            print_progress(index+1, total, prefix='Finding Dimensions')
+
+        logger.info('Collected dimensions for each explores.')
         return explores
 
     def create_query(self, explore: JsonDict) -> int:
@@ -152,6 +159,8 @@ class Fonz:
 
             query_id = self.create_query(explore)
             query_result = self.run_query(query_id)
+
+            logger.debug(query_result)
 
             if 'looker_error' in query_result[0]:
                 logger.debug('Error in explore {}: {}'.format(
