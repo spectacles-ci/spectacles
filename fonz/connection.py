@@ -140,9 +140,8 @@ class Fonz:
 
         return query.json()
 
-    def validate_explores(self, explores: List[JsonDict]) -> None:
+    def validate_explores(self, explores: List[JsonDict]) -> List[JsonDict]:
         """Take explores and runs a query with all dimensions."""
-        errors = False
 
         for explore in explores:
             query_id = self.create_query(explore)
@@ -153,10 +152,17 @@ class Fonz:
                     explore['explore'],
                     query_result[0]['looker_error'])
                 )
-                errors = True
+                explore['failed'] = True
+                explore['error'] = query_result[0]['looker_error']
 
-        if errors:
-            sys.exit(1)
+            else:
+                explore['failed'] = False
+
+        return explores
+
+    def print_results(self, explores: List[JsonDict]) -> bool:
+        """Prints errors and returns whether errors were present"""
+        pass
 
     def validate_content(self) -> JsonDict:
         """Validate all content and return any JSON errors."""
