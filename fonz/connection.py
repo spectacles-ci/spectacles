@@ -1,12 +1,11 @@
 from typing import Sequence, List, Dict, Any, Optional
 from fonz.utils import compose_url
+from fonz.logger import GLOBAL_LOGGER as logger
+from fonz.printer import print_start, print_fail, print_pass
 import requests
-import logging
 import sys
 
 JsonDict = Dict[str, Any]
-
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
 
 
 class Fonz:
@@ -26,12 +25,12 @@ class Fonz:
         self.client = None
         self.headers = None  # type: Optional[JsonDict]
 
-        logging.info('Instantiated Fonz object for url: {}'.format(url))
+        logger.debug('Instantiated Fonz object for url: {}'.format(url))
 
     def connect(self) -> None:
         """Authenticate, start a dev session, check out specified branch."""
 
-        logging.info('Authenticating Looker credentials.')
+        logger.info('Authenticating Looker credentials.')
 
         login = requests.post(
             url=compose_url(self.url, 'login'),
@@ -45,14 +44,14 @@ class Fonz:
 
     def update_session(self) -> None:
 
-        logging.info('Updating session to use development workspace.')
+        logger.debug('Updating session to use development workspace.')
 
         update_session = requests.patch(
             url=compose_url(self.url, 'session'),
             headers=self.headers,
             json={'workspace_id': 'dev'})
 
-        logging.info('Setting git branch to: {}'.format(self.branch))
+        logger.debug('Setting git branch to: {}'.format(self.branch))
 
         update_branch = requests.put(
             url=compose_url(self.url, 'projects', self.project, 'git_branch'),
@@ -62,7 +61,7 @@ class Fonz:
     def get_explores(self) -> List[JsonDict]:
         """Get all explores from the LookmlModel endpoint."""
 
-        logging.info('Getting all explores in Looker instance.')
+        logger.debug('Getting all explores in Looker instance.')
 
         models = requests.get(
             url=compose_url(self.url, 'lookml_models'),
@@ -70,7 +69,7 @@ class Fonz:
 
         explores = []
 
-        logging.info('Filtering explores for project: {}'.format(self.project))
+        logger.debug('Filtering explores for project: {}'.format(self.project))
 
         for model in models.json():
             if model['project_name'] == self.project:
@@ -85,7 +84,7 @@ class Fonz:
     def get_explore_dimensions(self, explore: JsonDict) -> List[str]:
         """Get dimensions for an explore from the LookmlModel endpoint."""
 
-        logging.info('Getting dimensions for {}'.format(explore['explore']))
+        logger.debug('Getting dimensions for {}'.format(explore['explore']))
 
         lookml_explore = requests.get(
             url=compose_url(
@@ -113,7 +112,7 @@ class Fonz:
     def create_query(self, explore: JsonDict) -> int:
         """Build a Looker query using all the specified dimensions."""
 
-        logging.info('Creating query for {}'.format(explore['explore']))
+        logger.debug('Creating query for {}'.format(explore['explore']))
 
         query = requests.post(
             url=compose_url(self.url, 'queries'),
@@ -132,7 +131,7 @@ class Fonz:
     def run_query(self, query_id: int) -> List[JsonDict]:
         """Run a Looker query by ID and return the JSON result."""
 
-        logging.info('Running query {}'.format(query_id))
+        logger.debug('Running query {}'.format(query_id))
 
         query = requests.get(
             url=compose_url(self.url, 'queries', query_id, 'run', 'json'),
@@ -143,20 +142,27 @@ class Fonz:
     def validate_explores(self, explores: List[JsonDict]) -> List[JsonDict]:
         """Take explores and runs a query with all dimensions."""
 
-        for explore in explores:
+        total = len(explores)
+
+        for index, explore in enumerate(explores):
+
+            index += 1
+            print_start(explore, index, total)
+
             query_id = self.create_query(explore)
             query_result = self.run_query(query_id)
 
             if 'looker_error' in query_result[0]:
-                logging.info('Error in explore {}: {}'.format(
+                logger.debug('Error in explore {}: {}'.format(
                     explore['explore'],
                     query_result[0]['looker_error'])
                 )
                 explore['failed'] = True
                 explore['error'] = query_result[0]['looker_error']
-
+                print_fail(explore, index, total)
             else:
                 explore['failed'] = False
+                print_pass(explore, index, total)
 
         return explores
 

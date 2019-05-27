@@ -15,7 +15,8 @@ setup(
         'mypy',
         'pycodestyle',
         'pytest-cov',
-        'coverage'
+        'coverage',
+        'colorama'
     ],
     entry_points='''
         [console_scripts]
