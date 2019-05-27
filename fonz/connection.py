@@ -1,7 +1,8 @@
 from typing import Sequence, List, Dict, Any, Optional
 from fonz.utils import compose_url
 from fonz.logger import GLOBAL_LOGGER as logger
-from fonz.printer import print_start, print_fail, print_pass
+from fonz.printer import (
+    print_start, print_fail, print_pass, print_error, print_stats)
 import requests
 import sys
 
@@ -30,7 +31,7 @@ class Fonz:
     def connect(self) -> None:
         """Authenticate, start a dev session, check out specified branch."""
 
-        logger.info('Authenticating Looker credentials.')
+        logger.info('Authenticating Looker credentials. \n')
 
         login = requests.post(
             url=compose_url(self.url, 'login'),
@@ -166,9 +167,21 @@ class Fonz:
 
         return explores
 
-    def print_results(self, explores: List[JsonDict]) -> bool:
+    def handle_errors(self, explores: List[JsonDict]) -> None:
         """Prints errors and returns whether errors were present"""
-        pass
+
+        total = len(explores)
+        errors = 0
+
+        for explore in explores:
+            if explore['failed']:
+                errors += 1
+                print_error(explore)
+
+        print_stats(errors, total)
+
+        if errors > 0:
+            sys.exit(1)
 
     def validate_content(self) -> JsonDict:
         """Validate all content and return any JSON errors."""

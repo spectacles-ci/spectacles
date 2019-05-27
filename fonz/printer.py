@@ -29,6 +29,10 @@ def red(text):
     return color(text, COLOR_FG_RED)
 
 
+def yellow(text):
+    return color(text, COLOR_FG_YELLOW)
+
+
 def print_fancy_line(msg: str, status: str, index: int, total: int) -> None:
     progress = '{} of {} '.format(index, total)
     prefix = "{timestamp} | {progress}{message}".format(
@@ -59,3 +63,21 @@ def print_pass(explore: JsonDict, index: int, total: int) -> None:
 def print_fail(explore: JsonDict, index: int, total: int) -> None:
     msg = "FAILED explore: {}".format(explore['explore'])
     print_fancy_line(msg, red('FAIL'), index, total)
+
+
+def print_error(explore: JsonDict):
+    msg = ("\nFailure in explore {}: \"{}\"".format(
+        explore['explore'], explore['error']))
+
+    logger.info(yellow(msg))
+
+
+def print_stats(errors: int, total: int) -> None:
+    stats = {
+        'error': errors,
+        'pass': total - errors,
+        'total': total,
+    }
+
+    stats_line = "\nDone. PASS={pass} ERROR={error} TOTAL={total}"
+    logger.info(stats_line.format(**stats))

@@ -33,7 +33,7 @@ def sql(url, client_id, client_secret, port, api, project, branch):
     explores = client.get_explores()
     explores = client.get_dimensions(explores)
     validate = client.validate_explores(explores)
-    client.print_results(validate)
+    client.handle_errors(validate)
 
 
 cli.add_command(connect)
