@@ -103,7 +103,8 @@ class Fonz:
         dimensions = []
 
         for dimension in lookml_explore.json()['fields']['dimensions']:
-            dimensions.append(dimension['name'])
+            if 'fonz_ignore' not in dimension['sql']:
+                dimensions.append(dimension['name'])
 
         return dimensions
 
