@@ -1,9 +1,13 @@
 import logging
+import os
+
+if not os.path.exists('logs/'):
+    os.mkdir('logs')
 
 logger = logging.getLogger('Fonz')
 logger.setLevel(logging.DEBUG)
 
-fh = logging.FileHandler('./logs.txt')
+fh = logging.FileHandler('./logs/logs.txt')
 fh.setLevel(logging.DEBUG)
 
 ch = logging.StreamHandler()

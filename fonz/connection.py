@@ -117,7 +117,7 @@ class Fonz:
         logger.info('Collected dimensions for each explores.')
         return explores
 
-    def create_query(self, explore: JsonDict) -> int:
+    def create_query(self, explore: JsonDict) -> JsonDict:
         """Build a Looker query using all the specified dimensions."""
 
         logger.debug('Creating query for {}'.format(explore['explore']))
@@ -133,8 +133,9 @@ class Fonz:
             })
 
         query_id = query.json()['id']
+        query_url = query.json()['share_url']
 
-        return query_id
+        return {'id': query_id, 'url': query_url}
 
     def run_query(self, query_id: int) -> List[JsonDict]:
         """Run a Looker query by ID and return the JSON result."""
@@ -147,6 +148,16 @@ class Fonz:
 
         return query.json()
 
+    def get_query_sql(self, query_id: int) -> str:
+
+        logger.debug('Getting SQL for query {}'.format(query_id))
+
+        query = requests.get(
+            url=compose_url(self.url, 'queries', query_id, 'run', 'sql'),
+            headers=self.headers)
+
+        return query.text
+
     def validate_explores(self, explores: List[JsonDict]) -> List[JsonDict]:
         """Take explores and runs a query with all dimensions."""
 
@@ -157,10 +168,17 @@ class Fonz:
             index += 1
             print_start(explore, index, total)
 
-            query_id = self.create_query(explore)
-            query_result = self.run_query(query_id)
+            query = self.create_query(explore)
+            explore['query_url'] = query['url']
+            query_result = self.run_query(query['id'])
+            query_sql = self.get_query_sql(query['id'])
 
             logger.debug(query_result)
+            logger.debug(query_sql)
+
+            file_name = "./logs/{}.sql".format(explore['explore'])
+            with open(file_name, 'w') as stream:
+                stream.write(query_sql)
 
             if len(query_result) == 0:
                 explore['failed'] = False
