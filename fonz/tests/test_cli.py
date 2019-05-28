@@ -23,7 +23,7 @@ class TestConnect(object):
         assert result.exit_code == 0
 
     def test_no_arguments_exits_with_nonzero_code(self):
-        result = self.runner.invoke(connect, catch_exceptions=False)
+        result = self.runner.invoke(connect)
         assert result.exit_code != 0
 
     @patch("fonz.cli.Fonz", autospec=True)
