@@ -24,10 +24,13 @@ def connect(url, client_id, client_secret, port, api):
 @click.argument('url', envvar='LOOKER_BASE_URL')
 @click.argument('client_id', envvar='LOOKER_CLIENT_ID')
 @click.argument('client_secret', envvar='LOOKER_CLIENT_SECRET')
+@click.option('--model', default=None)
 @click.option('--port', default=19999)
 @click.option('--api', default='3.0')
-def sql(url, client_id, client_secret, port, api, project, branch):
-    client = Fonz(url, client_id, client_secret, port, api, project, branch)
+def sql(url, client_id, client_secret, port, api, model, project, branch):
+    client = Fonz(
+        url, client_id, client_secret,
+        port, api, model, project, branch)
     client.connect()
     client.update_session()
     explores = client.get_explores()

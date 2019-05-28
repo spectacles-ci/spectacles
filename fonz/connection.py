@@ -13,7 +13,8 @@ JsonDict = Dict[str, Any]
 class Fonz:
 
     def __init__(self, url: str, client_id: str, client_secret: str,
-                 port: int, api: str, project: str = None, branch: str = None):
+                 port: int, api: str, model: Optional[str] = None,
+                 project: str = None, branch: str = None):
         """Instantiate Fonz and save authentication details and branch."""
         if url[-1] == '/':
             self.url = '{}:{}/api/{}/'.format(url[:-1], port, api)
@@ -22,6 +23,7 @@ class Fonz:
 
         self.client_id = client_id
         self.client_secret = client_secret
+        self.model = model
         self.branch = branch
         self.project = project
         self.client = None
@@ -75,11 +77,12 @@ class Fonz:
 
         for model in models.json():
             if model['project_name'] == self.project:
-                for explore in model['explores']:
-                    explores.append({
-                        'model': model['name'],
-                        'explore': explore['name']
-                        })
+                if model['name'] == self.model or self.model is None:
+                    for explore in model['explores']:
+                        explores.append({
+                            'model': model['name'],
+                            'explore': explore['name']
+                            })
 
         return explores
 
