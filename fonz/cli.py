@@ -1,5 +1,20 @@
 import click
+import yaml
 from fonz.connection import Fonz
+
+
+class CommandWithConfig(click.Command):
+    def invoke(self, ctx):
+        click.echo(ctx.params)
+        config_filename = ctx.params.get("config_file")
+        if config_filename is not None:
+            with open(config_filename) as file:
+                config = yaml.safe_load(file)
+                for param, value in ctx.params.items():
+                    if value is None and param in config:
+                        ctx.params[param] = config[param]
+
+        return super(CommandWithConfig, self).invoke(ctx)
 
 
 @click.group()
@@ -7,14 +22,15 @@ def cli():
     pass
 
 
-@click.command()
-@click.argument("url", envvar="LOOKER_BASE_URL")
-@click.option("--client-id", required=True, envvar="LOOKER_CLIENT_ID")
-@click.option("--client-secret", required=True, envvar="LOOKER_CLIENT_SECRET")
+@click.command(cls=CommandWithConfig)
+@click.option("--base-url", envvar="LOOKER_BASE_URL")
+@click.option("--client-id", envvar="LOOKER_CLIENT_ID")
+@click.option("--client-secret", envvar="LOOKER_CLIENT_SECRET")
+@click.option("--config-file")
 @click.option("--port", default=19999)
 @click.option("--api", default="3.0")
-def connect(url, client_id, client_secret, port, api):
-    client = Fonz(url, client_id, client_secret, port, api)
+def connect(base_url, client_id, client_secret, config_file, port, api):
+    client = Fonz(base_url, client_id, client_secret, port, api)
     client.connect()
 
 

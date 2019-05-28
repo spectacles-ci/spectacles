@@ -31,6 +31,7 @@ class TestConnect(object):
         result = self.runner.invoke(
             connect,
             [
+                "--base-url",
                 TEST_BASE_URL,
                 "--client-id",
                 "FAKE_CLIENT_ID",
@@ -77,7 +78,7 @@ class TestConnect(object):
                 yaml.dump(config, file)
         result = self.runner.invoke(
             connect,
-            ["--config-file", "config.yml"],
+            [TEST_BASE_URL, "--config-file", "config.yml"],
             standalone_mode=False,
             catch_exceptions=False,
         )
