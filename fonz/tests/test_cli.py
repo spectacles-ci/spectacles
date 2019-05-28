@@ -78,7 +78,7 @@ class TestConnect(object):
                 yaml.dump(config, file)
         result = self.runner.invoke(
             connect,
-            [TEST_BASE_URL, "--config-file", "config.yml"],
+            ["--config-file", "config.yml"],
             standalone_mode=False,
             catch_exceptions=False,
         )
