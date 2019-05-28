@@ -162,14 +162,19 @@ class Fonz:
 
             logger.debug(query_result)
 
-            if 'looker_error' in query_result[0]:
-                logger.debug('Error in explore {}: {}'.format(
+            if len(query_result) == 0:
+                explore['failed'] = False
+                print_pass(explore, index, total)
+
+            elif 'looker_error' in query_result[0]:
+                logging.info('Error in explore {}: {}'.format(
                     explore['explore'],
                     query_result[0]['looker_error'])
                 )
                 explore['failed'] = True
                 explore['error'] = query_result[0]['looker_error']
                 print_fail(explore, index, total)
+                
             else:
                 explore['failed'] = False
                 print_pass(explore, index, total)
