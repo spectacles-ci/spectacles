@@ -1,3 +1,4 @@
+import os
 from unittest.mock import patch
 import pytest
 from click.testing import CliRunner
@@ -18,7 +19,7 @@ class TestConnect(object):
         assert result.exit_code == 0
 
     def test_no_arguments_exits_with_nonzero_code(self):
-        result = self.runner.invoke(connect, [])
+        result = self.runner.invoke(connect)
         assert result.exit_code != 0
 
     @patch("fonz.connection.Fonz.connect")
@@ -35,8 +36,18 @@ class TestConnect(object):
         )
         assert result.exit_code == 0
 
-    def test_with_env_vars_only(self):
-        pass
+    @patch("fonz.connection.Fonz.connect")
+    @patch.dict(
+        os.environ,
+        {
+            "LOOKER_BASE_URL": "https://test.looker.com",
+            "LOOKER_CLIENT_ID": "FAKE_CLIENT_ID",
+            "LOOKER_CLIENT_SECRET": "FAKE_CLIENT_SECRET",
+        },
+    )
+    def test_with_env_vars_only(self, mock_connect):
+        result = self.runner.invoke(connect)
+        assert result.exit_code == 0
 
     def test_with_config_file_only(self):
         pass
