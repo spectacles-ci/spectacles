@@ -76,12 +76,12 @@ class TestConnect(object):
                     "client_secret": "FAKE_CLIENT_SECRET",
                 }
                 yaml.dump(config, file)
-        result = self.runner.invoke(
-            connect,
-            ["--config-file", "config.yml"],
-            standalone_mode=False,
-            catch_exceptions=False,
-        )
+            result = self.runner.invoke(
+                connect,
+                ["--config-file", "config.yml"],
+                standalone_mode=False,
+                catch_exceptions=False,
+            )
         mock_client.assert_called_once_with(
             TEST_BASE_URL, "FAKE_CLIENT_ID", "FAKE_CLIENT_SECRET", 19999, "3.0"
         )
