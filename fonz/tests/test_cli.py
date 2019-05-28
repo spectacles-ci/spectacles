@@ -1,5 +1,6 @@
 import os
 from unittest.mock import patch, Mock
+import yaml
 import pytest
 from click.testing import CliRunner
 from fonz.tests.constants import TEST_BASE_URL
@@ -16,11 +17,13 @@ def runner(request):
 @pytest.mark.usefixtures("runner")
 class TestConnect(object):
     def test_help(self):
-        result = self.runner.invoke(connect, ["--help"])
+        result = self.runner.invoke(
+            connect, ["--help"], standalone_mode=False, catch_exceptions=False
+        )
         assert result.exit_code == 0
 
     def test_no_arguments_exits_with_nonzero_code(self):
-        result = self.runner.invoke(connect)
+        result = self.runner.invoke(connect, catch_exceptions=False)
         assert result.exit_code != 0
 
     @patch("fonz.cli.Fonz", autospec=True)
@@ -34,6 +37,8 @@ class TestConnect(object):
                 "--client-secret",
                 "FAKE_CLIENT_SECRET",
             ],
+            standalone_mode=False,
+            catch_exceptions=False,
         )
         mock_client.assert_called_once_with(
             TEST_BASE_URL, "FAKE_CLIENT_ID", "FAKE_CLIENT_SECRET", 19999, "3.0"
@@ -51,15 +56,36 @@ class TestConnect(object):
         },
     )
     def test_with_env_vars_only(self, mock_client):
-        result = self.runner.invoke(connect)
+        result = self.runner.invoke(
+            connect, standalone_mode=False, catch_exceptions=False
+        )
         mock_client.assert_called_once_with(
             TEST_BASE_URL, "FAKE_CLIENT_ID", "FAKE_CLIENT_SECRET", 19999, "3.0"
         )
         mock_client.return_value.connect.assert_called_once()
         assert result.exit_code == 0
 
-    def test_with_config_file_only(self):
-        pass
+    @patch("fonz.cli.Fonz", autospec=True)
+    def test_with_config_file_only(self, mock_client):
+        with self.runner.isolated_filesystem():
+            with open("config.yml", "w") as file:
+                config = {
+                    "base_url": TEST_BASE_URL,
+                    "client_id": "FAKE_CLIENT_ID",
+                    "client_secret": "FAKE_CLIENT_SECRET",
+                }
+                yaml.dump(config, file)
+        result = self.runner.invoke(
+            connect,
+            ["--config-file", "config.yml"],
+            standalone_mode=False,
+            catch_exceptions=False,
+        )
+        mock_client.assert_called_once_with(
+            TEST_BASE_URL, "FAKE_CLIENT_ID", "FAKE_CLIENT_SECRET", 19999, "3.0"
+        )
+        mock_client.return_value.connect.assert_called_once()
+        assert result.exit_code == 0
 
     def test_with_config_file_args_and_env_vars(self):
         pass
