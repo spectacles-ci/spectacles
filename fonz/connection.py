@@ -147,7 +147,10 @@ class Fonz:
             query_id = self.create_query(explore)
             query_result = self.run_query(query_id)
 
-            if 'looker_error' in query_result[0]:
+            if len(query_result) == 0:
+                explore['failed'] = False
+
+            elif 'looker_error' in query_result[0]:
                 logging.info('Error in explore {}: {}'.format(
                     explore['explore'],
                     query_result[0]['looker_error'])
