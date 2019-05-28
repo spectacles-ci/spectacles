@@ -1,3 +1,4 @@
+from unittest.mock import patch
 import pytest
 from click.testing import CliRunner
 from fonz.cli import connect
@@ -20,7 +21,8 @@ class TestConnect(object):
         result = self.runner.invoke(connect, [])
         assert result.exit_code != 0
 
-    def test_with_command_line_args_only(self):
+    @patch("fonz.connection.Fonz.connect")
+    def test_with_command_line_args_only(self, mock_connect):
         result = self.runner.invoke(
             connect,
             [
