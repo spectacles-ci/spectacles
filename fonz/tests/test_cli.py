@@ -145,3 +145,34 @@ class TestSql(object):
     def test_no_arguments_exits_with_nonzero_code(self):
         result = self.runner.invoke(sql)
         assert result.exit_code != 0
+
+    @patch("fonz.cli.Fonz", autospec=True)
+    def test_with_command_line_args_only(self, mock_client):
+        result = self.runner.invoke(
+            sql,
+            [
+                "--base-url",
+                TEST_BASE_URL,
+                "--client-id",
+                "FAKE_CLIENT_ID",
+                "--client-secret",
+                "FAKE_CLIENT_SECRET",
+                "--project",
+                "FAKE_PROJECT",
+                "--branch",
+                "FAKE_BRANCH",
+            ],
+            standalone_mode=False,
+            catch_exceptions=False,
+        )
+        mock_client.assert_called_once_with(
+            TEST_BASE_URL,
+            "FAKE_CLIENT_ID",
+            "FAKE_CLIENT_SECRET",
+            19999,
+            "3.0",
+            "FAKE_PROJECT",
+            "FAKE_BRANCH",
+        )
+        mock_client.return_value.connect.assert_called_once()
+        assert result.exit_code == 0
