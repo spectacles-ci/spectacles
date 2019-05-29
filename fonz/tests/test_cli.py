@@ -106,3 +106,29 @@ class TestConnect(object):
         )
         mock_client.return_value.connect.assert_called_once()
         assert result.exit_code == 0
+
+    @patch("fonz.cli.Fonz", autospec=True)
+    @patch.dict(
+        os.environ,
+        {"LOOKER_BASE_URL": "URL_ENV_VAR", "LOOKER_CLIENT_ID": "CLIENT_ID_ENV_VAR"},
+    )
+    def test_cli_supersedes_env_var_which_supersedes_config_file(self, mock_client):
+        with self.runner.isolated_filesystem():
+            with open("config.yml", "w") as file:
+                config = {
+                    "base_url": "URL_CONFIG_FILE",
+                    "client_id": "CLIENT_ID_CONFIG_FILE",
+                    "client_secret": "CLIENT_SECRET_CONFIG_FILE",
+                }
+                yaml.dump(config, file)
+            result = self.runner.invoke(
+                connect,
+                ["--base-url", "URL_CLI", "--config-file", "config.yml"],
+                standalone_mode=False,
+                catch_exceptions=False,
+            )
+        mock_client.assert_called_once_with(
+            "URL_CLI", "CLIENT_ID_ENV_VAR", "CLIENT_SECRET_CONFIG_FILE", 19999, "3.0"
+        )
+        mock_client.return_value.connect.assert_called_once()
+        assert result.exit_code == 0
