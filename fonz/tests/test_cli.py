@@ -4,7 +4,7 @@ import yaml
 import pytest
 from click.testing import CliRunner
 from fonz.tests.constants import TEST_BASE_URL
-from fonz.cli import connect
+from fonz.cli import connect, sql
 import logging
 
 
@@ -132,3 +132,16 @@ class TestConnect(object):
         )
         mock_client.return_value.connect.assert_called_once()
         assert result.exit_code == 0
+
+
+@pytest.mark.usefixtures("runner")
+class TestSql(object):
+    def test_help(self):
+        result = self.runner.invoke(
+            sql, ["--help"], standalone_mode=False, catch_exceptions=False
+        )
+        assert result.exit_code == 0
+
+    def test_no_arguments_exits_with_nonzero_code(self):
+        result = self.runner.invoke(sql)
+        assert result.exit_code != 0
