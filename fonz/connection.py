@@ -21,11 +21,7 @@ class Fonz:
         branch: str = None,
     ):
         """Instantiate Fonz and save authentication details and branch."""
-        if url[-1] == "/":
-            self.url = "{}:{}/api/{}/".format(url[:-1], port, api)
-        else:
-            self.url = "{}:{}/api/{}/".format(url, port, api)
-
+        self.url = "{}:{}/api/{}/".format(url.rstrip("/"), port, api)
         self.client_id = client_id
         self.client_secret = client_secret
         self.branch = branch
