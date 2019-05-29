@@ -1,4 +1,3 @@
-import pytest
 from constants import TEST_BASE_URL
 from fonz import utils
 
