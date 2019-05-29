@@ -35,12 +35,6 @@ jobs:
           key: v1-dependencies-{{ checksum "requirements.txt" }}
 
       - run:
-          name: pycodestyle
-          command: |
-            . venv/bin/activate
-            pycodestyle fonz
-
-      - run:
           name: mypy
           command: |
             . venv/bin/activate
@@ -52,7 +46,7 @@ jobs:
             . venv/bin/activate
             python -m pytest
 
-      - run: 
+      - run:
           name: coverage
           command: |
             . venv/bin/activate
