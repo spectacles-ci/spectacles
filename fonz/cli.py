@@ -28,9 +28,9 @@ def cli():
 @click.option("--client-secret", envvar="LOOKER_CLIENT_SECRET")
 @click.option("--config-file")
 @click.option("--port", default=19999)
-@click.option("--api", default="3.0")
-def connect(base_url, client_id, client_secret, config_file, port, api):
-    client = Fonz(base_url, client_id, client_secret, port, api)
+@click.option("--api-version", default="3.0")
+def connect(base_url, client_id, client_secret, config_file, port, api_version):
+    client = Fonz(base_url, client_id, client_secret, port, api_version)
     client.connect()
 
 
@@ -42,9 +42,13 @@ def connect(base_url, client_id, client_secret, config_file, port, api):
 @click.option("--client-secret", envvar="LOOKER_CLIENT_SECRET")
 @click.option("--config-file")
 @click.option("--port", default=19999)
-@click.option("--api", default="3.0")
-def sql(project, branch, base_url, client_id, client_secret, config_file, port, api):
-    client = Fonz(base_url, client_id, client_secret, port, api, project, branch)
+@click.option("--api-version", default="3.0")
+def sql(
+    project, branch, base_url, client_id, client_secret, config_file, port, api_version
+):
+    client = Fonz(
+        base_url, client_id, client_secret, port, api_version, project, branch
+    )
     client.connect()
     client.update_session()
     explores = client.get_explores()
