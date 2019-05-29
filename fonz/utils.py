@@ -1,7 +1,5 @@
-from typing import Sequence, List, Dict, Any, Union
+from typing import List
 from urllib.parse import urljoin
-
-JsonDict = Dict[str, Any]
 
 
 def compose_url(base_url: str, path: List[str]) -> str:
