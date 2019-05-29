@@ -2,9 +2,9 @@ import pytest
 import requests
 import requests_mock
 from fonz.utils import compose_url
+from fonz.tests.constants import TEST_BASE_URL
 
-
-base_30 = "https://test.looker.com:19999/api/3.0/"
+BASE_URL_30 = compose_url(TEST_BASE_URL + ":19999", path=["api", "3.0"])
 
 lookml_models = [
     {
@@ -28,14 +28,17 @@ dimensions = {
 
 looker_mock = requests_mock.Mocker()
 
-looker_mock.get(url=compose_url(base_30, "lookml_models"), json=lookml_models)
+url = compose_url(BASE_URL_30, path=["lookml_models"])
+looker_mock.get(url, json=lookml_models)
 
 for model in lookml_models:
     for explore in model["explores"]:
+        url = compose_url(
+            BASE_URL_30,
+            path=["lookml_models", model["name"], "explores", explore["name"]],
+        )
         looker_mock.get(
-            url=compose_url(
-                base_30, "lookml_models", model["name"], "explores", explore["name"]
-            ),
+            url,
             json={
                 "name": explore["name"],
                 "fields": {"dimensions": dimensions[explore["name"]]},

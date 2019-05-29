@@ -41,7 +41,7 @@ class Fonz:
         logging.info("Authenticating Looker credentials.")
 
         login = requests.post(
-            url=compose_url(self.url, "login"),
+            url=compose_url(self.url, path=["login"]),
             data={"client_id": self.client_id, "client_secret": self.client_secret},
         )
 
@@ -53,7 +53,7 @@ class Fonz:
         logging.info("Updating session to use development workspace.")
 
         update_session = requests.patch(
-            url=compose_url(self.url, "session"),
+            url=compose_url(self.url, path=["session"]),
             headers=self.headers,
             json={"workspace_id": "dev"},
         )
@@ -61,7 +61,7 @@ class Fonz:
         logging.info("Setting git branch to: {}".format(self.branch))
 
         update_branch = requests.put(
-            url=compose_url(self.url, "projects", self.project, "git_branch"),
+            url=compose_url(self.url, path=["projects", self.project, "git_branch"]),
             headers=self.headers,
             json={"name": self.branch},
         )
@@ -72,7 +72,7 @@ class Fonz:
         logging.info("Getting all explores in Looker instance.")
 
         models = requests.get(
-            url=compose_url(self.url, "lookml_models"), headers=self.headers
+            url=compose_url(self.url, path=["lookml_models"]), headers=self.headers
         )
 
         explores = []
@@ -96,10 +96,12 @@ class Fonz:
         lookml_explore = requests.get(
             url=compose_url(
                 self.url,
-                "lookml_models",
-                explore["model"],
-                "explores",
-                explore["explore"],
+                path=[
+                    "lookml_models",
+                    explore["model"],
+                    "explores",
+                    explore["explore"],
+                ],
             ),
             headers=self.headers,
         )
@@ -124,7 +126,7 @@ class Fonz:
         logging.info("Creating query for {}".format(explore["explore"]))
 
         query = requests.post(
-            url=compose_url(self.url, "queries"),
+            url=compose_url(self.url, path=["queries"]),
             headers=self.headers,
             json={
                 "model": explore["model"],
@@ -144,7 +146,7 @@ class Fonz:
         logging.info("Running query {}".format(query_id))
 
         query = requests.get(
-            url=compose_url(self.url, "queries", query_id, "run", "json"),
+            url=compose_url(self.url, path=["queries", query_id, "run", "json"]),
             headers=self.headers,
         )
 
