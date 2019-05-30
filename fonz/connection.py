@@ -21,7 +21,7 @@ class Fonz:
         branch: str = None,
     ):
         """Instantiate Fonz and save authentication details and branch."""
-        self.url = "{}:{}/api/{}/".format(url.rstrip("/"), port, api)
+        self.base_url = "{}:{}/api/{}/".format(url.rstrip("/"), port, api)
         self.client_id = client_id
         self.client_secret = client_secret
         self.branch = branch
@@ -37,7 +37,7 @@ class Fonz:
         logging.info("Authenticating Looker credentials.")
 
         response = self.session.post(
-            url=compose_url(self.url, path=["login"]),
+            url=compose_url(self.base_url, path=["login"]),
             data={"client_id": self.client_id, "client_secret": self.client_secret},
         )
         response.raise_for_status()
@@ -50,14 +50,17 @@ class Fonz:
         logging.info("Updating session to use development workspace.")
 
         response = self.session.patch(
-            url=compose_url(self.url, path=["session"]), json={"workspace_id": "dev"}
+            url=compose_url(self.base_url, path=["session"]),
+            json={"workspace_id": "dev"},
         )
         response.raise_for_status()
 
         logging.info("Setting git branch to: {}".format(self.branch))
 
         response = self.session.put(
-            url=compose_url(self.url, path=["projects", self.project, "git_branch"]),
+            url=compose_url(
+                self.base_url, path=["projects", self.project, "git_branch"]
+            ),
             json={"name": self.branch},
         )
         response.raise_for_status()
@@ -67,7 +70,9 @@ class Fonz:
 
         logging.info("Getting all explores in Looker instance.")
 
-        response = self.session.get(url=compose_url(self.url, path=["lookml_models"]))
+        response = self.session.get(
+            url=compose_url(self.base_url, path=["lookml_models"])
+        )
         response.raise_for_status()
 
         explores = []
@@ -90,7 +95,7 @@ class Fonz:
 
         response = self.session.get(
             url=compose_url(
-                self.url,
+                self.base_url,
                 path=[
                     "lookml_models",
                     explore["model"],
@@ -121,7 +126,7 @@ class Fonz:
         logging.info("Creating query for {}".format(explore["explore"]))
 
         response = self.session.post(
-            url=compose_url(self.url, path=["queries"]),
+            url=compose_url(self.base_url, path=["queries"]),
             json={
                 "model": explore["model"],
                 "view": explore["explore"],
@@ -141,7 +146,7 @@ class Fonz:
         logging.info("Running query {}".format(query_id))
 
         response = self.session.get(
-            url=compose_url(self.url, path=["queries", query_id, "run", "json"])
+            url=compose_url(self.base_url, path=["queries", query_id, "run", "json"])
         )
         response.raise_for_status()
         query_result = response.json()
