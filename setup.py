@@ -9,6 +9,7 @@ setup(
     install_requires=[
         "Click",
         "requests",
+        "PyYAML",
         "pytest",
         "requests-mock",
         "coverage",
