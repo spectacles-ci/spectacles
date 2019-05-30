@@ -1,54 +1,17 @@
-import pytest
+from constants import TEST_BASE_URL
 from fonz import utils
 
-base = "https://test.looker.com/api/3.0/"
-endpoint = "login"
-endpoint_id_int = 42
-endpoint_id_str = "42"
-subendpoint = "auth"
-subendpoint_id_int = 27
-subendpoint_id_str = "27"
+
+def test_compose_url_one_path_component():
+    url = utils.compose_url(TEST_BASE_URL, ["api"])
+    assert url == "https://test.looker.com/api"
 
 
-def test_compose_url_endpoint():
-    url = utils.compose_url(base, endpoint)
+def test_compose_url_multiple_path_components():
+    url = utils.compose_url(TEST_BASE_URL, ["api", "3.0", "login", "42", "auth", "27"])
+    assert url == "https://test.looker.com/api/3.0/login/42/auth/27"
+
+
+def test_compose_url_with_extra_slashes():
+    url = utils.compose_url(TEST_BASE_URL + "/", ["/api//", "3.0/login/"])
     assert url == "https://test.looker.com/api/3.0/login"
-
-
-def test_compose_url_endpoint_id_str():
-    url = utils.compose_url(base, endpoint, endpoint_id_str)
-    assert url == "https://test.looker.com/api/3.0/login/42"
-
-
-def test_compose_url_endpoint_id_int():
-    url = utils.compose_url(base, endpoint, endpoint_id_int)
-    assert url == "https://test.looker.com/api/3.0/login/42"
-
-
-def test_compose_url_subendpoint():
-    url = utils.compose_url(base, endpoint, endpoint_id_str, subendpoint)
-    assert url == "https://test.looker.com/api/3.0/login/42/auth"
-
-
-def test_compose_url_subendpoint_id_str():
-    url = utils.compose_url(
-        base, endpoint, endpoint_id_str, subendpoint, subendpoint_id_str
-    )
-    assert url == "https://test.looker.com/api/3.0/login/42/auth/27"
-
-
-def test_compose_url_subendpoint_id_int():
-    url = utils.compose_url(
-        base, endpoint, endpoint_id_int, subendpoint, subendpoint_id_int
-    )
-    assert url == "https://test.looker.com/api/3.0/login/42/auth/27"
-
-
-def test_compose_url_no_endpoint():
-    with pytest.raises(TypeError) as e:
-        utils.compose_url(base)
-
-
-def test_compose_url_no_base():
-    with pytest.raises(TypeError) as e:
-        utils.compose_url(endpoint=endpoint)
