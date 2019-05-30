@@ -1,25 +1,10 @@
-from typing import Sequence, List, Dict, Any, Union
+from typing import List
+from urllib.parse import urljoin
 
-JsonDict = Dict[str, Any]
 
-
-def compose_url(
-    url_base: str,
-    endpoint: str,
-    endpointid: Union[str, int] = None,
-    subendpoint: str = None,
-    subendpointid: Union[str, int] = None,
-) -> str:
-
-    url = "{}{}".format(url_base, endpoint)
-
-    if endpointid:
-        url += "/" + str(endpointid)
-
-        if subendpoint:
-            url += "/" + subendpoint
-
-            if subendpointid:
-                url += "/" + str(subendpointid)
-
+def compose_url(base_url: str, path: List) -> str:
+    if not isinstance(path, list):
+        raise TypeError("URL path must be a list")
+    parts = [base_url] + path
+    url = "/".join(str(part).strip("/") for part in parts)
     return url
