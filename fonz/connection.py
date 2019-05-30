@@ -21,13 +21,13 @@ class Fonz:
         branch: str = None,
     ):
         """Instantiate Fonz and save authentication details and branch."""
-        self.url = "{}:{}/api/{}/".format(url.rstrip("/"), port, api)
+        self.base_url = "{}:{}/api/{}/".format(url.rstrip("/"), port, api)
         self.client_id = client_id
         self.client_secret = client_secret
         self.branch = branch
         self.project = project
         self.client = None
-        self.headers = None  # type: Optional[JsonDict]
+        self.session = requests.Session()
 
         logging.info("Instantiated Fonz object for url: {}".format(url))
 
@@ -36,46 +36,50 @@ class Fonz:
 
         logging.info("Authenticating Looker credentials.")
 
-        login = requests.post(
-            url=compose_url(self.url, path=["login"]),
+        response = self.session.post(
+            url=compose_url(self.base_url, path=["login"]),
             data={"client_id": self.client_id, "client_secret": self.client_secret},
         )
+        response.raise_for_status()
 
-        access_token = login.json()["access_token"]
-        self.headers = {"Authorization": "token {}".format(access_token)}
+        access_token = response.json()["access_token"]
+        self.session.headers = {"Authorization": "token {}".format(access_token)}
 
     def update_session(self) -> None:
 
         logging.info("Updating session to use development workspace.")
 
-        update_session = requests.patch(
-            url=compose_url(self.url, path=["session"]),
-            headers=self.headers,
+        response = self.session.patch(
+            url=compose_url(self.base_url, path=["session"]),
             json={"workspace_id": "dev"},
         )
+        response.raise_for_status()
 
         logging.info("Setting git branch to: {}".format(self.branch))
 
-        update_branch = requests.put(
-            url=compose_url(self.url, path=["projects", self.project, "git_branch"]),
-            headers=self.headers,
+        response = self.session.put(
+            url=compose_url(
+                self.base_url, path=["projects", self.project, "git_branch"]
+            ),
             json={"name": self.branch},
         )
+        response.raise_for_status()
 
     def get_explores(self) -> List[JsonDict]:
         """Get all explores from the LookmlModel endpoint."""
 
         logging.info("Getting all explores in Looker instance.")
 
-        models = requests.get(
-            url=compose_url(self.url, path=["lookml_models"]), headers=self.headers
+        response = self.session.get(
+            url=compose_url(self.base_url, path=["lookml_models"])
         )
+        response.raise_for_status()
 
         explores = []
 
         logging.info("Filtering explores for project: {}".format(self.project))
 
-        for model in models.json():
+        for model in response.json():
             if model["project_name"] == self.project:
                 for explore in model["explores"]:
                     explores.append(
@@ -89,22 +93,22 @@ class Fonz:
 
         logging.info("Getting dimensions for {}".format(explore["explore"]))
 
-        lookml_explore = requests.get(
+        response = self.session.get(
             url=compose_url(
-                self.url,
+                self.base_url,
                 path=[
                     "lookml_models",
                     explore["model"],
                     "explores",
                     explore["explore"],
                 ],
-            ),
-            headers=self.headers,
+            )
         )
+        response.raise_for_status()
 
         dimensions = []
 
-        for dimension in lookml_explore.json()["fields"]["dimensions"]:
+        for dimension in response.json()["fields"]["dimensions"]:
             dimensions.append(dimension["name"])
 
         return dimensions
@@ -121,9 +125,8 @@ class Fonz:
 
         logging.info("Creating query for {}".format(explore["explore"]))
 
-        query = requests.post(
-            url=compose_url(self.url, path=["queries"]),
-            headers=self.headers,
+        response = self.session.post(
+            url=compose_url(self.base_url, path=["queries"]),
             json={
                 "model": explore["model"],
                 "view": explore["explore"],
@@ -131,8 +134,9 @@ class Fonz:
                 "limit": 1,
             },
         )
+        response.raise_for_status()
 
-        query_id = query.json()["id"]
+        query_id = response.json()["id"]
 
         return query_id
 
@@ -141,12 +145,13 @@ class Fonz:
 
         logging.info("Running query {}".format(query_id))
 
-        query = requests.get(
-            url=compose_url(self.url, path=["queries", query_id, "run", "json"]),
-            headers=self.headers,
+        response = self.session.get(
+            url=compose_url(self.base_url, path=["queries", query_id, "run", "json"])
         )
+        response.raise_for_status()
+        query_result = response.json()
 
-        return query.json()
+        return query_result
 
     def validate_explores(self, explores: List[JsonDict]) -> List[JsonDict]:
         """Take explores and runs a query with all dimensions."""
