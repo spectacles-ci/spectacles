@@ -30,13 +30,12 @@ class Fonz:
         self.base_url = "{}:{}/api/{}/".format(url.rstrip("/"), port, api)
         self.client_id = client_id
         self.client_secret = client_secret
-        self.model = model
         self.branch = branch
         self.project = project
         self.client = None
         self.session = requests.Session()
 
-        logger.debug("Instantiated Fonz object for url: {}".format(url))
+        logger.debug("Instantiated Fonz object for url: {}".format(self.base_url))
 
     def connect(self) -> None:
         """Authenticate, start a dev session, check out specified branch."""
@@ -116,7 +115,7 @@ class Fonz:
         dimensions = []
 
         for dimension in response.json()["fields"]["dimensions"]:
-            if "fonz_ignore" not in dimension["sql"]:
+            if "fonz: ignore" not in dimension["sql"]:
                 dimensions.append(dimension["name"])
 
         return dimensions
@@ -172,9 +171,8 @@ class Fonz:
 
         logger.debug("Getting SQL for query {}".format(query_id))
 
-        query = requests.get(
-            url=compose_url(self.url, "queries", query_id, "run", "sql"),
-            headers=self.headers,
+        query = self.session.get(
+            url=compose_url(self.base_url, path=["queries", query_id, "run", "sql"])
         )
 
         return query.text
