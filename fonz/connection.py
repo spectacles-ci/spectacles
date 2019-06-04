@@ -25,6 +25,7 @@ class Fonz:
         api: str,
         project: str = None,
         branch: str = None,
+        model: str = None,
     ):
         """Instantiate Fonz and save authentication details and branch."""
         self.base_url = "{}:{}/api/{}/".format(url.rstrip("/"), port, api)
@@ -34,6 +35,7 @@ class Fonz:
         self.project = project
         self.client = None
         self.session = requests.Session()
+        self.model = model
 
         logger.debug("Instantiated Fonz object for url: {}".format(self.base_url))
 
@@ -86,7 +88,9 @@ class Fonz:
         logger.debug("Filtering explores for project: {}".format(self.project))
 
         for model in response.json():
-            if model["project_name"] == self.project:
+            if model["project_name"] == self.project and (
+                model["name"] == self.model or self.model is None
+            ):
                 for explore in model["explores"]:
                     explores.append(
                         {"model": model["name"], "explore": explore["name"]}

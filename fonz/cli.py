@@ -41,13 +41,22 @@ def connect(base_url, client_id, client_secret, config_file, port, api_version):
 @click.option("--client-id", envvar="LOOKER_CLIENT_ID")
 @click.option("--client-secret", envvar="LOOKER_CLIENT_SECRET")
 @click.option("--config-file")
+@click.option("--model")
 @click.option("--port", default=19999)
 @click.option("--api-version", default="3.0")
 def sql(
-    project, branch, base_url, client_id, client_secret, config_file, port, api_version
+    project,
+    branch,
+    base_url,
+    client_id,
+    client_secret,
+    config_file,
+    port,
+    api_version,
+    model=None,
 ):
     client = Fonz(
-        base_url, client_id, client_secret, port, api_version, project, branch
+        base_url, client_id, client_secret, port, api_version, project, branch, model
     )
     client.connect()
     client.update_session()
