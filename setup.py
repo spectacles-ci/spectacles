@@ -1,15 +1,16 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='fonz',
-    version='0.0.1',
-    py_modules=['fonz'],
+    name="fonz",
+    version="0.0.1",
+    py_modules=["fonz"],
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
         'Click',
         'requests',
         'pytest',
+        "PyYAML",
         'requests-mock',
         'coverage',
         'mypy',
@@ -18,8 +19,8 @@ setup(
         'coverage',
         'colorama'
     ],
-    entry_points='''
+    entry_points="""
         [console_scripts]
         fonz=fonz.cli:cli
-    '''
+    """,
 )
