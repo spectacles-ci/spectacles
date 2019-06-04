@@ -34,61 +34,62 @@ def yellow(text):
 
 
 def print_fancy_line(msg: str, status: str, index: int, total: int) -> None:
-    progress = '{} of {} '.format(index, total)
+    progress = "{} of {} ".format(index, total)
     prefix = "{timestamp} | {progress}{message}".format(
-        timestamp=get_timestamp(),
-        progress=progress,
-        message=msg)
+        timestamp=get_timestamp(), progress=progress, message=msg
+    )
 
     justified = prefix.ljust(PRINTER_WIDTH, ".")
 
     status_txt = status
 
-    output = "{justified} [{status}]".format(
-        justified=justified, status=status_txt)
+    output = "{justified} [{status}]".format(justified=justified, status=status_txt)
 
     logger.info(output)
 
 
 def print_start(explore: JsonDict, index: int, total: int) -> None:
-    msg = "CHECKING explore: {}".format(explore['explore'])
-    print_fancy_line(msg, 'START', index, total)
+    msg = "CHECKING explore: {}".format(explore["explore"])
+    print_fancy_line(msg, "START", index, total)
 
 
 def print_pass(explore: JsonDict, index: int, total: int) -> None:
-    msg = "PASSED explore: {}".format(explore['explore'])
-    print_fancy_line(msg, green('PASS'), index, total)
+    msg = "PASSED explore: {}".format(explore["explore"])
+    print_fancy_line(msg, green("PASS"), index, total)
 
 
 def print_fail(explore: JsonDict, index: int, total: int) -> None:
-    msg = "FAILED explore: {}".format(explore['explore'])
-    print_fancy_line(msg, red('FAIL'), index, total)
+    msg = "FAILED explore: {}".format(explore["explore"])
+    print_fancy_line(msg, red("FAIL"), index, total)
 
 
 def print_error(explore: JsonDict):
-    error_msg = ("\nFailure in explore {}: \"{}\"".format(
-        explore['explore'], explore['error']))
+    error_msg = '\nFailure in explore {}: "{}"'.format(
+        explore["explore"], explore["error"]
+    )
 
-    url_msg = ("More details at {}".format(explore['query_url']))
+    url_msg = "More details at {}".format(explore["query_url"])
 
     logger.info(yellow(error_msg))
     logger.info(yellow(url_msg))
 
 
 def print_stats(errors: int, total: int) -> None:
-    stats = {
-        'error': errors,
-        'pass': total - errors,
-        'total': total,
-    }
+    stats = {"error": errors, "pass": total - errors, "total": total}
 
     stats_line = "\nDone. PASS={pass} ERROR={error} TOTAL={total}"
     logger.info(stats_line.format(**stats))
 
 
 def print_progress(
-        iteration: int, total: int, prefix: str = '', suffix: str = '',
-        decimals: int = 1, length: int = 80, fill: str = '█'):
+    iteration: int,
+    total: int,
+    prefix: str = "",
+    suffix: str = "",
+    decimals: int = 1,
+    length: int = 80,
+    fill: str = "█",
+):
     """
     Call in a loop to create terminal progress bar
     @params:
@@ -100,12 +101,11 @@ def print_progress(
         length      - Optional  : character length of bar (Int)
         fill        - Optional  : bar fill character (Str)
     """
-    percent = ("{0:." + str(decimals) + "f}").format(
-        100 * (iteration / float(total)))
+    percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
 
     filledLength = int(length * iteration // total)
-    bar = fill * filledLength + '-' * (length - filledLength)
-    print('\r%s |%s| %s%% %s' % (prefix, bar, percent, suffix), end='\r')
+    bar = fill * filledLength + "-" * (length - filledLength)
+    print("\r%s |%s| %s%% %s" % (prefix, bar, percent, suffix), end="\r")
     # Print New Line on Complete
     if iteration == total:
-        print('\n')
+        print("\n")

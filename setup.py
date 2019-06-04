@@ -7,17 +7,17 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
-        'Click',
-        'requests',
-        'pytest',
+        "Click",
+        "requests",
+        "pytest",
         "PyYAML",
-        'requests-mock',
-        'coverage',
-        'mypy',
-        'pycodestyle',
-        'pytest-cov',
-        'coverage',
-        'colorama'
+        "requests-mock",
+        "coverage",
+        "mypy",
+        "pycodestyle",
+        "pytest-cov",
+        "coverage",
+        "colorama",
     ],
     entry_points="""
         [console_scripts]
