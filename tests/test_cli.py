@@ -3,7 +3,7 @@ from unittest.mock import patch, Mock
 import yaml
 import pytest
 from click.testing import CliRunner
-from fonz.tests.constants import TEST_BASE_URL
+from tests.constants import TEST_BASE_URL
 from fonz.cli import connect, sql
 import logging
 
