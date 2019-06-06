@@ -1,7 +1,7 @@
 import pytest
 import requests
 import requests_mock
-from fonz.tests import mock
+from tests import mock
 from fonz import connection
 
 base = "https://test.looker.com"
