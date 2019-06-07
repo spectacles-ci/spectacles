@@ -202,9 +202,13 @@ class Fonz:
             try:
                 self.validate_explore(explore)
             except SqlError as error:
+                # TODO: Move this into a separate function
                 line_number = parse_error_line_number(error.message)
                 sql = self.get_query_sql(error.query_id)
                 sql = sql.replace("\n\n", "\n")
+                filename = "./logs/{}.sql".format(error.explore_name)
+                with open(filename, "w+") as file:
+                    file.write(sql)
                 sql_context = extract_sql_context(sql, line_number)
                 full_message = f"Error in explore {error.explore_name}: {error.message}"
                 full_message = full_message + "\n\n" + sql_context
