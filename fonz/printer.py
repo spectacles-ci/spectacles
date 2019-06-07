@@ -63,15 +63,8 @@ def print_fail(explore: JsonDict, index: int, total: int) -> None:
     print_fancy_line(msg, red("FAIL"), index, total)
 
 
-def print_error(explore: JsonDict):
-    error_msg = '\nFailure in explore {}: "{}"'.format(
-        explore["explore"], explore["error"]
-    )
-
-    url_msg = "More details at {}".format(explore["query_url"])
-
-    logger.info(yellow(error_msg))
-    logger.info(yellow(url_msg))
+def print_error(message: str):
+    logger.info(yellow("\n" + message))
 
 
 def print_stats(errors: int, total: int) -> None:

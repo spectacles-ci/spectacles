@@ -53,7 +53,7 @@ def sql(
     client.update_session()
     explores = client.get_explores()
     explores = client.get_dimensions(explores)
-    validate = client.validate_explores(explores)
+    validate = client.validate_all_explores(explores)
     client.handle_errors(validate)
 
 

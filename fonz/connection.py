@@ -1,6 +1,7 @@
 from typing import Sequence, List, Dict, Any, Optional
 from fonz.utils import compose_url
 from fonz.logger import GLOBAL_LOGGER as logger
+from fonz.exceptions import SqlError
 from fonz.printer import (
     print_start,
     print_fail,
@@ -34,6 +35,7 @@ class Fonz:
         self.project = project
         self.client = None
         self.session = requests.Session()
+        self.messages = []
 
         logger.debug("Instantiated Fonz object for url: {}".format(self.base_url))
 
@@ -177,47 +179,35 @@ class Fonz:
 
         return query.text
 
-    def validate_explores(self, explores: List[JsonDict]) -> List[JsonDict]:
+    def validate_explore(self, explore):
+        query = self.create_query(explore)
+        result = self.run_query(query["id"])
+        logger.debug(result)
+        if not result:
+            return
+        elif "looker_error" in result[0]:
+            error_message = result[0]["looker_error"]
+            raise SqlError(query["id"], explore["explore"], error_message)
+        else:
+            return
+
+    def validate_all_explores(self, explores: List[JsonDict]) -> List[JsonDict]:
         """Take explores and runs a query with all dimensions."""
 
-        total = len(explores)
-
+        explore_count = len(explores)
         for index, explore in enumerate(explores):
-
             index += 1
-            print_start(explore, index, total)
-
-            query = self.create_query(explore)
-            explore["query_url"] = query["url"]
-            query_result = self.run_query(query["id"])
-            query_sql = self.get_query_sql(query["id"])
-
-            logger.debug(query_result)
-            logger.debug(query_sql)
-
-            file_name = "./logs/{}.sql".format(explore["explore"])
-            with open(file_name, "w") as stream:
-                stream.write(query_sql)
-
-            if len(query_result) == 0:
-
-                explore["failed"] = False
-                print_pass(explore, index, total)
-
-            elif "looker_error" in query_result[0]:
-                logger.debug(
-                    "Error in explore {}: {}".format(
-                        explore["explore"], query_result[0]["looker_error"]
-                    )
-                )
-                explore["failed"] = True
-                explore["error"] = query_result[0]["looker_error"]
-                print_fail(explore, index, total)
-
+            print_start(explore, index, explore_count)
+            try:
+                self.validate_explore(explore)
+            except SqlError as error:
+                full_message = f"Error in explore {error.explore_name}: {error.message}"
+                self.messages.append(full_message)
+                logger.debug(full_message)
+                sql = self.get_query_sql(error.query_id)
+                print_fail(explore, index, explore_count)
             else:
-                explore["failed"] = False
-                print_pass(explore, index, total)
-
+                print_pass(explore, index, explore_count)
         return explores
 
     def handle_errors(self, explores: List[JsonDict]) -> None:
@@ -226,10 +216,9 @@ class Fonz:
         total = len(explores)
         errors = 0
 
-        for explore in explores:
-            if explore["failed"]:
-                errors += 1
-                print_error(explore)
+        for message in self.messages:
+            errors += 1
+            print_error(message)
 
         print_stats(errors, total)
 
