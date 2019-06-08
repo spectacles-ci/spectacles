@@ -28,7 +28,7 @@ class Fonz:
         self.project = project
         self.client = None
         self.session = requests.Session()
-        self.messages = []
+        self.messages: List[str] = []
 
         logger.debug("Instantiated Fonz object for url: {}".format(self.base_url))
 
