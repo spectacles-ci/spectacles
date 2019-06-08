@@ -180,7 +180,7 @@ class Fonz:
 
         return query.text
 
-    def validate_explore(self, explore):
+    def validate_explore(self, explore) -> None:
         """Query all dimensions in an explore and return any errors."""
         query = self.create_query(explore)
         result = self.run_query(query["id"])
