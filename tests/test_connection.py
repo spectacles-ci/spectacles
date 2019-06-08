@@ -29,39 +29,11 @@ def test_get_explores():
         assert response == output
 
 
-def test_get_explore_dimensions():
+def test_get_dimensions():
 
-    body = {"model": "model_one", "explore": "explore_one"}
     output = ["dimension_one", "dimension_two"]
 
     with mock.looker_mock as m:
 
-        response = client.get_explore_dimensions(body)
-        assert response == output
-
-
-def test_get_dimensions():
-
-    explores = [
-        {"model": "model_one", "explore": "explore_one"},
-        {"model": "model_one", "explore": "explore_two"},
-    ]
-
-    output = [
-        {
-            "model": "model_one",
-            "explore": "explore_one",
-            "dimensions": ["dimension_one", "dimension_two"],
-        },
-        {
-            "model": "model_one",
-            "explore": "explore_two",
-            "dimensions": ["dimension_three", "dimension_four"],
-        },
-    ]
-
-    with mock.looker_mock as m:
-
-        response = client.get_dimensions(explores)
-        print(response)
+        response = client.get_dimensions("model_one", "explore_one")
         assert response == output

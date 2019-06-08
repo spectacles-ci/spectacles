@@ -88,20 +88,14 @@ class Fonz:
 
         return explores
 
-    def get_explore_dimensions(self, explore: JsonDict) -> List[str]:
+    def get_dimensions(self, model: str, explore: str) -> List[str]:
         """Get dimensions for an explore from the LookmlModel endpoint."""
 
-        logging.info("Getting dimensions for {}".format(explore["explore"]))
+        logging.info("Getting dimensions for {}".format(explore))
 
         response = self.session.get(
             url=compose_url(
-                self.base_url,
-                path=[
-                    "lookml_models",
-                    explore["model"],
-                    "explores",
-                    explore["explore"],
-                ],
+                self.base_url, path=["lookml_models", model, "explores", explore]
             )
         )
         response.raise_for_status()
@@ -113,26 +107,14 @@ class Fonz:
 
         return dimensions
 
-    def get_dimensions(self, explores: List[JsonDict]) -> List[JsonDict]:
-        """Finds the dimensions for all explores"""
-        for explore in explores:
-            explore["dimensions"] = self.get_explore_dimensions(explore)
-
-        return explores
-
-    def create_query(self, explore: JsonDict) -> int:
+    def create_query(self, model: str, explore: str, dimensions: List[str]) -> int:
         """Build a Looker query using all the specified dimensions."""
 
-        logging.info("Creating query for {}".format(explore["explore"]))
+        logging.info("Creating query for {}".format(explore))
 
         response = self.session.post(
             url=compose_url(self.base_url, path=["queries"]),
-            json={
-                "model": explore["model"],
-                "view": explore["explore"],
-                "fields": explore["dimensions"],
-                "limit": 1,
-            },
+            json={"model": model, "view": explore, "fields": dimensions, "limit": 1},
         )
         response.raise_for_status()
 
@@ -153,29 +135,24 @@ class Fonz:
 
         return query_result
 
-    def validate_explores(self, explores: List[JsonDict]) -> List[JsonDict]:
+    def validate_explore(self, query_id: int) -> JsonDict:
         """Take explores and runs a query with all dimensions."""
 
-        for explore in explores:
-            query_id = self.create_query(explore)
-            query_result = self.run_query(query_id)
+        result = {}
 
-            if len(query_result) == 0:
-                explore["failed"] = False
+        query_result = self.run_query(query_id)
 
-            elif "looker_error" in query_result[0]:
-                logging.info(
-                    "Error in explore {}: {}".format(
-                        explore["explore"], query_result[0]["looker_error"]
-                    )
-                )
-                explore["failed"] = True
-                explore["error"] = query_result[0]["looker_error"]
+        if len(query_result) == 0:
+            result["failed"] = False
 
-            else:
-                explore["failed"] = False
+        elif "looker_error" in query_result[0]:
+            result["failed"] = True
+            result["error"] = query_result[0]["looker_error"]
 
-        return explores
+        else:
+            result["failed"] = False
+
+        return result
 
     def print_results(self, explores: List[JsonDict]) -> bool:
         """Prints errors and returns whether errors were present"""

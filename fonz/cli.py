@@ -52,9 +52,25 @@ def sql(
     client.connect()
     client.update_session()
     explores = client.get_explores()
-    explores = client.get_dimensions(explores)
-    validate = client.validate_explores(explores)
-    client.print_results(validate)
+
+    # Get Dimensions and build query for each explore
+    for explore in explores:
+        explore["dimensions"] = client.get_dimensions(
+            explore["model"], explore["explore"]
+        )
+        explore["query_id"] = client.create_query(
+            explore["model"], explore["explore"], explore["dimensions"]
+        )
+        explore["result"] = validate_explore(explore["query_id"])
+
+        if explore["result"]["failed"]:
+            logging.info(
+                "Error in explore {}: {}".format(
+                    explore["explore"], explore["result"]["error"]
+                )
+            )
+
+    client.print_results(explores)
 
 
 cli.add_command(connect)
