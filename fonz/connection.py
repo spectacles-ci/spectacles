@@ -202,22 +202,35 @@ class Fonz:
             try:
                 self.validate_explore(explore)
             except SqlError as error:
-                # TODO: Move this into a separate function
                 line_number = parse_error_line_number(error.message)
                 sql = self.get_query_sql(error.query_id)
-                sql = sql.replace("\n\n", "\n")
-                filename = "./logs/{}.sql".format(error.explore_name)
-                with open(filename, "w+") as file:
-                    file.write(sql)
-                sql_context = extract_sql_context(sql, line_number)
-                full_message = f"Error in explore {error.explore_name}: {error.message}"
-                full_message = full_message + "\n\n" + sql_context
-                self.messages.append(full_message)
-                logger.debug(full_message)
+                self.handle_sql_error(
+                    sql, line_number, error.message, error.explore_name
+                )
                 print_fail(explore, index, explore_count)
             else:
                 print_pass(explore, index, explore_count)
         return explores
+
+    def handle_sql_error(
+        self,
+        sql: str,
+        line_number: int,
+        message: str,
+        explore_name: str,
+        show_sql: bool = True,
+    ) -> None:
+        """Log and display SQL snippet and error message."""
+        sql = sql.replace("\n\n", "\n")
+        filename = "./logs/{}.sql".format(explore_name)
+        with open(filename, "w+") as file:
+            file.write(sql)
+        full_message = f"Error in explore {explore_name}: {message}"
+        if show_sql:
+            sql_context = extract_sql_context(sql, line_number)
+            full_message = full_message + "\n\n" + sql_context
+        self.messages.append(full_message)
+        logger.debug(full_message)
 
     def handle_errors(self, explores: List[JsonDict]) -> None:
         """Prints errors and returns whether errors were present"""
