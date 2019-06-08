@@ -1,0 +1,68 @@
+# Python CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-python/ for more details
+#
+version: 2.1
+orbs:
+  codecov: codecov/codecov@1.0.2
+jobs:
+  test:
+    docker:
+      - image: circleci/python:3.7.0
+
+    working_directory: ~/Fonz
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "requirements.txt" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+
+      - run:
+          name: install fonz
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -r requirements.txt
+            pip install .
+
+      - save_cache:
+          paths:
+            - ./venv
+          key: v1-dependencies-{{ checksum "requirements.txt" }}
+
+      - run:
+          name: mypy
+          command: |
+            . venv/bin/activate
+            mypy fonz
+
+      - run:
+          name: pytest
+          command: |
+            . venv/bin/activate
+            python -m pytest
+
+      - run:
+          name: coverage
+          command: |
+            . venv/bin/activate
+            coverage run --source fonz -m pytest
+            coverage report
+            coverage html
+            coverage xml
+
+      - store_artifacts:
+          path: htmlcov
+
+      - codecov/upload:
+          file: coverage.xml
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - test
