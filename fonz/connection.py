@@ -171,7 +171,7 @@ class Fonz:
         return query_result
 
     def get_query_sql(self, query_id: int) -> str:
-
+        """Collect the SQL string for a Looker query."""
         logger.debug("Getting SQL for query {}".format(query_id))
 
         query = self.session.get(
@@ -181,6 +181,7 @@ class Fonz:
         return query.text
 
     def validate_explore(self, explore):
+        """Query all dimensions in an explore and return any errors."""
         query = self.create_query(explore)
         result = self.run_query(query["id"])
         logger.debug(result)
@@ -253,6 +254,7 @@ class Fonz:
 
 
 def mark_line(lines: Sequence, line_number: int, char: str = "*") -> List:
+    """For a list of strings, mark a specified line with a prepended character."""
     marked = []
     for i, line in enumerate(lines):
         if i == line_number:
@@ -263,6 +265,7 @@ def mark_line(lines: Sequence, line_number: int, char: str = "*") -> List:
 
 
 def extract_sql_context(sql: str, line_number: int, window_size: int = 2) -> str:
+    """Extract a line of SQL with a specified amount of surrounding context."""
     split = sql.split("\n")
     line_number -= 1  # Align with array indexing
     line_start = line_number - (window_size + 1)
@@ -277,6 +280,7 @@ def extract_sql_context(sql: str, line_number: int, window_size: int = 2) -> str
 
 
 def parse_error_line_number(error_message: str) -> int:
+    """Extract the line number for a SQL error from the error message."""
     BQ_LINE_NUM_PATTERN = r"at \[(\d+):\d+\]"
     try:
         line_number = re.findall(BQ_LINE_NUM_PATTERN, error_message)[0]
