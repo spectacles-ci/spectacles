@@ -1,6 +1,9 @@
+import sys
 import click
 import yaml
 from fonz.connection import Fonz
+from fonz.exceptions import SqlError
+from fonz.printer import print_start, print_pass, print_fail, print_error, print_stats
 
 
 class CommandWithConfig(click.Command):
@@ -52,9 +55,30 @@ def sql(
     client.connect()
     client.update_session()
     explores = client.get_explores()
-    explores = client.get_dimensions(explores)
-    validate = client.validate_all_explores(explores)
-    client.handle_errors(validate)
+
+    explore_count = len(explores)
+    for index, explore in enumerate(explores):
+        model = explore["model"]
+        explore_name = explore["explore"]
+        dimensions = client.get_dimensions(model, explore_name)
+
+        print_start(explore_name, index + 1, explore_count)
+
+        try:
+            client.validate_explore(model, explore_name, dimensions)
+        except SqlError as error:
+            client.handle_sql_error(error.query_id, error.message, error.explore_name)
+            print_fail(explore_name, index + 1, explore_count)
+        else:
+            print_pass(explore_name, index + 1, explore_count)
+
+        errors = 0
+        for message in client.messages:
+            errors += 1
+            print_error(message)
+        print_stats(errors, explore_count)
+        if errors > 0:
+            sys.exit(1)
 
 
 cli.add_command(connect)

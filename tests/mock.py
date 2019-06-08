@@ -2,7 +2,7 @@ import pytest
 import requests
 import requests_mock
 from fonz.utils import compose_url
-from fonz.tests.constants import TEST_BASE_URL
+from tests.constants import TEST_BASE_URL
 
 BASE_URL_30 = compose_url(TEST_BASE_URL + ":19999", path=["api", "3.0"])
 

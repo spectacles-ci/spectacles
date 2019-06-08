@@ -48,18 +48,18 @@ def print_fancy_line(msg: str, status: str, index: int, total: int) -> None:
     logger.info(output)
 
 
-def print_start(explore: JsonDict, index: int, total: int) -> None:
-    msg = "CHECKING explore: {}".format(explore["explore"])
+def print_start(explore_name: str, index: int, total: int) -> None:
+    msg = f"CHECKING explore: {explore_name}"
     print_fancy_line(msg, "START", index, total)
 
 
-def print_pass(explore: JsonDict, index: int, total: int) -> None:
-    msg = "PASSED explore: {}".format(explore["explore"])
+def print_pass(explore_name: str, index: int, total: int) -> None:
+    msg = f"PASSED explore: {explore_name}"
     print_fancy_line(msg, green("PASS"), index, total)
 
 
-def print_fail(explore: JsonDict, index: int, total: int) -> None:
-    msg = "FAILED explore: {}".format(explore["explore"])
+def print_fail(explore_name: str, index: int, total: int) -> None:
+    msg = f"FAILED explore: {explore_name}"
     print_fancy_line(msg, red("FAIL"), index, total)
 
 

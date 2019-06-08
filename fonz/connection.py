@@ -3,14 +3,6 @@ import re
 from fonz.utils import compose_url
 from fonz.logger import GLOBAL_LOGGER as logger
 from fonz.exceptions import SqlError
-from fonz.printer import (
-    print_start,
-    print_fail,
-    print_pass,
-    print_error,
-    print_stats,
-    print_progress,
-)
 import requests
 import sys
 
@@ -97,20 +89,14 @@ class Fonz:
 
         return explores
 
-    def get_explore_dimensions(self, explore: JsonDict) -> List[str]:
+    def get_dimensions(self, model: str, explore_name: str) -> List[str]:
         """Get dimensions for an explore from the LookmlModel endpoint."""
 
-        logger.debug("Getting dimensions for {}".format(explore["explore"]))
+        logger.debug(f"Getting dimensions for {explore_name}")
 
         response = self.session.get(
             url=compose_url(
-                self.base_url,
-                path=[
-                    "lookml_models",
-                    explore["model"],
-                    "explores",
-                    explore["explore"],
-                ],
+                self.base_url, path=["lookml_models", model, "explores", explore_name]
             )
         )
         response.raise_for_status()
@@ -123,39 +109,24 @@ class Fonz:
 
         return dimensions
 
-    def get_dimensions(self, explores: List[JsonDict]) -> List[JsonDict]:
-        """Finds the dimensions for all explores"""
-
-        total = len(explores)
-        print_progress(0, total, prefix="Finding Dimensions")
-
-        for index, explore in enumerate(explores):
-            explore["dimensions"] = self.get_explore_dimensions(explore)
-            print_progress(index + 1, total, prefix="Finding Dimensions")
-
-        logger.info("Collected dimensions for each explores.")
-        return explores
-
-    def create_query(self, explore: JsonDict) -> JsonDict:
+    def create_query(self, model: str, explore_name: str, dimensions: List[str]) -> int:
         """Build a Looker query using all the specified dimensions."""
 
-        logger.debug("Creating query for {}".format(explore["explore"]))
+        logger.debug(f"Creating query for {explore_name}")
 
         response = self.session.post(
             url=compose_url(self.base_url, path=["queries"]),
             json={
-                "model": explore["model"],
-                "view": explore["explore"],
-                "fields": explore["dimensions"],
+                "model": model,
+                "view": explore_name,
+                "fields": dimensions,
                 "limit": 1,
             },
         )
         response.raise_for_status()
-
         query_id = response.json()["id"]
-        query_url = response.json()["share_url"]
 
-        return {"id": query_id, "url": query_url}
+        return query_id
 
     def run_query(self, query_id: int) -> List[JsonDict]:
         """Run a Looker query by ID and return the JSON result."""
@@ -180,48 +151,27 @@ class Fonz:
 
         return query.text
 
-    def validate_explore(self, explore) -> None:
-        """Query all dimensions in an explore and return any errors."""
-        query = self.create_query(explore)
-        result = self.run_query(query["id"])
+    def validate_explore(
+        self, model: str, explore_name: str, dimensions: List[str]
+    ) -> None:
+        """Query selected dimensions in an explore and return any errors."""
+        query_id = self.create_query(model, explore_name, dimensions)
+        result = self.run_query(query_id)
         logger.debug(result)
         if not result:
             return
         elif "looker_error" in result[0]:
             error_message = result[0]["looker_error"]
-            raise SqlError(query["id"], explore["explore"], error_message)
+            raise SqlError(query_id, explore_name, error_message)
         else:
             return
 
-    def validate_all_explores(self, explores: List[JsonDict]) -> List[JsonDict]:
-        """Take explores and runs a query with all dimensions."""
-
-        explore_count = len(explores)
-        for index, explore in enumerate(explores):
-            index += 1
-            print_start(explore, index, explore_count)
-            try:
-                self.validate_explore(explore)
-            except SqlError as error:
-                line_number = parse_error_line_number(error.message)
-                sql = self.get_query_sql(error.query_id)
-                self.handle_sql_error(
-                    sql, line_number, error.message, error.explore_name
-                )
-                print_fail(explore, index, explore_count)
-            else:
-                print_pass(explore, index, explore_count)
-        return explores
-
     def handle_sql_error(
-        self,
-        sql: str,
-        line_number: int,
-        message: str,
-        explore_name: str,
-        show_sql: bool = True,
+        self, query_id: int, message: str, explore_name: str, show_sql: bool = True
     ) -> None:
-        """Log and display SQL snippet and error message."""
+        """Log and save SQL snippet and error message for later."""
+        line_number = parse_error_line_number(message)
+        sql = self.get_query_sql(query_id)
         sql = sql.replace("\n\n", "\n")
         filename = "./logs/{}.sql".format(explore_name)
         with open(filename, "w+") as file:
@@ -232,21 +182,6 @@ class Fonz:
             full_message = full_message + "\n\n" + sql_context
         self.messages.append(full_message)
         logger.debug(full_message)
-
-    def handle_errors(self, explores: List[JsonDict]) -> None:
-        """Prints errors and returns whether errors were present"""
-
-        total = len(explores)
-        errors = 0
-
-        for message in self.messages:
-            errors += 1
-            print_error(message)
-
-        print_stats(errors, total)
-
-        if errors > 0:
-            sys.exit(1)
 
     def validate_content(self) -> JsonDict:
         """Validate all content and return any JSON errors."""
