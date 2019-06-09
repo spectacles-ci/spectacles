@@ -39,7 +39,7 @@ class Fonz:
 
         response = self.session.post(
             url=compose_url(self.base_url, path=["login"]),
-            data={"client_id": self.client_id, "client_secret": self.client_secret},
+            json={"client_id": self.client_id, "client_secret": self.client_secret},
         )
         response.raise_for_status()
 
