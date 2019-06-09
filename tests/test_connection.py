@@ -3,6 +3,7 @@ import requests
 import requests_mock
 from tests.mock import looker_mock
 from fonz import connection
+from fonz.exceptions import SqlError
 
 base = "https://test.looker.com"
 
@@ -45,23 +46,6 @@ def test_update_session():
         client.update_session()
 
 
-def test_create_query():
-
-    with looker_mock as m:
-        client.create_query(
-            "model_one", "explore_one", ["dimension_one", "dimension_two"]
-        )
-
-
-def test_create_query_incorrect_explore():
-
-    with looker_mock as m:
-        with pytest.raises(requests.exceptions.HTTPError):
-            client.create_query(
-                "model_one", "explore_five", ["dimension_one", "dimension_two"]
-            )
-
-
 def test_get_explores():
 
     output = [
@@ -83,5 +67,61 @@ def test_get_dimensions():
         assert response == output
 
 
-def test_get_query():
-    pass
+def test_create_query():
+
+    with looker_mock as m:
+        client.create_query(
+            model="model_one",
+            explore_name="explore_one",
+            dimensions=["dimension_one", "dimension_two"],
+        )
+
+
+def test_create_query_incorrect_explore():
+
+    with looker_mock as m:
+        with pytest.raises(requests.exceptions.HTTPError):
+            client.create_query(
+                model="model_one",
+                explore_name="explore_five",
+                dimensions=["dimension_one", "dimension_two"],
+            )
+
+
+def test_run_query_one_row_returned():
+
+    with looker_mock as m:
+        response = client.run_query(1)
+        assert response == [{"column_one": 123}]
+
+
+def test_run_query_zero_rows_returned():
+
+    with looker_mock as m:
+        response = client.run_query(3)
+        assert response == []
+
+
+def test_validate_explore_one_row_pass():
+
+    with looker_mock as m:
+        client.validate_explore(
+            "model_one", "explore_one", ["dimension_one", "dimension_two"]
+        )
+
+
+def test_validate_explore_zero_row_pass():
+
+    with looker_mock as m:
+        client.validate_explore(
+            "model_two", "explore_three", ["dimension_one", "dimension_two"]
+        )
+
+
+def test_validate_explore_looker_error():
+
+    with looker_mock as m:
+        with pytest.raises(SqlError):
+            client.validate_explore(
+                "model_two", "explore_four", ["dimension_three", "dimension_four"]
+            )

@@ -52,6 +52,13 @@ explores = {
     },
 }
 
+queries = [
+    {"id": 1, "response": [{"column_one": 123}]},
+    {"id": 2, "response": [{"column_one": 123}]},
+    {"id": 3, "response": []},
+    {"id": 4, "response": [{"looker_error": "What went wrong?"}]},
+]
+
 looker_mock = requests_mock.Mocker()
 
 
@@ -79,7 +86,7 @@ looker_mock.put(
 )
 
 # POST queries
-def queries_callback(request, context):
+def create_query_callback(request, context):
     data = parse_qs(request.text)
     try:
         query_id = explores[data["view"][0]]["query_id"]
@@ -89,12 +96,20 @@ def queries_callback(request, context):
         context.status_code = 404
 
 
-looker_mock.post(compose_url(BASE_URL_30, path=["queries"]), json=queries_callback)
+looker_mock.post(compose_url(BASE_URL_30, path=["queries"]), json=create_query_callback)
+
+# GET queries
+for query in queries:
+    looker_mock.get(
+        compose_url(BASE_URL_30, path=["queries", query["id"], "run", "json"]),
+        json=query["response"],
+    )
 
 
 # GET lookml_models
 looker_mock.get(compose_url(BASE_URL_30, path=["lookml_models"]), json=lookml_models)
 
+# GET explores
 for model in lookml_models:
     for explore in model["explores"]:
         url = compose_url(
