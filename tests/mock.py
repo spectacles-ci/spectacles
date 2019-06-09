@@ -20,10 +20,22 @@ lookml_models = [
 ]
 
 dimensions = {
-    "explore_one": [{"name": "dimension_one"}, {"name": "dimension_two"}],
-    "explore_two": [{"name": "dimension_three"}, {"name": "dimension_four"}],
-    "explore_three": [{"name": "dimension_one"}, {"name": "dimension_two"}],
-    "explore_four": [{"name": "dimension_three"}, {"name": "dimension_four"}],
+    "explore_one": [
+        {"name": "dimension_one", "sql": "${TABLE}.dimension_one"},
+        {"name": "dimension_two", "sql": "${TABLE}.dimension_two"},
+    ],
+    "explore_two": [
+        {"name": "dimension_three", "sql": "${TABLE}.dimension_three"},
+        {"name": "dimension_four", "sql": "${TABLE}.dimension_four"},
+    ],
+    "explore_three": [
+        {"name": "dimension_one", "sql": "${TABLE}.dimension_one"},
+        {"name": "dimension_two", "sql": "${TABLE}.dimension_two"},
+    ],
+    "explore_four": [
+        {"name": "dimension_three", "sql": "${TABLE}.dimension_three"},
+        {"name": "dimension_four", "sql": "${TABLE}.dimension_four"},
+    ],
 }
 
 looker_mock = requests_mock.Mocker()
