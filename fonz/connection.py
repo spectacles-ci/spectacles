@@ -116,7 +116,7 @@ class Fonz:
 
         response = self.session.post(
             url=compose_url(self.base_url, path=["queries"]),
-            json={
+            data={
                 "model": model,
                 "view": explore_name,
                 "fields": dimensions,

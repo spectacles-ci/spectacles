@@ -18,15 +18,6 @@ client = connection.Fonz(
 
 def test_connect_correct_credentials():
 
-    client = connection.Fonz(
-        url=base,
-        client_id="CLIENT_ID",
-        client_secret="CLIENT_SECRET",
-        port=19999,
-        api="3.0",
-        project="test_project",
-    )
-
     with looker_mock as m:
         client.connect()
         assert client.session.headers == {"Authorization": "token FAKE_ACCESS_TOKEN"}
@@ -48,16 +39,30 @@ def test_connect_incorrect_credentials():
             client.connect()
 
 
-def test_get_explores():
+def test_update_session():
 
-    client = connection.Fonz(
-        url=base,
-        client_id="CLIENT_ID",
-        client_secret="CLIENT_SECRET",
-        port=19999,
-        api="3.0",
-        project="test_project",
-    )
+    with looker_mock as m:
+        client.update_session()
+
+
+def test_create_query():
+
+    with looker_mock as m:
+        client.create_query(
+            "model_one", "explore_one", ["dimension_one", "dimension_two"]
+        )
+
+
+def test_create_query_incorrect_explore():
+
+    with looker_mock as m:
+        with pytest.raises(requests.exceptions.HTTPError):
+            client.create_query(
+                "model_one", "explore_five", ["dimension_one", "dimension_two"]
+            )
+
+
+def test_get_explores():
 
     output = [
         {"model": "model_one", "explore": "explore_one"},
@@ -71,17 +76,12 @@ def test_get_explores():
 
 def test_get_dimensions():
 
-    client = connection.Fonz(
-        url=base,
-        client_id="CLIENT_ID",
-        client_secret="CLIENT_SECRET",
-        port=19999,
-        api="3.0",
-        project="test_project",
-    )
-
     output = ["dimension_one", "dimension_two"]
 
     with looker_mock as m:
         response = client.get_dimensions("model_one", "explore_one")
         assert response == output
+
+
+def test_get_query():
+    pass
