@@ -87,9 +87,10 @@ looker_mock.put(
 
 # POST queries
 def create_query_callback(request, context):
-    data = parse_qs(request.text)
+    print(request.json())
+    data = request.json()
     try:
-        query_id = explores[data["view"][0]]["query_id"]
+        query_id = explores[data["view"]]["query_id"]
         context.status_code = 200
         return {"id": query_id}
     except:
