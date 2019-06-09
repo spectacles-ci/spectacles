@@ -9,6 +9,4 @@ def compose_url(base_url: str, path: List, query: JsonDict = None) -> str:
         raise TypeError("URL path must be a list")
     parts = [base_url] + path
     url = "/".join(str(part).strip("/") for part in parts)
-    if query:
-        url = "{}?{}".format(url, urlencode(query))
     return url
