@@ -32,7 +32,7 @@ def extract_sql_context(sql: str, line_number: int, window_size: int = 2) -> str
     line_end = line_end if line_end <= len(split) else len(split)
 
     selected_lines = split[line_start:line_end]
-    marked = mark_line(selected_lines, line_number=window_size)
+    marked = mark_line(selected_lines, line_number=line_number - line_start)
     context = "\n".join(marked)
     return context
 
