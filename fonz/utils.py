@@ -25,8 +25,8 @@ def extract_sql_context(sql: str, line_number: int, window_size: int = 2) -> str
     """Extract a line of SQL with a specified amount of surrounding context."""
     split = sql.split("\n")
     line_number -= 1  # Align with array indexing
-    line_start = line_number - (window_size + 1)
-    line_end = line_number + window_size
+    line_start = line_number - window_size
+    line_end = line_number + (window_size + 1)
     line_start = line_start if line_start >= 0 else 0
     line_end = line_end if line_end <= len(split) else len(split)
 
