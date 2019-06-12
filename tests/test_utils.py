@@ -22,3 +22,17 @@ def test_extract_sql_context():
     expected_result = "| 4\n| 5\n* 6\n| 7\n| 8"
     result = utils.extract_sql_context(sql=text, line_number=6, window_size=2)
     assert result == expected_result
+
+
+def test_extract_sql_context_line_number_close_to_end():
+    text = "\n".join([f"{n}" for n in range(1, 21)])
+    expected_result = "| 17\n| 18\n* 19\n| 20"
+    result = utils.extract_sql_context(sql=text, line_number=19, window_size=2)
+    assert result == expected_result
+
+
+def test_extract_sql_context_line_number_close_to_beginning():
+    text = "\n".join([f"{n}" for n in range(1, 21)])
+    expected_result = "| 1\n* 2\n| 3\n| 4"
+    result = utils.extract_sql_context(sql=text, line_number=2, window_size=2)
+    assert result == expected_result
