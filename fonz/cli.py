@@ -73,12 +73,13 @@ def sql(
             print_pass(explore_name, index + 1, explore_count)
 
         errors = 0
-        for message in client.messages:
-            errors += 1
-            print_error(message)
-        print_stats(errors, explore_count)
-        if errors > 0:
-            sys.exit(1)
+
+    for message in client.messages:
+        errors += 1
+        print_error(message)
+    print_stats(errors, explore_count)
+    if errors > 0:
+        sys.exit(1)
 
 
 cli.add_command(connect)
