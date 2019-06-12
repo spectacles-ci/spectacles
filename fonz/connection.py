@@ -1,6 +1,6 @@
 from typing import Sequence, List, Dict, Any, Optional
 import re
-from fonz.utils import compose_url
+import fonz.utils as utils
 from fonz.logger import GLOBAL_LOGGER as logger
 from fonz.exceptions import SqlError
 import requests
@@ -38,7 +38,7 @@ class Fonz:
         logger.info("Authenticating Looker credentials. \n")
 
         response = self.session.post(
-            url=compose_url(self.base_url, path=["login"]),
+            url=utils.compose_url(self.base_url, path=["login"]),
             data={"client_id": self.client_id, "client_secret": self.client_secret},
         )
         response.raise_for_status()
@@ -51,7 +51,7 @@ class Fonz:
         logger.debug("Updating session to use development workspace.")
 
         response = self.session.patch(
-            url=compose_url(self.base_url, path=["session"]),
+            url=utils.compose_url(self.base_url, path=["session"]),
             json={"workspace_id": "dev"},
         )
         response.raise_for_status()
@@ -59,7 +59,7 @@ class Fonz:
         logger.debug("Setting git branch to: {}".format(self.branch))
 
         response = self.session.put(
-            url=compose_url(
+            url=utils.compose_url(
                 self.base_url, path=["projects", self.project, "git_branch"]
             ),
             json={"name": self.branch},
@@ -72,7 +72,7 @@ class Fonz:
         logger.debug("Getting all explores in Looker instance.")
 
         response = self.session.get(
-            url=compose_url(self.base_url, path=["lookml_models"])
+            url=utils.compose_url(self.base_url, path=["lookml_models"])
         )
         response.raise_for_status()
 
@@ -95,7 +95,7 @@ class Fonz:
         logger.debug(f"Getting dimensions for {explore_name}")
 
         response = self.session.get(
-            url=compose_url(
+            url=utils.compose_url(
                 self.base_url, path=["lookml_models", model, "explores", explore_name]
             )
         )
@@ -115,7 +115,7 @@ class Fonz:
         logger.debug(f"Creating query for {explore_name}")
 
         response = self.session.post(
-            url=compose_url(self.base_url, path=["queries"]),
+            url=utils.compose_url(self.base_url, path=["queries"]),
             json={
                 "model": model,
                 "view": explore_name,
@@ -134,7 +134,9 @@ class Fonz:
         logger.debug("Running query {}".format(query_id))
 
         response = self.session.get(
-            url=compose_url(self.base_url, path=["queries", query_id, "run", "json"])
+            url=utils.compose_url(
+                self.base_url, path=["queries", query_id, "run", "json"]
+            )
         )
         response.raise_for_status()
         query_result = response.json()
@@ -146,7 +148,9 @@ class Fonz:
         logger.debug("Getting SQL for query {}".format(query_id))
 
         query = self.session.get(
-            url=compose_url(self.base_url, path=["queries", query_id, "run", "sql"])
+            url=utils.compose_url(
+                self.base_url, path=["queries", query_id, "run", "sql"]
+            )
         )
 
         return query.text
@@ -170,7 +174,7 @@ class Fonz:
         self, query_id: int, message: str, explore_name: str, show_sql: bool = True
     ) -> None:
         """Log and save SQL snippet and error message for later."""
-        line_number = parse_error_line_number(message)
+        line_number = utils.parse_error_line_number(message)
         sql = self.get_query_sql(query_id)
         sql = sql.replace("\n\n", "\n")
         filename = "./logs/{}.sql".format(explore_name)
@@ -178,7 +182,7 @@ class Fonz:
             file.write(sql)
         full_message = f"Error in explore {explore_name}: {message}"
         if show_sql:
-            sql_context = extract_sql_context(sql, line_number)
+            sql_context = utils.extract_sql_context(sql, line_number)
             full_message = full_message + "\n\n" + sql_context
         self.messages.append(full_message)
         logger.debug(full_message)
@@ -186,42 +190,3 @@ class Fonz:
     def validate_content(self) -> JsonDict:
         """Validate all content and return any JSON errors."""
         pass
-
-
-def mark_line(lines: Sequence, line_number: int, char: str = "*") -> List:
-    """For a list of strings, mark a specified line with a prepended character."""
-    marked = []
-    for i, line in enumerate(lines):
-        if i == line_number:
-            marked.append(char + " " + line)
-        else:
-            marked.append("| " + line)
-    return marked
-
-
-def extract_sql_context(sql: str, line_number: int, window_size: int = 2) -> str:
-    """Extract a line of SQL with a specified amount of surrounding context."""
-    split = sql.split("\n")
-    line_number -= 1  # Align with array indexing
-    line_start = line_number - (window_size + 1)
-    line_end = line_number + window_size
-    line_start = line_start if line_start >= 0 else 0
-    line_end = line_end if line_end <= len(split) else len(split)
-
-    selected_lines = split[line_start:line_end]
-    marked = mark_line(selected_lines, line_number=window_size)
-    context = "\n".join(marked)
-    return context
-
-
-def parse_error_line_number(error_message: str) -> int:
-    """Extract the line number for a SQL error from the error message."""
-    BQ_LINE_NUM_PATTERN = r"at \[(\d+):\d+\]"
-    try:
-        line_number = re.findall(BQ_LINE_NUM_PATTERN, error_message)[0]
-    except IndexError:
-        pass  # Insert patterns for other data warehouses
-    else:
-        line_number = int(line_number)
-
-    return line_number
