@@ -1,3 +1,4 @@
+import re
 from typing import List, Sequence
 from urllib.parse import urljoin
 

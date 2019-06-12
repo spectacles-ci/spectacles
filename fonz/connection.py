@@ -1,5 +1,4 @@
 from typing import Sequence, List, Dict, Any, Optional
-import re
 import fonz.utils as utils
 from fonz.logger import GLOBAL_LOGGER as logger
 from fonz.exceptions import SqlError
