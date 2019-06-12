@@ -50,3 +50,9 @@ def test_mark_line_even_number_of_lines():
     expected_result = ["| 1", "* 2", "| 3", "| 4"]
     result = utils.mark_line(lines=text, line_number=2)
     assert result == expected_result
+
+
+def test_parse_error_line_number_big_query_syntax():
+    error_message = "Name shipping_tax_amount not found inside orders at [92:16]"
+    result = utils.parse_error_line_number(error_message)
+    assert result == 92
