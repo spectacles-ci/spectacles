@@ -86,7 +86,10 @@ class Fonz:
         logger.debug("Getting all explores in Looker instance.")
         url = utils.compose_url(self.base_url, path=["lookml_models"])
         response = self.session.get(url=url)
-        response.raise_for_status()
+        try:
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as error:
+            raise FonzError(f'Unable to retrieve explores.\nError raised: "{error}"')
 
         explores = []
 
@@ -109,7 +112,13 @@ class Fonz:
             self.base_url, path=["lookml_models", model, "explores", explore_name]
         )
         response = self.session.get(url=url)
-        response.raise_for_status()
+        try:
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as error:
+            raise FonzError(
+                f'Unable to get dimensions for explore "{explore_name}".\n'
+                f'Error raised: "{error}"'
+            )
 
         dimensions = []
 
@@ -126,7 +135,13 @@ class Fonz:
         url = utils.compose_url(self.base_url, path=["queries"])
         body = {"model": model, "view": explore_name, "fields": dimensions, "limit": 1}
         response = self.session.post(url=url, json=body)
-        response.raise_for_status()
+        try:
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as error:
+            raise FonzError(
+                f'Unable to create a query for "{model}/{explore_name}".\n'
+                f'Error raised: "{error}"'
+            )
         query_id = response.json()["id"]
 
         return query_id
@@ -139,7 +154,12 @@ class Fonz:
             self.base_url, path=["queries", query_id, "run", "json"]
         )
         response = self.session.get(url=url)
-        response.raise_for_status()
+        try:
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as error:
+            raise FonzError(
+                f'Failed to run query "{query_id}".\nError raised: "{error}"'
+            )
         query_result = response.json()
 
         return query_result
@@ -149,9 +169,16 @@ class Fonz:
 
         logger.debug("Getting SQL for query {}".format(query_id))
         url = utils.compose_url(self.base_url, path=["queries", query_id, "run", "sql"])
-        query = self.session.get(url=url)
+        response = self.session.get(url=url)
+        try:
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as error:
+            raise FonzError(
+                f'Failed to obtain SQL for query "{query_id}".\nError raised: "{error}"'
+            )
+        sql = response.text
 
-        return query.text
+        return sql
 
     def validate_explore(
         self, model: str, explore_name: str, dimensions: List[str]
