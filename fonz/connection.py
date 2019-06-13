@@ -1,7 +1,7 @@
 from typing import Sequence, List, Dict, Any, Optional
 import fonz.utils as utils
 from fonz.logger import GLOBAL_LOGGER as logger
-from fonz.exceptions import SqlError, ConnectionError
+from fonz.exceptions import SqlError, ConnectionError, FonzException
 import requests
 import sys
 
@@ -89,7 +89,9 @@ class Fonz:
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError as error:
-            raise FonzError(f'Unable to retrieve explores.\nError raised: "{error}"')
+            raise FonzException(
+                f'Unable to retrieve explores.\nError raised: "{error}"'
+            )
 
         explores = []
 
@@ -115,7 +117,7 @@ class Fonz:
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError as error:
-            raise FonzError(
+            raise FonzException(
                 f'Unable to get dimensions for explore "{explore_name}".\n'
                 f'Error raised: "{error}"'
             )
@@ -138,7 +140,7 @@ class Fonz:
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError as error:
-            raise FonzError(
+            raise FonzException(
                 f'Unable to create a query for "{model}/{explore_name}".\n'
                 f'Error raised: "{error}"'
             )
@@ -157,7 +159,7 @@ class Fonz:
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError as error:
-            raise FonzError(
+            raise FonzException(
                 f'Failed to run query "{query_id}".\nError raised: "{error}"'
             )
         query_result = response.json()
@@ -173,7 +175,7 @@ class Fonz:
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError as error:
-            raise FonzError(
+            raise FonzException(
                 f'Failed to obtain SQL for query "{query_id}".\nError raised: "{error}"'
             )
         sql = response.text
