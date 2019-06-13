@@ -26,7 +26,7 @@ def handle_exceptions(function):
                 "For support, please create an issue at "
                 "https://github.com/dbanalyticsco/Fonz/issues\n"
             )
-            sys.exit(3)
+            sys.exit(1)
 
     return wrapper
 

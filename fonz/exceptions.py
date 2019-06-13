@@ -1,9 +1,9 @@
 class FonzException(Exception):
-    exit_code = 1
+    exit_code = 100
 
 
 class ConnectionError(FonzException):
-    exit_code = 2
+    exit_code = 101
 
 
 class SqlError(FonzException):
