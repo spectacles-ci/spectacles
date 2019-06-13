@@ -25,7 +25,6 @@ class Fonz:
         self.client_secret = client_secret
         self.branch = branch
         self.project = project
-        self.client = None
         self.session = requests.Session()
         self.messages: List[str] = []
 
