@@ -4,9 +4,22 @@ import yaml
 from fonz.connection import Fonz
 from fonz.exceptions import SqlError
 from fonz.printer import print_start, print_pass, print_fail, print_error, print_stats
+from fonz.logger import GLOBAL_LOGGER as logger
+
+
+def handle_exceptions(function):
+    def wrapper(*args, **kwargs):
+        try:
+            return function(*args, **kwargs)
+        except Exception as error:
+            logger.debug(error, exc_info=True)
+            logger.error(f"Encountered runtime error: {error}")
+
+    return wrapper
 
 
 class CommandWithConfig(click.Command):
+    @handle_exceptions
     def invoke(self, ctx):
         click.echo(ctx.params)
         config_filename = ctx.params.get("config_file")
