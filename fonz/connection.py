@@ -20,7 +20,7 @@ class Fonz:
         branch: str = None,
     ):
         """Instantiate Fonz and save authentication details and branch."""
-        self.base_url = "{}:{}/api/{}/".format(url.rstrip("/"), port, api)
+        self.base_url = f'{url.rstrip("/")}:{port}/api/{api}/'
         self.client_id = client_id
         self.client_secret = client_secret
         self.branch = branch
@@ -29,7 +29,7 @@ class Fonz:
         self.session = requests.Session()
         self.messages: List[str] = []
 
-        logger.debug("Instantiated Fonz object for url: {}".format(self.base_url))
+        logger.debug(f"Instantiated Fonz object for url: {self.base_url}")
 
     def connect(self) -> None:
         """Authenticate, start a dev session, check out specified branch."""
@@ -49,7 +49,7 @@ class Fonz:
             )
 
         access_token = response.json()["access_token"]
-        self.session.headers = {"Authorization": "token {}".format(access_token)}
+        self.session.headers = {"Authorization": f"token {access_token}"}
 
     def update_session(self) -> None:
         """Switch to a dev mode session and checkout the desired branch."""
@@ -93,7 +93,7 @@ class Fonz:
 
         explores = []
 
-        logger.debug("Filtering explores for project: {}".format(self.project))
+        logger.debug(f"Filtering explores for project: {self.project}")
 
         for model in response.json():
             if model["project_name"] == self.project:
@@ -149,7 +149,7 @@ class Fonz:
     def run_query(self, query_id: int) -> List[JsonDict]:
         """Run a Looker query by ID and return the JSON result."""
 
-        logger.debug("Running query {}".format(query_id))
+        logger.debug(f"Running query {query_id}")
         url = utils.compose_url(
             self.base_url, path=["queries", query_id, "run", "json"]
         )
@@ -167,7 +167,7 @@ class Fonz:
     def get_query_sql(self, query_id: int) -> str:
         """Collect the SQL string for a Looker query."""
 
-        logger.debug("Getting SQL for query {}".format(query_id))
+        logger.debug(f"Getting SQL for query {query_id}")
         url = utils.compose_url(self.base_url, path=["queries", query_id, "run", "sql"])
         response = self.session.get(url=url)
         try:
@@ -204,7 +204,7 @@ class Fonz:
         line_number = utils.parse_error_line_number(message)
         sql = self.get_query_sql(query_id)
         sql = sql.replace("\n\n", "\n")
-        filename = "./logs/{}.sql".format(explore_name)
+        filename = f"./logs/{explore_name}.sql"
         with open(filename, "w+") as file:
             file.write(sql)
         full_message = f"Error in explore {explore_name}: {message}"
