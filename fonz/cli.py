@@ -21,7 +21,6 @@ def handle_exceptions(function):
 class CommandWithConfig(click.Command):
     @handle_exceptions
     def invoke(self, ctx):
-        click.echo(ctx.params)
         config_filename = ctx.params.get("config_file")
         if config_filename is not None:
             with open(config_filename) as file:
