@@ -56,8 +56,7 @@ class Fonz:
         except requests.exceptions.HTTPError as error:
             raise ConnectionError(
                 f"Failed to authenticate to {url}\n"
-                f'Attempted authentication with client ID "{self.client_id}" '
-                f'and client secret "{self.client_secret}"\n'
+                f'Attempted authentication with client ID "{self.client_id}"\n'
                 f'Error raised: "{error}"'
             )
 
