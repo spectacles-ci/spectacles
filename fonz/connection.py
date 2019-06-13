@@ -20,6 +20,20 @@ class Fonz:
         branch: str = None,
     ):
         """Instantiate Fonz and save authentication details and branch."""
+
+        if not client_id:
+            raise FonzException(
+                "No Looker API client ID provided. "
+                "Instructions for supplying credentials at "
+                "https://github.com/dbanalyticsco/Fonz/blob/master/README.md"
+            )
+        if not client_secret:
+            raise FonzException(
+                "No Looker API client secret provided. "
+                "Instructions for supplying credentials at "
+                "https://github.com/dbanalyticsco/Fonz/blob/master/README.md"
+            )
+
         self.base_url = f'{url.rstrip("/")}:{port}/api/{api}/'
         self.client_id = client_id
         self.client_secret = client_secret
