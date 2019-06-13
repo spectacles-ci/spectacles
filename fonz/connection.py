@@ -35,7 +35,6 @@ class Fonz:
         """Authenticate, start a dev session, check out specified branch."""
 
         logger.info("Authenticating Looker credentials. \n")
-
         url = utils.compose_url(self.base_url, path=["login"])
         body = {"client_id": self.client_id, "client_secret": self.client_secret}
         response = self.session.post(url=url, data=body)
@@ -53,12 +52,12 @@ class Fonz:
         self.session.headers = {"Authorization": "token {}".format(access_token)}
 
     def update_session(self) -> None:
+        """Switch to a dev mode session and checkout the desired branch."""
 
         logger.debug("Updating session to use development workspace.")
-        response = self.session.patch(
-            url=utils.compose_url(self.base_url, path=["session"]),
-            json={"workspace_id": "dev"},
-        )
+        url = utils.compose_url(self.base_url, path=["session"])
+        body = {"workspace_id": "dev"}
+        response = self.session.patch(url=url, json=body)
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError as error:
@@ -68,12 +67,11 @@ class Fonz:
             )
 
         logger.debug(f"Setting git branch to: {self.branch}")
-        response = self.session.put(
-            url=utils.compose_url(
-                self.base_url, path=["projects", self.project, "git_branch"]
-            ),
-            json={"name": self.branch},
+        url = utils.compose_url(
+            self.base_url, path=["projects", self.project, "git_branch"]
         )
+        body = {"name": self.branch}
+        response = self.session.put(url=url, json=body)
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError as error:
@@ -86,10 +84,8 @@ class Fonz:
         """Get all explores from the LookmlModel endpoint."""
 
         logger.debug("Getting all explores in Looker instance.")
-
-        response = self.session.get(
-            url=utils.compose_url(self.base_url, path=["lookml_models"])
-        )
+        url = utils.compose_url(self.base_url, path=["lookml_models"])
+        response = self.session.get(url=url)
         response.raise_for_status()
 
         explores = []
@@ -109,12 +105,10 @@ class Fonz:
         """Get dimensions for an explore from the LookmlModel endpoint."""
 
         logger.debug(f"Getting dimensions for {explore_name}")
-
-        response = self.session.get(
-            url=utils.compose_url(
-                self.base_url, path=["lookml_models", model, "explores", explore_name]
-            )
+        url = utils.compose_url(
+            self.base_url, path=["lookml_models", model, "explores", explore_name]
         )
+        response = self.session.get(url=url)
         response.raise_for_status()
 
         dimensions = []
@@ -129,16 +123,9 @@ class Fonz:
         """Build a Looker query using all the specified dimensions."""
 
         logger.debug(f"Creating query for {explore_name}")
-
-        response = self.session.post(
-            url=utils.compose_url(self.base_url, path=["queries"]),
-            json={
-                "model": model,
-                "view": explore_name,
-                "fields": dimensions,
-                "limit": 1,
-            },
-        )
+        url = utils.compose_url(self.base_url, path=["queries"])
+        body = {"model": model, "view": explore_name, "fields": dimensions, "limit": 1}
+        response = self.session.post(url=url, json=body)
         response.raise_for_status()
         query_id = response.json()["id"]
 
@@ -148,12 +135,10 @@ class Fonz:
         """Run a Looker query by ID and return the JSON result."""
 
         logger.debug("Running query {}".format(query_id))
-
-        response = self.session.get(
-            url=utils.compose_url(
-                self.base_url, path=["queries", query_id, "run", "json"]
-            )
+        url = utils.compose_url(
+            self.base_url, path=["queries", query_id, "run", "json"]
         )
+        response = self.session.get(url=url)
         response.raise_for_status()
         query_result = response.json()
 
@@ -161,13 +146,10 @@ class Fonz:
 
     def get_query_sql(self, query_id: int) -> str:
         """Collect the SQL string for a Looker query."""
-        logger.debug("Getting SQL for query {}".format(query_id))
 
-        query = self.session.get(
-            url=utils.compose_url(
-                self.base_url, path=["queries", query_id, "run", "sql"]
-            )
-        )
+        logger.debug("Getting SQL for query {}".format(query_id))
+        url = utils.compose_url(self.base_url, path=["queries", query_id, "run", "sql"])
+        query = self.session.get(url=url)
 
         return query.text
 
@@ -175,6 +157,7 @@ class Fonz:
         self, model: str, explore_name: str, dimensions: List[str]
     ) -> None:
         """Query selected dimensions in an explore and return any errors."""
+
         query_id = self.create_query(model, explore_name, dimensions)
         result = self.run_query(query_id)
         logger.debug(result)
@@ -190,6 +173,7 @@ class Fonz:
         self, query_id: int, message: str, explore_name: str, show_sql: bool = True
     ) -> None:
         """Log and save SQL snippet and error message for later."""
+
         line_number = utils.parse_error_line_number(message)
         sql = self.get_query_sql(query_id)
         sql = sql.replace("\n\n", "\n")
