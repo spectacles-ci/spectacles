@@ -2,7 +2,7 @@ import sys
 import click
 import yaml
 from fonz.connection import Fonz
-from fonz.exceptions import SqlError
+from fonz.exceptions import SqlError, FonzException
 from fonz.printer import print_start, print_pass, print_fail, print_error, print_stats
 from fonz.logger import GLOBAL_LOGGER as logger, LOG_FILEPATH
 
@@ -11,6 +11,12 @@ def handle_exceptions(function):
     def wrapper(*args, **kwargs):
         try:
             return function(*args, **kwargs)
+        except FonzException as error:
+            logger.error(
+                f"{error}\n\n"
+                "For support, please create an issue at "
+                "https://github.com/dbanalyticsco/Fonz/issues\n"
+            )
         except Exception as error:
             logger.debug(error, exc_info=True)
             logger.error(

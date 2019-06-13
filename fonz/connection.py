@@ -1,7 +1,7 @@
 from typing import Sequence, List, Dict, Any, Optional
 import fonz.utils as utils
 from fonz.logger import GLOBAL_LOGGER as logger
-from fonz.exceptions import SqlError
+from fonz.exceptions import SqlError, ConnectionError
 import requests
 import sys
 
@@ -36,11 +36,18 @@ class Fonz:
 
         logger.info("Authenticating Looker credentials. \n")
 
-        response = self.session.post(
-            url=utils.compose_url(self.base_url, path=["login"]),
-            data={"client_id": self.client_id, "client_secret": self.client_secret},
-        )
-        response.raise_for_status()
+        url = utils.compose_url(self.base_url, path=["login"])
+        body = {"client_id": self.client_id, "client_secret": self.client_secret}
+        response = self.session.post(url=url, data=body)
+        try:
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as error:
+            raise ConnectionError(
+                f"Failed to authenticate to {url}\n"
+                f'Attempted authentication with client ID "{self.client_id}" '
+                f'and client secret "{self.client_secret}"\n'
+                f'Error raised: "{error}"'
+            )
 
         access_token = response.json()["access_token"]
         self.session.headers = {"Authorization": "token {}".format(access_token)}
@@ -48,22 +55,32 @@ class Fonz:
     def update_session(self) -> None:
 
         logger.debug("Updating session to use development workspace.")
-
         response = self.session.patch(
             url=utils.compose_url(self.base_url, path=["session"]),
             json={"workspace_id": "dev"},
         )
-        response.raise_for_status()
+        try:
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as error:
+            raise ConnectionError(
+                f"Unable to update session to development workspace.\n"
+                f'Error raised: "{error}"'
+            )
 
-        logger.debug("Setting git branch to: {}".format(self.branch))
-
+        logger.debug(f"Setting git branch to: {self.branch}")
         response = self.session.put(
             url=utils.compose_url(
                 self.base_url, path=["projects", self.project, "git_branch"]
             ),
             json={"name": self.branch},
         )
-        response.raise_for_status()
+        try:
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as error:
+            raise ConnectionError(
+                f'Unable to set git branch to "{self.branch}".\n'
+                f'Error raised: "{error}"'
+            )
 
     def get_explores(self) -> List[JsonDict]:
         """Get all explores from the LookmlModel endpoint."""

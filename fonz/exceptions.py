@@ -2,6 +2,10 @@ class FonzException(Exception):
     pass
 
 
+class ConnectionError(FonzException):
+    pass
+
+
 class SqlError(FonzException):
     def __init__(self, query_id, explore_name, message):
         self.query_id = query_id
