@@ -4,7 +4,7 @@ import yaml
 from fonz.connection import Fonz
 from fonz.exceptions import SqlError
 from fonz.printer import print_start, print_pass, print_fail, print_error, print_stats
-from fonz.logger import GLOBAL_LOGGER as logger
+from fonz.logger import GLOBAL_LOGGER as logger, LOG_FILEPATH
 
 
 def handle_exceptions(function):
@@ -15,7 +15,7 @@ def handle_exceptions(function):
             logger.debug(error, exc_info=True)
             logger.error(
                 f'Encountered runtime error: "{error}"\n'
-                "Full error traceback logged to logs/logs.txt\n"
+                f"Full error traceback logged to {LOG_FILEPATH}\n"
             )
 
     return wrapper
