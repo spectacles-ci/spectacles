@@ -61,7 +61,7 @@ class Fonz:
         if not self.branch:
             raise FonzException(
                 "No git branch provided. "
-                "Please include the desired project name with --branch"
+                "Please include the desired git branch name with --branch"
             )
 
         logger.debug("Updating session to use development workspace.")
