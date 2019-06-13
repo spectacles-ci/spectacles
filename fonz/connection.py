@@ -54,6 +54,17 @@ class Fonz:
     def update_session(self) -> None:
         """Switch to a dev mode session and checkout the desired branch."""
 
+        if not self.project:
+            raise FonzException(
+                "No Looker project name provided. "
+                "Please include the desired project name with --project"
+            )
+        if not self.branch:
+            raise FonzException(
+                "No git branch provided. "
+                "Please include the desired project name with --branch"
+            )
+
         logger.debug("Updating session to use development workspace.")
         url = utils.compose_url(self.base_url, path=["session"])
         body = {"workspace_id": "dev"}
