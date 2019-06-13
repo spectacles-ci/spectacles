@@ -13,7 +13,10 @@ def handle_exceptions(function):
             return function(*args, **kwargs)
         except Exception as error:
             logger.debug(error, exc_info=True)
-            logger.error(f"Encountered runtime error: {error}")
+            logger.error(
+                f'Encountered runtime error: "{error}"\n'
+                "Full error traceback logged to logs/logs.txt\n"
+            )
 
     return wrapper
 
