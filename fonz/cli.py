@@ -17,6 +17,7 @@ def handle_exceptions(function):
                 "For support, please create an issue at "
                 "https://github.com/dbanalyticsco/Fonz/issues\n"
             )
+            sys.exit(error.exit_code)
         except Exception as error:
             logger.debug(error, exc_info=True)
             logger.error(
@@ -25,6 +26,7 @@ def handle_exceptions(function):
                 "For support, please create an issue at "
                 "https://github.com/dbanalyticsco/Fonz/issues\n"
             )
+            sys.exit(3)
 
     return wrapper
 
