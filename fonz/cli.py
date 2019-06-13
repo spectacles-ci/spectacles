@@ -14,7 +14,7 @@ def handle_exceptions(function):
         except Exception as error:
             logger.debug(error, exc_info=True)
             logger.error(
-                f'Encountered runtime error: "{error}"\n'
+                f'Encountered unexpected error: "{error}"\n'
                 f"Full error traceback logged to {LOG_FILEPATH}\n\n"
                 "For support, please create an issue at "
                 "https://github.com/dbanalyticsco/Fonz/issues\n"
