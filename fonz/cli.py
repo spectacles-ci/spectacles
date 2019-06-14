@@ -73,8 +73,17 @@ def connect(base_url, client_id, client_secret, config_file, port, api_version):
 @click.option("--config-file")
 @click.option("--port", default=19999)
 @click.option("--api-version", default="3.0")
+@click.option("--batch/--no-batch", default=False)
 def sql(
-    project, branch, base_url, client_id, client_secret, config_file, port, api_version
+    project,
+    branch,
+    base_url,
+    client_id,
+    client_secret,
+    config_file,
+    port,
+    api_version,
+    batch,
 ):
     client = Fonz(
         base_url, client_id, client_secret, port, api_version, project, branch
@@ -82,7 +91,7 @@ def sql(
     client.connect()
     client.update_session()
     client.build_project()
-    client.validate()
+    client.validate(batch)
 
 
 cli.add_command(connect)
