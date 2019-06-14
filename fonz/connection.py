@@ -260,7 +260,7 @@ class Fonz:
         """Query selected dimensions in an explore and return any errors."""
 
         dimensions = [dimension.name for dimension in explore.dimensions]
-        query_id = self.create_query(model.name, explore.name, [dimension.name])
+        query_id = self.create_query(model.name, explore.name, dimensions)
         result = self.run_query(query_id)
         logger.debug(result)
         if not result:
