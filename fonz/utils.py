@@ -1,10 +1,8 @@
-from typing import List, Any, Dict
-from urllib.parse import urljoin, urlencode
-
-JsonDict = Dict[str, Any]
+from typing import List
+from urllib.parse import urljoin
 
 
-def compose_url(base_url: str, path: List, query: JsonDict = None) -> str:
+def compose_url(base_url: str, path: List) -> str:
     if not isinstance(path, list):
         raise TypeError("URL path must be a list")
     parts = [base_url] + path
