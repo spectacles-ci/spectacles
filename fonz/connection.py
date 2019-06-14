@@ -36,7 +36,8 @@ class Fonz:
                 "https://github.com/dbanalyticsco/Fonz/blob/master/README.md"
             )
 
-        self.base_url = f'{url.rstrip("/")}:{port}/api/{api}/'
+        self.base_url = url.rstrip("/")
+        self.api_url = f"{self.base_url}:{port}/api/{api}/"
         self.client_id = client_id
         self.client_secret = client_secret
         self.branch = branch
@@ -45,14 +46,14 @@ class Fonz:
         self.lookml: Project = None
         self.messages: List[str] = []
 
-        logger.debug(f"Instantiated Fonz object for url: {self.base_url}")
+        logger.debug(f"Instantiated Fonz object for url: {self.api_url}")
 
     def connect(self) -> None:
         """Authenticate, start a dev session, check out specified branch."""
 
         logger.info("Authenticating Looker credentials. \n")
 
-        url = utils.compose_url(self.base_url, path=["login"])
+        url = utils.compose_url(self.api_url, path=["login"])
         body = {"client_id": self.client_id, "client_secret": self.client_secret}
         response = self.session.post(url=url, data=body)
         try:
@@ -82,7 +83,7 @@ class Fonz:
             )
 
         logger.debug("Updating session to use development workspace.")
-        url = utils.compose_url(self.base_url, path=["session"])
+        url = utils.compose_url(self.api_url, path=["session"])
         body = {"workspace_id": "dev"}
         response = self.session.patch(url=url, json=body)
         try:
@@ -95,7 +96,7 @@ class Fonz:
 
         logger.debug(f"Setting git branch to: {self.branch}")
         url = utils.compose_url(
-            self.base_url, path=["projects", self.project, "git_branch"]
+            self.api_url, path=["projects", self.project, "git_branch"]
         )
         body = {"name": self.branch}
         response = self.session.put(url=url, json=body)
@@ -123,7 +124,7 @@ class Fonz:
 
         self.lookml = Project(self.project, models)
 
-    def validate(self):
+    def validate(self, batch=False):
         explore_count = 0
         index = 0
         for model in self.lookml.models:
@@ -131,12 +132,28 @@ class Fonz:
             for explore in model.explores:
                 index += 1
                 print_start(explore.name, index, explore_count)
-                try:
-                    self.validate_explore(model.name, explore)
-                except SqlError as error:
-                    self.handle_sql_error(
-                        error.query_id, error.message, error.explore_name
-                    )
+
+                if batch:
+                    try:
+                        self.validate_explore(model, explore)
+                    except SqlError as error:
+                        self.handle_sql_error(
+                            model.name, explore.name, error.query_id, error.message
+                        )
+                else:
+                    for dimension in explore.dimensions[:10]:
+                        try:
+                            self.validate_dimension(model, explore, dimension)
+                        except SqlError as error:
+                            self.handle_sql_error(
+                                model.name,
+                                explore.name,
+                                error.query_id,
+                                error.message,
+                                error.url,
+                            )
+
+                if explore.errored:
                     print_fail(explore.name, index, explore_count)
                 else:
                     print_pass(explore.name, index, explore_count)
@@ -155,7 +172,7 @@ class Fonz:
         """Get all models and explores from the LookmlModel endpoint."""
 
         logger.debug("Getting all models and explores in Looker instance.")
-        url = utils.compose_url(self.base_url, path=["lookml_models"])
+        url = utils.compose_url(self.api_url, path=["lookml_models"])
         response = self.session.get(url=url)
         try:
             response.raise_for_status()
@@ -171,7 +188,7 @@ class Fonz:
 
         logger.debug(f"Getting dimensions for {explore_name}")
         url = utils.compose_url(
-            self.base_url, path=["lookml_models", model, "explores", explore_name]
+            self.api_url, path=["lookml_models", model, "explores", explore_name]
         )
         response = self.session.get(url=url)
         try:
@@ -188,7 +205,7 @@ class Fonz:
         """Build a Looker query using all the specified dimensions."""
 
         logger.debug(f"Creating query for {explore_name}")
-        url = utils.compose_url(self.base_url, path=["queries"])
+        url = utils.compose_url(self.api_url, path=["queries"])
         body = {"model": model, "view": explore_name, "fields": dimensions, "limit": 1}
         response = self.session.post(url=url, json=body)
         try:
@@ -206,9 +223,7 @@ class Fonz:
         """Run a Looker query by ID and return the JSON result."""
 
         logger.debug(f"Running query {query_id}")
-        url = utils.compose_url(
-            self.base_url, path=["queries", query_id, "run", "json"]
-        )
+        url = utils.compose_url(self.api_url, path=["queries", query_id, "run", "json"])
         response = self.session.get(url=url)
         try:
             response.raise_for_status()
@@ -224,7 +239,7 @@ class Fonz:
         """Collect the SQL string for a Looker query."""
 
         logger.debug(f"Getting SQL for query {query_id}")
-        url = utils.compose_url(self.base_url, path=["queries", query_id, "run", "sql"])
+        url = utils.compose_url(self.api_url, path=["queries", query_id, "run", "sql"])
         response = self.session.get(url=url)
         try:
             response.raise_for_status()
@@ -236,38 +251,68 @@ class Fonz:
 
         return sql
 
-    def validate_explore(self, model: str, explore: Explore) -> None:
+    def validate_explore(self, model: Model, explore: Explore) -> None:
         """Query selected dimensions in an explore and return any errors."""
+
         dimensions = [dimension.name for dimension in explore.dimensions]
-        query_id = self.create_query(model, explore.name, dimensions)
+        query_id = self.create_query(model.name, explore.name, [dimension.name])
         result = self.run_query(query_id)
         logger.debug(result)
         if not result:
             return
         elif "looker_error" in result[0]:
             error_message = result[0]["looker_error"]
-            raise SqlError(query_id, explore.name, error_message)
+            explore.error = True
+            model.error = True
+            raise SqlError(query_id, error_message)
+        else:
+            return
+
+    def validate_dimension(self, model: Model, explore: Explore, dimension: Dimension):
+
+        query_id = self.create_query(model.name, explore.name, [dimension.name])
+        result = self.run_query(query_id)
+        logger.debug(result)
+        if not result:
+            return
+        elif "looker_error" in result[0]:
+            error_message = result[0]["looker_error"]
+            explore.error = True
+            model.error = True
+            raise SqlError(query_id, error_message, dimension.url)
         else:
             return
 
     def handle_sql_error(
-        self, query_id: int, message: str, explore_name: str, show_sql: bool = True
-    ) -> None:
-        """Log and save SQL snippet and error message for later."""
-
-        line_number = utils.parse_error_line_number(message)
+        self,
+        model_name: str,
+        explore_name: str,
+        query_id: int,
+        message: str,
+        url: str = None,
+    ):
         sql = self.get_query_sql(query_id)
         sql = sql.replace("\n\n", "\n")
         filename = f"./logs/{explore_name}.sql"
         with open(filename, "w+") as file:
             file.write(sql)
-        full_message = f"Error in explore {explore_name}: {message}"
-        if show_sql:
-            sql_context = utils.extract_sql_context(sql, line_number)
-            full_message = full_message + "\n\n" + sql_context
-        self.messages.append(full_message)
-        logger.debug(full_message)
 
-    def validate_content(self) -> JsonDict:
-        """Validate all content and return any JSON errors."""
-        pass
+        message = self.add_error_context(message, sql, url)
+        message = f"Error in {model_name}/{explore_name}: {message}"
+        self.messages.append(message)
+        logger.debug(message)
+
+    def add_error_context(
+        self, message: str, sql: str, url: str = None, show_sql: bool = True
+    ) -> None:
+
+        if show_sql:
+            line_number = utils.parse_error_line_number(message)
+            sql_context = utils.extract_sql_context(sql, line_number)
+            message = message + "\n\n" + sql_context
+        if url:
+            message = (
+                message + "\n\n" + f"LookML in question is here: {self.base_url + url}"
+            )
+
+        return message
