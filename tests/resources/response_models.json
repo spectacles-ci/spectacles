@@ -1,0 +1,65 @@
+[
+  {
+    "explores": [
+      {
+        "description": null,
+        "label": "Test Explore",
+        "hidden": true,
+        "group_label": "Fonz",
+        "name": "test_explore",
+        "can": {}
+      }
+    ],
+    "has_content": true,
+    "label": "Fonz",
+    "name": "fonz",
+    "project_name": "fonz",
+    "unlimited_db_connections": false,
+    "allowed_db_connection_names": [
+      "connection"
+    ],
+    "can": {
+      "index": true,
+      "show": true,
+      "create": true,
+      "update": true,
+      "destroy": true
+    }
+  },
+  {
+    "explores": [],
+    "has_content": false,
+    "label": "American Community Survey",
+    "name": "american_community_survey",
+    "project_name": "american_community_survey",
+    "unlimited_db_connections": false,
+    "allowed_db_connection_names": [
+      "connection"
+    ],
+    "can": {
+      "index": true,
+      "show": true,
+      "create": true,
+      "update": true,
+      "destroy": true
+    }
+  },
+  {
+    "explores": [],
+    "has_content": false,
+    "label": "Bigquery.gsod",
+    "name": "bigquery.gsod",
+    "project_name": "weather",
+    "unlimited_db_connections": false,
+    "allowed_db_connection_names": [
+      "connection"
+    ],
+    "can": {
+      "index": true,
+      "show": true,
+      "create": true,
+      "update": true,
+      "destroy": true
+    }
+  }
+]
