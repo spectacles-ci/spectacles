@@ -48,6 +48,7 @@ class Fonz:
         """Authenticate, start a dev session, check out specified branch."""
 
         logger.info("Authenticating Looker credentials. \n")
+
         url = utils.compose_url(self.base_url, path=["login"])
         body = {"client_id": self.client_id, "client_secret": self.client_secret}
         response = self.session.post(url=url, data=body)
