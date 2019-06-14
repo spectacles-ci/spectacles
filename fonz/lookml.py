@@ -13,6 +13,7 @@ class Dimension(LookMlObject):
         self.sql = sql
         self.url = url
         self.ignore = True if "fonz: ignore" in sql else False
+        self.errored = False
 
     def __repr__(self):
         return f"{self.__class__.__name__}(name={self.name}, type={self.type})"
@@ -30,6 +31,7 @@ class Explore(LookMlObject):
     def __init__(self, name: str, dimensions: List[Dimension] = None):
         self.name = name
         self.dimensions = [] if dimensions is None else dimensions
+        self.errored = False
 
     @classmethod
     def from_json(cls, json_dict):
@@ -45,6 +47,7 @@ class Model(LookMlObject):
         self.name = name
         self.project = project
         self.explores = explores
+        self.errored = False
 
     @classmethod
     def from_json(cls, json_dict):
