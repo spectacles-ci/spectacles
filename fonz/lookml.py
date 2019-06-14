@@ -55,7 +55,7 @@ class Model(LookMlObject):
 
 
 class Project(LookMlObject):
-    def __init__(self, name, models: List[Models]):
+    def __init__(self, name, models: List[Model]):
         self.name = name
         self.models = models
 
