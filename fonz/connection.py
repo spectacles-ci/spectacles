@@ -2,7 +2,8 @@ from typing import Sequence, List, Dict, Any, Optional
 import fonz.utils as utils
 from fonz.lookml import Project, Model, Explore, Dimension
 from fonz.logger import GLOBAL_LOGGER as logger
-from fonz.exceptions import SqlError, ConnectionError, FonzException
+from fonz.printer import print_start, print_pass, print_fail, print_error, print_stats
+from fonz.exceptions import SqlError, ConnectionError, ValidationError, FonzException
 import requests
 import sys
 
@@ -113,7 +114,7 @@ class Fonz:
         models = []
         for model_json in models_json:
             model = Model.from_json(model_json)
-            if model.project_name == self.project:
+            if model.project == self.project:
                 for explore in model.explores:
                     dimensions_json = self.get_dimensions(model.name, explore.name)
                     for dimension_json in dimensions_json:
@@ -121,6 +122,34 @@ class Fonz:
                 models.append(model)
 
         self.lookml = Project(self.project, models)
+
+    def validate(self):
+        explore_count = 0
+        index = 0
+        for model in self.lookml.models:
+            explore_count += len(model.explores)
+            for explore in model.explores:
+                index += 1
+                print_start(explore.name, index, explore_count)
+                try:
+                    self.validate_explore(model.name, explore)
+                except SqlError as error:
+                    self.handle_sql_error(
+                        error.query_id, error.message, error.explore_name
+                    )
+                    print_fail(explore.name, index, explore_count)
+                else:
+                    print_pass(explore.name, index, explore_count)
+
+        errors = 0
+        for message in self.messages:
+            errors += 1
+            print_error(message)
+        print_stats(errors, explore_count)
+        if errors > 0:
+            raise ValidationError(
+                f'Found {errors} SQL errors in project "{self.project}"'
+            )
 
     def get_models(self) -> List[JsonDict]:
         """Get all models and explores from the LookmlModel endpoint."""
@@ -207,19 +236,17 @@ class Fonz:
 
         return sql
 
-    def validate_explore(
-        self, model: str, explore_name: str, dimensions: List[str]
-    ) -> None:
+    def validate_explore(self, model: str, explore: Explore) -> None:
         """Query selected dimensions in an explore and return any errors."""
-
-        query_id = self.create_query(model, explore_name, dimensions)
+        dimensions = [dimension.name for dimension in explore.dimensions]
+        query_id = self.create_query(model, explore.name, dimensions)
         result = self.run_query(query_id)
         logger.debug(result)
         if not result:
             return
         elif "looker_error" in result[0]:
             error_message = result[0]["looker_error"]
-            raise SqlError(query_id, explore_name, error_message)
+            raise SqlError(query_id, explore.name, error_message)
         else:
             return
 
