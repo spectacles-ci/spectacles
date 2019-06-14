@@ -141,6 +141,7 @@ class TestSql(object):
 
     @patch("fonz.cli.Fonz", autospec=True)
     def test_with_command_line_args_only(self, mock_client):
+        mock_client.return_value.messages = []
         result = self.runner.invoke(
             sql,
             [
@@ -172,6 +173,7 @@ class TestSql(object):
 
     @patch("fonz.cli.Fonz", autospec=True)
     def test_with_env_vars_only(self, mock_client, env):
+        mock_client.return_value.messages = []
         result = self.runner.invoke(sql, standalone_mode=False, catch_exceptions=False)
         mock_client.assert_called_once_with(
             TEST_BASE_URL,
@@ -187,6 +189,7 @@ class TestSql(object):
 
     @patch("fonz.cli.Fonz", autospec=True)
     def test_with_config_file_only(self, mock_client, clean_env):
+        mock_client.return_value.messages = []
         with self.runner.isolated_filesystem():
             with open("config.yml", "w") as file:
                 config = {
@@ -219,6 +222,7 @@ class TestSql(object):
     def test_cli_supersedes_env_var_which_supersedes_config_file(
         self, mock_client, limited_env
     ):
+        mock_client.return_value.messages = []
         with self.runner.isolated_filesystem():
             with open("config.yml", "w") as file:
                 config = {

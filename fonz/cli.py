@@ -97,8 +97,7 @@ def sql(
         else:
             print_pass(explore_name, index + 1, explore_count)
 
-        errors = 0
-
+    errors = 0
     for message in client.messages:
         errors += 1
         print_error(message)
