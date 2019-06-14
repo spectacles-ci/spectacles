@@ -51,7 +51,7 @@ class Fonz:
 
         url = utils.compose_url(self.base_url, path=["login"])
         body = {"client_id": self.client_id, "client_secret": self.client_secret}
-        response = self.session.post(url=url, json=body)
+        response = self.session.post(url=url, data=body)
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError as error:

@@ -64,8 +64,11 @@ looker_mock = requests_mock.Mocker()
 
 # POST login
 def login_callback(request, context):
-    data = request.json()
-    if data["client_id"] == "CLIENT_ID" and data["client_secret"] == "CLIENT_SECRET":
+    data = parse_qs(request.text)
+    if (
+        data["client_id"][0] == "CLIENT_ID"
+        and data["client_secret"][0] == "CLIENT_SECRET"
+    ):
         context.status_code = 200
         return {"access_token": "FAKE_ACCESS_TOKEN"}
     else:

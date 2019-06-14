@@ -3,7 +3,7 @@ import requests
 import requests_mock
 from tests.mock import looker_mock
 from fonz import connection
-from fonz.exceptions import SqlError
+from fonz.exceptions import SqlError, ConnectionError, FonzException
 
 base = "https://test.looker.com"
 
@@ -14,6 +14,7 @@ client = connection.Fonz(
     port=19999,
     api="3.0",
     project="test_project",
+    branch="test_branch",
 )
 
 
@@ -36,7 +37,7 @@ def test_connect_incorrect_credentials():
     )
 
     with looker_mock as m:
-        with pytest.raises(requests.exceptions.HTTPError):
+        with pytest.raises(ConnectionError):
             client.connect()
 
 
@@ -80,7 +81,7 @@ def test_create_query():
 def test_create_query_incorrect_explore():
 
     with looker_mock as m:
-        with pytest.raises(requests.exceptions.HTTPError):
+        with pytest.raises(FonzException):
             client.create_query(
                 model="model_one",
                 explore_name="explore_five",
