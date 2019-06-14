@@ -1,5 +1,6 @@
 from typing import Sequence, List, Dict, Any, Optional
 import fonz.utils as utils
+from fonz.lookml import Project, Model, Explore, Dimension
 from fonz.logger import GLOBAL_LOGGER as logger
 from fonz.exceptions import SqlError, ConnectionError, FonzException
 import requests
@@ -40,6 +41,7 @@ class Fonz:
         self.branch = branch
         self.project = project
         self.session = requests.Session()
+        self.lookml: Project = None
         self.messages: List[str] = []
 
         logger.debug(f"Instantiated Fonz object for url: {self.base_url}")
@@ -104,10 +106,26 @@ class Fonz:
                 f'Error raised: "{error}"'
             )
 
-    def get_explores(self) -> List[JsonDict]:
-        """Get all explores from the LookmlModel endpoint."""
+    def build_project(self) -> Project:
+        """Create a representation of the desired project's LookML."""
 
-        logger.debug("Getting all explores in Looker instance.")
+        models_json = self.get_models()
+        models = []
+        for model_json in models_json:
+            model = Model.from_json(model_json)
+            if model.project_name == self.project:
+                for explore in model.explores:
+                    dimensions_json = self.get_dimensions(model.name, explore.name)
+                    for dimension_json in dimensions_json:
+                        explore.add_dimension(Dimension.from_json(dimension_json))
+                models.append(model)
+
+        self.lookml = Project(self.project, models)
+
+    def get_models(self) -> List[JsonDict]:
+        """Get all models and explores from the LookmlModel endpoint."""
+
+        logger.debug("Getting all models and explores in Looker instance.")
         url = utils.compose_url(self.base_url, path=["lookml_models"])
         response = self.session.get(url=url)
         try:
@@ -117,18 +135,7 @@ class Fonz:
                 f'Unable to retrieve explores.\nError raised: "{error}"'
             )
 
-        explores = []
-
-        logger.debug(f"Filtering explores for project: {self.project}")
-
-        for model in response.json():
-            if model["project_name"] == self.project:
-                for explore in model["explores"]:
-                    explores.append(
-                        {"model": model["name"], "explore": explore["name"]}
-                    )
-
-        return explores
+        return response.json()
 
     def get_dimensions(self, model: str, explore_name: str) -> List[str]:
         """Get dimensions for an explore from the LookmlModel endpoint."""
@@ -146,13 +153,7 @@ class Fonz:
                 f'Error raised: "{error}"'
             )
 
-        dimensions = []
-
-        for dimension in response.json()["fields"]["dimensions"]:
-            if "fonz: ignore" not in dimension["sql"]:
-                dimensions.append(dimension["name"])
-
-        return dimensions
+        return response.json()["fields"]["dimensions"]
 
     def create_query(self, model: str, explore_name: str, dimensions: List[str]) -> int:
         """Build a Looker query using all the specified dimensions."""
