@@ -137,6 +137,8 @@ class Fonz:
                     try:
                         self.validate_explore(model, explore)
                     except SqlError as error:
+                        explore.errored = True
+                        model.errored = True
                         self.handle_sql_error(
                             model.name, explore.name, error.query_id, error.message
                         )
@@ -145,6 +147,9 @@ class Fonz:
                         try:
                             self.validate_dimension(model, explore, dimension)
                         except SqlError as error:
+                            dimension.errored = True
+                            explore.errored = True
+                            model.errored = True
                             self.handle_sql_error(
                                 model.name,
                                 explore.name,
