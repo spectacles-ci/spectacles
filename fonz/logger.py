@@ -1,13 +1,16 @@
+from pathlib import Path
 import logging
 import os
 
-if not os.path.exists("logs/"):
-    os.mkdir("logs")
+LOG_DIRECTORY = Path("logs")
+LOG_FILEPATH = Path(LOG_DIRECTORY / "logs.txt")
+
+LOG_DIRECTORY.mkdir(exist_ok=True)
 
 logger = logging.getLogger("Fonz")
 logger.setLevel(logging.DEBUG)
 
-fh = logging.FileHandler("./logs/logs.txt")
+fh = logging.FileHandler(LOG_FILEPATH)
 fh.setLevel(logging.DEBUG)
 
 ch = logging.StreamHandler()

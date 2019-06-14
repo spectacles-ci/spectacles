@@ -2,13 +2,38 @@ import sys
 import click
 import yaml
 from fonz.connection import Fonz
-from fonz.exceptions import SqlError
+from fonz.exceptions import SqlError, FonzException
 from fonz.printer import print_start, print_pass, print_fail, print_error, print_stats
+from fonz.logger import GLOBAL_LOGGER as logger, LOG_FILEPATH
+
+
+def handle_exceptions(function):
+    def wrapper(*args, **kwargs):
+        try:
+            return function(*args, **kwargs)
+        except FonzException as error:
+            logger.error(
+                f"{error}\n\n"
+                "For support, please create an issue at "
+                "https://github.com/dbanalyticsco/Fonz/issues\n"
+            )
+            sys.exit(error.exit_code)
+        except Exception as error:
+            logger.debug(error, exc_info=True)
+            logger.error(
+                f'Encountered unexpected error: "{error}"\n'
+                f"Full error traceback logged to {LOG_FILEPATH}\n\n"
+                "For support, please create an issue at "
+                "https://github.com/dbanalyticsco/Fonz/issues\n"
+            )
+            sys.exit(1)
+
+    return wrapper
 
 
 class CommandWithConfig(click.Command):
+    @handle_exceptions
     def invoke(self, ctx):
-        click.echo(ctx.params)
         config_filename = ctx.params.get("config_file")
         if config_filename is not None:
             with open(config_filename) as file:
@@ -73,12 +98,13 @@ def sql(
             print_pass(explore_name, index + 1, explore_count)
 
         errors = 0
-        for message in client.messages:
-            errors += 1
-            print_error(message)
-        print_stats(errors, explore_count)
-        if errors > 0:
-            sys.exit(1)
+
+    for message in client.messages:
+        errors += 1
+        print_error(message)
+    print_stats(errors, explore_count)
+    if errors > 0:
+        sys.exit(1)
 
 
 cli.add_command(connect)
