@@ -9,14 +9,15 @@ setup(
     install_requires=[
         "Click",
         "requests",
-        "PyYAML",
         "pytest",
+        "PyYAML",
         "requests-mock",
         "coverage",
         "mypy",
         "pycodestyle",
         "pytest-cov",
         "coverage",
+        "colorama",
     ],
     entry_points="""
         [console_scripts]
