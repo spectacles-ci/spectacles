@@ -141,7 +141,7 @@ class Fonz:
                             model.name, explore.name, error.query_id, error.message
                         )
                 else:
-                    for dimension in explore.dimensions[:10]:
+                    for dimension in explore.dimensions:
                         try:
                             self.validate_dimension(model, explore, dimension)
                         except SqlError as error:
