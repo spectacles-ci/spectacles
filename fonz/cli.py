@@ -2,8 +2,7 @@ import sys
 import click
 import yaml
 from fonz.connection import Fonz
-from fonz.exceptions import SqlError, FonzException
-from fonz.printer import print_start, print_pass, print_fail, print_error, print_stats
+from fonz.exceptions import SqlError, FonzException, ValidationError
 from fonz.logger import GLOBAL_LOGGER as logger, LOG_FILEPATH
 
 
@@ -11,6 +10,9 @@ def handle_exceptions(function):
     def wrapper(*args, **kwargs):
         try:
             return function(*args, **kwargs)
+        except ValidationError as error:
+            logger.error(f"{error}\n")
+            sys.exit(error.exit_code)
         except FonzException as error:
             logger.error(
                 f"{error}\n\n"
@@ -71,39 +73,25 @@ def connect(base_url, client_id, client_secret, config_file, port, api_version):
 @click.option("--config-file")
 @click.option("--port", default=19999)
 @click.option("--api-version", default="3.0")
+@click.option("--batch/--no-batch", default=False)
 def sql(
-    project, branch, base_url, client_id, client_secret, config_file, port, api_version
+    project,
+    branch,
+    base_url,
+    client_id,
+    client_secret,
+    config_file,
+    port,
+    api_version,
+    batch,
 ):
     client = Fonz(
         base_url, client_id, client_secret, port, api_version, project, branch
     )
     client.connect()
     client.update_session()
-    explores = client.get_explores()
-
-    explore_count = len(explores)
-    for index, explore in enumerate(explores):
-        model = explore["model"]
-        explore_name = explore["explore"]
-        dimensions = client.get_dimensions(model, explore_name)
-
-        print_start(explore_name, index + 1, explore_count)
-
-        try:
-            client.validate_explore(model, explore_name, dimensions)
-        except SqlError as error:
-            client.handle_sql_error(error.query_id, error.message, error.explore_name)
-            print_fail(explore_name, index + 1, explore_count)
-        else:
-            print_pass(explore_name, index + 1, explore_count)
-
-    errors = 0
-    for message in client.messages:
-        errors += 1
-        print_error(message)
-    print_stats(errors, explore_count)
-    if errors > 0:
-        sys.exit(1)
+    client.build_project()
+    client.validate(batch)
 
 
 cli.add_command(connect)
