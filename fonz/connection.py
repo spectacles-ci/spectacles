@@ -45,6 +45,7 @@ class Fonz:
         self.session = requests.Session()
         self.lookml: Project = None
         self.messages: List[str] = []
+        self.error_count = 0
 
         logger.debug(f"Instantiated Fonz object for url: {self.api_url}")
 
@@ -136,48 +137,45 @@ class Fonz:
         explore_count = self.count_explores()
         index = 0
         for model in self.lookml.models:
-
             for explore in model.explores:
                 index += 1
                 print_start(explore.name, index, explore_count)
 
-                if batch:
-                    try:
-                        self.validate_explore(model, explore)
-                    except SqlError as error:
-                        self.handle_sql_error(
-                            model.name, explore.name, error.query_id, error.message
-                        )
-                else:
-                    for dimension in explore.dimensions:
-                        try:
-                            self.validate_dimension(model, explore, dimension)
-                        except SqlError as error:
-                            self.handle_sql_error(
-                                model.name,
-                                explore.name,
-                                error.query_id,
-                                error.message,
-                                error.url,
-                            )
+                self.validate_explore(model, explore, batch)
 
                 if explore.errored:
                     print_fail(explore.name, index, explore_count)
                 else:
                     print_pass(explore.name, index, explore_count)
 
-    def report_results(self):
+    def report_results(self, batch: bool = False):
         """Displays the overall results of the completed validation."""
 
         explore_count = self.count_explores()
-        errors = 0
-        for message in self.messages:
-            errors += 1
-            print_error(message)
-        print_stats(errors, explore_count)
-        if errors > 0:
+        for model in self.lookml.get_errored_models():
+            for explore in model.get_errored_explores():
+                if batch:
+                    self.error_count += 1
+                    message = (
+                        f"Error in {model.name}/{explore.name}: "
+                        f"{explore.error_message}\n\n"
+                    )
+                    print_error(message)
+                else:
+                    for dimension in explore.get_errored_dimensions():
+                        self.error_count += 1
+                        message = (
+                            f"Error in {model.name}/{dimension.name}: "
+                            f"{dimension.error_message}\n\n"
+                            f"LookML in question is here: "
+                            f"{self.base_url + dimension.url}"
+                        )
+                        print_error(message)
+
+        print_stats(self.error_count, explore_count)
+        if self.error_count > 0:
             raise ValidationError(
-                f'Found {errors} SQL errors in project "{self.project}"'
+                f'Found {self.error_count} SQL errors in project "{self.project}"'
             )
 
     def get_models(self) -> List[JsonDict]:
@@ -263,38 +261,38 @@ class Fonz:
 
         return sql
 
-    def validate_explore(self, model: Model, explore: Explore) -> None:
+    def validate_explore(
+        self, model: Model, explore: Explore, batch: bool = False
+    ) -> None:
         """Query selected dimensions in an explore and return any errors."""
 
-        dimensions = [dimension.name for dimension in explore.dimensions]
-        query_id = self.create_query(model.name, explore.name, dimensions)
-        result = self.run_query(query_id)
-        logger.debug(result)
-        if not result:
-            return
-        elif "looker_error" in result[0]:
-            error_message = result[0]["looker_error"]
-            explore.errored = True
-            model.errored = True
-            raise SqlError(query_id, error_message)
-        else:
-            return
+        if batch:
+            dimensions = [dimension.name for dimension in explore.dimensions]
+            query_id = self.create_query(model.name, explore.name, dimensions)
+            explore.query_id = query_id
+            result = self.run_query(query_id)
 
-    def validate_dimension(self, model: Model, explore: Explore, dimension: Dimension):
-
-        query_id = self.create_query(model.name, explore.name, [dimension.name])
-        result = self.run_query(query_id)
-        logger.debug(result)
-        if not result:
-            return
-        elif "looker_error" in result[0]:
-            error_message = result[0]["looker_error"]
-            dimension.errored = True
-            explore.errored = True
-            model.errored = True
-            raise SqlError(query_id, error_message, dimension.url)
+            if not result:
+                return
+            elif "looker_error" in result[0]:
+                error_message = result[0]["looker_error"]
+                explore.errored = True
+                model.errored = True
+                explore.error_message = error_message
         else:
-            return
+            for dimension in explore.dimensions:
+                query_id = self.create_query(model.name, explore.name, [dimension.name])
+                dimension.query_id = query_id
+                result = self.run_query(query_id)
+
+                if not result:
+                    continue
+                elif "looker_error" in result[0]:
+                    error_message = result[0]["looker_error"]
+                    dimension.errored = True
+                    explore.errored = True
+                    model.errored = True
+                    dimension.error_message = error_message
 
     def handle_sql_error(
         self,
