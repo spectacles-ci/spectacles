@@ -276,8 +276,8 @@ class Fonz:
                 return
             elif "looker_error" in result[0]:
                 error_message = result[0]["looker_error"]
-                explore.errored = True
-                model.errored = True
+                for lookml_object in [explore, model]:
+                    lookml_object.errored = True
                 explore.error_message = error_message
         else:
             for dimension in explore.dimensions:
@@ -289,9 +289,8 @@ class Fonz:
                     continue
                 elif "looker_error" in result[0]:
                     error_message = result[0]["looker_error"]
-                    dimension.errored = True
-                    explore.errored = True
-                    model.errored = True
+                    for lookml_object in [dimension, explore, model]:
+                        lookml_object.errored = True
                     dimension.error_message = error_message
 
     def handle_sql_error(
