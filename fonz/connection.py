@@ -145,8 +145,6 @@ class Fonz:
                     try:
                         self.validate_explore(model, explore)
                     except SqlError as error:
-                        explore.errored = True
-                        model.errored = True
                         self.handle_sql_error(
                             model.name, explore.name, error.query_id, error.message
                         )
@@ -155,9 +153,6 @@ class Fonz:
                         try:
                             self.validate_dimension(model, explore, dimension)
                         except SqlError as error:
-                            dimension.errored = True
-                            explore.errored = True
-                            model.errored = True
                             self.handle_sql_error(
                                 model.name,
                                 explore.name,
@@ -279,8 +274,8 @@ class Fonz:
             return
         elif "looker_error" in result[0]:
             error_message = result[0]["looker_error"]
-            explore.error = True
-            model.error = True
+            explore.errored = True
+            model.errored = True
             raise SqlError(query_id, error_message)
         else:
             return
@@ -294,8 +289,9 @@ class Fonz:
             return
         elif "looker_error" in result[0]:
             error_message = result[0]["looker_error"]
-            explore.error = True
-            model.error = True
+            dimension.errored = True
+            explore.errored = True
+            model.errored = True
             raise SqlError(query_id, error_message, dimension.url)
         else:
             return
