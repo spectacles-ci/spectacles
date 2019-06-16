@@ -124,11 +124,19 @@ class Fonz:
 
         self.lookml = Project(self.project, models)
 
-    def validate(self, batch=False):
+    def count_explores(self):
+        """Return the total number of explores in the project."""
+
         explore_count = 0
-        index = 0
         for model in self.lookml.models:
             explore_count += len(model.explores)
+        return explore_count
+
+    def validate(self, batch=False):
+        explore_count = self.count_explores()
+        index = 0
+        for model in self.lookml.models:
+
             for explore in model.explores:
                 index += 1
                 print_start(explore.name, index, explore_count)
@@ -163,6 +171,10 @@ class Fonz:
                 else:
                     print_pass(explore.name, index, explore_count)
 
+    def report_results(self):
+        """Displays the overall results of the completed validation."""
+
+        explore_count = self.count_explores()
         errors = 0
         for message in self.messages:
             errors += 1
