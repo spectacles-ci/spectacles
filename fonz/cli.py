@@ -92,6 +92,7 @@ def sql(
     client.update_session()
     client.build_project()
     client.validate(batch)
+    client.report_results()
 
 
 cli.add_command(connect)
