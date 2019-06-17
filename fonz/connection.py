@@ -13,6 +13,7 @@ from fonz.exceptions import (
     ValidationError,
     FonzException,
     QueryNotFinished,
+    SqlError,
 )
 
 
@@ -165,17 +166,25 @@ class Fonz:
             for explore in model.get_errored_explores():
                 if batch:
                     self.error_count += 1
+                    sql = explore.error.sql
+                    line_number = explore.error.line_number
+                    sql_context = utils.extract_sql_context(sql, line_number)
                     message = (
                         f"Error in {model.name}/{explore.name}: "
-                        f"{explore.error_message}\n\n"
+                        f"{explore.error.message}\n\n"
+                        f"{sql_context}"
                     )
                     print_error(message)
                 else:
                     for dimension in explore.get_errored_dimensions():
                         self.error_count += 1
+                        sql = dimension.error.sql
+                        line_number = dimension.error.line_number
+                        sql_context = utils.extract_sql_context(sql, line_number)
                         message = (
                             f"Error in {model.name}/{dimension.name}: "
-                            f"{dimension.error_message}\n\n"
+                            f"{dimension.error.message}\n\n"
+                            f"{sql_context}\n\n"
                             f"LookML in question is here: "
                             f"{self.base_url + dimension.url}"
                         )
@@ -237,7 +246,7 @@ class Fonz:
         return query_id
 
     async def run_query(self, session: aiohttp.ClientSession, query_id: int) -> str:
-        """Run a Looker query by ID and return the JSON result."""
+        """Run a Looker query asynchronously by ID and return the query task ID."""
 
         logger.debug(f"Starting query {query_id}")
         body = {"query_id": query_id, "result_format": "json"}
@@ -265,22 +274,6 @@ class Fonz:
             result = await response.json()
             return result
 
-    def get_query_sql(self, query_id: int) -> str:
-        """Collect the SQL string for a Looker query."""
-
-        logger.debug(f"Getting SQL for query {query_id}")
-        url = utils.compose_url(self.api_url, path=["queries", query_id, "run", "sql"])
-        response = self.session.get(url=url)
-        try:
-            response.raise_for_status()
-        except requests.exceptions.HTTPError as error:
-            raise FonzException(
-                f'Failed to obtain SQL for query "{query_id}".\nError raised: "{error}"'
-            )
-        sql = response.text
-
-        return sql
-
     async def query_explore(self, model: Model, explore: Explore):
         async with aiohttp.ClientSession(
             headers=self.session.headers, raise_for_status=True
@@ -305,9 +298,7 @@ class Fonz:
 
                 for lookml_object in [explore, model]:
                     lookml_object.errored = True
-                explore.error_message = error_message
-                explore.sql = sql
-                explore.line_number = line_number
+                explore.error = SqlError(error_message, sql, line_number)
 
     async def query_dimension(
         self, model: Model, explore: Explore, dimension: Dimension
@@ -334,9 +325,7 @@ class Fonz:
 
                 for lookml_object in [dimension, explore, model]:
                     lookml_object.errored = True
-                dimension.error_message = error_message
-                dimension.sql = sql
-                dimension.line_number = line_number
+                dimension.error = SqlError(error_message, sql, line_number)
 
     def validate_explore(
         self, model: Model, explore: Explore, batch: bool = False
