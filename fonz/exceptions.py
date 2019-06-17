@@ -12,3 +12,13 @@ class ValidationError(FonzException):
 
 class QueryNotFinished(FonzException):
     pass
+
+
+class SqlError(FonzException):
+    def __init__(self, message, sql, line_number):
+        self.message = message
+        self.sql = sql
+        self.line_number = line_number
+
+    def __repr__(self):
+        return self.message
