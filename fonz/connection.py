@@ -1,11 +1,14 @@
+import sys
+import asyncio
 from typing import Sequence, List, Dict, Any, Optional
+import aiohttp
+import requests
 import fonz.utils as utils
 from fonz.lookml import Project, Model, Explore, Dimension
 from fonz.logger import GLOBAL_LOGGER as logger
 from fonz.printer import print_start, print_pass, print_fail, print_error, print_stats
 from fonz.exceptions import ConnectionError, ValidationError, FonzException
-import requests
-import sys
+
 
 JsonDict = Dict[str, Any]
 
@@ -261,12 +264,8 @@ class Fonz:
 
         return sql
 
-    def validate_explore(
-        self, model: Model, explore: Explore, batch: bool = False
-    ) -> None:
-        """Query selected dimensions in an explore and return any errors."""
-
-        if batch:
+    async def query_explore(self, model: Model, explore: Explore):
+        async with aiohttp.ClientSession(headers=self.session.headers) as async_session:
             dimensions = [dimension.name for dimension in explore.dimensions]
             query_id = self.create_query(model.name, explore.name, dimensions)
             explore.query_id = query_id
@@ -279,19 +278,43 @@ class Fonz:
                 for lookml_object in [explore, model]:
                     lookml_object.errored = True
                 explore.error_message = error_message
+
+    async def query_dimension(
+        self, model: Model, explore: Explore, dimension: Dimension
+    ):
+        async with aiohttp.ClientSession(headers=self.session.headers) as async_session:
+            query_id = self.create_query(model.name, explore.name, [dimension.name])
+            dimension.query_id = query_id
+            result = self.run_query(query_id)
+
+            if not result:
+                return
+            elif "looker_error" in result[0]:
+                error_message = result[0]["looker_error"]
+                for lookml_object in [dimension, explore, model]:
+                    lookml_object.errored = True
+                dimension.error_message = error_message
+
+    def validate_explore(
+        self, model: Model, explore: Explore, batch: bool = False
+    ) -> None:
+        """Query selected dimensions in an explore and return any errors."""
+
+        loop = asyncio.get_event_loop()
+        tasks = []
+
+        if batch:
+            task = loop.create_task(self.query_explore(model, explore))
+            tasks.append(task)
         else:
             for dimension in explore.dimensions:
-                query_id = self.create_query(model.name, explore.name, [dimension.name])
-                dimension.query_id = query_id
-                result = self.run_query(query_id)
+                task = loop.create_task(self.query_dimension(model, explore, dimension))
+                tasks.append(task)
 
-                if not result:
-                    continue
-                elif "looker_error" in result[0]:
-                    error_message = result[0]["looker_error"]
-                    for lookml_object in [dimension, explore, model]:
-                        lookml_object.errored = True
-                    dimension.error_message = error_message
+        loop.run_until_complete(asyncio.gather(*tasks))
+        # Wait for the underlying connections to close for graceful shutdown
+        loop.run_until_complete(asyncio.sleep(0))
+        loop.close()
 
     def handle_sql_error(
         self,
