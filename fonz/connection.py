@@ -232,7 +232,6 @@ class Fonz:
         body = {"model": model, "view": explore_name, "fields": dimensions, "limit": 1}
         url = utils.compose_url(self.api_url, path=["queries"])
         async with session.post(url=url, json=body) as response:
-            logger.debug(f"Received response with status code {response.status}")
             result = await response.json()
         query_id = result["id"]
         return query_id
