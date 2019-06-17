@@ -3,11 +3,17 @@ import asyncio
 from typing import Sequence, List, Dict, Any, Optional
 import aiohttp
 import requests
+import backoff
 import fonz.utils as utils
 from fonz.lookml import Project, Model, Explore, Dimension
 from fonz.logger import GLOBAL_LOGGER as logger
 from fonz.printer import print_start, print_pass, print_fail, print_error, print_stats
-from fonz.exceptions import ConnectionError, ValidationError, FonzException
+from fonz.exceptions import (
+    ConnectionError,
+    ValidationError,
+    FonzException,
+    QueryNotFinished,
+)
 
 
 JsonDict = Dict[str, Any]
@@ -214,39 +220,51 @@ class Fonz:
 
         return response.json()["fields"]["dimensions"]
 
-    def create_query(self, model: str, explore_name: str, dimensions: List[str]) -> int:
+    async def create_query(
+        self, session, model: str, explore_name: str, dimensions: List[str]
+    ) -> int:
         """Build a Looker query using all the specified dimensions."""
 
-        logger.debug(f"Creating query for {explore_name}")
-        url = utils.compose_url(self.api_url, path=["queries"])
+        logger.debug(
+            f"Creating query for {model}/{explore_name} "
+            f"with {len(dimensions)} dimensions"
+        )
         body = {"model": model, "view": explore_name, "fields": dimensions, "limit": 1}
-        response = self.session.post(url=url, json=body)
-        try:
-            response.raise_for_status()
-        except requests.exceptions.HTTPError as error:
-            raise FonzException(
-                f'Unable to create a query for "{model}/{explore_name}".\n'
-                f'Error raised: "{error}"'
-            )
-        query_id = response.json()["id"]
-
+        url = utils.compose_url(self.api_url, path=["queries"])
+        async with session.post(url=url, json=body) as response:
+            logger.debug(f"Received response with status code {response.status}")
+            result = await response.json()
+        query_id = result["id"]
         return query_id
 
-    def run_query(self, query_id: int) -> List[JsonDict]:
+    async def run_query(self, session: aiohttp.ClientSession, query_id: int) -> str:
         """Run a Looker query by ID and return the JSON result."""
 
-        logger.debug(f"Running query {query_id}")
-        url = utils.compose_url(self.api_url, path=["queries", query_id, "run", "json"])
-        response = self.session.get(url=url)
-        try:
-            response.raise_for_status()
-        except requests.exceptions.HTTPError as error:
-            raise FonzException(
-                f'Failed to run query "{query_id}".\nError raised: "{error}"'
-            )
-        query_result = response.json()
+        logger.debug(f"Starting query {query_id}")
+        body = {"query_id": query_id, "result_format": "json"}
+        url = utils.compose_url(self.api_url, path=["query_tasks"])
+        async with session.post(url=url, json=body) as response:
+            result = await response.json()
+        query_task_id = result["id"]
+        return query_task_id
 
-        return query_result
+    @backoff.on_exception(backoff.expo, QueryNotFinished, max_value=1)
+    async def get_query_results(
+        self, session: aiohttp.ClientSession, query_task_id: str, explore_name: str
+    ) -> List[JsonDict]:
+        """Check for async query task results until they're ready."""
+
+        logger.debug(f"Attempting to get results for query {query_task_id}")
+        url = utils.compose_url(
+            self.api_url, path=["query_tasks", query_task_id, "results"]
+        )
+        async with session.get(url=url) as response:
+            if response.status == 204:
+                logger.debug(f"Query {query_task_id} not finished yet.")
+                raise QueryNotFinished
+            logger.debug(f"Received results from query {query_task_id}")
+            result = await response.json()
+            return result
 
     def get_query_sql(self, query_id: int) -> str:
         """Collect the SQL string for a Looker query."""
@@ -265,35 +283,61 @@ class Fonz:
         return sql
 
     async def query_explore(self, model: Model, explore: Explore):
-        async with aiohttp.ClientSession(headers=self.session.headers) as async_session:
+        async with aiohttp.ClientSession(
+            headers=self.session.headers, raise_for_status=True
+        ) as async_session:
             dimensions = [dimension.name for dimension in explore.dimensions]
-            query_id = self.create_query(model.name, explore.name, dimensions)
+            query_id = await self.create_query(
+                async_session, model.name, explore.name, dimensions
+            )
             explore.query_id = query_id
-            result = self.run_query(query_id)
+            query_task_id = await self.run_query(async_session, query_id)
+            result = await self.get_query_results(
+                async_session, query_task_id, explore.name
+            )
 
             if not result:
                 return
-            elif "looker_error" in result[0]:
-                error_message = result[0]["looker_error"]
+            elif isinstance(result, dict) and result.get("errors"):
+                first_error = result["errors"][0]
+                error_message = first_error["message_details"]
+                line_number = first_error["sql_error_loc"]["line"]
+                sql = result["sql"]
+
                 for lookml_object in [explore, model]:
                     lookml_object.errored = True
                 explore.error_message = error_message
+                explore.sql = sql
+                explore.line_number = line_number
 
     async def query_dimension(
         self, model: Model, explore: Explore, dimension: Dimension
     ):
-        async with aiohttp.ClientSession(headers=self.session.headers) as async_session:
-            query_id = self.create_query(model.name, explore.name, [dimension.name])
+        async with aiohttp.ClientSession(
+            headers=self.session.headers, raise_for_status=True
+        ) as async_session:
+            query_id = await self.create_query(
+                async_session, model.name, explore.name, [dimension.name]
+            )
             dimension.query_id = query_id
-            result = self.run_query(query_id)
+            query_task_id = await self.run_query(async_session, query_id)
+            result = await self.get_query_results(
+                async_session, query_task_id, explore.name
+            )
 
             if not result:
                 return
-            elif "looker_error" in result[0]:
-                error_message = result[0]["looker_error"]
+            elif isinstance(result, dict) and result.get("errors"):
+                first_error = result["errors"][0]
+                error_message = first_error["message_details"]
+                line_number = first_error["sql_error_loc"]["line"]
+                sql = result["sql"]
+
                 for lookml_object in [dimension, explore, model]:
                     lookml_object.errored = True
                 dimension.error_message = error_message
+                dimension.sql = sql
+                dimension.line_number = line_number
 
     def validate_explore(
         self, model: Model, explore: Explore, batch: bool = False
