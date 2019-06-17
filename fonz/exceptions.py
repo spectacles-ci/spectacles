@@ -8,3 +8,7 @@ class ConnectionError(FonzException):
 
 class ValidationError(FonzException):
     exit_code = 102
+
+
+class QueryNotFinished(FonzException):
+    pass
