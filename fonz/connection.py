@@ -3,7 +3,7 @@ import fonz.utils as utils
 from fonz.lookml import Project, Model, Explore, Dimension
 from fonz.logger import GLOBAL_LOGGER as logger
 from fonz.printer import print_start, print_pass, print_fail, print_error, print_stats
-from fonz.exceptions import SqlError, ConnectionError, ValidationError, FonzException
+from fonz.exceptions import ConnectionError, ValidationError, FonzException
 import requests
 import sys
 
