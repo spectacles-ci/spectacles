@@ -2,7 +2,7 @@ import sys
 import click
 import yaml
 from fonz.connection import Fonz
-from fonz.exceptions import SqlError, FonzException, ValidationError
+from fonz.exceptions import FonzException, ValidationError
 from fonz.logger import GLOBAL_LOGGER as logger, LOG_FILEPATH
 
 
