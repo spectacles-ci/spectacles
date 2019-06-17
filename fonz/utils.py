@@ -36,16 +36,3 @@ def extract_sql_context(sql: str, line_number: int, window_size: int = 2) -> str
     marked = mark_line(selected_lines, line_number=line_number - line_start + 1)
     context = "\n".join(marked)
     return context
-
-
-def parse_error_line_number(error_message: str) -> int:
-    """Extract the line number for a SQL error from the error message."""
-    BQ_LINE_NUM_PATTERN = r"at \[(\d+):\d+\]"
-    try:
-        line_number = re.findall(BQ_LINE_NUM_PATTERN, error_message)[0]
-    except IndexError:
-        pass  # Insert patterns for other data warehouses
-    else:
-        line_number = int(line_number)
-
-    return line_number
