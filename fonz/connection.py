@@ -1,5 +1,6 @@
 import sys
 import asyncio
+from pathlib import Path
 from typing import Sequence, List, Dict, Any, Optional
 import aiohttp
 import requests
@@ -54,7 +55,6 @@ class Fonz:
         self.project = project
         self.session = requests.Session()
         self.lookml: Project = None
-        self.messages: List[str] = []
         self.error_count = 0
 
         logger.debug(f"Instantiated Fonz object for url: {self.api_url}")
@@ -168,11 +168,18 @@ class Fonz:
                     self.error_count += 1
                     sql = explore.error.sql
                     line_number = explore.error.line_number
+
+                    path = Path.cwd() / "logs" / model.name / f"{explore.name}.sql"
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    with path.open("w+") as file:
+                        file.write(sql)
+
                     sql_context = utils.extract_sql_context(sql, line_number)
                     message = (
                         f"Error in {model.name}/{explore.name}: "
                         f"{explore.error.message}\n\n"
-                        f"{sql_context}"
+                        f"{sql_context}\n\n"
+                        f"Full SQL logged to {path}"
                     )
                     print_error(message)
                 else:
@@ -180,11 +187,24 @@ class Fonz:
                         self.error_count += 1
                         sql = dimension.error.sql
                         line_number = dimension.error.line_number
+
+                        path = (
+                            Path.cwd()
+                            / "logs"
+                            / model.name
+                            / explore.name
+                            / f"{dimension.name}.sql"
+                        )
+                        path.parent.mkdir(parents=True, exist_ok=True)
+                        with path.open("w+") as file:
+                            file.write(sql)
+
                         sql_context = utils.extract_sql_context(sql, line_number)
                         message = (
                             f"Error in {model.name}/{dimension.name}: "
                             f"{dimension.error.message}\n\n"
                             f"{sql_context}\n\n"
+                            f"Full SQL logged to {path}\n"
                             f"LookML in question is here: "
                             f"{self.base_url + dimension.url}"
                         )
@@ -347,37 +367,3 @@ class Fonz:
         # Wait for the underlying connections to close for graceful shutdown
         loop.run_until_complete(asyncio.sleep(0))
         loop.close()
-
-    def handle_sql_error(
-        self,
-        model_name: str,
-        explore_name: str,
-        query_id: int,
-        message: str,
-        url: str = None,
-    ):
-        sql = self.get_query_sql(query_id)
-        sql = sql.replace("\n\n", "\n")
-        filename = f"./logs/{explore_name}.sql"
-        with open(filename, "w+") as file:
-            file.write(sql)
-
-        message = self.add_error_context(message, sql, url)
-        message = f"Error in {model_name}/{explore_name}: {message}"
-        self.messages.append(message)
-        logger.debug(message)
-
-    def add_error_context(
-        self, message: str, sql: str, url: str = None, show_sql: bool = True
-    ) -> None:
-
-        if show_sql:
-            line_number = utils.parse_error_line_number(message)
-            sql_context = utils.extract_sql_context(sql, line_number)
-            message = message + "\n\n" + sql_context
-        if url:
-            message = (
-                message + "\n\n" + f"LookML in question is here: {self.base_url + url}"
-            )
-
-        return message
