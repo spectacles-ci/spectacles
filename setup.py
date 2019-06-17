@@ -18,6 +18,8 @@ setup(
         "pytest-cov",
         "coverage",
         "colorama",
+        "backoff",
+        "aiohttp",
     ],
     entry_points="""
         [console_scripts]
