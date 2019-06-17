@@ -293,7 +293,7 @@ class Fonz:
         )
         async with session.get(url=url) as response:
             if response.status == 204:
-                logger.debug(f"Query {query_task_id} not finished yet.")
+                logger.debug(f"Query task {query_task_id} not finished yet.")
                 raise QueryNotFinished
             logger.debug(f"Received results from query {query_task_id}")
             result = await response.json()
