@@ -218,7 +218,9 @@ class Fonz:
         print_stats(self.error_count, explore_count)
         if self.error_count > 0:
             raise ValidationError(
-                f'Found {self.error_count} SQL errors in project "{self.project}"'
+                f"Found {self.error_count} SQL "
+                f'{"errors" if self.error_count > 1 else "error"} '
+                f'in project "{self.project}"'
             )
 
     def get_models(self) -> List[JsonDict]:
