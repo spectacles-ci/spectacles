@@ -1,4 +1,5 @@
 from typing import List
+from fonz.exceptions import SqlError
 
 
 class LookMlObject:
@@ -14,10 +15,20 @@ class Dimension(LookMlObject):
         self.url = url
         self.ignore = True if "fonz: ignore" in sql else False
         self.errored = False
-        self.error_message: str = None
+        self.error: SqlError = None
 
     def __repr__(self):
         return f"{self.__class__.__name__}(name={self.name}, type={self.type})"
+
+    def __eq__(self, other):
+        if not isinstance(other, Dimension):
+            return NotImplemented
+
+        return (
+            self.name == other.name
+            and self.type == other.type
+            and self.url == other.url
+        )
 
     @classmethod
     def from_json(cls, json_dict):
@@ -34,6 +45,12 @@ class Explore(LookMlObject):
         self.dimensions = [] if dimensions is None else dimensions
         self.errored = False
         self.error_message: str = None
+
+    def __eq__(self, other):
+        if not isinstance(other, Explore):
+            return NotImplemented
+
+        return self.name == other.name and self.dimensions == other.dimensions
 
     def get_errored_dimensions(self):
         for dimension in self.dimensions:
@@ -56,6 +73,16 @@ class Model(LookMlObject):
         self.explores = explores
         self.errored = False
 
+    def __eq__(self, other):
+        if not isinstance(other, Model):
+            return NotImplemented
+
+        return (
+            self.name == other.name
+            and self.project == other.project
+            and self.explores == other.explores
+        )
+
     def get_errored_explores(self):
         for explore in self.explores:
             if explore.errored:
@@ -73,6 +100,12 @@ class Project(LookMlObject):
     def __init__(self, name, models: List[Model]):
         self.name = name
         self.models = models
+
+    def __eq__(self, other):
+        if not isinstance(other, Project):
+            return NotImplemented
+
+        return self.name == other.name and self.models == other.models
 
     def get_errored_models(self):
         for model in self.models:
