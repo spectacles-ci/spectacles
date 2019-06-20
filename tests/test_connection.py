@@ -57,6 +57,32 @@ def lookml():
     return project
 
 
+def test_fonz_with_no_client_id_raises_exception():
+    with pytest.raises(FonzException):
+        Fonz(
+            url="https://test.looker.com",
+            client_id=None,
+            client_secret="CLIENT_SECRET",
+            port=19999,
+            api="3.0",
+            project="test_project",
+            branch="test_branch",
+        )
+
+
+def test_fonz_with_no_client_secret_raises_exception():
+    with pytest.raises(FonzException):
+        Fonz(
+            url="https://test.looker.com",
+            client_id="CLIENT_ID",
+            client_secret=None,
+            port=19999,
+            api="3.0",
+            project="test_project",
+            branch="test_branch",
+        )
+
+
 @patch("fonz.connection.requests.Session.post")
 def test_connect_sets_session_headers_correctly(mock_post, client):
     mock_post.return_value.json.return_value = {"access_token": "ACCESS_TOKEN"}
@@ -65,11 +91,10 @@ def test_connect_sets_session_headers_correctly(mock_post, client):
 
 
 @patch("fonz.connection.requests.Session.post")
-def test_connect_bad_client_secret_raises_connection_error(mock_post, client):
+def test_connect_bad_request_raises_connection_error(mock_post, client):
     mock_response = requests.models.Response()
     mock_response.status_code = 404
     mock_post.return_value = mock_response
-    client.client_secret = "INCORRECT_CLIENT_SECRET"
     with pytest.raises(ConnectionError):
         client.connect()
 
@@ -89,7 +114,7 @@ def test_update_session_with_no_branch_raises(client):
 @patch("fonz.connection.requests.Session.patch")
 @patch("fonz.connection.requests.Session.put")
 def test_update_session_patch_with_bad_request_raises_connection_error(
-    mock_patch, mock_put, client
+    mock_put, mock_patch, client
 ):
     mock_response = requests.models.Response()
     mock_response.status_code = 404
@@ -141,6 +166,32 @@ def test_get_models_with_bad_request_raises_exception(mock_get, client):
     mock_get.return_value = mock_response
     with pytest.raises(FonzException):
         client.get_models()
+
+
+@asynctest.patch("fonz.connection.Fonz.query_dimension")
+@asynctest.patch("fonz.connection.Fonz.query_explore")
+def test_validate_explore_batch_calls_explore_query(
+    mock_query_explore, mock_query_dimension, client, lookml
+):
+    model = lookml.models[0]
+    explore = model.explores[0]
+
+    client.validate_explore(model, explore, batch=True)
+    mock_query_explore.assert_called_once()
+    assert mock_query_dimension.call_count == 0
+
+
+@asynctest.patch("fonz.connection.Fonz.query_dimension")
+@asynctest.patch("fonz.connection.Fonz.query_explore")
+def test_validate_explore_no_batch_calls_dimension_query(
+    mock_query_explore, mock_query_dimension, client, lookml
+):
+    model = lookml.models[0]
+    explore = model.explores[0]
+
+    client.validate_explore(model, explore, batch=False)
+    assert mock_query_dimension.call_count > 1
+    assert mock_query_explore.call_count == 0
 
 
 @pytest.mark.asyncio
