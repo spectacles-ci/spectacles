@@ -168,6 +168,59 @@ async def test_create_query(mock_post, client):
     )
 
 
+@pytest.mark.asyncio
+@asynctest.patch("aiohttp.ClientSession.post")
+async def test_run_query(mock_post, client):
+    QUERY_ID = 124950204921
+    QUERY_TASK_ID = "a1ds2d49d5d02wdf0we4a921e"
+    mock_post.return_value.__aenter__.return_value.json = asynctest.CoroutineMock(
+        return_value={"id": QUERY_TASK_ID}
+    )
+    async with aiohttp.ClientSession() as session:
+        query_task_id = await client.run_query(session, QUERY_ID)
+    assert query_task_id == QUERY_TASK_ID
+    mock_post.assert_called_once_with(
+        url="https://test.looker.com:19999/api/3.0/query_tasks",
+        json={"query_id": QUERY_ID, "result_format": "json"},
+    )
+
+
+@pytest.mark.asyncio
+@asynctest.patch("fonz.connection.Fonz.get_query_results")
+@asynctest.patch("fonz.connection.Fonz.run_query")
+@asynctest.patch("fonz.connection.Fonz.create_query")
+async def test_query_dimension_sets_errors_on_lookml_objects(
+    mock_create, mock_run, mock_get_results, client, lookml
+):
+    QUERY_ID = 124950204921
+    QUERY_TASK_ID = "a1ds2d49d5d02wdf0we4a921e"
+    mock_create.return_value = QUERY_ID
+    mock_run.return_value = QUERY_TASK_ID
+    error_result = {
+        "errors": [
+            {"message_details": "An error message.", "sql_error_loc": {"line": 12}}
+        ],
+        "sql": "SELECT something FROM something",
+    }
+    mock_get_results.return_value = error_result
+
+    model = lookml.models[0]
+    explore = model.explores[0]
+    dimension = explore.dimensions[0]
+
+    await client.query_dimension(model, explore, dimension)
+
+    mock_create.assert_called_once()
+    mock_run.assert_called_once()
+    mock_get_results.assert_called_once()
+
+    assert dimension.errored
+    assert explore.errored
+    assert isinstance(dimension.error, SqlError)
+    assert dimension.error.message == "An error message."
+    assert dimension.error.line_number == 12
+
+
 # def test_create_query():
 #
 #     with looker_mock as m:
