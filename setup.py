@@ -7,7 +7,15 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=["Click", "requests", "PyYAML", "colorama", "backoff", "aiohttp"],
-    tests_require=["pytest", "pytest-cov", "requests_mock", "mypy", "coverage"],
+    tests_require=[
+        "pytest",
+        "pytest-cov",
+        "requests_mock",
+        "mypy",
+        "coverage",
+        "pytest-asyncio",
+        "asynctest",
+    ],
     entry_points="""
         [console_scripts]
         fonz=fonz.cli:cli
