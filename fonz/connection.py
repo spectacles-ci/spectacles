@@ -49,6 +49,7 @@ class Fonz:
 
         self.base_url = url.rstrip("/")
         self.api_url = f"{self.base_url}:{port}/api/{api}/"
+        self.api_version = api
         self.client_id = client_id
         self.client_secret = client_secret
         self.branch = branch
@@ -62,7 +63,7 @@ class Fonz:
     def connect(self) -> None:
         """Authenticate, start a dev session, check out specified branch."""
 
-        logger.info("Authenticating Looker credentials. \n")
+        logger.info("Authenticating Looker credentials...")
 
         url = utils.compose_url(self.api_url, path=["login"])
         body = {"client_id": self.client_id, "client_secret": self.client_secret}
@@ -78,6 +79,11 @@ class Fonz:
 
         access_token = response.json()["access_token"]
         self.session.headers = {"Authorization": f"token {access_token}"}
+
+        logger.info(
+            f"Connection test completed successfully for {self.base_url}, "
+            f"API version {self.api_version}\n"
+        )
 
     def update_session(self) -> None:
         """Switch to a dev mode session and checkout the desired branch."""
