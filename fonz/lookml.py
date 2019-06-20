@@ -49,6 +49,7 @@ class Explore(LookMlObject):
         self.dimensions = [] if dimensions is None else dimensions
         self.errored = False
         self.error_message: str = None
+        self.error: SqlError = None
 
     def __eq__(self, other):
         if not isinstance(other, Explore):
