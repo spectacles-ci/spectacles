@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from fonz.exceptions import SqlError
 
 
@@ -15,7 +15,8 @@ class Dimension(LookMlObject):
         self.url = url
         self.ignore = True if "fonz: ignore" in sql else False
         self.errored = False
-        self.error: SqlError = None
+        self.error: Optional[SqlError] = None
+        self.query_id: Optional[int] = None
 
     def __repr__(self):
         return (
@@ -48,8 +49,8 @@ class Explore(LookMlObject):
         self.name = name
         self.dimensions = [] if dimensions is None else dimensions
         self.errored = False
-        self.error_message: str = None
-        self.error: SqlError = None
+        self.error: Optional[SqlError] = None
+        self.query_id: Optional[int] = None
 
     def __eq__(self, other):
         if not isinstance(other, Explore):
