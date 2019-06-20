@@ -158,11 +158,6 @@ class Fonz:
                 else:
                     print_pass(explore.name, index, explore_count)
 
-        loop = asyncio.get_event_loop()
-        # Wait for all connections to close, according to aiohttp docs
-        loop.run_until_complete(asyncio.sleep(0))
-        loop.close()
-
     def report_results(self, batch: bool = False):
         """Displays the overall results of the completed validation."""
 

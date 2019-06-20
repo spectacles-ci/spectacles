@@ -315,7 +315,7 @@ async def test_query_explore_success_does_not_set_errors_on_lookml_objects(
 
 
 @patch("fonz.connection.Fonz.validate_explore")
-def test_validate_closes_event_loop_on_finish(mock_validate_explore, client, lookml):
+def test_validate_event_loop_is_closed_on_finish(mock_validate_explore, client, lookml):
     client.lookml = lookml
     client.validate()
     with pytest.raises(RuntimeError):
