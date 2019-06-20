@@ -18,7 +18,11 @@ class Dimension(LookMlObject):
         self.error: SqlError = None
 
     def __repr__(self):
-        return f"{self.__class__.__name__}(name={self.name}, type={self.type})"
+        return (
+            f"{self.__class__.__name__}(name={self.name}, "
+            f"type={self.type}, "
+            f"errored={self.errored})"
+        )
 
     def __eq__(self, other):
         if not isinstance(other, Dimension):
