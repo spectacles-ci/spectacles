@@ -28,6 +28,32 @@ def client():
     )
 
 
+@pytest.fixture
+def lookml():
+    dimensions = [
+        Dimension(
+            "test_view.dimension_one",
+            "number",
+            "${TABLE}.dimension_one",
+            "/projects/fonz/files/test_view.view.lkml?line=340",
+        ),
+        Dimension(
+            "test_view.dimension_two",
+            "number",
+            "${TABLE}.dimension_two",
+            "/projects/fonz/files/test_view.view.lkml?line=360",
+        ),
+    ]
+    explores_model_one = [Explore("test_explore_one", dimensions)]
+    explores_model_two = [Explore("test_explore_two", dimensions)]
+    models = [
+        Model("test_model_one", "test_project", explores_model_one),
+        Model("test_model_two", "test_project", explores_model_two),
+    ]
+    project = Project("test_project", models)
+    return project
+
+
 @patch("fonz.connection.requests.Session.post")
 def test_connect_sets_session_headers_correctly(mock_post, client):
     mock_post.return_value.json.return_value = {"access_token": "ACCESS_TOKEN"}
@@ -83,59 +109,37 @@ def test_update_session_put_with_bad_request_raises_connection_error(
 
 @patch("fonz.connection.Fonz.get_dimensions")
 @patch("fonz.connection.Fonz.get_models")
-def test_build_project(mock_get_models, mock_get_dimensions, client):
+def test_build_project(mock_get_models, mock_get_dimensions, lookml, client):
     mock_get_models.return_value = load("response_models.json")
     mock_get_dimensions.return_value = load("response_dimensions.json")
-
-    dimensions = [
-        Dimension(
-            "test_view.dimension_one",
-            "number",
-            "${TABLE}.dimension_one",
-            "/projects/fonz/files/test_view.view.lkml?line=340",
-        ),
-        Dimension(
-            "test_view.dimension_two",
-            "number",
-            "${TABLE}.dimension_two",
-            "/projects/fonz/files/test_view.view.lkml?line=360",
-        ),
-    ]
-    explores_model_one = [Explore("test_explore_one", dimensions)]
-    explores_model_two = [Explore("test_explore_two", dimensions)]
-    models = [
-        Model("test_model_one", "test_project", explores_model_one),
-        Model("test_model_two", "test_project", explores_model_two),
-    ]
-    expected = Project("test_project", models)
-
     client.build_project()
-    assert client.lookml == expected
+    assert client.lookml == lookml
 
 
-# def test_get_explores():
-#
-#     output = [
-#         {"model": "model_one", "explore": "explore_one"},
-#         {"model": "model_one", "explore": "explore_two"},
-#     ]
-#
-#     with looker_mock as m:
-#         response = client.get_explores()
-#         assert response == output
+def test_count_explores(client, lookml):
+    client.lookml = lookml
+    count = client.count_explores()
+    assert count == 2
 
 
-#
-#
-# def test_get_dimensions():
-#
-#     output = ["dimension_one", "dimension_two"]
-#
-#     with looker_mock as m:
-#         response = client.get_dimensions("model_one", "explore_one")
-#         assert response == output
-#
-#
+@patch("fonz.connection.requests.Session.get")
+def test_get_dimensions_with_bad_request_raises_exception(mock_get, client):
+    mock_response = requests.models.Response()
+    mock_response.status_code = 404
+    mock_get.return_value = mock_response
+    with pytest.raises(FonzException):
+        client.get_dimensions("test_model", "test_explore_one")
+
+
+@patch("fonz.connection.requests.Session.get")
+def test_get_models_with_bad_request_raises_exception(mock_get, client):
+    mock_response = requests.models.Response()
+    mock_response.status_code = 404
+    mock_get.return_value = mock_response
+    with pytest.raises(FonzException):
+        client.get_models()
+
+
 # def test_create_query():
 #
 #     with looker_mock as m:
