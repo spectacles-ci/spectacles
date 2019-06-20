@@ -54,7 +54,7 @@ class Fonz:
         self.branch = branch
         self.project = project
         self.session = requests.Session()
-        self.lookml: Project = None
+        self.lookml = Project(project, models=[])
         self.error_count = 0
 
         logger.debug(f"Instantiated Fonz object for url: {self.api_url}")
@@ -119,7 +119,7 @@ class Fonz:
                 f'Error raised: "{error}"'
             )
 
-    def build_project(self) -> Project:
+    def build_project(self):
         """Create a representation of the desired project's LookML."""
 
         models_json = self.get_models()
@@ -133,7 +133,7 @@ class Fonz:
                         explore.add_dimension(Dimension.from_json(dimension_json))
                 models.append(model)
 
-        self.lookml = Project(self.project, models)
+        self.lookml.models = models
 
     def count_explores(self):
         """Return the total number of explores in the project."""
@@ -318,8 +318,8 @@ class Fonz:
                 line_number = first_error["sql_error_loc"]["line"]
                 sql = result["sql"]
 
-                for lookml_object in [explore, model]:
-                    lookml_object.errored = True
+                explore.errored = True
+                model.errored = True
                 explore.error = SqlError(error_message, sql, line_number)
 
     async def query_dimension(
@@ -345,8 +345,9 @@ class Fonz:
                 line_number = first_error["sql_error_loc"]["line"]
                 sql = result["sql"]
 
-                for lookml_object in [dimension, explore, model]:
-                    lookml_object.errored = True
+                dimension.errored = True
+                explore.errored = True
+                model.errored = True
                 dimension.error = SqlError(error_message, sql, line_number)
 
     def validate_explore(
