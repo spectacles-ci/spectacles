@@ -1,4 +1,5 @@
 import json
+import asyncio
 from pathlib import Path
 from unittest.mock import Mock, patch
 import asynctest
@@ -189,7 +190,7 @@ async def test_run_query(mock_post, client):
 @asynctest.patch("fonz.connection.Fonz.get_query_results")
 @asynctest.patch("fonz.connection.Fonz.run_query")
 @asynctest.patch("fonz.connection.Fonz.create_query")
-async def test_query_dimension_sets_errors_on_lookml_objects(
+async def test_query_dimension_failure_sets_errors_on_lookml_objects(
     mock_create, mock_run, mock_get_results, client, lookml
 ):
     QUERY_ID = 124950204921
@@ -216,9 +217,109 @@ async def test_query_dimension_sets_errors_on_lookml_objects(
 
     assert dimension.errored
     assert explore.errored
+    assert model.errored
     assert isinstance(dimension.error, SqlError)
     assert dimension.error.message == "An error message."
     assert dimension.error.line_number == 12
+
+
+@pytest.mark.asyncio
+@asynctest.patch("fonz.connection.Fonz.get_query_results")
+@asynctest.patch("fonz.connection.Fonz.run_query")
+@asynctest.patch("fonz.connection.Fonz.create_query")
+async def test_query_dimension_success_does_not_set_errors_on_lookml_objects(
+    mock_create, mock_run, mock_get_results, client, lookml
+):
+    QUERY_ID = 124950204921
+    QUERY_TASK_ID = "a1ds2d49d5d02wdf0we4a921e"
+    mock_create.return_value = QUERY_ID
+    mock_run.return_value = QUERY_TASK_ID
+    mock_get_results.return_value = {"dimension_one": "A returned value."}
+
+    model = lookml.models[0]
+    explore = model.explores[0]
+    dimension = explore.dimensions[0]
+
+    await client.query_dimension(model, explore, dimension)
+
+    mock_create.assert_called_once()
+    mock_run.assert_called_once()
+    mock_get_results.assert_called_once()
+
+    assert not dimension.errored
+    assert not explore.errored
+    assert not model.errored
+    assert not dimension.error
+
+
+@pytest.mark.asyncio
+@asynctest.patch("fonz.connection.Fonz.get_query_results")
+@asynctest.patch("fonz.connection.Fonz.run_query")
+@asynctest.patch("fonz.connection.Fonz.create_query")
+async def test_query_explore_failure_sets_errors_on_lookml_objects(
+    mock_create, mock_run, mock_get_results, client, lookml
+):
+    QUERY_ID = 124950204921
+    QUERY_TASK_ID = "a1ds2d49d5d02wdf0we4a921e"
+    mock_create.return_value = QUERY_ID
+    mock_run.return_value = QUERY_TASK_ID
+    error_result = {
+        "errors": [
+            {"message_details": "An error message.", "sql_error_loc": {"line": 12}}
+        ],
+        "sql": "SELECT something FROM something",
+    }
+    mock_get_results.return_value = error_result
+
+    model = lookml.models[0]
+    explore = model.explores[0]
+
+    await client.query_explore(model, explore)
+
+    mock_create.assert_called_once()
+    mock_run.assert_called_once()
+    mock_get_results.assert_called_once()
+
+    assert explore.errored
+    assert model.errored
+    assert isinstance(explore.error, SqlError)
+    assert explore.error.message == "An error message."
+    assert explore.error.line_number == 12
+
+
+@pytest.mark.asyncio
+@asynctest.patch("fonz.connection.Fonz.get_query_results")
+@asynctest.patch("fonz.connection.Fonz.run_query")
+@asynctest.patch("fonz.connection.Fonz.create_query")
+async def test_query_explore_success_does_not_set_errors_on_lookml_objects(
+    mock_create, mock_run, mock_get_results, client, lookml
+):
+    QUERY_ID = 124950204921
+    QUERY_TASK_ID = "a1ds2d49d5d02wdf0we4a921e"
+    mock_create.return_value = QUERY_ID
+    mock_run.return_value = QUERY_TASK_ID
+    mock_get_results.return_value = {"test_explore_one": "A returned value."}
+
+    model = lookml.models[0]
+    explore = model.explores[0]
+
+    await client.query_explore(model, explore)
+
+    mock_create.assert_called_once()
+    mock_run.assert_called_once()
+    mock_get_results.assert_called_once()
+
+    assert not explore.errored
+    assert not model.errored
+    assert not explore.error
+
+
+@patch("fonz.connection.Fonz.validate_explore")
+def test_validate_closes_event_loop_on_finish(mock_validate_explore, client, lookml):
+    client.lookml = lookml
+    client.validate()
+    with pytest.raises(RuntimeError):
+        asyncio.get_running_loop()
 
 
 # def test_create_query():
