@@ -288,6 +288,7 @@ class Fonz:
         query_task_id = result["id"]
         return query_task_id
 
+    @backoff.on_exception(backoff.expo, aiohttp.ClientError, max_tries=2)
     @backoff.on_exception(backoff.expo, QueryNotFinished, max_value=1)
     async def get_query_results(
         self, session: aiohttp.ClientSession, query_task_id: str, explore_name: str
