@@ -15,9 +15,10 @@ setup(
         "coverage",
         "pytest-asyncio",
         "asynctest",
+        "argparse",
     ],
     entry_points="""
         [console_scripts]
-        fonz=fonz.cli:cli
+        fonz=fonz.cli:main
     """,
 )
