@@ -15,7 +15,6 @@ setup(
         "coverage",
         "pytest-asyncio",
         "asynctest",
-        "argparse",
     ],
     entry_points="""
         [console_scripts]
