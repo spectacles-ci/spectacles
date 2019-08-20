@@ -43,7 +43,6 @@ def main():
             args.base_url,
             args.client_id,
             args.client_secret,
-            args.config_file,
             args.port,
             args.api_version,
         )
@@ -54,7 +53,6 @@ def main():
             args.base_url,
             args.client_id,
             args.client_secret,
-            args.config_file,
             args.port,
             args.api_version,
             args.batch,
@@ -85,7 +83,7 @@ def _build_base_subparser():
     )
     base_subparser.add_argument("--port", default=19999)
     base_subparser.add_argument("--api-version", default=3.0)
-    base_subparser.add_argument("--config-file", type=argparse.FileType(mode="r"))
+    base_subparser.add_argument("--config-file", type=str)
 
     return base_subparser
 
@@ -127,22 +125,12 @@ def parse_args(parser):
     return args
 
 
-def connect(base_url, client_id, client_secret, config_file, port, api_version):
+def connect(base_url, client_id, client_secret, port, api_version):
     client = Fonz(base_url, client_id, client_secret, port, api_version)
     client.connect()
 
 
-def sql(
-    project,
-    branch,
-    base_url,
-    client_id,
-    client_secret,
-    config_file,
-    port,
-    api_version,
-    batch,
-):
+def sql(project, branch, base_url, client_id, client_secret, port, api_version, batch):
     client = Fonz(
         base_url, client_id, client_secret, port, api_version, project, branch
     )
