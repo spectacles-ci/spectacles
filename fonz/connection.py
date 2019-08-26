@@ -261,6 +261,9 @@ class Fonz:
 
         return response.json()["fields"]["dimensions"]
 
+    @backoff.on_exception(
+        backoff.expo, (aiohttp.ClientError, asyncio.TimeoutError), max_tries=2
+    )
     async def create_query(
         self, session, model: str, explore_name: str, dimensions: List[str]
     ) -> int:
@@ -277,6 +280,9 @@ class Fonz:
         query_id = result["id"]
         return query_id
 
+    @backoff.on_exception(
+        backoff.expo, (aiohttp.ClientError, asyncio.TimeoutError), max_tries=2
+    )
     async def run_query(self, session: aiohttp.ClientSession, query_id: int) -> str:
         """Run a Looker query asynchronously by ID and return the query task ID."""
 
@@ -288,7 +294,9 @@ class Fonz:
         query_task_id = result["id"]
         return query_task_id
 
-    @backoff.on_exception(backoff.expo, aiohttp.ClientError, max_tries=2)
+    @backoff.on_exception(
+        backoff.expo, (aiohttp.ClientError, asyncio.TimeoutError), max_tries=2
+    )
     @backoff.on_exception(backoff.expo, QueryNotFinished, max_value=1)
     async def get_query_results(
         self, session: aiohttp.ClientSession, query_task_id: str, explore_name: str
@@ -308,8 +316,9 @@ class Fonz:
             return result
 
     async def query_explore(self, model: Model, explore: Explore):
+        timeout = aiohttp.ClientTimeout(total=300)
         async with aiohttp.ClientSession(
-            headers=self.session.headers, raise_for_status=True
+            headers=self.session.headers, raise_for_status=True, timeout=timeout
         ) as async_session:
             dimensions = [dimension.name for dimension in explore.dimensions]
             query_id = await self.create_query(
