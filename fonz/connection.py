@@ -326,7 +326,8 @@ class Fonz:
             elif isinstance(result, dict) and result.get("errors"):
                 first_error = result["errors"][0]
                 error_message = first_error["message_details"]
-                line_number = first_error["sql_error_loc"]["line"]
+                # Subtract one to account for the comment Looker appends to queries
+                line_number = first_error["sql_error_loc"]["line"] - 1
                 sql = result["sql"]
 
                 explore.errored = True
