@@ -8,7 +8,14 @@ import backoff
 import fonz.utils as utils
 from fonz.lookml import Project, Model, Explore, Dimension
 from fonz.logger import GLOBAL_LOGGER as logger
-from fonz.printer import print_start, print_pass, print_fail, print_error, print_stats
+from fonz.printer import (
+    print_start,
+    print_pass,
+    print_fail,
+    print_stats,
+    print_header,
+    print_sql_error,
+)
 from fonz.exceptions import (
     ConnectionError,
     ValidationError,
@@ -90,7 +97,7 @@ class Fonz:
 
         logger.info(
             f"Successfully connected to {self.base_url} using "
-            f"API version {self.api_version}\n"
+            f"API version {self.api_version}"
         )
 
     def update_session(self) -> None:
@@ -136,6 +143,7 @@ class Fonz:
     def build_project(self):
         """Create a representation of the desired project's LookML."""
 
+        logger.info(f"Building LookML hierarchy for {self.project}...")
         models_json = self.get_models()
         models = []
         for model_json in models_json:
@@ -161,6 +169,10 @@ class Fonz:
 
     def validate(self, batch=False):
         explore_count = self.count_explores()
+        print_header(
+            f"Begin testing {explore_count} "
+            f"{'explores' if explore_count > 1 else 'explore'}"
+        )
         index = 0
         for model in self.lookml.models:
             for explore in model.explores:
@@ -176,7 +188,7 @@ class Fonz:
 
     def report_results(self, batch: bool = False):
         """Displays the overall results of the completed validation."""
-
+        print_header("End testing session")
         explore_count = self.count_explores()
         for model in self.lookml.get_errored_models():
             for explore in model.get_errored_explores():
@@ -190,14 +202,13 @@ class Fonz:
                     with path.open("w+") as file:
                         file.write(sql)
 
-                    sql_context = utils.extract_sql_context(sql, line_number)
-                    message = (
-                        f"Error in {model.name}/{explore.name}: "
-                        f"{explore.error.message}\n\n"
-                        f"{sql_context}\n\n"
-                        f"Full SQL logged to {path}"
+                    print_sql_error(
+                        f"{model.name}/{explore.name}",
+                        explore.error.message,
+                        sql,
+                        line_number,
+                        f"Full SQL logged to {path}",
                     )
-                    print_error(message)
                 else:
                     for dimension in explore.get_errored_dimensions():
                         self.error_count += 1
@@ -215,24 +226,23 @@ class Fonz:
                         with path.open("w+") as file:
                             file.write(sql)
 
-                        sql_context = utils.extract_sql_context(sql, line_number)
-                        message = (
-                            f"Error in {model.name}/{dimension.name}: "
-                            f"{dimension.error.message}\n\n"
-                            f"{sql_context}\n\n"
-                            f"Full SQL logged to {path}\n"
-                            f"LookML in question is here: "
-                            f"{self.base_url + dimension.url}"
+                        print_sql_error(
+                            f"{model.name}/{dimension.name}",
+                            dimension.error.message,
+                            sql,
+                            line_number,
+                            f"Full SQL logged to {path}",
+                            f"LookML causing the error: {self.base_url + dimension.url}",
                         )
-                        print_error(message)
 
-        print_stats(self.error_count, explore_count)
+        exit_message = (
+            f"Found {self.error_count} SQL "
+            f'{"errors" if self.error_count > 1 else "error"} '
+            f"in {self.project}"
+        )
+        print_header(exit_message)
         if self.error_count > 0:
-            raise ValidationError(
-                f"Found {self.error_count} SQL "
-                f'{"errors" if self.error_count > 1 else "error"} '
-                f'in project "{self.project}"'
-            )
+            raise ValidationError(exit_message)
 
     def get_models(self) -> List[JsonDict]:
         """Get all models and explores from the LookmlModel endpoint."""

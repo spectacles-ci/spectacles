@@ -1,4 +1,5 @@
-from typing import Dict, Any
+from typing import Dict, Any, Sequence, List
+import textwrap
 from fonz.logger import GLOBAL_LOGGER as logger
 import colorama  # type: ignore
 import time
@@ -18,7 +19,7 @@ def get_timestamp() -> str:
 
 
 def color(text: str, color_code: str) -> str:
-    return "{}{}{}".format(color_code, text, COLOR_RESET_ALL)
+    return f"{color_code}{text}{COLOR_RESET_ALL}"
 
 
 def green(text):
@@ -31,6 +32,48 @@ def red(text):
 
 def yellow(text):
     return color(text, COLOR_FG_YELLOW)
+
+
+def print_header(msg: str) -> None:
+    header = f" {msg} ".center(PRINTER_WIDTH, "=")
+    logger.info(f"\n{header}\n")
+
+
+def mark_line(lines: Sequence, line_number: int, char: str = "*") -> List:
+    """For a list of strings, mark a specified line with a prepended character."""
+    line_number -= 1  # Align with array indexing
+    marked = []
+    for i, line in enumerate(lines):
+        if i == line_number:
+            marked.append(char + " " + line)
+        else:
+            marked.append("| " + line)
+    return marked
+
+
+def extract_sql_context(sql: str, line_number: int, window_size: int = 2) -> str:
+    """Extract a line of SQL with a specified amount of surrounding context."""
+    split = sql.split("\n")
+    line_number -= 1  # Align with array indexing
+    line_start = line_number - window_size
+    line_end = line_number + (window_size + 1)
+    line_start = line_start if line_start >= 0 else 0
+    line_end = line_end if line_end <= len(split) else len(split)
+
+    selected_lines = split[line_start:line_end]
+    marked = mark_line(selected_lines, line_number=line_number - line_start + 1)
+    context = "\n".join(marked)
+    return context
+
+
+def print_sql_error(path, msg, sql, line_number, *footers):
+    wrapped = textwrap.fill(f"Error in {path}: {msg}", PRINTER_WIDTH)
+    sql_context = extract_sql_context(sql, line_number)
+    print_error(wrapped + "\n")
+    logger.info(sql_context + "\n")
+    for footer in footers:
+        logger.info(footer)
+    logger.info("")
 
 
 def print_fancy_line(msg: str, status: str, index: int, total: int) -> None:
@@ -64,7 +107,7 @@ def print_fail(explore_name: str, index: int, total: int) -> None:
 
 
 def print_error(message: str):
-    logger.info(yellow("\n" + message))
+    logger.info(red(message))
 
 
 def print_stats(errors: int, total: int) -> None:

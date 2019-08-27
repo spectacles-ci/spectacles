@@ -11,7 +11,6 @@ def handle_exceptions(function):
         try:
             return function(*args, **kwargs)
         except ValidationError as error:
-            logger.error(f"{error}\n")
             sys.exit(error.exit_code)
         except FonzException as error:
             logger.error(
