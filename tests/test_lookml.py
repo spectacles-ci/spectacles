@@ -33,3 +33,21 @@ def test_dimension_from_json():
     assert dimension.url == "/projects/fonz/files/test_view.view.lkml?line=340"
     assert dimension.sql == "${TABLE}.dimension_one "
     assert dimension.ignore == False
+
+
+def test_ignored_dimension_with_whitespace():
+    name = "test_view.dimension_one"
+    dimension_type = "number"
+    url = "/projects/fonz/files/test_view.view.lkml?line=340"
+    sql = " -- fonz: ignore\n${TABLE}.dimension_one "
+    dimension = Dimension(name, dimension_type, sql, url)
+    assert dimension.ignore == True
+
+
+def test_ignored_dimension_with_no_whitespace():
+    name = "test_view.dimension_one"
+    dimension_type = "number"
+    url = "/projects/fonz/files/test_view.view.lkml?line=340"
+    sql = "--fonz:ignore\n${TABLE}.dimension_one "
+    dimension = Dimension(name, dimension_type, sql, url)
+    assert dimension.ignore == True

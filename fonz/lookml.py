@@ -1,3 +1,4 @@
+import re
 from typing import List, Optional
 from fonz.exceptions import SqlError
 
@@ -13,10 +14,13 @@ class Dimension(LookMlObject):
         self.type = type
         self.sql = sql
         self.url = url
-        self.ignore = True if "fonz: ignore" in sql else False
         self.errored = False
         self.error: Optional[SqlError] = None
         self.query_id: Optional[int] = None
+        if re.search(r"fonz\s*:\s*ignore", sql, re.IGNORECASE):
+            self.ignore = True
+        else:
+            self.ignore = False
 
     def __repr__(self):
         return (

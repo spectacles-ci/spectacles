@@ -140,7 +140,9 @@ class Fonz:
                 for explore in model.explores:
                     dimensions_json = self.get_dimensions(model.name, explore.name)
                     for dimension_json in dimensions_json:
-                        explore.add_dimension(Dimension.from_json(dimension_json))
+                        dimension = Dimension.from_json(dimension_json)
+                        if not dimension.ignore:
+                            explore.add_dimension(dimension)
                 models.append(model)
 
         self.lookml.models = models
