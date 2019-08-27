@@ -46,9 +46,13 @@ class Fonz:
                 "Instructions for supplying credentials at "
                 "https://github.com/dbanalyticsco/Fonz/blob/master/README.md"
             )
-        if api not in ["3.0", "3.1"]:
+
+        supported_api_versions = ["3.0", "3.1"]
+        if api not in supported_api_versions:
             raise FonzException(
-                f"API version {api} is not supported. Please a valid API version."
+                f"API version {api} is not supported. "
+                "Please use one of these supported versions instead: "
+                f"{', '.join(supported_api_versions)}"
             )
 
         self.base_url = url.rstrip("/")
