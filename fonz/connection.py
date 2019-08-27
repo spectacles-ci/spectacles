@@ -363,7 +363,10 @@ class Fonz:
             elif isinstance(result, dict) and result.get("errors"):
                 first_error = result["errors"][0]
                 error_message = first_error["message_details"]
-                line_number = first_error["sql_error_loc"]["line"]
+                if first_error.get("sql_error_loc"):
+                    line_number = first_error["sql_error_loc"]["line"]
+                else:
+                    line_number = None
                 sql = result["sql"]
 
                 dimension.errored = True
