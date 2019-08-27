@@ -85,7 +85,7 @@ class Fonz:
         self.session.headers = {"Authorization": f"token {access_token}"}
 
         logger.info(
-            f"Connection test completed successfully for {self.base_url}, "
+            f"Successfully connected to {self.base_url} using "
             f"API version {self.api_version}\n"
         )
 
