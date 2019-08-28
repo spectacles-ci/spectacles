@@ -91,7 +91,7 @@ def _build_base_subparser():
         "--client-secret", default=os.environ.get("LOOKER_CLIENT_SECRET")
     )
     base_subparser.add_argument("--port", default=19999)
-    base_subparser.add_argument("--api-version", default="3.1")
+    base_subparser.add_argument("--api-version", type=float, default=3.1)
     base_subparser.add_argument("--config-file", type=str)
 
     return base_subparser

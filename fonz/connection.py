@@ -24,7 +24,7 @@ JsonDict = Dict[str, Any]
 
 class Fonz:
     def __init__(
-        self, url: str, client_id: str, client_secret: str, port: int, api: str
+        self, url: str, client_id: str, client_secret: str, port: int, api: float
     ):
         """Instantiate Fonz and save authentication details and branch."""
 
@@ -41,12 +41,12 @@ class Fonz:
                 "https://github.com/dbanalyticsco/Fonz/blob/master/README.md"
             )
 
-        supported_api_versions = ["3.0", "3.1"]
+        supported_api_versions = [3.0, 3.1]
         if api not in supported_api_versions:
             raise FonzException(
-                f"API version {printer.color(api, 'bold')} is not supported. "
+                f"API version {printer.color(str(api), 'bold')} is not supported. "
                 "Please use one of these supported versions instead: "
-                f"{', '.join(supported_api_versions)}"
+                f"{', '.join(str(ver) for ver in sorted(supported_api_versions))}"
             )
 
         self.base_url = url.rstrip("/")
