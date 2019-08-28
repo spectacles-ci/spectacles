@@ -79,7 +79,8 @@ def print_fancy_line(msg: str, status: str, index: int, total: int) -> None:
         timestamp=get_timestamp(), progress=progress, message=msg
     )
 
-    justified = prefix.ljust(PRINTER_WIDTH, ".")
+    adjusted_width = PRINTER_WIDTH - 8  # Account for the pass/fail/start messages
+    justified = prefix.ljust(adjusted_width, ".")
 
     status_txt = status
 
