@@ -2,6 +2,8 @@ import sys
 import yaml
 import argparse
 import os
+from collections import defaultdict
+from typing import List, DefaultDict
 from fonz.connection import Fonz
 from fonz.exceptions import FonzException, ValidationError
 from fonz.logger import GLOBAL_LOGGER as logger, LOG_FILEPATH
@@ -50,6 +52,7 @@ def main():
         sql(
             args.project,
             args.branch,
+            args.explores,
             args.base_url,
             args.client_id,
             args.client_secret,
@@ -106,13 +109,34 @@ def _build_sql_subparser(subparsers, base_subparser):
 
     sql_sub.add_argument("--project", default=os.environ.get("LOOKER_PROJECT"))
     sql_sub.add_argument("--branch", default=os.environ.get("LOOKER_GIT_BRANCH"))
+    sql_sub.add_argument("--explores", nargs="+", default=["*.*"])
     sql_sub.add_argument("--batch", action="store_true")
 
     return sql_sub
 
 
+def parse_selectors(selectors: List) -> DefaultDict[str, set]:
+    selection = defaultdict(set)
+
+    for selector in selectors:
+        try:
+            model, explore = selector.split(".")
+        except ValueError:
+            raise FonzException(
+                f'Explore selector "{selector}" is not valid.\n'
+                'Instead, use the format "model_name.explore_name". '
+                'Use "model_name.*" to select all explores in a model.'
+            )
+        else:
+            selection[model].add(explore)
+
+    return selection
+
+
 def parse_args(parser):
     args = parser.parse_args()
+
+    args.explores = parse_selectors(args.explores)
 
     if args.config_file:
         with open(args.config_file, "r") as file:
@@ -131,9 +155,19 @@ def connect(base_url, client_id, client_secret, port, api_version):
     client.connect()
 
 
-def sql(project, branch, base_url, client_id, client_secret, port, api_version, batch):
+def sql(
+    project,
+    branch,
+    explores,
+    base_url,
+    client_id,
+    client_secret,
+    port,
+    api_version,
+    batch,
+):
     client = Fonz(
-        base_url, client_id, client_secret, port, api_version, project, branch
+        base_url, client_id, client_secret, port, api_version, project, branch, explores
     )
     client.connect()
     client.update_session()
