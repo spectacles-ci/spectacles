@@ -6,7 +6,7 @@ setup(
     py_modules=["fonz"],
     packages=find_packages(),
     include_package_data=True,
-    install_requires=["Click", "requests", "PyYAML", "colorama", "backoff", "aiohttp"],
+    install_requires=["requests", "PyYAML", "colorama", "backoff", "aiohttp"],
     tests_require=[
         "pytest",
         "pytest-cov",
