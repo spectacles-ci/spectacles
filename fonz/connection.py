@@ -55,8 +55,8 @@ class Fonz:
         self.client_id = client_id
         self.client_secret = client_secret
         self.session = requests.Session()
-        self.lookml: Project = None
-        self.project: str = None
+        self.lookml: Optional[Project] = None
+        self.project: Optional[str] = None
         self.error_count = 0
 
         logger.debug(f"Instantiated Fonz object for url: {self.api_url}")
@@ -214,6 +214,10 @@ class Fonz:
             f"{'explore' if explore_count == 1 else 'explores'}"
         )
         index = 0
+
+        if not self.lookml:
+            raise ValueError("No LookML model has been defined yet.")
+
         for model in self.lookml.models:
             for explore in model.explores:
                 index += 1
@@ -230,6 +234,10 @@ class Fonz:
         """Displays the overall results of the completed validation."""
         printer.print_header("End testing session")
         explore_count = self.count_explores()
+
+        if not self.lookml:
+            raise ValueError("No LookML model has been defined yet.")
+
         for model in self.lookml.get_errored_models():
             for explore in model.get_errored_explores():
                 if batch:
