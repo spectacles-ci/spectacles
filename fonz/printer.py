@@ -1,5 +1,5 @@
 import os
-from typing import Dict, Any, Sequence, List
+from typing import Dict, Any, Sequence, List, Optional
 import textwrap
 from fonz.logger import GLOBAL_LOGGER as logger
 import colorama  # type: ignore
@@ -23,9 +23,9 @@ def get_timestamp() -> str:
     return time.strftime("%H:%M:%S")
 
 
-def color(text: str, name: str) -> str:
+def color(text: Optional[str], name: str) -> str:
     if os.environ.get("NO_COLOR") or os.environ.get("TERM") == "dumb":
-        return text
+        return str(text)
     else:
         return f"{COLORS[name]}{text}{colorama.Style.RESET_ALL}"
 
@@ -62,7 +62,7 @@ def extract_sql_context(sql: str, line_number: int, window_size: int = 2) -> str
     return context
 
 
-def print_sql_error(path, msg, sql, line_number, *footers):
+def print_sql_error(path, msg, sql, line_number, *footers) -> None:
     adjusted_width = PRINTER_WIDTH + 2  # Account for two color characters for bold
     wrapped = textwrap.fill(f"Error in {path}: {color(msg, 'bold')}")
     sql_context = extract_sql_context(sql, line_number)
@@ -103,7 +103,7 @@ def print_fail(explore_name: str, index: int, total: int) -> None:
     print_fancy_line(msg, color("FAIL", "red"), index, total)
 
 
-def print_error(message: str):
+def print_error(message: str) -> None:
     logger.info(color(message, "red"))
 
 

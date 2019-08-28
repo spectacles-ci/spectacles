@@ -1,10 +1,10 @@
 import sys
 import asyncio
 from pathlib import Path
-from typing import Sequence, List, DefaultDict, Dict, Any, Optional, Iterable
+from typing import Sequence, Set, Collection, List, DefaultDict, Dict, Any, Optional
 import aiohttp
 import requests
-import backoff
+import backoff  # type: ignore
 import fonz.utils as utils
 from fonz.lookml import Project, Model, Explore, Dimension
 from fonz.logger import GLOBAL_LOGGER as logger
@@ -29,9 +29,9 @@ class Fonz:
         client_secret: str,
         port: int,
         api: str,
-        project: str = None,
-        branch: str = None,
-        selection: DefaultDict = None,
+        project: Optional[str] = None,
+        branch: Optional[str] = None,
+        selection: Optional[DefaultDict[str, Set[str]]] = None,
     ):
         """Instantiate Fonz and save authentication details and branch."""
 
@@ -135,7 +135,7 @@ class Fonz:
                 f'Error raised: "{error}"'
             )
 
-    def select(self, to_select: Iterable[str], discovered: Iterable):
+    def select(self, to_select: Collection[str], discovered: Sequence) -> Sequence:
         to_select = set(to_select)
         discovered_names = set(each.name for each in discovered)
         difference = to_select.difference(discovered_names)
@@ -149,8 +149,11 @@ class Fonz:
             )
         return [each for each in discovered if each.name in to_select]
 
-    def build_project(self):
+    def build_project(self) -> None:
         """Create a representation of the desired project's LookML."""
+
+        if not self.selection:
+            raise ValueError('Fonz missing value for attribute "selection".')
 
         logger.info(
             f"Building LookML hierarchy for {printer.color(self.project, 'bold')}..."
@@ -203,7 +206,7 @@ class Fonz:
             explore_count += len(model.explores)
         return explore_count
 
-    def validate(self, batch=False):
+    def validate(self, batch: bool = False) -> None:
         explore_count = self.count_explores()
         printer.print_header(
             f"Begin testing {explore_count} "
@@ -222,7 +225,7 @@ class Fonz:
                 else:
                     printer.print_pass(explore.name, index, explore_count)
 
-    def report_results(self, batch: bool = False):
+    def report_results(self, batch: bool = False) -> None:
         """Displays the overall results of the completed validation."""
         printer.print_header("End testing session")
         explore_count = self.count_explores()

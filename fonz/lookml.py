@@ -1,5 +1,5 @@
 import re
-from typing import List, Optional
+from typing import List, Sequence, Optional
 from fonz.exceptions import SqlError
 
 
@@ -107,7 +107,7 @@ class Model(LookMlObject):
 
 
 class Project(LookMlObject):
-    def __init__(self, name, models: List[Model]):
+    def __init__(self, name, models: Sequence[Model]):
         self.name = name
         self.models = models
 

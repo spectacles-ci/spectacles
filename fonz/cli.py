@@ -123,7 +123,7 @@ def _build_sql_subparser(subparsers, base_subparser):
 
 
 def parse_selectors(selectors: List) -> DefaultDict[str, set]:
-    selection = defaultdict(set)
+    selection: DefaultDict = defaultdict(set)
 
     for selector in selectors:
         try:

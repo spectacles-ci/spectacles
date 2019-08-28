@@ -38,7 +38,7 @@ jobs:
           name: mypy
           command: |
             . venv/bin/activate
-            mypy fonz --ignore-missing-imports
+            mypy fonz
 
       - run:
           name: pytest
