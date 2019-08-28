@@ -1,5 +1,6 @@
 import os
 import sys
+from collections import defaultdict
 from unittest.mock import patch, Mock
 from unittest import TestCase
 import yaml
@@ -32,13 +33,20 @@ def limited_env(monkeypatch):
             monkeypatch.setenv(variable, value)
 
 
+@pytest.fixture
+def selection():
+    selection = defaultdict(set)
+    selection["*"] = set("*")
+    return selection
+
+
 @pytest.fixture()
 def parser():
     parser = create_parser()
     return parser
 
 
-def test_help(parser,):
+def test_help(parser):
     with pytest.raises(SystemExit) as cm:
         with patch.object(sys, "argv", ["fonz", "--help"]):
             main()
@@ -63,12 +71,13 @@ def test_connect_with_base_cli(mock_connect, clean_env):
     ):
         main()
         mock_connect.assert_called_once_with(
-            "cli_url", "cli_client_id", "cli_client_secret", 19999, 3.0
+            "cli_url", "cli_client_id", "cli_client_secret", 19999, 3.1
         )
 
 
+@patch("builtins.open")
 @patch("fonz.cli.connect", autospec=True)
-def test_connect_with_full_cli(mock_connect, clean_env):
+def test_connect_with_full_cli(mock_connect, mock_open, clean_env):
     with patch.object(
         sys,
         "argv",
@@ -89,7 +98,7 @@ def test_connect_with_full_cli(mock_connect, clean_env):
     ):
         main()
         mock_connect.assert_called_once_with(
-            "cli_url", "cli_client_id", "cli_client_secret", "272727", "3.1"
+            "cli_url", "cli_client_id", "cli_client_secret", 272727, 3.1
         )
 
 
@@ -102,13 +111,14 @@ def test_connect_with_env_variables(mock_connect, env):
             "CLIENT_ID_ENV_VAR",
             "CLIENT_SECRET_ENV_VAR",
             19999,
-            3.0,
+            3.1,
         )
 
 
 @patch("fonz.cli.yaml.load")
+@patch("builtins.open")
 @patch("fonz.cli.connect", autospec=True)
-def test_connect_with_config_file(mock_connect, mock_yaml_load, clean_env):
+def test_connect_with_config_file(mock_connect, mock_open, mock_yaml_load, clean_env):
     mock_yaml_load.return_value = {
         "base_url": TEST_BASE_URL,
         "client_id": "CLIENT_ID_CONFIG",
@@ -121,7 +131,7 @@ def test_connect_with_config_file(mock_connect, mock_yaml_load, clean_env):
             "CLIENT_ID_CONFIG",
             "CLIENT_SECRET_CONFIG",
             19999,
-            3.0,
+            3.1,
         )
 
 
@@ -148,7 +158,7 @@ def test_connect_with_limited_env_variables(mock_connect, env):
     ):
         main()
         mock_connect.assert_called_once_with(
-            "https://test.looker.com", "cli_client_id", "cli_client_secret", 19999, 3.0
+            "https://test.looker.com", "cli_client_id", "cli_client_secret", 19999, 3.1
         )
 
 
@@ -176,11 +186,12 @@ def test_sql_with_base_cli_without_batch(mock_sql, clean_env):
         mock_sql.assert_called_once_with(
             "cli_project",
             "cli_branch",
+            ["*.*"],
             "cli_url",
             "cli_client_id",
             "cli_client_secret",
             19999,
-            3.0,
+            3.1,
             False,
         )
 
@@ -210,11 +221,12 @@ def test_sql_with_base_cli_with_batch(mock_sql, clean_env):
         mock_sql.assert_called_once_with(
             "cli_project",
             "cli_branch",
+            ["*.*"],
             "cli_url",
             "cli_client_id",
             "cli_client_secret",
             19999,
-            3.0,
+            3.1,
             True,
         )
 
@@ -247,11 +259,12 @@ def test_sql_with_full_cli(mock_sql, clean_env):
         mock_sql.assert_called_once_with(
             "cli_project",
             "cli_branch",
+            ["*.*"],
             "cli_url",
             "cli_client_id",
             "cli_client_secret",
-            "272727",
-            "3.1",
+            272727,
+            3.1,
             False,
         )
 
@@ -263,18 +276,20 @@ def test_sql_with_env_variables(mock_sql, env):
         mock_sql.assert_called_once_with(
             "PROJECT_ENV_VAR",
             "BRANCH_ENV_VAR",
+            ["*.*"],
             "https://test.looker.com",
             "CLIENT_ID_ENV_VAR",
             "CLIENT_SECRET_ENV_VAR",
             19999,
-            3.0,
+            3.1,
             True,
         )
 
 
 @patch("fonz.cli.yaml.load")
+@patch("builtins.open")
 @patch("fonz.cli.sql", autospec=True)
-def test_sql_with_config_file(mock_sql, mock_yaml_load, clean_env):
+def test_sql_with_config_file(mock_sql, mock_open, mock_yaml_load, clean_env):
     mock_yaml_load.return_value = {
         "base_url": TEST_BASE_URL,
         "client_id": "CLIENT_ID_CONFIG",
@@ -287,11 +302,12 @@ def test_sql_with_config_file(mock_sql, mock_yaml_load, clean_env):
         mock_sql.assert_called_once_with(
             "PROJECT_ENV_VAR",
             "BRANCH_ENV_VAR",
+            ["*.*"],
             "https://test.looker.com",
             "CLIENT_ID_CONFIG",
             "CLIENT_SECRET_CONFIG",
             19999,
-            3.0,
+            3.1,
             False,
         )
 
@@ -321,41 +337,11 @@ def test_sql_with_limited_env_variables(mock_connect, env):
         mock_connect.assert_called_once_with(
             "PROJECT_ENV_VAR",
             "BRANCH_ENV_VAR",
+            ["*.*"],
             "https://test.looker.com",
             "cli_client_id",
             "cli_client_secret",
             19999,
-            3.0,
+            3.1,
             False,
         )
-
-
-@patch("fonz.cli.Fonz", autospec=True)
-def test_connect(mock_fonz, clean_env):
-    connect("https://test.looker.com", "client_id", "client_secret", 19999, 3.0)
-    mock_fonz.assert_called_once_with(
-        "https://test.looker.com", "client_id", "client_secret", 19999, 3.0
-    )
-
-
-@patch("fonz.cli.Fonz", autospec=True)
-def test_sql(mock_fonz, clean_env):
-    sql(
-        "project",
-        "branch",
-        "https://test.looker.com",
-        "client_id",
-        "client_secret",
-        19999,
-        3.0,
-        True,
-    )
-    mock_fonz.assert_called_once_with(
-        "https://test.looker.com",
-        "client_id",
-        "client_secret",
-        19999,
-        3.0,
-        "project",
-        "branch",
-    )

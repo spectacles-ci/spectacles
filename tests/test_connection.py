@@ -20,15 +20,15 @@ def load(filename):
 
 @pytest.fixture
 def client():
-    return Fonz(
+    client = Fonz(
         url="https://test.looker.com",
         client_id="CLIENT_ID",
         client_secret="CLIENT_SECRET",
         port=19999,
-        api="3.0",
-        project="test_project",
-        branch="test_branch",
+        api=3.1,
     )
+    client.project = "test_project"
+    return client
 
 
 @pytest.fixture
@@ -64,9 +64,7 @@ def test_fonz_with_no_client_id_raises_exception():
             client_id=None,
             client_secret="CLIENT_SECRET",
             port=19999,
-            api="3.0",
-            project="test_project",
-            branch="test_branch",
+            api=3.1,
         )
 
 
@@ -77,9 +75,7 @@ def test_fonz_with_no_client_secret_raises_exception():
             client_id="CLIENT_ID",
             client_secret=None,
             port=19999,
-            api="3.0",
-            project="test_project",
-            branch="test_branch",
+            api=3.1,
         )
 
 
@@ -99,18 +95,6 @@ def test_connect_bad_request_raises_connection_error(mock_post, client):
         client.connect()
 
 
-def test_update_session_with_no_project_raises(client):
-    client.project = None
-    with pytest.raises(FonzException):
-        client.update_session()
-
-
-def test_update_session_with_no_branch_raises(client):
-    client.branch = None
-    with pytest.raises(FonzException):
-        client.update_session()
-
-
 @patch("fonz.connection.requests.Session.patch")
 @patch("fonz.connection.requests.Session.put")
 def test_update_session_patch_with_bad_request_raises_connection_error(
@@ -120,7 +104,7 @@ def test_update_session_patch_with_bad_request_raises_connection_error(
     mock_response.status_code = 404
     mock_patch.return_value = mock_response
     with pytest.raises(ConnectionError):
-        client.update_session()
+        client.update_session("test_project", "test_branch")
 
 
 @patch("fonz.connection.requests.Session.patch")
@@ -132,7 +116,7 @@ def test_update_session_put_with_bad_request_raises_connection_error(
     mock_response.status_code = 404
     mock_put.return_value = mock_response
     with pytest.raises(ConnectionError):
-        client.update_session()
+        client.update_session("test_project", "test_branch")
 
 
 @patch("fonz.connection.Fonz.get_dimensions")
@@ -140,7 +124,7 @@ def test_update_session_put_with_bad_request_raises_connection_error(
 def test_build_project(mock_get_models, mock_get_dimensions, lookml, client):
     mock_get_models.return_value = load("response_models.json")
     mock_get_dimensions.return_value = load("response_dimensions.json")
-    client.build_project()
+    client.build_project(selectors=["*.*"])
     assert client.lookml == lookml
 
 
@@ -210,7 +194,7 @@ async def test_create_query(mock_post, client):
         )
     assert query_id == QUERY_ID
     mock_post.assert_called_once_with(
-        url="https://test.looker.com:19999/api/3.0/queries",
+        url="https://test.looker.com:19999/api/3.1/queries",
         json={
             "model": "test_model",
             "view": "test_explore_one",
@@ -232,7 +216,7 @@ async def test_run_query(mock_post, client):
         query_task_id = await client.run_query(session, QUERY_ID)
     assert query_task_id == QUERY_TASK_ID
     mock_post.assert_called_once_with(
-        url="https://test.looker.com:19999/api/3.0/query_tasks",
+        url="https://test.looker.com:19999/api/3.1/query_tasks",
         json={"query_id": QUERY_ID, "result_format": "json"},
     )
 
@@ -335,7 +319,8 @@ async def test_query_explore_failure_sets_errors_on_lookml_objects(
     assert model.errored
     assert isinstance(explore.error, SqlError)
     assert explore.error.message == "An error message."
-    assert explore.error.line_number == 12
+    # Account for extra line number added by Looker comment
+    assert explore.error.line_number == 11
 
 
 @pytest.mark.asyncio
