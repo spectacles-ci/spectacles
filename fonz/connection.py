@@ -220,7 +220,7 @@ class Fonz:
                             / "logs"
                             / model.name
                             / explore.name
-                            / f"{dimension.name}.sql"
+                            / f"{dimension.name.split('.')[-1]}.sql"
                         )
                         path.parent.mkdir(parents=True, exist_ok=True)
                         with path.open("w+") as file:
