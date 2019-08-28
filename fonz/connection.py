@@ -8,14 +8,7 @@ import backoff
 import fonz.utils as utils
 from fonz.lookml import Project, Model, Explore, Dimension
 from fonz.logger import GLOBAL_LOGGER as logger
-from fonz.printer import (
-    print_start,
-    print_pass,
-    print_fail,
-    print_stats,
-    print_header,
-    print_sql_error,
-)
+import fonz.printer as printer
 from fonz.exceptions import (
     ConnectionError,
     ValidationError,
@@ -57,7 +50,7 @@ class Fonz:
         supported_api_versions = ["3.0", "3.1"]
         if api not in supported_api_versions:
             raise FonzException(
-                f"API version {api} is not supported. "
+                f"API version {printer.bold(api)} is not supported. "
                 "Please use one of these supported versions instead: "
                 f"{', '.join(supported_api_versions)}"
             )
@@ -126,7 +119,7 @@ class Fonz:
                 f'Error raised: "{error}"'
             )
 
-        logger.debug(f"Setting git branch to: {self.branch}")
+        logger.debug(f"Setting git branch to {printer.bold(self.branch)}")
         url = utils.compose_url(
             self.api_url, path=["projects", self.project, "git_branch"]
         )
@@ -136,14 +129,15 @@ class Fonz:
             response.raise_for_status()
         except requests.exceptions.HTTPError as error:
             raise ConnectionError(
-                f'Unable to set git branch to "{self.branch}".\n'
+                f"Unable to set git branch to {printer.bold(self.branch)}.\n"
                 f'Error raised: "{error}"'
             )
 
     def build_project(self):
         """Create a representation of the desired project's LookML."""
 
-        logger.info(f"Building LookML hierarchy for {self.project}...")
+        logger.info(f"Building LookML hierarchy for {printer.bold(self.project)}...")
+
         models_json = self.get_models()
         models = []
         for model_json in models_json:
@@ -169,26 +163,26 @@ class Fonz:
 
     def validate(self, batch=False):
         explore_count = self.count_explores()
-        print_header(
+        printer.print_header(
             f"Begin testing {explore_count} "
-            f"{'explores' if explore_count > 1 else 'explore'}"
+            f"{'explore' if explore_count == 1 else 'explores'}"
         )
         index = 0
         for model in self.lookml.models:
             for explore in model.explores:
                 index += 1
-                print_start(explore.name, index, explore_count)
+                printer.print_start(explore.name, index, explore_count)
 
                 self.validate_explore(model, explore, batch)
 
                 if explore.errored:
-                    print_fail(explore.name, index, explore_count)
+                    printer.print_fail(explore.name, index, explore_count)
                 else:
-                    print_pass(explore.name, index, explore_count)
+                    printer.print_pass(explore.name, index, explore_count)
 
     def report_results(self, batch: bool = False):
         """Displays the overall results of the completed validation."""
-        print_header("End testing session")
+        printer.print_header("End testing session")
         explore_count = self.count_explores()
         for model in self.lookml.get_errored_models():
             for explore in model.get_errored_explores():
@@ -202,7 +196,7 @@ class Fonz:
                     with path.open("w+") as file:
                         file.write(sql)
 
-                    print_sql_error(
+                    printer.print_sql_error(
                         f"{model.name}/{explore.name}",
                         explore.error.message,
                         sql,
@@ -226,21 +220,22 @@ class Fonz:
                         with path.open("w+") as file:
                             file.write(sql)
 
-                        print_sql_error(
+                        printer.print_sql_error(
                             f"{model.name}/{dimension.name}",
                             dimension.error.message,
                             sql,
                             line_number,
                             f"Full SQL logged to {path}",
-                            f"LookML causing the error: {self.base_url + dimension.url}",
+                            "LookML causing the error: "
+                            f"{printer.cyan(self.base_url + dimension.url)}",
                         )
 
         exit_message = (
             f"Found {self.error_count} SQL "
-            f'{"errors" if self.error_count > 1 else "error"} '
+            f'{"error" if self.error_count == 1 else "errors"} '
             f"in {self.project}"
         )
-        print_header(exit_message)
+        printer.print_header(exit_message)
         if self.error_count > 0:
             raise ValidationError(exit_message)
 
