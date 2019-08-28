@@ -20,4 +20,6 @@ setup(
         [console_scripts]
         fonz=fonz.cli:main
     """,
+    author="Dylan Baker, Josh Temple",
+    author_email="",
 )
