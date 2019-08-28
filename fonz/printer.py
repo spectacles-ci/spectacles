@@ -9,7 +9,10 @@ JsonDict = Dict[str, Any]
 COLOR_FG_RED = colorama.Fore.RED
 COLOR_FG_GREEN = colorama.Fore.GREEN
 COLOR_FG_YELLOW = colorama.Fore.YELLOW
+COLOR_FG_CYAN = colorama.Fore.CYAN
 COLOR_RESET_ALL = colorama.Style.RESET_ALL
+COLOR_BOLD = colorama.Style.BRIGHT
+COLOR_DIM = colorama.Style.DIM
 
 PRINTER_WIDTH = 80
 
@@ -22,6 +25,14 @@ def color(text: str, color_code: str) -> str:
     return f"{color_code}{text}{COLOR_RESET_ALL}"
 
 
+def bold(text):
+    return color(text, COLOR_BOLD)
+
+
+def dim(text):
+    return color(text, COLOR_DIM)
+
+
 def green(text):
     return color(text, COLOR_FG_GREEN)
 
@@ -32,6 +43,10 @@ def red(text):
 
 def yellow(text):
     return color(text, COLOR_FG_YELLOW)
+
+
+def cyan(text):
+    return color(text, COLOR_FG_CYAN)
 
 
 def print_header(msg: str) -> None:
