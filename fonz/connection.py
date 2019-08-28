@@ -1,3 +1,4 @@
+from collections import defaultdict
 import sys
 import asyncio
 from pathlib import Path
@@ -23,15 +24,7 @@ JsonDict = Dict[str, Any]
 
 class Fonz:
     def __init__(
-        self,
-        url: str,
-        client_id: str,
-        client_secret: str,
-        port: int,
-        api: str,
-        project: Optional[str] = None,
-        branch: Optional[str] = None,
-        selection: Optional[DefaultDict[str, Set[str]]] = None,
+        self, url: str, client_id: str, client_secret: str, port: int, api: str
     ):
         """Instantiate Fonz and save authentication details and branch."""
 
@@ -61,11 +54,9 @@ class Fonz:
         self.api_version = api
         self.client_id = client_id
         self.client_secret = client_secret
-        self.branch = branch
-        self.project = project
-        self.selection = selection
         self.session = requests.Session()
-        self.lookml = Project(project, models=[])
+        self.lookml: Project = None
+        self.project: str = None
         self.error_count = 0
 
         logger.debug(f"Instantiated Fonz object for url: {self.api_url}")
@@ -95,19 +86,9 @@ class Fonz:
             f"API version {self.api_version}"
         )
 
-    def update_session(self) -> None:
+    def update_session(self, project: str, branch: str) -> None:
         """Switch to a dev mode session and checkout the desired branch."""
-
-        if not self.project:
-            raise FonzException(
-                "No Looker project name provided. "
-                "Please include the desired project name with --project"
-            )
-        if not self.branch:
-            raise FonzException(
-                "No git branch provided. "
-                "Please include the desired git branch name with --branch"
-            )
+        self.project = project
 
         logger.debug("Updating session to use development workspace.")
         url = utils.compose_url(self.api_url, path=["session"])
@@ -121,17 +102,17 @@ class Fonz:
                 f'Error raised: "{error}"'
             )
 
-        logger.debug(f"Setting git branch to {printer.color(self.branch, 'bold')}")
+        logger.debug(f"Setting git branch to {printer.color(branch, 'bold')}")
         url = utils.compose_url(
             self.api_url, path=["projects", self.project, "git_branch"]
         )
-        body = {"name": self.branch}
+        body = {"name": branch}
         response = self.session.put(url=url, json=body)
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError as error:
             raise ConnectionError(
-                f"Unable to set git branch to {printer.color(self.branch, 'bold')}.\n"
+                f"Unable to set git branch to {printer.color(branch, 'bold')}.\n"
                 f'Error raised: "{error}"'
             )
 
@@ -149,11 +130,31 @@ class Fonz:
             )
         return [each for each in discovered if each.name in to_select]
 
-    def build_project(self) -> None:
+    @staticmethod
+    def parse_selectors(selectors: List) -> DefaultDict[str, set]:
+        selection: DefaultDict = defaultdict(set)
+
+        for selector in selectors:
+            try:
+                model, explore = selector.split(".")
+            except ValueError:
+                raise FonzException(
+                    f"Explore selector {printer.color(selector, 'bold')} is not valid.\n"
+                    "Instead, use the format "
+                    f"{printer.color('model_name.explore_name', 'bold')}. "
+                    f"Use {printer.color('model_name.*', 'bold')} "
+                    f"to select all explores in a model."
+                )
+            else:
+                selection[model].add(explore)
+
+        return selection
+
+    def build_project(self, selectors: List[str]) -> None:
         """Create a representation of the desired project's LookML."""
 
-        if not self.selection:
-            raise ValueError('Fonz missing value for attribute "selection".')
+        selection = self.parse_selectors(selectors)
+        self.lookml = Project(self.project, models=[])
 
         logger.info(
             f"Building LookML hierarchy for {printer.color(self.project, 'bold')}..."
@@ -164,19 +165,19 @@ class Fonz:
         project_models = [m for m in all_models if m.project == self.project]
 
         # Expand wildcard operator to include all specified or discovered models
-        selected_model_names = self.selection.keys()
+        selected_model_names = selection.keys()
         if "*" in selected_model_names:
-            explore_names = self.selection.pop("*")
+            explore_names = selection.pop("*")
             for model in project_models:
-                self.selection[model.name].update(explore_names)
+                selection[model.name].update(explore_names)
 
         selected_models = self.select(
-            to_select=self.selection.keys(), discovered=project_models
+            to_select=selection.keys(), discovered=project_models
         )
 
         for model in selected_models:
             # Expand wildcard operator to include all specified or discovered explores
-            selected_explore_names = self.selection[model.name]
+            selected_explore_names = selection[model.name]
             if "*" in selected_explore_names:
                 selected_explore_names.remove("*")
                 selected_explore_names.update(

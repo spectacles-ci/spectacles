@@ -2,7 +2,6 @@ import sys
 import yaml
 import argparse
 import os
-from collections import defaultdict
 from typing import List, DefaultDict
 import fonz.printer as printer
 from fonz.connection import Fonz
@@ -122,29 +121,8 @@ def _build_sql_subparser(subparsers, base_subparser):
     return sql_sub
 
 
-def parse_selectors(selectors: List) -> DefaultDict[str, set]:
-    selection: DefaultDict = defaultdict(set)
-
-    for selector in selectors:
-        try:
-            model, explore = selector.split(".")
-        except ValueError:
-            raise FonzException(
-                f'Explore selector "{selector}" is not valid.\n'
-                'Instead, use the format "model_name.explore_name". '
-                'Use "model_name.*" to select all explores in a model.'
-            )
-        else:
-            selection[model].add(explore)
-
-    return selection
-
-
 def parse_args(parser):
     args = parser.parse_args()
-
-    args.explores = parse_selectors(args.explores)
-
     if args.config_file:
         with open(args.config_file, "r") as file:
             data = yaml.safe_load(file)
@@ -173,12 +151,23 @@ def sql(
     api_version,
     batch,
 ):
-    client = Fonz(
-        base_url, client_id, client_secret, port, api_version, project, branch, explores
-    )
+
+    if not project:
+        raise FonzException(
+            "No Looker project name provided. "
+            "Please include the desired project name with --project"
+        )
+
+    if not branch:
+        raise FonzException(
+            "No git branch provided. "
+            "Please include the desired git branch name with --branch"
+        )
+
+    client = Fonz(base_url, client_id, client_secret, port, api_version)
     client.connect()
-    client.update_session()
-    client.build_project()
+    client.update_session(project, branch)
+    client.build_project(explores)
     client.validate(batch)
     client.report_results(batch)
 
