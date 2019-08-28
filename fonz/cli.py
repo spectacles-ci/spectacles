@@ -115,7 +115,8 @@ def parse_args(parser):
     args = parser.parse_args()
 
     if args.config_file:
-        data = yaml.load(args.config_file)
+        with open(args.config_file, "r") as file:
+            data = yaml.safe_load(file)
         arg_dict = args.__dict__
         for key, value in data.items():
             if isinstance(value, list):
