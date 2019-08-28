@@ -4,6 +4,7 @@ import argparse
 import os
 from collections import defaultdict
 from typing import List, DefaultDict
+import fonz.printer as printer
 from fonz.connection import Fonz
 from fonz.exceptions import FonzException, ValidationError
 from fonz.logger import GLOBAL_LOGGER as logger, LOG_FILEPATH
@@ -18,8 +19,10 @@ def handle_exceptions(function):
         except FonzException as error:
             logger.error(
                 f"{error}\n\n"
-                "For support, please create an issue at "
-                "https://github.com/dbanalyticsco/Fonz/issues\n"
+                + printer.dim(
+                    "For support, please create an issue at "
+                    "https://github.com/dbanalyticsco/Fonz/issues\n"
+                )
             )
             sys.exit(error.exit_code)
         except Exception as error:
@@ -27,8 +30,10 @@ def handle_exceptions(function):
             logger.error(
                 f'Encountered unexpected {error.__class__.__name__}: "{error}"\n'
                 f"Full error traceback logged to {LOG_FILEPATH}\n\n"
-                "For support, please create an issue at "
-                "https://github.com/dbanalyticsco/Fonz/issues\n"
+                + printer.dim(
+                    "For support, please create an issue at "
+                    "https://github.com/dbanalyticsco/Fonz/issues\n"
+                )
             )
             sys.exit(1)
 
