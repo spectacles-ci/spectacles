@@ -65,9 +65,11 @@ def extract_sql_context(sql: str, line_number: int, window_size: int = 2) -> str
 def print_sql_error(path, msg, sql, line_number, *footers) -> None:
     adjusted_width = PRINTER_WIDTH + 2  # Account for two color characters for bold
     wrapped = textwrap.fill(f"Error in {path}: {color(msg, 'bold')}")
-    sql_context = extract_sql_context(sql, line_number)
+
     print_error(wrapped + "\n")
-    logger.info(sql_context + "\n")
+    if line_number:
+        sql_context = extract_sql_context(sql, line_number)
+        logger.info(sql_context + "\n")
     for footer in footers:
         logger.info(footer)
     logger.info("")
