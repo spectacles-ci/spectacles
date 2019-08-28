@@ -19,9 +19,10 @@ def handle_exceptions(function):
         except FonzException as error:
             logger.error(
                 f"{error}\n\n"
-                + printer.dim(
+                + printer.color(
                     "For support, please create an issue at "
-                    "https://github.com/dbanalyticsco/Fonz/issues\n"
+                    "https://github.com/dbanalyticsco/Fonz/issues\n",
+                    "dim",
                 )
             )
             sys.exit(error.exit_code)
@@ -30,9 +31,10 @@ def handle_exceptions(function):
             logger.error(
                 f'Encountered unexpected {error.__class__.__name__}: "{error}"\n'
                 f"Full error traceback logged to {LOG_FILEPATH}\n\n"
-                + printer.dim(
+                + printer.color(
                     "For support, please create an issue at "
-                    "https://github.com/dbanalyticsco/Fonz/issues\n"
+                    "https://github.com/dbanalyticsco/Fonz/issues\n",
+                    "dim",
                 )
             )
             sys.exit(1)

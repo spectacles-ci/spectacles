@@ -1,3 +1,4 @@
+import os
 from typing import Dict, Any, Sequence, List
 import textwrap
 from fonz.logger import GLOBAL_LOGGER as logger
@@ -6,13 +7,14 @@ import time
 
 JsonDict = Dict[str, Any]
 
-COLOR_FG_RED = colorama.Fore.RED
-COLOR_FG_GREEN = colorama.Fore.GREEN
-COLOR_FG_YELLOW = colorama.Fore.YELLOW
-COLOR_FG_CYAN = colorama.Fore.CYAN
-COLOR_RESET_ALL = colorama.Style.RESET_ALL
-COLOR_BOLD = colorama.Style.BRIGHT
-COLOR_DIM = colorama.Style.DIM
+COLORS = {
+    "red": colorama.Fore.RED,
+    "green": colorama.Fore.GREEN,
+    "yellow": colorama.Fore.YELLOW,
+    "cyan": colorama.Fore.CYAN,
+    "bold": colorama.Style.BRIGHT,
+    "dim": colorama.Style.DIM,
+}
 
 PRINTER_WIDTH = 80
 
@@ -21,32 +23,11 @@ def get_timestamp() -> str:
     return time.strftime("%H:%M:%S")
 
 
-def color(text: str, color_code: str) -> str:
-    return f"{color_code}{text}{COLOR_RESET_ALL}"
-
-
-def bold(text):
-    return color(text, COLOR_BOLD)
-
-
-def dim(text):
-    return color(text, COLOR_DIM)
-
-
-def green(text):
-    return color(text, COLOR_FG_GREEN)
-
-
-def red(text):
-    return color(text, COLOR_FG_RED)
-
-
-def yellow(text):
-    return color(text, COLOR_FG_YELLOW)
-
-
-def cyan(text):
-    return color(text, COLOR_FG_CYAN)
+def color(text: str, name: str) -> str:
+    if os.environ.get("NO_COLOR") or os.environ.get("TERM") == "dumb":
+        return text
+    else:
+        return f"{COLORS[name]}{text}{colorama.Style.RESET_ALL}"
 
 
 def print_header(msg: str) -> None:
@@ -83,7 +64,7 @@ def extract_sql_context(sql: str, line_number: int, window_size: int = 2) -> str
 
 def print_sql_error(path, msg, sql, line_number, *footers):
     adjusted_width = PRINTER_WIDTH + 2  # Account for two color characters for bold
-    wrapped = textwrap.fill(f"Error in {path}: {bold(msg)}")
+    wrapped = textwrap.fill(f"Error in {path}: {color(msg, 'bold')}")
     sql_context = extract_sql_context(sql, line_number)
     print_error(wrapped + "\n")
     logger.info(sql_context + "\n")
@@ -114,16 +95,16 @@ def print_start(explore_name: str, index: int, total: int) -> None:
 
 def print_pass(explore_name: str, index: int, total: int) -> None:
     msg = f"PASSED explore: {explore_name}"
-    print_fancy_line(msg, green("PASS"), index, total)
+    print_fancy_line(msg, color("PASS", "green"), index, total)
 
 
 def print_fail(explore_name: str, index: int, total: int) -> None:
     msg = f"FAILED explore: {explore_name}"
-    print_fancy_line(msg, red("FAIL"), index, total)
+    print_fancy_line(msg, color("FAIL", "red"), index, total)
 
 
 def print_error(message: str):
-    logger.info(red(message))
+    logger.info(color(message, "red"))
 
 
 def print_stats(errors: int, total: int) -> None:

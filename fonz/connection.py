@@ -51,7 +51,7 @@ class Fonz:
         supported_api_versions = ["3.0", "3.1"]
         if api not in supported_api_versions:
             raise FonzException(
-                f"API version {printer.bold(api)} is not supported. "
+                f"API version {printer.color(api, 'bold')} is not supported. "
                 "Please use one of these supported versions instead: "
                 f"{', '.join(supported_api_versions)}"
             )
@@ -121,7 +121,7 @@ class Fonz:
                 f'Error raised: "{error}"'
             )
 
-        logger.debug(f"Setting git branch to {printer.bold(self.branch)}")
+        logger.debug(f"Setting git branch to {printer.color(self.branch, 'bold')}")
         url = utils.compose_url(
             self.api_url, path=["projects", self.project, "git_branch"]
         )
@@ -131,7 +131,7 @@ class Fonz:
             response.raise_for_status()
         except requests.exceptions.HTTPError as error:
             raise ConnectionError(
-                f"Unable to set git branch to {printer.bold(self.branch)}.\n"
+                f"Unable to set git branch to {printer.color(self.branch, 'bold')}.\n"
                 f'Error raised: "{error}"'
             )
 
@@ -143,15 +143,18 @@ class Fonz:
             raise FonzException(
                 f"{discovered[0].__class__.__name__}"
                 f'{"" if len(difference) == 1 else "s"} '
-                + ", ".join(printer.bold(diff) for diff in difference)
-                + f" not found in LookML for project {printer.bold(self.project)}."
+                + ", ".join(printer.color(diff, "bold") for diff in difference)
+                + " not found in LookML for project "
+                f"{printer.color(self.project, 'bold')}."
             )
         return [each for each in discovered if each.name in to_select]
 
     def build_project(self):
         """Create a representation of the desired project's LookML."""
 
-        logger.info(f"Building LookML hierarchy for {printer.bold(self.project)}...")
+        logger.info(
+            f"Building LookML hierarchy for {printer.color(self.project, 'bold')}..."
+        )
 
         models_json = self.get_models()
         all_models = [Model.from_json(model_json) for model_json in models_json]
@@ -266,7 +269,7 @@ class Fonz:
                             line_number,
                             f"Full SQL logged to {path}",
                             "LookML causing the error: "
-                            f"{printer.cyan(self.base_url + dimension.url)}",
+                            f"{printer.color(self.base_url + dimension.url, 'cyan')}",
                         )
 
         exit_message = (
