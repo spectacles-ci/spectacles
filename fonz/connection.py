@@ -1,7 +1,7 @@
 import sys
 import asyncio
 from pathlib import Path
-from typing import Sequence, List, Dict, Any, Optional
+from typing import Sequence, List, DefaultDict, Dict, Any, Optional, Iterable
 import aiohttp
 import requests
 import backoff
@@ -31,6 +31,7 @@ class Fonz:
         api: str,
         project: str = None,
         branch: str = None,
+        selection: DefaultDict = None,
     ):
         """Instantiate Fonz and save authentication details and branch."""
 
@@ -62,6 +63,7 @@ class Fonz:
         self.client_secret = client_secret
         self.branch = branch
         self.project = project
+        self.selection = selection
         self.session = requests.Session()
         self.lookml = Project(project, models=[])
         self.error_count = 0
@@ -133,25 +135,62 @@ class Fonz:
                 f'Error raised: "{error}"'
             )
 
+    def select(self, to_select: Iterable[str], discovered: Iterable):
+        to_select = set(to_select)
+        discovered_names = set(each.name for each in discovered)
+        difference = to_select.difference(discovered_names)
+        if difference:
+            raise FonzException(
+                f"{discovered[0].__class__.__name__}"
+                f'{"" if len(difference) == 1 else "s"} '
+                + ", ".join(printer.bold(diff) for diff in difference)
+                + f" not found in LookML for project {printer.bold(self.project)}."
+            )
+        return [each for each in discovered if each.name in to_select]
+
     def build_project(self):
         """Create a representation of the desired project's LookML."""
 
         logger.info(f"Building LookML hierarchy for {printer.bold(self.project)}...")
 
         models_json = self.get_models()
-        models = []
-        for model_json in models_json:
-            model = Model.from_json(model_json)
-            if model.project == self.project:
-                for explore in model.explores:
-                    dimensions_json = self.get_dimensions(model.name, explore.name)
-                    for dimension_json in dimensions_json:
-                        dimension = Dimension.from_json(dimension_json)
-                        if not dimension.ignore:
-                            explore.add_dimension(dimension)
-                models.append(model)
+        all_models = [Model.from_json(model_json) for model_json in models_json]
+        project_models = [m for m in all_models if m.project == self.project]
 
-        self.lookml.models = models
+        # Expand wildcard operator to include all specified or discovered models
+        selected_model_names = self.selection.keys()
+        if "*" in selected_model_names:
+            explore_names = self.selection.pop("*")
+            for model in project_models:
+                self.selection[model.name].update(explore_names)
+
+        selected_models = self.select(
+            to_select=self.selection.keys(), discovered=project_models
+        )
+
+        for model in selected_models:
+            # Expand wildcard operator to include all specified or discovered explores
+            selected_explore_names = self.selection[model.name]
+            if "*" in selected_explore_names:
+                selected_explore_names.remove("*")
+                selected_explore_names.update(
+                    set(explore.name for explore in model.explores)
+                )
+
+            selected_explores = self.select(
+                to_select=selected_explore_names, discovered=model.explores
+            )
+
+            for explore in selected_explores:
+                dimensions_json = self.get_dimensions(model.name, explore.name)
+                for dimension_json in dimensions_json:
+                    dimension = Dimension.from_json(dimension_json)
+                    if not dimension.ignore:
+                        explore.add_dimension(dimension)
+
+            model.explores = selected_explores
+
+        self.lookml.models = selected_models
 
     def count_explores(self):
         """Return the total number of explores in the project."""
