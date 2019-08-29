@@ -82,8 +82,8 @@ class Fonz:
         self.session.headers = {"Authorization": f"token {access_token}"}
 
         logger.info(
-            f"Successfully connected to {self.base_url} using "
-            f"API version {self.api_version}"
+            f"Connected to {printer.color(self.base_url, 'bold')} "
+            f"using API version {printer.color(self.api_version, 'bold')}"
         )
 
     def update_session(self, project: str, branch: str) -> None:
@@ -115,6 +115,8 @@ class Fonz:
                 f"Unable to set git branch to {printer.color(branch, 'bold')}.\n"
                 f'Error raised: "{error}"'
             )
+
+        logger.info(f"Checked out branch {printer.color(branch, 'bold')}")
 
     def select(self, to_select: Collection[str], discovered: Sequence) -> Sequence:
         to_select = set(to_select)
