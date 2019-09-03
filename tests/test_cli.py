@@ -1,18 +1,14 @@
 import os
+import sys
 from unittest.mock import patch, Mock
+from unittest import TestCase
 import yaml
 import pytest
 import click
 from click.testing import CliRunner
 from tests.constants import TEST_BASE_URL, ENV_VARS
-from fonz.cli import connect, sql
+from fonz.cli import create_parser, main, connect, sql
 import logging
-
-
-@pytest.fixture(scope="class")
-def runner(request):
-    """Click's CLI runner to invoke commands as command line scripts."""
-    request.cls.runner = CliRunner()
 
 
 @pytest.fixture
@@ -36,224 +32,323 @@ def limited_env(monkeypatch):
             monkeypatch.setenv(variable, value)
 
 
-@pytest.mark.usefixtures("runner")
-class TestConnect(object):
-    def test_help(self):
-        result = self.runner.invoke(
-            connect, ["--help"], standalone_mode=False, catch_exceptions=False
-        )
-        assert result.exit_code == 0
-
-    def test_no_arguments_exits_with_nonzero_code(self, clean_env):
-        result = self.runner.invoke(connect)
-        assert result.exit_code != 0
-
-    @patch("fonz.cli.Fonz", autospec=True)
-    def test_with_command_line_args_only(self, mock_client, clean_env):
-        result = self.runner.invoke(
-            connect,
-            [
-                "--base-url",
-                TEST_BASE_URL,
-                "--client-id",
-                "CLIENT_ID_CLI",
-                "--client-secret",
-                "CLIENT_SECRET_CLI",
-            ],
-            standalone_mode=False,
-            catch_exceptions=False,
-        )
-        mock_client.assert_called_once_with(
-            TEST_BASE_URL, "CLIENT_ID_CLI", "CLIENT_SECRET_CLI", 19999, "3.0"
-        )
-        mock_client.return_value.connect.assert_called_once()
-        assert result.exit_code == 0
-
-    @patch("fonz.cli.Fonz", autospec=True)
-    def test_with_env_vars_only(self, mock_client, env):
-        result = self.runner.invoke(
-            connect, standalone_mode=False, catch_exceptions=False
-        )
-        mock_client.assert_called_once_with(
-            TEST_BASE_URL, "CLIENT_ID_ENV_VAR", "CLIENT_SECRET_ENV_VAR", 19999, "3.0"
-        )
-        mock_client.return_value.connect.assert_called_once()
-        assert result.exit_code == 0
-
-    @patch("fonz.cli.Fonz", autospec=True)
-    def test_with_config_file_only(self, mock_client, clean_env):
-        with self.runner.isolated_filesystem():
-            with open("config.yml", "w") as file:
-                config = {
-                    "base_url": TEST_BASE_URL,
-                    "client_id": "CLIENT_ID_CONFIG",
-                    "client_secret": "CLIENT_SECRET_CONFIG",
-                }
-                yaml.dump(config, file)
-            result = self.runner.invoke(
-                connect,
-                ["--config-file", "config.yml"],
-                standalone_mode=False,
-                catch_exceptions=False,
-            )
-        mock_client.assert_called_once_with(
-            TEST_BASE_URL, "CLIENT_ID_CONFIG", "CLIENT_SECRET_CONFIG", 19999, "3.0"
-        )
-        mock_client.return_value.connect.assert_called_once()
-        assert result.exit_code == 0
-
-    @patch("fonz.cli.Fonz", autospec=True)
-    def test_cli_supersedes_env_var_which_supersedes_config_file(
-        self, mock_client, limited_env
-    ):
-        with self.runner.isolated_filesystem():
-            with open("config.yml", "w") as file:
-                config = {
-                    "base_url": "URL_CONFIG",
-                    "client_id": "CLIENT_ID_CONFIG",
-                    "client_secret": "CLIENT_SECRET_CONFIG",
-                }
-                yaml.dump(config, file)
-            result = self.runner.invoke(
-                connect,
-                ["--base-url", "URL_CLI", "--config-file", "config.yml"],
-                standalone_mode=False,
-                catch_exceptions=False,
-            )
-        mock_client.assert_called_once_with(
-            "URL_CLI", "CLIENT_ID_ENV_VAR", "CLIENT_SECRET_CONFIG", 19999, "3.0"
-        )
-        mock_client.return_value.connect.assert_called_once()
-        assert result.exit_code == 0
+@pytest.fixture()
+def parser():
+    parser = create_parser()
+    return parser
 
 
-@pytest.mark.usefixtures("runner")
-class TestSql(object):
-    def test_help(self):
-        result = self.runner.invoke(
-            sql, ["--help"], standalone_mode=False, catch_exceptions=False
-        )
-        assert result.exit_code == 0
+@patch("sys.argv", new=["fonz", "--help"])
+def test_help(parser,):
+    with pytest.raises(SystemExit) as cm:
+        main()
+        assert cm.value.code == 0
 
-    def test_no_arguments_exits_with_nonzero_code(self, clean_env):
-        result = self.runner.invoke(sql)
-        assert result.exit_code != 0
 
-    @patch("fonz.cli.Fonz", autospec=True)
-    def test_with_command_line_args_only(self, mock_client):
-        mock_client.return_value.messages = []
-        result = self.runner.invoke(
-            sql,
-            [
-                "--base-url",
-                TEST_BASE_URL,
-                "--client-id",
-                "CLIENT_ID_CLI",
-                "--client-secret",
-                "CLIENT_SECRET_CLI",
-                "--project",
-                "PROJECT_CLI",
-                "--branch",
-                "BRANCH_CLI",
-            ],
-            standalone_mode=False,
-            catch_exceptions=False,
-        )
-        mock_client.assert_called_once_with(
-            TEST_BASE_URL,
-            "CLIENT_ID_CLI",
-            "CLIENT_SECRET_CLI",
-            19999,
-            "3.0",
-            "PROJECT_CLI",
-            "BRANCH_CLI",
-        )
-        mock_client.return_value.connect.assert_called_once()
-        assert result.exit_code == 0
+@patch(
+    "sys.argv",
+    new=[
+        "fonz",
+        "connect",
+        "--base-url",
+        "cli_url",
+        "--client-id",
+        "cli_client_id",
+        "--client-secret",
+        "cli_client_secret",
+    ],
+)
+@patch("fonz.cli.connect")
+def test_connect_with_base_cli(mock_connect, clean_env):
+    main()
+    mock_connect.assert_called_once_with(
+        "cli_url", "cli_client_id", "cli_client_secret", "19999", "3.0"
+    )
 
-    @patch("fonz.cli.Fonz", autospec=True)
-    def test_with_env_vars_only(self, mock_client, env):
-        mock_client.return_value.messages = []
-        result = self.runner.invoke(sql, standalone_mode=False, catch_exceptions=False)
-        mock_client.assert_called_once_with(
-            TEST_BASE_URL,
-            "CLIENT_ID_ENV_VAR",
-            "CLIENT_SECRET_ENV_VAR",
-            19999,
-            "3.0",
-            "PROJECT_ENV_VAR",
-            "BRANCH_ENV_VAR",
-        )
-        mock_client.return_value.connect.assert_called_once()
-        assert result.exit_code == 0
 
-    @patch("fonz.cli.Fonz", autospec=True)
-    def test_with_config_file_only(self, mock_client, clean_env):
-        mock_client.return_value.messages = []
-        with self.runner.isolated_filesystem():
-            with open("config.yml", "w") as file:
-                config = {
-                    "base_url": TEST_BASE_URL,
-                    "client_id": "CLIENT_ID_CONFIG",
-                    "client_secret": "CLIENT_SECRET_CONFIG",
-                    "project": "PROJECT_CONFIG",
-                    "branch": "BRANCH_CONFIG",
-                }
-                yaml.dump(config, file)
-            result = self.runner.invoke(
-                sql,
-                ["--config-file", "config.yml"],
-                standalone_mode=False,
-                catch_exceptions=False,
-            )
-        mock_client.assert_called_once_with(
-            TEST_BASE_URL,
-            "CLIENT_ID_CONFIG",
-            "CLIENT_SECRET_CONFIG",
-            19999,
-            "3.0",
-            "PROJECT_CONFIG",
-            "BRANCH_CONFIG",
-        )
-        mock_client.return_value.connect.assert_called_once()
-        assert result.exit_code == 0
+@patch(
+    "sys.argv",
+    new=[
+        "fonz",
+        "connect",
+        "--base-url",
+        "cli_url",
+        "--client-id",
+        "cli_client_id",
+        "--client-secret",
+        "cli_client_secret",
+        "--port",
+        "272727",
+        "--api-version",
+        "3.1",
+    ],
+)
+@patch("fonz.cli.connect")
+def test_connect_with_full_cli(mock_connect, clean_env):
+    main()
+    mock_connect.assert_called_once_with(
+        "cli_url", "cli_client_id", "cli_client_secret", "272727", "3.1"
+    )
 
-    @patch("fonz.cli.Fonz", autospec=True)
-    def test_cli_supersedes_env_var_which_supersedes_config_file(
-        self, mock_client, limited_env
-    ):
-        mock_client.return_value.messages = []
-        with self.runner.isolated_filesystem():
-            with open("config.yml", "w") as file:
-                config = {
-                    "base_url": "URL_CONFIG",
-                    "client_id": "CLIENT_ID_CONFIG",
-                    "client_secret": "CLIENT_SECRET_CONFIG",
-                    "branch": "BRANCH_CONFIG",
-                    "project": "PROJECT_CONFIG",
-                }
-                yaml.dump(config, file)
-            result = self.runner.invoke(
-                sql,
-                [
-                    "--base-url",
-                    "URL_CLI",
-                    "--branch",
-                    "BRANCH_CLI",
-                    "--config-file",
-                    "config.yml",
-                ],
-                standalone_mode=False,
-                catch_exceptions=False,
-            )
-        mock_client.assert_called_once_with(
-            "URL_CLI",
-            "CLIENT_ID_ENV_VAR",
-            "CLIENT_SECRET_CONFIG",
-            19999,
-            "3.0",
-            "PROJECT_CONFIG",
-            "BRANCH_CLI",
-        )
-        mock_client.return_value.connect.assert_called_once()
-        assert result.exit_code == 0
+
+@patch("sys.argv", new=["fonz", "connect"])
+@patch("fonz.cli.connect")
+def test_connect_with_env_variables(mock_connect, env):
+    main()
+    mock_connect.assert_called_once_with(
+        "https://test.looker.com",
+        "CLIENT_ID_ENV_VAR",
+        "CLIENT_SECRET_ENV_VAR",
+        "19999",
+        "3.0",
+    )
+
+
+@patch("sys.argv", new=["fonz", "connect", "--config-file", "config.yml"])
+@patch("fonz.cli.yaml.load")
+@patch("fonz.cli.connect")
+def test_connect_with_config_file(mock_connect, mock_yaml_load, clean_env):
+    mock_yaml_load.return_value = {
+        "base_url": TEST_BASE_URL,
+        "client_id": "CLIENT_ID_CONFIG",
+        "client_secret": "CLIENT_SECRET_CONFIG",
+    }
+    main()
+    mock_connect.assert_called_once_with(
+        "https://test.looker.com",
+        "CLIENT_ID_CONFIG",
+        "CLIENT_SECRET_CONFIG",
+        "19999",
+        "3.0",
+    )
+
+
+@patch("sys.argv", new=["fonz", "connect"])
+def test_connect_no_arguments(clean_env):
+    with pytest.raises(SystemExit) as cm:
+        main()
+        assert cm.value.code == 1
+
+
+@patch(
+    "sys.argv",
+    new=[
+        "fonz",
+        "connect",
+        "--client-id",
+        "cli_client_id",
+        "--client-secret",
+        "cli_client_secret",
+    ],
+)
+@patch("fonz.cli.connect")
+def test_connect_with_limited_env_variables(mock_connect, env):
+    main()
+    mock_connect.assert_called_once_with(
+        "https://test.looker.com", "cli_client_id", "cli_client_secret", "19999", "3.0"
+    )
+
+
+@patch(
+    "sys.argv",
+    new=[
+        "fonz",
+        "sql",
+        "--base-url",
+        "cli_url",
+        "--client-id",
+        "cli_client_id",
+        "--client-secret",
+        "cli_client_secret",
+        "--project",
+        "cli_project",
+        "--branch",
+        "cli_branch",
+    ],
+)
+@patch("fonz.cli.sql")
+def test_sql_with_base_cli_without_batch(mock_sql, clean_env):
+    main()
+    mock_sql.assert_called_once_with(
+        "cli_project",
+        "cli_branch",
+        "cli_url",
+        "cli_client_id",
+        "cli_client_secret",
+        "19999",
+        "3.0",
+        False,
+    )
+
+
+@patch(
+    "sys.argv",
+    new=[
+        "fonz",
+        "sql",
+        "--base-url",
+        "cli_url",
+        "--client-id",
+        "cli_client_id",
+        "--client-secret",
+        "cli_client_secret",
+        "--project",
+        "cli_project",
+        "--branch",
+        "cli_branch",
+        "--batch",
+    ],
+)
+@patch("fonz.cli.sql")
+def test_sql_with_base_cli_with_batch(mock_sql, clean_env):
+    main()
+    mock_sql.assert_called_once_with(
+        "cli_project",
+        "cli_branch",
+        "cli_url",
+        "cli_client_id",
+        "cli_client_secret",
+        "19999",
+        "3.0",
+        True,
+    )
+
+
+@patch(
+    "sys.argv",
+    new=[
+        "fonz",
+        "sql",
+        "--base-url",
+        "cli_url",
+        "--client-id",
+        "cli_client_id",
+        "--client-secret",
+        "cli_client_secret",
+        "--port",
+        "272727",
+        "--api-version",
+        "3.1",
+        "--project",
+        "cli_project",
+        "--branch",
+        "cli_branch",
+    ],
+)
+@patch("fonz.cli.sql")
+def test_sql_with_full_cli(mock_sql, clean_env):
+    main()
+    mock_sql.assert_called_once_with(
+        "cli_project",
+        "cli_branch",
+        "cli_url",
+        "cli_client_id",
+        "cli_client_secret",
+        "272727",
+        "3.1",
+        False,
+    )
+
+
+@patch("sys.argv", new=["fonz", "sql", "--batch"])
+@patch("fonz.cli.sql")
+def test_sql_with_env_variables(mock_sql, env):
+    main()
+    mock_sql.assert_called_once_with(
+        "PROJECT_ENV_VAR",
+        "BRANCH_ENV_VAR",
+        "https://test.looker.com",
+        "CLIENT_ID_ENV_VAR",
+        "CLIENT_SECRET_ENV_VAR",
+        "19999",
+        "3.0",
+        True,
+    )
+
+
+@patch("sys.argv", new=["fonz", "sql", "--config-file", "config.yml"])
+@patch("fonz.cli.yaml.load")
+@patch("fonz.cli.sql")
+def test_sql_with_config_file(mock_sql, mock_yaml_load, clean_env):
+    mock_yaml_load.return_value = {
+        "base_url": TEST_BASE_URL,
+        "client_id": "CLIENT_ID_CONFIG",
+        "client_secret": "CLIENT_SECRET_CONFIG",
+        "project": "PROJECT_ENV_VAR",
+        "branch": "BRANCH_ENV_VAR",
+    }
+    main()
+    mock_sql.assert_called_once_with(
+        "PROJECT_ENV_VAR",
+        "BRANCH_ENV_VAR",
+        "https://test.looker.com",
+        "CLIENT_ID_CONFIG",
+        "CLIENT_SECRET_CONFIG",
+        "19999",
+        "3.0",
+        False,
+    )
+
+
+@patch("sys.argv", new=["fonz", "sql"])
+def test_sql_no_arguments(clean_env):
+    with pytest.raises(SystemExit) as cm:
+        main()
+        assert cm.value.code == 1
+
+
+@patch(
+    "sys.argv",
+    new=[
+        "fonz",
+        "sql",
+        "--client-id",
+        "cli_client_id",
+        "--client-secret",
+        "cli_client_secret",
+    ],
+)
+@patch("fonz.cli.sql")
+def test_sql_with_limited_env_variables(mock_connect, env):
+    main()
+    mock_connect.assert_called_once_with(
+        "PROJECT_ENV_VAR",
+        "BRANCH_ENV_VAR",
+        "https://test.looker.com",
+        "cli_client_id",
+        "cli_client_secret",
+        "19999",
+        "3.0",
+        False,
+    )
+
+
+@patch("fonz.cli.Fonz")
+def test_connect(mock_fonz, clean_env):
+    connect("https://test.looker.com", "client_id", "client_secret", "19999", "3.0")
+    mock_fonz.assert_called_once_with(
+        "https://test.looker.com", "client_id", "client_secret", "19999", "3.0"
+    )
+
+
+@patch("fonz.cli.Fonz")
+def test_sql(mock_fonz, clean_env):
+    sql(
+        "project",
+        "branch",
+        "https://test.looker.com",
+        "client_id",
+        "client_secret",
+        "19999",
+        "3.0",
+        True,
+    )
+    mock_fonz.assert_called_once_with(
+        "https://test.looker.com",
+        "client_id",
+        "client_secret",
+        "19999",
+        "3.0",
+        "project",
+        "branch",
+    )

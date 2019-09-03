@@ -18,6 +18,6 @@ setup(
     ],
     entry_points="""
         [console_scripts]
-        fonz=fonz.cli:cli
+        fonz=fonz.cli:main
     """,
 )
