@@ -46,14 +46,6 @@ def test_help(parser,):
         assert cm.value.code == 0
 
 
-@patch("fonz.cli.Fonz")
-def test_connect(mock_fonz, clean_env):
-    connect("https://test.looker.com", "client_id", "client_secret", "19999", "3.0")
-    mock_fonz.assert_called_once_with(
-        "https://test.looker.com", "client_id", "client_secret", "19999", "3.0"
-    )
-
-
 @patch(
     "sys.argv",
     new=[
@@ -157,29 +149,6 @@ def test_connect_with_limited_env_variables(mock_connect, env):
     main()
     mock_connect.assert_called_once_with(
         "https://test.looker.com", "cli_client_id", "cli_client_secret", 19999, 3.1
-    )
-
-
-@patch("fonz.cli.Fonz")
-def test_sql(mock_fonz, clean_env):
-    sql(
-        "project",
-        "branch",
-        "https://test.looker.com",
-        "client_id",
-        "client_secret",
-        "19999",
-        "3.0",
-        True,
-    )
-    mock_fonz.assert_called_once_with(
-        "https://test.looker.com",
-        "client_id",
-        "client_secret",
-        "19999",
-        "3.0",
-        "project",
-        "branch",
     )
 
 
