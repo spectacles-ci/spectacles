@@ -47,40 +47,19 @@ def test_help(parser,):
         assert cm.value.code == 0
 
 
-def test_handle_exceptions_unhandled_error():
+@pytest.mark.parametrize(
+    "exception,exit_code",
+    [(ValueError, 1), (FonzException, 100), (ValidationError, 102)],
+)
+def test_handle_exceptions_unhandled_error(exception, exit_code):
     @handle_exceptions
     def raise_exception():
-        raise ValueError("This is a value error.")
+        raise exception(f"This is a {exception.__class__.__name__}.")
 
     with pytest.raises(SystemExit) as pytest_error:
         raise_exception()
 
-    assert pytest_error.type == SystemExit
-    assert pytest_error.value.code == 1
-
-
-def test_handle_exceptions_validation_error():
-    @handle_exceptions
-    def raise_exception():
-        raise ValidationError("This is a validation error.")
-
-    with pytest.raises(SystemExit) as pytest_error:
-        raise_exception()
-
-    assert pytest_error.type == SystemExit
-    assert pytest_error.value.code == 102
-
-
-def test_handle_exceptions_fonz_error():
-    @handle_exceptions
-    def raise_exception():
-        raise FonzException("This is a FonzException error.")
-
-    with pytest.raises(SystemExit) as pytest_error:
-        raise_exception()
-
-    assert pytest_error.type == SystemExit
-    assert pytest_error.value.code == 100
+    assert pytest_error.value.code == exit_code
 
 
 @patch(
