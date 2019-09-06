@@ -119,6 +119,30 @@ def test_update_session_put_with_bad_request_raises_connection_error(
         client.update_session("test_project", "test_branch")
 
 
+@patch("fonz.connection.requests.Session.patch")
+@patch("fonz.connection.requests.Session.put")
+def test_update_session_correctly(mock_put, mock_patch, client):
+    client.update_session("test_project", "test_branch")
+    assert client.project == "test_project"
+
+
+def test_select_with_non_matching_sequences(client):
+    mock_model = Mock()
+    mock_model.name.return_value = "f"
+    with pytest.raises(FonzException):
+        client.select(["a", "b", "c"], [mock_model, mock_model])
+
+
+def test_parse_selectors_with_no_dot(client):
+    with pytest.raises(FonzException):
+        client.parse_selectors(["no_dot"])
+
+
+def test_parse_selectors_with_too_many_dots(client):
+    with pytest.raises(FonzException):
+        client.parse_selectors(["too.many.dots"])
+
+
 @patch("fonz.connection.Fonz.get_dimensions")
 @patch("fonz.connection.Fonz.get_models")
 def test_build_project(mock_get_models, mock_get_dimensions, lookml, client):

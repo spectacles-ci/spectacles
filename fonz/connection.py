@@ -118,22 +118,26 @@ class Fonz:
 
         logger.info(f"Checked out branch {printer.color(branch, 'bold')}")
 
-    def select(self, to_select: Collection[str], discovered: Sequence) -> Sequence:
-        to_select = set(to_select)
-        discovered_names = set(each.name for each in discovered)
-        difference = to_select.difference(discovered_names)
+    def select(
+        self, choices: Sequence[str], select_from: Sequence[Model]
+    ) -> Sequence[Model]:
+        choices = set(choices)
+        select_from_names = set(each.name for each in select_from)
+        difference = choices.difference(select_from_names)
         if difference:
             raise FonzException(
-                f"{discovered[0].__class__.__name__}"
+                f"{select_from[0].__class__.__name__}"
                 f'{"" if len(difference) == 1 else "s"} '
                 + ", ".join(printer.color(diff, "bold") for diff in difference)
                 + " not found in LookML for project "
                 f"{printer.color(self.project, 'bold')}."
             )
-        return [each for each in discovered if each.name in to_select]
+        return [each for each in select_from if each.name in choices]
 
     @staticmethod
     def parse_selectors(selectors: List) -> DefaultDict[str, set]:
+        """Parses explore selectors with the syntax model_name.explore_name."""
+
         selection: DefaultDict = defaultdict(set)
 
         for selector in selectors:
@@ -174,7 +178,7 @@ class Fonz:
                 selection[model.name].update(explore_names)
 
         selected_models = self.select(
-            to_select=selection.keys(), discovered=project_models
+            choices=selection.keys(), select_from=project_models
         )
 
         for model in selected_models:
@@ -187,7 +191,7 @@ class Fonz:
                 )
 
             selected_explores = self.select(
-                to_select=selected_explore_names, discovered=model.explores
+                choices=selected_explore_names, select_from=model.explores
             )
 
             for explore in selected_explores:
