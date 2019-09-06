@@ -152,6 +152,12 @@ def test_get_models_with_bad_request_raises_exception(mock_get, client):
         client.get_models()
 
 
+def test_validate_before_lookml_built(client):
+    client.lookml = None
+    with pytest.raises(FonzException):
+        client.validate()
+
+
 @asynctest.patch("fonz.connection.Fonz.query_dimension")
 @asynctest.patch("fonz.connection.Fonz.query_explore")
 def test_validate_explore_batch_calls_explore_query(

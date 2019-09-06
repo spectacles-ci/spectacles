@@ -210,15 +210,15 @@ class Fonz:
         return explore_count
 
     def validate(self, batch: bool = False) -> None:
+        if not self.lookml:
+            raise FonzException("No LookML model has been defined yet.")
+
         explore_count = self.count_explores()
         printer.print_header(
             f"Begin testing {explore_count} "
             f"{'explore' if explore_count == 1 else 'explores'}"
         )
         index = 0
-
-        if not self.lookml:
-            raise ValueError("No LookML model has been defined yet.")
 
         for model in self.lookml.models:
             for explore in model.explores:
