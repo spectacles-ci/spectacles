@@ -79,6 +79,17 @@ def test_fonz_with_no_client_secret_raises_exception():
         )
 
 
+def test_fonz_with_unsupported_api_version_raises_exception():
+    with pytest.raises(FonzException):
+        Fonz(
+            url="https://test.looker.com",
+            client_id="CLIENT_ID",
+            client_secret=None,
+            port=19999,
+            api=2.0,
+        )
+
+
 @patch("fonz.connection.requests.Session.post")
 def test_connect_sets_session_headers_correctly(mock_post, client):
     mock_post.return_value.json.return_value = {"access_token": "ACCESS_TOKEN"}
