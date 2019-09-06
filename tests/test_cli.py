@@ -8,7 +8,8 @@ import pytest
 import click
 from click.testing import CliRunner
 from tests.constants import TEST_BASE_URL, ENV_VARS
-from fonz.cli import create_parser, main, connect, sql
+from fonz.cli import create_parser, main, connect, sql, handle_exceptions
+from fonz.exceptions import FonzException, ValidationError
 import logging
 
 
@@ -44,6 +45,42 @@ def test_help(parser,):
     with pytest.raises(SystemExit) as cm:
         main()
         assert cm.value.code == 0
+
+
+def test_handle_exceptions_unhandled_error():
+    @handle_exceptions
+    def raise_exception():
+        raise ValueError("This is a value error.")
+
+    with pytest.raises(SystemExit) as pytest_error:
+        raise_exception()
+
+    assert pytest_error.type == SystemExit
+    assert pytest_error.value.code == 1
+
+
+def test_handle_exceptions_validation_error():
+    @handle_exceptions
+    def raise_exception():
+        raise ValidationError("This is a validation error.")
+
+    with pytest.raises(SystemExit) as pytest_error:
+        raise_exception()
+
+    assert pytest_error.type == SystemExit
+    assert pytest_error.value.code == 102
+
+
+def test_handle_exceptions_fonz_error():
+    @handle_exceptions
+    def raise_exception():
+        raise FonzException("This is a FonzException error.")
+
+    with pytest.raises(SystemExit) as pytest_error:
+        raise_exception()
+
+    assert pytest_error.type == SystemExit
+    assert pytest_error.value.code == 100
 
 
 @patch(
