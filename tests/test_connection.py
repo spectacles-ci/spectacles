@@ -145,12 +145,14 @@ def test_select_with_non_matching_sequences(client):
 
 
 def test_select_with_matching_sequences(client):
-    model_names = ["model_one", "model_two", "model_three"]
-    mock_models = [Mock()] * 3
-    for mock, name in zip(mock_models, model_names):
-        mock.name.return_value = name
-    with pytest.raises(FonzException):
-        client.select(model_names, mock_models)
+    model_names = ["model_1", "model_2", "model_3"]
+    mock_models = []
+    for i in range(1, 5):
+        mock_model = Mock()
+        mock_model.name = f"model_{i}"
+        mock_models.append(mock_model)
+    result = client.select(model_names, mock_models)
+    assert result == mock_models[:3]
 
 
 def test_parse_selectors_with_no_dot(client):
