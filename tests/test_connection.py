@@ -139,9 +139,18 @@ def test_update_session_correctly(mock_put, mock_patch, client):
 
 def test_select_with_non_matching_sequences(client):
     mock_model = Mock()
-    mock_model.name.return_value = "f"
+    mock_model.name = "f"
     with pytest.raises(FonzException):
         client.select(["a", "b", "c"], [mock_model, mock_model])
+
+
+def test_select_with_matching_sequences(client):
+    model_names = ["model_one", "model_two", "model_three"]
+    mock_models = [Mock()] * 3
+    for mock, name in zip(mock_models, model_names):
+        mock.name.return_value = name
+    with pytest.raises(FonzException):
+        client.select(model_names, mock_models)
 
 
 def test_parse_selectors_with_no_dot(client):
