@@ -2,7 +2,17 @@ from collections import defaultdict
 import sys
 import asyncio
 from pathlib import Path
-from typing import Sequence, Set, Collection, List, DefaultDict, Dict, Any, Optional
+from typing import (
+    Sequence,
+    Set,
+    Collection,
+    List,
+    DefaultDict,
+    Dict,
+    Any,
+    Optional,
+    Union,
+)
 import aiohttp
 import requests
 import backoff  # type: ignore
@@ -83,7 +93,7 @@ class Fonz:
 
         logger.info(
             f"Connected to {printer.color(self.base_url, 'bold')} "
-            f"using API version {printer.color(self.api_version, 'bold')}"
+            f"using API version {printer.color(str(self.api_version), 'bold')}"
         )
 
     def update_session(self, project: str, branch: str) -> None:
@@ -118,12 +128,10 @@ class Fonz:
 
         logger.info(f"Checked out branch {printer.color(branch, 'bold')}")
 
-    def select(
-        self, choices: Sequence[str], select_from: Sequence[Model]
-    ) -> Sequence[Model]:
-        choices = set(choices)
+    def select(self, choices: Sequence[str], select_from: Sequence) -> Sequence:
+        unique_choices = set(choices)
         select_from_names = set(each.name for each in select_from)
-        difference = choices.difference(select_from_names)
+        difference = unique_choices.difference(select_from_names)
         if difference:
             raise FonzException(
                 f"{select_from[0].__class__.__name__}"
@@ -132,7 +140,7 @@ class Fonz:
                 + " not found in LookML for project "
                 f"{printer.color(self.project, 'bold')}."
             )
-        return [each for each in select_from if each.name in choices]
+        return [each for each in select_from if each.name in unique_choices]
 
     @staticmethod
     def parse_selectors(selectors: List) -> DefaultDict[str, set]:
@@ -178,7 +186,7 @@ class Fonz:
                 selection[model.name].update(explore_names)
 
         selected_models = self.select(
-            choices=selection.keys(), select_from=project_models
+            choices=tuple(selection.keys()), select_from=project_models
         )
 
         for model in selected_models:
@@ -191,7 +199,7 @@ class Fonz:
                 )
 
             selected_explores = self.select(
-                choices=selected_explore_names, select_from=model.explores
+                choices=tuple(selected_explore_names), select_from=model.explores
             )
 
             for explore in selected_explores:
