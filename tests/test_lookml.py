@@ -1,6 +1,32 @@
 from pathlib import Path
 import json
-from fonz.lookml import Model, Explore, Dimension
+import pytest
+from fonz.lookml import Project, Model, Explore, Dimension
+
+
+@pytest.fixture
+def dimension():
+    return Dimension(
+        name="dimension_name",
+        type="string",
+        sql="${TABLE}.dimension_name",
+        url="https://test.looker.com",
+    )
+
+
+@pytest.fixture
+def explore():
+    return Explore(name="explore_name")
+
+
+@pytest.fixture
+def model():
+    return Model(name="model_name", project="string", explores=[])
+
+
+@pytest.fixture
+def project():
+    return Project(name="project_name", models=[])
 
 
 def load(filename):
@@ -51,3 +77,10 @@ def test_ignored_dimension_with_no_whitespace():
     sql = "--fonz:ignore\n${TABLE}.dimension_one "
     dimension = Dimension(name, dimension_type, sql, url)
     assert dimension.ignore == True
+
+
+def test_comparison_to_mismatched_type_object_fails(dimension, explore, model, project):
+    assert dimension != 1
+    assert explore != 1
+    assert model != 1
+    assert project != 1
