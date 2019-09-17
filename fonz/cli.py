@@ -4,7 +4,6 @@ import sys
 import yaml
 import argparse
 import os
-import fonz.printer as printer
 from fonz.runner import Runner
 from fonz.client import LookerClient
 from fonz.exceptions import FonzException, ValidationError
@@ -20,11 +19,8 @@ def handle_exceptions(function):
         except FonzException as error:
             logger.error(
                 f"{error}\n\n"
-                + printer.color(
-                    "For support, please create an issue at "
-                    "https://github.com/dbanalyticsco/Fonz/issues\n",
-                    "dim",
-                )
+                "For support, please create an issue at "
+                "https://github.com/dbanalyticsco/Fonz/issues\n"
             )
             sys.exit(error.exit_code)
         except Exception as error:
@@ -32,11 +28,8 @@ def handle_exceptions(function):
             logger.error(
                 f'Encountered unexpected {error.__class__.__name__}: "{error}"\n'
                 f"Full error traceback logged to {LOG_FILEPATH}\n\n"
-                + printer.color(
-                    "For support, please create an issue at "
-                    "https://github.com/dbanalyticsco/Fonz/issues\n",
-                    "dim",
-                )
+                "For support, please create an issue at "
+                "https://github.com/dbanalyticsco/Fonz/issues\n"
             )
             sys.exit(1)
 
