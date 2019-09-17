@@ -1,9 +1,12 @@
+# TODO: Test precedence of argument specification
+
 import sys
 import yaml
 import argparse
 import os
 import fonz.printer as printer
-from fonz.connection import Fonz
+from fonz.runner import Runner
+from fonz.client import LookerClient
 from fonz.exceptions import FonzException, ValidationError
 from fonz.logger import GLOBAL_LOGGER as logger, LOG_FILEPATH
 
@@ -135,8 +138,7 @@ def parse_args(parser):
 
 
 def connect(base_url, client_id, client_secret, port, api_version):
-    client = Fonz(base_url, client_id, client_secret, port, api_version)
-    client.connect()
+    LookerClient(base_url, client_id, client_secret, port, api_version)
 
 
 def sql(
@@ -150,25 +152,12 @@ def sql(
     api_version,
     batch,
 ):
-
-    if not project:
-        raise FonzException(
-            "No Looker project name provided. "
-            "Please include the desired project name with --project"
-        )
-
-    if not branch:
-        raise FonzException(
-            "No git branch provided. "
-            "Please include the desired git branch name with --branch"
-        )
-
-    client = Fonz(base_url, client_id, client_secret, port, api_version)
-    client.connect()
-    client.update_session(project, branch)
-    client.build_project(explores)
-    client.validate(batch)
-    client.report_results(batch)
+    runner = Runner(
+        base_url, project, branch, client_id, client_secret, port, api_version
+    )
+    errors = runner.validate_sql(explores, batch)
+    if errors:
+        raise ValidationError
 
 
 if __name__ == "__main__":
