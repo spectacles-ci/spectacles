@@ -69,8 +69,8 @@ def create_parser():
     subs = parser.add_subparsers(title="Available sub-commands", dest="command")
     base_subparser = _build_base_subparser()
 
-    connect_sub = _build_connect_subparser(subs, base_subparser)
-    sql_sub = _build_sql_subparser(subs, base_subparser)
+    _build_connect_subparser(subs, base_subparser)
+    _build_sql_subparser(subs, base_subparser)
 
     return parser
 
