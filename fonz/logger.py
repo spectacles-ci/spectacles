@@ -1,6 +1,5 @@
 from pathlib import Path
 import logging
-import os
 
 LOG_DIRECTORY = Path("logs")
 LOG_FILEPATH = Path(LOG_DIRECTORY / "logs.txt")

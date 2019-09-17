@@ -1,6 +1,4 @@
-import re
 from typing import List
-from urllib.parse import urljoin
 
 
 def compose_url(base_url: str, path: List) -> str:

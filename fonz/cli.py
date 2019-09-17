@@ -2,7 +2,6 @@ import sys
 import yaml
 import argparse
 import os
-from typing import List, DefaultDict
 import fonz.printer as printer
 from fonz.connection import Fonz
 from fonz.exceptions import FonzException, ValidationError
