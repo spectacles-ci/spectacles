@@ -269,8 +269,7 @@ class SqlValidator(Validator):
             return error
         else:
             raise FonzException(
-                f"Unexpected API result for query {query_id} for explore "
-                f"'{model.name}/{explore.name}'. "
+                f"Unexpected API result for explore '{model.name}/{explore.name}'. "
                 f"API result obtained: {result}"
             )
 
@@ -305,8 +304,7 @@ class SqlValidator(Validator):
             return error
         else:
             raise FonzException(
-                f"Unexpected API result for query {query_id} for dimension "
-                f"'{model.name}/{dimension.name}'. "
+                f"Unexpected API result for dimension '{model.name}/{dimension.name}'. "
                 f"API result obtained: {result}"
             )
 
