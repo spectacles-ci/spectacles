@@ -16,7 +16,6 @@ class Dimension(LookMlObject):
         self.url = url
         self.errored = False
         self.error: Optional[SqlError] = None
-        self.query_id: Optional[int] = None
         if re.search(r"fonz\s*:\s*ignore", sql, re.IGNORECASE):
             self.ignore = True
         else:
@@ -54,7 +53,6 @@ class Explore(LookMlObject):
         self.dimensions = [] if dimensions is None else dimensions
         self.errored = False
         self.error: Optional[SqlError] = None
-        self.query_id: Optional[int] = None
 
     def __eq__(self, other):
         if not isinstance(other, Explore):
