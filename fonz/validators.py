@@ -12,6 +12,8 @@ from fonz.exceptions import SqlError, FonzException
 class Validator(ABC):
     """Defines abstract base interface for validators.
 
+    Not intended to be used directly, only inherited.
+
     Attributes:
         client: Looker API client.
 
@@ -33,7 +35,7 @@ class SqlValidator(Validator):
         project: Name of the LookML project to validate.
 
     Attributes:
-        timeout: aiohttp timeout object to limit request duration.
+        timeout: aiohttp object to limit duration of running requests.
         project: LookML project object representation.
 
     """
@@ -45,14 +47,17 @@ class SqlValidator(Validator):
         self.project = Project(project, models=[])
 
     @staticmethod
-    def parse_selectors(selectors: List) -> DefaultDict[str, set]:
-        """Parses explore selectors with the syntax model_name.explore_name.
+    def parse_selectors(selectors: List[str]) -> DefaultDict[str, set]:
+        """Parses explore selectors with the format 'model_name.explore_name'.
 
         Args:
-            selectors: Description of parameter `selectors`.
+            selectors: List of selector strings in 'model_name.explore_name' format.
+                The '*' wildcard selects all models or explores. For instance,
+                'model_name.*' would select all explores in the 'model_name' model.
 
         Returns:
-            DefaultDict[str, set]: Description of returned object.
+            DefaultDict[str, set]: A hierarchy of selected model names (keys) and
+                explore names (values).
 
         """
         selection: DefaultDict = defaultdict(set)
@@ -69,6 +74,7 @@ class SqlValidator(Validator):
                 selection[model].add(explore)
         return selection
 
+    # TODO: Refactor this so it's more obvious how selection works
     def _select(self, choices: Sequence[str], select_from: Sequence) -> Sequence:
         unique_choices = set(choices)
         select_from_names = set(each.name for each in select_from)
@@ -86,8 +92,9 @@ class SqlValidator(Validator):
         """Creates an object representation of the project's LookML.
 
         Args:
-            project: Description of parameter `project`.
-            selectors: Description of parameter `selectors`.
+            selectors: List of selector strings in 'model_name.explore_name' format.
+                The '*' wildcard selects all models or explores. For instance,
+                'model_name.*' would select all explores in the 'model_name' model.
 
         """
         selection = self.parse_selectors(selectors)
@@ -142,12 +149,14 @@ class SqlValidator(Validator):
         """Queries selected dimensions in an explore and returns any errors.
 
         Args:
-            model: Description of parameter `model`.
-            explore: Description of parameter `explore`.
-            batch: Description of parameter `batch`.
+            model: Object representation of LookML model.
+            explore: Object representation of LookML explore.
+            batch: When true, runs one query per explore (using all dimensions). When
+                false, runs one query per dimension. Batch mode increases query speed
+                but can only return the first error encountered for each dimension.
 
         Returns:
-            List[ValidationError]: Description of returned object.
+            List[SqlError]: SqlErrors encountered while querying the explore.
 
         """
         loop = asyncio.get_event_loop()
@@ -167,13 +176,15 @@ class SqlValidator(Validator):
         return [error for error in validation_errors if error]
 
     def validate(self, batch: bool = False) -> List[SqlError]:
-        """Short summary.
+        """Queries selected explores and returns any errors.
 
         Args:
-            batch: Description of parameter `batch`.
+            batch: When true, runs one query per explore (using all dimensions). When
+                false, runs one query per dimension. Batch mode increases query speed
+                but can only return the first error encountered for each dimension.
 
         Returns:
-            List[SqlError]: Description of returned object.
+            List[SqlError]: SqlErrors encountered while querying the explore.
 
         """
         explore_count = self._count_explores()
@@ -197,13 +208,13 @@ class SqlValidator(Validator):
         return validation_errors
 
     def _get_error_from_api_result(self, result: dict) -> dict:
-        """Short summary.
+        """Extracts the relevant error parameters from an API result.
 
         Args:
-            result: Description of parameter `result`.
+            result: JSON dictionary query result returned by the API.
 
         Returns:
-            dict: Description of returned object.
+            dict: Relevant error parameters extracted from the API result.
 
         """
         error = result["errors"][0]
@@ -216,15 +227,17 @@ class SqlValidator(Validator):
         return {"sql": result["sql"], "line_number": line_number, "message": message}
 
     async def _run_async_query(self, model: str, explore: str, dimensions: List[str]):
-        """Short summary.
+        """Executes an asynchronous Looker query and returns the result.
 
         Args:
-            model: Description of parameter `model`.
-            explore: Description of parameter `explore`.
-            dimensions: Description of parameter `dimensions`.
+            model: LookML model name.
+            explore: LookML explore name.
+            dimensions: List of LookML dimension names.
 
         Returns:
-            Union[list, dict]: Description of returned object.
+            Union[list, dict]: API query result. At time of writing, the Looker Async
+                Query endpoint returns a list for a successful query and a dict for an
+                unsuccessful one.
 
         """
         async with aiohttp.ClientSession(
@@ -245,11 +258,12 @@ class SqlValidator(Validator):
         """Creates and executes a query with a single explore.
 
         Args:
-            model: Description of parameter `model`.
-            explore: Description of parameter `explore`.
+            model: Object representation of LookML model.
+            explore: Object representation of LookML explore.
 
         Returns:
-            Optional[SqlError]: Description of returned object.
+            Optional[SqlError]: SqlError encountered while querying the explore. If no
+                error occurs, returns None.
 
         """
         dimensions = [dimension.name for dimension in explore.dimensions]
@@ -279,12 +293,13 @@ class SqlValidator(Validator):
         """Creates and executes a query with a single dimension.
 
         Args:
-            model: Description of parameter `model`.
-            explore: Description of parameter `explore`.
-            dimension: Description of parameter `dimension`.
+            model: Object representation of LookML model.
+            explore: Object representation of LookML explore.
+            dimension: Object representation of LookML dimension.
 
         Returns:
-            Optional[SqlError]: Description of returned object.
+            Optional[SqlError]: SqlError encountered while querying the explore. If no
+                error occurs, returns None.
 
         """
         result = await self._run_async_query(model.name, explore.name, [dimension.name])
