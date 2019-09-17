@@ -1,5 +1,3 @@
-# TODO: Test precedence of argument specification
-
 import sys
 import yaml
 import argparse
@@ -39,7 +37,7 @@ def handle_exceptions(function):
 @handle_exceptions
 def main():
     parser = create_parser()
-    args = parse_args(parser)
+    args = parser.parse_args()
 
     if args.command == "connect":
         connect(
@@ -66,68 +64,65 @@ def main():
 def create_parser():
     parser = argparse.ArgumentParser(prog="fonz")
 
-    subs = parser.add_subparsers(title="Available sub-commands", dest="command")
-    base_subparser = _build_base_subparser()
+    subparsers = parser.add_subparsers(title="Available sub-commands", dest="command")
+    base_subparser, defaults = _build_base_subparser()
 
-    _build_connect_subparser(subs, base_subparser)
-    _build_sql_subparser(subs, base_subparser)
+    _build_connect_subparser(subparsers, base_subparser)
+    _build_sql_subparser(subparsers, base_subparser, defaults)
 
     return parser
 
 
 def _build_base_subparser():
     base_subparser = argparse.ArgumentParser(add_help=False)
+    base_subparser.add_argument("--config-file")
+    args, remaining = base_subparser.parse_known_args()
+    if args.config_file:
+        with open(args.config_file, "r") as file:
+            config_from_file = yaml.safe_load(file)
+    else:
+        config_from_file = {}
 
-    base_subparser.add_argument("--base-url", default=os.environ.get("LOOKER_BASE_URL"))
-    base_subparser.add_argument(
-        "--client-id", default=os.environ.get("LOOKER_CLIENT_ID")
-    )
-    base_subparser.add_argument(
-        "--client-secret", default=os.environ.get("LOOKER_CLIENT_SECRET")
-    )
+    env_var_arg_map = {
+        "base_url": "LOOKER_BASE_URL",
+        "client_id": "LOOKER_CLIENT_ID",
+        "client_secret": "LOOKER_CLIENT_SECRET",
+        "project": "LOOKER_PROJECT",
+        "branch": "LOOKER_GIT_BRANCH",
+    }
+
+    defaults = {}
+    for arg, env_var in env_var_arg_map.items():
+        defaults[arg] = os.environ.get(env_var) or config_from_file.get(arg)
+
+    base_subparser.add_argument("--base-url", default=defaults["base_url"])
+    base_subparser.add_argument("--client-id", default=defaults["client_id"])
+    base_subparser.add_argument("--client-secret", default=defaults["client_secret"])
     base_subparser.add_argument("--port", type=int, default=19999)
     base_subparser.add_argument("--api-version", type=float, default=3.1)
-    base_subparser.add_argument("--config-file", type=str)
 
-    return base_subparser
+    return base_subparser, defaults
 
 
 def _build_connect_subparser(subparsers, base_subparser):
-    connect_sub = subparsers.add_parser(
+    subparser = subparsers.add_parser(
         "connect",
         parents=[base_subparser],
         help="Connect to Looker instance to test credentials.",
     )
-    return connect_sub
 
 
-def _build_sql_subparser(subparsers, base_subparser):
-    sql_sub = subparsers.add_parser(
+def _build_sql_subparser(subparsers, base_subparser, defaults):
+    subparser = subparsers.add_parser(
         "sql",
         parents=[base_subparser],
         help="Build and run queries to test your Looker instance.",
     )
 
-    sql_sub.add_argument("--project", default=os.environ.get("LOOKER_PROJECT"))
-    sql_sub.add_argument("--branch", default=os.environ.get("LOOKER_GIT_BRANCH"))
-    sql_sub.add_argument("--explores", nargs="+", default=["*.*"])
-    sql_sub.add_argument("--batch", action="store_true")
-
-    return sql_sub
-
-
-def parse_args(parser):
-    args = parser.parse_args()
-    if args.config_file:
-        with open(args.config_file, "r") as file:
-            data = yaml.safe_load(file)
-        arg_dict = args.__dict__
-        for key, value in data.items():
-            if isinstance(value, list):
-                arg_dict[key].extend(value)
-            else:
-                arg_dict[key] = value
-    return args
+    subparser.add_argument("--project", default=defaults["project"])
+    subparser.add_argument("--branch", default=defaults["branch"])
+    subparser.add_argument("--explores", nargs="+", default=["*.*"])
+    subparser.add_argument("--batch", action="store_true")
 
 
 def connect(base_url, client_id, client_secret, port, api_version):
