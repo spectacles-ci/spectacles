@@ -36,8 +36,28 @@ def handle_exceptions(function):
 
 @handle_exceptions
 def main():
-    parser = create_parser()
+    parser = argparse.ArgumentParser(prog="fonz")
+    subparser_action = parser.add_subparsers(
+        title="Available sub-commands", dest="command"
+    )
+    base_subparser, defaults = _build_base_subparser()
+    subparsers = {
+        "connect": _build_connect_subparser(subparser_action, base_subparser),
+        "sql": _build_sql_subparser(subparser_action, base_subparser, defaults),
+    }
+
     args = parser.parse_args()
+
+    # Check arguments for missing required arguments and error the correct subparser
+    required_args = ["base_url", "client_id", "client_secret", "project", "branch"]
+    if not all(getattr(args, arg_name, True) for arg_name in required_args):
+        null_arg_names = [
+            arg_name for arg_name in required_args if not getattr(args, arg_name, True)
+        ]
+        subparsers[args.command].error(
+            "the following arguments are required: "
+            f"{', '.join('--' + name for name in null_arg_names)}"
+        )
 
     if args.command == "connect":
         connect(
@@ -59,18 +79,6 @@ def main():
             args.api_version,
             args.batch,
         )
-
-
-def create_parser():
-    parser = argparse.ArgumentParser(prog="fonz")
-
-    subparsers = parser.add_subparsers(title="Available sub-commands", dest="command")
-    base_subparser, defaults = _build_base_subparser()
-
-    _build_connect_subparser(subparsers, base_subparser)
-    _build_sql_subparser(subparsers, base_subparser, defaults)
-
-    return parser
 
 
 def _build_base_subparser():
@@ -104,16 +112,18 @@ def _build_base_subparser():
     return base_subparser, defaults
 
 
-def _build_connect_subparser(subparsers, base_subparser):
-    subparsers.add_parser(
+def _build_connect_subparser(subparser_action, base_subparser):
+    subparser = subparser_action.add_parser(
         "connect",
         parents=[base_subparser],
         help="Connect to Looker instance to test credentials.",
     )
 
+    return subparser
 
-def _build_sql_subparser(subparsers, base_subparser, defaults):
-    subparser = subparsers.add_parser(
+
+def _build_sql_subparser(subparser_action, base_subparser, defaults):
+    subparser = subparser_action.add_parser(
         "sql",
         parents=[base_subparser],
         help="Build and run queries to test your Looker instance.",
@@ -123,6 +133,8 @@ def _build_sql_subparser(subparsers, base_subparser, defaults):
     subparser.add_argument("--branch", default=defaults["branch"])
     subparser.add_argument("--explores", nargs="+", default=["*.*"])
     subparser.add_argument("--batch", action="store_true")
+
+    return subparser
 
 
 def connect(base_url, client_id, client_secret, port, api_version):
