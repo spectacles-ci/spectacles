@@ -5,7 +5,7 @@ import aiohttp
 import requests
 import fonz.utils as utils
 from fonz.logger import GLOBAL_LOGGER as logger
-from fonz.exceptions import FonzException, QueryNotFinished
+from fonz.exceptions import FonzException, ApiConnectionError, QueryNotFinished
 
 JsonDict = Dict[str, Any]
 
@@ -67,7 +67,7 @@ class LookerClient:
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError as error:
-            raise ConnectionError(
+            raise ApiConnectionError(
                 f"Failed to authenticate to {url}\n"
                 f'Attempted authentication with client ID "{client_id}"\n'
                 f'Error raised: "{error}"'
@@ -93,7 +93,7 @@ class LookerClient:
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError as error:
-            raise ConnectionError(
+            raise ApiConnectionError(
                 f"Unable to update session to development workspace.\n"
                 f'Error raised: "{error}"'
             )
@@ -105,7 +105,7 @@ class LookerClient:
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError as error:
-            raise ConnectionError(
+            raise ApiConnectionError(
                 f'Unable to set git branch to {branch}.\nError raised: "{error}"'
             )
 

@@ -2,7 +2,7 @@ class FonzException(Exception):
     exit_code = 100
 
 
-class ConnectionError(FonzException):
+class ApiConnectionError(FonzException):
     exit_code = 101
 
 
