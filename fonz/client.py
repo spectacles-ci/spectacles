@@ -124,7 +124,7 @@ class LookerClient:
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError as error:
-            raise FonzException(
+            raise ApiConnectionError(
                 f'Unable to retrieve explores.\nError raised: "{error}"'
             )
 
@@ -150,7 +150,7 @@ class LookerClient:
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError as error:
-            raise FonzException(
+            raise ApiConnectionError(
                 f'Unable to get dimensions for explore "{explore}".\n'
                 f'Error raised: "{error}"'
             )
