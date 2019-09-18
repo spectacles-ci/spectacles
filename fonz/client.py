@@ -14,7 +14,7 @@ class LookerClient:
     """Wraps some endpoints of the Looker API, issues requests and handles responses.
 
     Args:
-        base_url: Base URL for the Looker instance.
+        base_url: Base URL for the Looker instance, e.g. https://mycompany.looker.com.
         client_id: Looker API client ID.
         client_secret: Looker API client secret.
         port: Desired API port to use for requests.
