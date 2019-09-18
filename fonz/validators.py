@@ -84,7 +84,7 @@ class SqlValidator(Validator):
                 f"{select_from[0].__class__.__name__}"
                 f'{"" if len(difference) == 1 else "s"} '
                 + ", ".join(difference)
-                + f" not found in LookML for project '{self.project}'."
+                + f" not found in LookML for project '{self.project.name}'."
             )
         return [each for each in select_from if each.name in unique_choices]
 
