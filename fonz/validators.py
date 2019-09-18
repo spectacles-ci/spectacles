@@ -9,7 +9,7 @@ from fonz.logger import GLOBAL_LOGGER as logger
 from fonz.exceptions import SqlError, FonzException
 
 
-class Validator(ABC):
+class Validator(ABC):  # pragma: no cover
     """Defines abstract base interface for validators.
 
     Not intended to be used directly, only inherited.
