@@ -105,7 +105,7 @@ def _build_base_subparser():
 
 
 def _build_connect_subparser(subparsers, base_subparser):
-    subparser = subparsers.add_parser(
+    subparsers.add_parser(
         "connect",
         parents=[base_subparser],
         help="Connect to Looker instance to test credentials.",
