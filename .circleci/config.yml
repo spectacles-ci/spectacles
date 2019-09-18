@@ -41,6 +41,12 @@ jobs:
             mypy fonz
 
       - run:
+          name: flake8
+          command: |
+            . venv/bin/activate
+            flake8 fonz
+
+      - run:
           name: pytest
           command: |
             . venv/bin/activate
