@@ -190,7 +190,8 @@ class SqlValidator(Validator):
         explore_count = self._count_explores()
         logger.info(
             f"Begin testing {explore_count} "
-            f"{'explore' if explore_count == 1 else 'explores'}"
+            f"{'explore' if explore_count == 1 else 'explores'} "
+            f"({'batch' if batch else 'single-dimension'} mode)."
         )
         index = 0
 
