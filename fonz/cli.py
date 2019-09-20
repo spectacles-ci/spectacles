@@ -13,6 +13,9 @@ class ConfigAction(argparse.Action):
     def __call__(self, parser, namespace, values, option_string):
         config = self.parse_config(path=values)
         for dest, value in config.items():
+            for action in parser._actions:
+                if dest == action.dest:
+                    action.required = False
             if not hasattr(namespace, dest) or not getattr(namespace, dest):
                 setattr(namespace, dest, value)
         parser.set_defaults(**config)
@@ -98,15 +101,19 @@ def _build_base_subparser():
     base_subparser = argparse.ArgumentParser(add_help=False)
     base_subparser.add_argument("--config-file", action=YamlConfigAction)
     base_subparser.add_argument(
-        "--base-url", default=os.environ.get("LOOKER_BASE_URL"), required=False
+        "--base-url",
+        default=os.environ.get("LOOKER_BASE_URL"),
+        required=False if os.environ.get("LOOKER_BASE_URL") else True,
     )
     base_subparser.add_argument(
-        "--client-id", default=os.environ.get("LOOKER_CLIENT_ID"), required=False
+        "--client-id",
+        default=os.environ.get("LOOKER_CLIENT_ID"),
+        required=False if os.environ.get("LOOKER_CLIENT_ID") else True,
     )
     base_subparser.add_argument(
         "--client-secret",
         default=os.environ.get("LOOKER_CLIENT_SECRET"),
-        required=False,
+        required=False if os.environ.get("LOOKER_CLIENT_SECRET") else True,
     )
     base_subparser.add_argument("--port", type=int, default=19999)
     base_subparser.add_argument("--api-version", type=float, default=3.1)
@@ -130,10 +137,14 @@ def _build_sql_subparser(subparser_action, base_subparser):
     )
 
     subparser.add_argument(
-        "--project", default=os.environ.get("LOOKER_PROJECT"), required=False
+        "--project",
+        default=os.environ.get("LOOKER_PROJECT"),
+        required=False if os.environ.get("LOOKER_PROJECT") else True,
     )
     subparser.add_argument(
-        "--branch", default=os.environ.get("LOOKER_GIT_BRANCH"), required=False
+        "--branch",
+        default=os.environ.get("LOOKER_GIT_BRANCH"),
+        required=False if os.environ.get("LOOKER_GIT_BRANCH") else True,
     )
     subparser.add_argument("--explores", nargs="+", default=["*.*"])
     subparser.add_argument("--batch", action="store_true")
