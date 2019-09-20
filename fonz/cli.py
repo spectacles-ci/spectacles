@@ -1,8 +1,10 @@
 from pathlib import Path
 import sys
 import yaml
+from yaml.parser import ParserError
 import argparse
 import os
+from typing import Callable
 from fonz.runner import Runner
 from fonz.client import LookerClient
 from fonz.exceptions import FonzException, ValidationError
@@ -10,7 +12,18 @@ from fonz.logger import GLOBAL_LOGGER as logger, LOG_FILEPATH
 
 
 class ConfigAction(argparse.Action):
+    """Parses an arbitrary config file and assigns its values as arg defaults."""
+
     def __call__(self, parser, namespace, values, option_string):
+        """Populates argument defaults with values from the config file.
+
+        Args:
+            parser: Parent argparse parser that is calling the action.
+            namespace: Object where parsed values will be set.
+            values: Parsed values to be set to the namespace.
+            option_string: Argument string, e.g. "--optional".
+
+        """
         config = self.parse_config(path=values)
         for dest, value in config.items():
             for action in parser._actions:
@@ -20,20 +33,42 @@ class ConfigAction(argparse.Action):
                 setattr(namespace, dest, value)
         parser.set_defaults(**config)
 
-    def parse_config(self, path):
+    def parse_config(self, path) -> dict:
+        """Base method for parsing an arbitrary config format."""
         raise NotImplementedError()
 
 
 class YamlConfigAction(ConfigAction):
-    def parse_config(self, path):
+    """Parses a YAML config file and assigns its values as argument defaults."""
+
+    def parse_config(self, path: str) -> dict:
+        """Loads a YAML config file, returning its dictionary format.
+
+        Args:
+            path: Path to the config file to be loaded.
+
+        Returns:
+            dict: Dictionary representation of the config file.
+
+        """
         try:
             with Path(path).open("r") as file:
                 return yaml.safe_load(file)
-        except (FileNotFoundError, yaml.parser.ParserError) as error:
+        except (FileNotFoundError, ParserError) as error:
             raise argparse.ArgumentError(self, error)
 
 
-def handle_exceptions(function):
+def handle_exceptions(function: Callable) -> Callable:
+    """Wrapper for handling custom exceptions by logging them.
+
+    Args:
+        function: Callable to wrap and handle exceptions for.
+
+    Returns:
+        callable: Wrapped callable.
+
+    """
+
     def wrapper(*args, **kwargs):
         try:
             return function(*args, **kwargs)
@@ -61,6 +96,7 @@ def handle_exceptions(function):
 
 @handle_exceptions
 def main():
+    """Runs main function. This is the entry point."""
     parser = create_parser()
     args = parser.parse_args()
 
@@ -86,18 +122,30 @@ def main():
         )
 
 
-def create_parser():
+def create_parser() -> argparse.ArgumentParser:
+    """Creates the top-level argument parser.
+
+    Returns:
+        argparse.ArgumentParser: Top-level argument parser.
+
+    """
     parser = argparse.ArgumentParser(prog="fonz")
     subparser_action = parser.add_subparsers(
         title="Available sub-commands", dest="command"
     )
     base_subparser = _build_base_subparser()
-    _build_connect_subparser(subparser_action, base_subparser),
+    _build_connect_subparser(subparser_action, base_subparser)
     _build_sql_subparser(subparser_action, base_subparser)
     return parser
 
 
-def _build_base_subparser():
+def _build_base_subparser() -> argparse.ArgumentParser:
+    """Returns the base subparser with arguments required for every subparser.
+
+    Returns:
+        argparse.ArgumentParser: Base subparser with url and auth arguments.
+
+    """
     base_subparser = argparse.ArgumentParser(add_help=False)
     base_subparser.add_argument("--config-file", action=YamlConfigAction)
     base_subparser.add_argument(
@@ -121,15 +169,41 @@ def _build_base_subparser():
     return base_subparser
 
 
-def _build_connect_subparser(subparser_action, base_subparser):
-    subparser = subparser_action.add_parser(
+def _build_connect_subparser(
+    subparser_action: argparse._SubParsersAction,
+    base_subparser: argparse.ArgumentParser,
+) -> None:
+    """Returns the subparser for the subcommand `connect`.
+
+    Args:
+        subparser_action (type): Description of parameter `subparser_action`.
+        base_subparser (type): Description of parameter `base_subparser`.
+
+    Returns:
+        type: Description of returned object.
+
+    """
+    subparser_action.add_parser(
         "connect",
         parents=[base_subparser],
         help="Connect to Looker instance to test credentials.",
     )
 
 
-def _build_sql_subparser(subparser_action, base_subparser):
+def _build_sql_subparser(
+    subparser_action: argparse._SubParsersAction,
+    base_subparser: argparse.ArgumentParser,
+) -> None:
+    """Returns the subparser for the subcommand `sql`.
+
+    Args:
+        subparser_action: Description of parameter `subparser_action`.
+        base_subparser: Description of parameter `base_subparser`.
+
+    Returns:
+        type: Description of returned object.
+
+    """
     subparser = subparser_action.add_parser(
         "sql",
         parents=[base_subparser],
@@ -150,7 +224,19 @@ def _build_sql_subparser(subparser_action, base_subparser):
     subparser.add_argument("--batch", action="store_true")
 
 
-def connect(base_url, client_id, client_secret, port, api_version):
+def connect(
+    base_url: str, client_id: str, client_secret: str, port: int, api_version: float
+) -> None:
+    """Tests the connection and credentials for the Looker API.
+
+    Args:
+        base_url: Base URL for the Looker instance, e.g. https://mycompany.looker.com.
+        client_id: Looker API client ID.
+        client_secret: Looker API client secret.
+        port: Desired API port to use for requests.
+        api_version: Desired API version to use for requests.
+
+    """
     LookerClient(base_url, client_id, client_secret, port, api_version)
 
 
@@ -164,7 +250,25 @@ def sql(
     port,
     api_version,
     batch,
-):
+) -> None:
+    """Runs and validates the SQL for each selected LookML dimension.
+
+    Args:
+        project: Name of the Looker project to use.
+        branch: Name of the Git branch to check out.
+        explores: List of selector strings in 'model_name.explore_name' format.
+            The '*' wildcard selects all models or explores. For instance,
+            'model_name.*' would select all explores in the 'model_name' model.
+        base_url: Base URL for the Looker instance, e.g. https://mycompany.looker.com.
+        client_id: Looker API client ID.
+        client_secret: Looker API client secret.
+        port: Desired API port to use for requests.
+        api_version: Desired API version to use for requests.
+        batch: When true, runs one query per explore (using all dimensions). When
+            false, runs one query per dimension. Batch mode increases query speed
+            but can only return the first error encountered for each dimension.
+
+    """
     runner = Runner(
         base_url, project, branch, client_id, client_secret, port, api_version
     )
