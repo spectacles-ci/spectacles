@@ -40,4 +40,4 @@ class Runner:
         sql_validator = SqlValidator(self.client, self.project)
         sql_validator.build_project(selectors)
         errors = sql_validator.validate(batch)
-        return [error.__dict__ for error in errors]
+        return [vars(error) for error in errors]
