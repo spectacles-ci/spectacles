@@ -58,7 +58,7 @@ def test_dimension_from_json():
     assert dimension.type == "number"
     assert dimension.url == "/projects/fonz/files/test_view.view.lkml?line=340"
     assert dimension.sql == "${TABLE}.dimension_one "
-    assert dimension.ignore == False
+    assert not dimension.ignore
 
 
 def test_ignored_dimension_with_whitespace():
@@ -67,7 +67,7 @@ def test_ignored_dimension_with_whitespace():
     url = "/projects/fonz/files/test_view.view.lkml?line=340"
     sql = " -- fonz: ignore\n${TABLE}.dimension_one "
     dimension = Dimension(name, dimension_type, sql, url)
-    assert dimension.ignore == True
+    assert dimension.ignore
 
 
 def test_ignored_dimension_with_no_whitespace():
@@ -76,7 +76,7 @@ def test_ignored_dimension_with_no_whitespace():
     url = "/projects/fonz/files/test_view.view.lkml?line=340"
     sql = "--fonz:ignore\n${TABLE}.dimension_one "
     dimension = Dimension(name, dimension_type, sql, url)
-    assert dimension.ignore == True
+    assert dimension.ignore
 
 
 def test_comparison_to_mismatched_type_object_fails(dimension, explore, model, project):
