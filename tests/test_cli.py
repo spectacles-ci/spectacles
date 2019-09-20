@@ -146,3 +146,20 @@ def test_arg_precedence(mock_parse_config, limited_env, parser):
     assert args.base_url == "BASE_URL_CLI"
     assert args.client_id == "CLIENT_ID_ENV_VAR"
     assert args.client_secret == "CLIENT_SECRET_CONFIG"
+
+
+def test_env_var_override_argparse_default(env, parser):
+    args = parser.parse_args(["connect"])
+    assert args.port == 8080
+
+
+@patch("fonz.cli.YamlConfigAction.parse_config")
+def test_config_override_argparse_default(mock_parse_config, clean_env, parser):
+    mock_parse_config.return_value = {
+        "base_url": "BASE_URL_CONFIG",
+        "client_id": "CLIENT_ID_CONFIG",
+        "client_secret": "CLIENT_SECRET_CONFIG",
+        "port": 8080,
+    }
+    args = parser.parse_args(["connect", "--config-file", "config.yml"])
+    assert args.port == 8080
