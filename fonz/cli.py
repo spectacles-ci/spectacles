@@ -12,8 +12,9 @@ from fonz.logger import GLOBAL_LOGGER as logger, LOG_FILEPATH
 class ConfigAction(argparse.Action):
     def __call__(self, parser, namespace, values, option_string):
         config = self.parse_config(path=values)
-        for key, value in config.items():
-            setattr(namespace, key, value)
+        for dest, value in config.items():
+            if not hasattr(namespace, dest) or not getattr(namespace, dest):
+                setattr(namespace, dest, value)
         parser.set_defaults(**config)
 
     def parse_config(self, path):
@@ -96,9 +97,17 @@ def create_parser():
 def _build_base_subparser():
     base_subparser = argparse.ArgumentParser(add_help=False)
     base_subparser.add_argument("--config-file", action=YamlConfigAction)
-    base_subparser.add_argument("--base-url", required=False)
-    base_subparser.add_argument("--client-id", required=False)
-    base_subparser.add_argument("--client-secret", required=False)
+    base_subparser.add_argument(
+        "--base-url", default=os.environ.get("LOOKER_BASE_URL"), required=False
+    )
+    base_subparser.add_argument(
+        "--client-id", default=os.environ.get("LOOKER_CLIENT_ID"), required=False
+    )
+    base_subparser.add_argument(
+        "--client-secret",
+        default=os.environ.get("LOOKER_CLIENT_SECRET"),
+        required=False,
+    )
     base_subparser.add_argument("--port", type=int, default=19999)
     base_subparser.add_argument("--api-version", type=float, default=3.1)
 
@@ -120,8 +129,12 @@ def _build_sql_subparser(subparser_action, base_subparser):
         help="Build and run queries to test your Looker instance.",
     )
 
-    subparser.add_argument("--project", required=False)
-    subparser.add_argument("--branch", required=False)
+    subparser.add_argument(
+        "--project", default=os.environ.get("LOOKER_PROJECT"), required=False
+    )
+    subparser.add_argument(
+        "--branch", default=os.environ.get("LOOKER_GIT_BRANCH"), required=False
+    )
     subparser.add_argument("--explores", nargs="+", default=["*.*"])
     subparser.add_argument("--batch", action="store_true")
 

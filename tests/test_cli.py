@@ -123,11 +123,13 @@ def test_connect_with_env_variables(mock_connect, env):
 
 
 @patch("sys.argv", new=["fonz", "connect", "--config-file", "config.yml"])
-@patch("fonz.cli.yaml.load")
+@patch("fonz.cli.YamlConfigAction.parse_config")
 @patch("builtins.open")
 @patch("fonz.cli.connect")
-def test_connect_with_config_file(mock_connect, mock_open, mock_yaml_load, clean_env):
-    mock_yaml_load.return_value = {
+def test_connect_with_config_file(
+    mock_connect, mock_open, mock_parse_config, clean_env
+):
+    mock_parse_config.return_value = {
         "base_url": TEST_BASE_URL,
         "client_id": "CLIENT_ID_CONFIG",
         "client_secret": "CLIENT_SECRET_CONFIG",
@@ -290,11 +292,11 @@ def test_sql_with_env_variables(mock_sql, env):
 
 
 @patch("sys.argv", new=["fonz", "sql", "--config-file", "config.yml"])
-@patch("fonz.cli.yaml.load")
+@patch("fonz.cli.YamlConfigAction.parse_config")
 @patch("builtins.open")
 @patch("fonz.cli.sql")
-def test_sql_with_config_file(mock_sql, mock_open, mock_yaml_load, clean_env):
-    mock_yaml_load.return_value = {
+def test_sql_with_config_file(mock_sql, mock_open, mock_parse_config, clean_env):
+    mock_parse_config.return_value = {
         "base_url": TEST_BASE_URL,
         "client_id": "CLIENT_ID_CONFIG",
         "client_secret": "CLIENT_SECRET_CONFIG",
