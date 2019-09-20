@@ -58,6 +58,37 @@ class YamlConfigAction(ConfigFileAction):
             raise argparse.ArgumentError(self, error)
 
 
+class EnvVarAction(argparse.Action):
+    """Uses an argument default defined in an environment variable.
+
+    Args:
+        env_var: The name of the environment variable to get the default from.
+        required: The argument's requirement status as defined in add_argument.
+        default: The argument default as defined in add_argument.
+        **kwargs: Arbitrary keyword arguments.
+
+    """
+
+    def __init__(self, env_var, required=False, default=None, **kwargs):
+        if env_var in os.environ:
+            default = os.environ[env_var]
+        if required and default:
+            required = False
+        super().__init__(default=default, required=required, **kwargs)
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        """Sets the argument value to the namespace during parsing.
+
+        Args:
+            parser: Parent argparse parser that is calling the action.
+            namespace: Object where parsed values will be set.
+            values: Parsed values to be set to the namespace.
+            option_string: Argument string, e.g. "--optional".
+
+        """
+        setattr(namespace, self.dest, values)
+
+
 def handle_exceptions(function: Callable) -> Callable:
     """Wrapper for handling custom exceptions by logging them.
 
@@ -149,22 +180,27 @@ def _build_base_subparser() -> argparse.ArgumentParser:
     base_subparser = argparse.ArgumentParser(add_help=False)
     base_subparser.add_argument("--config-file", action=YamlConfigAction)
     base_subparser.add_argument(
-        "--base-url",
-        default=os.environ.get("LOOKER_BASE_URL"),
-        required=False if os.environ.get("LOOKER_BASE_URL") else True,
+        "--base-url", action=EnvVarAction, env_var="LOOKER_BASE_URL", required=True
     )
     base_subparser.add_argument(
-        "--client-id",
-        default=os.environ.get("LOOKER_CLIENT_ID"),
-        required=False if os.environ.get("LOOKER_CLIENT_ID") else True,
+        "--client-id", action=EnvVarAction, env_var="LOOKER_CLIENT_ID", required=True
     )
     base_subparser.add_argument(
         "--client-secret",
-        default=os.environ.get("LOOKER_CLIENT_SECRET"),
-        required=False if os.environ.get("LOOKER_CLIENT_SECRET") else True,
+        action=EnvVarAction,
+        env_var="LOOKER_CLIENT_SECRET",
+        required=True,
     )
-    base_subparser.add_argument("--port", type=int, default=19999)
-    base_subparser.add_argument("--api-version", type=float, default=3.1)
+    base_subparser.add_argument(
+        "--port", type=int, action=EnvVarAction, env_var="LOOKER_PORT", default=19999
+    )
+    base_subparser.add_argument(
+        "--api-version",
+        type=float,
+        action=EnvVarAction,
+        env_var="LOOKER_API_VERSION",
+        default=3.1,
+    )
 
     return base_subparser
 
@@ -211,14 +247,10 @@ def _build_sql_subparser(
     )
 
     subparser.add_argument(
-        "--project",
-        default=os.environ.get("LOOKER_PROJECT"),
-        required=False if os.environ.get("LOOKER_PROJECT") else True,
+        "--project", action=EnvVarAction, env_var="LOOKER_PROJECT", required=True
     )
     subparser.add_argument(
-        "--branch",
-        default=os.environ.get("LOOKER_GIT_BRANCH"),
-        required=False if os.environ.get("LOOKER_GIT_BRANCH") else True,
+        "--branch", action=EnvVarAction, env_var="LOOKER_GIT_BRANCH", required=True
     )
     subparser.add_argument("--explores", nargs="+", default=["*.*"])
     subparser.add_argument("--batch", action="store_true")
