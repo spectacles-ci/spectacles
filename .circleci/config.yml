@@ -44,7 +44,7 @@ jobs:
           name: flake8
           command: |
             . venv/bin/activate
-            flake8 fonz
+            flake8 fonz tests
 
       - run:
           name: pytest
