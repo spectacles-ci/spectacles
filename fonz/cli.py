@@ -11,7 +11,7 @@ from fonz.exceptions import FonzException, ValidationError
 from fonz.logger import GLOBAL_LOGGER as logger, LOG_FILEPATH
 
 
-class ConfigAction(argparse.Action):
+class ConfigFileAction(argparse.Action):
     """Parses an arbitrary config file and assigns its values as arg defaults."""
 
     def __call__(self, parser, namespace, values, option_string):
@@ -38,7 +38,7 @@ class ConfigAction(argparse.Action):
         raise NotImplementedError()
 
 
-class YamlConfigAction(ConfigAction):
+class YamlConfigAction(ConfigFileAction):
     """Parses a YAML config file and assigns its values as argument defaults."""
 
     def parse_config(self, path: str) -> dict:
