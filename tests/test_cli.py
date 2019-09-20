@@ -74,6 +74,23 @@ def test_parse_args_with_one_argument_supplied(clean_env, parser, capsys):
     )
 
 
+def test_parse_args_with_only_cli(clean_env, parser):
+    args = parser.parse_args(
+        [
+            "connect",
+            "--base-url",
+            "BASE_URL_CLI",
+            "--client-id",
+            "CLIENT_ID_CLI",
+            "--client-secret",
+            "CLIENT_SECRET_CLI",
+        ]
+    )
+    assert args.base_url == "BASE_URL_CLI"
+    assert args.client_id == "CLIENT_ID_CLI"
+    assert args.client_secret == "CLIENT_SECRET_CLI"
+
+
 @patch("fonz.cli.YamlConfigAction.parse_config")
 def test_parse_args_with_only_config_file(mock_parse_config, parser, clean_env):
     mock_parse_config.return_value = {
