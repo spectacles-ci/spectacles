@@ -193,6 +193,7 @@ class LookerClient:
         url = utils.compose_url(self.api_url, path=["queries"])
         async with session.post(url=url, json=body) as response:
             result = await response.json()
+            response.raise_for_status()
         query_id = result["id"]
         logger.debug(
             "Query for %s/%s/%s created as query %d.",
@@ -227,6 +228,7 @@ class LookerClient:
         url = utils.compose_url(self.api_url, path=["query_tasks"])
         async with session.post(url=url, json=body) as response:
             result = await response.json()
+            response.raise_for_status()
         query_task_id = result["id"]
         logger.debug(
             "Query %d is running under query task %s.", query_id, query_task_id
@@ -262,6 +264,11 @@ class LookerClient:
             if response.status == 204:
                 logger.debug("Query task %s not finished yet.", query_task_id)
                 raise QueryNotFinished
-            logger.debug("Received results from query task %s.", query_task_id)
             result = await response.json()
-            return result
+            try:
+                response.raise_for_status()
+            except aiohttp.ClientResponseError as error:
+                raise ApiConnectionError(f"{response.reason}: {result['message']}")
+            else:
+                logger.debug("Received results from query task %s.", query_task_id)
+                return result

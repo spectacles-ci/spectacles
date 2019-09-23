@@ -242,9 +242,7 @@ class SqlValidator(Validator):
 
         """
         async with aiohttp.ClientSession(
-            headers=self.client.session.headers,
-            raise_for_status=True,
-            timeout=self.timeout,
+            headers=self.client.session.headers, timeout=self.timeout
         ) as async_session:
             query_id = await self.client.create_query(
                 async_session, model, explore, dimensions
