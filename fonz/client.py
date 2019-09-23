@@ -111,7 +111,7 @@ class LookerClient:
 
         logger.info(f"Checked out Git branch {branch}.")
 
-    def get_models(self) -> List[JsonDict]:
+    def get_lookml_models(self) -> List[JsonDict]:
         """Gets all models and explores from the LookmlModel endpoint.
 
         Returns:
@@ -130,7 +130,7 @@ class LookerClient:
 
         return response.json()
 
-    def get_dimensions(self, model: str, explore: str) -> List[str]:
+    def get_lookml_dimensions(self, model: str, explore: str) -> List[str]:
         """Gets all dimensions for an explore from the LookmlModel endpoint.
 
         Args:
@@ -186,8 +186,7 @@ class LookerClient:
             int: ID for the created query.
 
         """
-        # Using old-style string formatting so that strings are only formatted when
-        # logging level is DEBUG
+        # Using old-style string formatting so that strings are formatted lazily
         logger.debug("Creating async query for %s/%s/%s.", model, explore, dimensions)
         body = {"model": model, "view": explore, "fields": dimensions, "limit": 1}
         url = utils.compose_url(self.api_url, path=["queries"])
@@ -207,7 +206,9 @@ class LookerClient:
     @backoff.on_exception(
         backoff.expo, (aiohttp.ClientError, asyncio.TimeoutError), max_tries=2
     )
-    async def run_query(self, session: aiohttp.ClientSession, query_id: int) -> str:
+    async def create_query_task(
+        self, session: aiohttp.ClientSession, query_id: int
+    ) -> str:
         """Runs a previously created query asynchronously and returns the query task ID.
 
         If a ClientError or TimeoutError is received, attempts to retry.
@@ -221,8 +222,7 @@ class LookerClient:
                 is being run asynchronously.
 
         """
-        # Using old-style string formatting so that strings are only formatted when
-        # logging level is DEBUG
+        # Using old-style string formatting so that strings are formatted lazily
         logger.debug("Starting query %d.", query_id)
         body = {"query_id": query_id, "result_format": "json"}
         url = utils.compose_url(self.api_url, path=["query_tasks"])
@@ -235,40 +235,29 @@ class LookerClient:
         )
         return query_task_id
 
-    @backoff.on_exception(
-        backoff.expo, (aiohttp.ClientError, asyncio.TimeoutError), max_tries=2
-    )
-    @backoff.on_exception(backoff.expo, QueryNotFinished, max_value=1)
-    async def get_query_results(
-        self, session: aiohttp.ClientSession, query_task_id: str
-    ) -> List[JsonDict]:
-        """Repeatedly checks for a query task's results until they are available.
+    def get_query_task_multi_results(self, query_task_ids: List[str]) -> List[JsonDict]:
+        """Returns query task results.
 
         If a ClientError or TimeoutError is received, attempts to retry.
 
         Args:
             session: Existing asychronous HTTP session.
-            query_task_id: ID for the query task running asynchronously.
+            query_task_ids: IDs for the query tasks running asynchronously.
 
         Returns:
             List[JsonDict]: JSON response from the query task.
 
         """
-        # Using old-style string formatting so that strings are only formatted when
-        # logging level is DEBUG
-        logger.debug("Attempting to get results for query task %s.", query_task_id)
-        url = utils.compose_url(
-            self.api_url, path=["query_tasks", query_task_id, "results"]
+        # Using old-style string formatting so that strings are formatted lazily
+        logger.debug(
+            "Attempting to get results for %d query tasks", len(query_task_ids)
         )
-        async with session.get(url=url) as response:
-            if response.status == 204:
-                logger.debug("Query task %s not finished yet.", query_task_id)
-                raise QueryNotFinished
-            result = await response.json()
-            try:
-                response.raise_for_status()
-            except aiohttp.ClientResponseError as error:
-                raise ApiConnectionError(f"{response.reason}: {result['message']}")
-            else:
-                logger.debug("Received results from query task %s.", query_task_id)
-                return result
+        url = utils.compose_url(self.api_url, path=["query_tasks", "multi_results"])
+        response = self.session.get(
+            url=url, params={"query_task_ids": ",".join(query_task_ids)}
+        )
+        try:
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as error:
+            raise ApiConnectionError(error)
+        return response.json()

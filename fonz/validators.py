@@ -45,6 +45,7 @@ class SqlValidator(Validator):
     def __init__(self, client: LookerClient, project: str):
         super().__init__(client)
         self.project = Project(project, models=[])
+        self.query_tasks = {}
 
     @staticmethod
     def parse_selectors(selectors: List[str]) -> DefaultDict[str, set]:
@@ -102,7 +103,9 @@ class SqlValidator(Validator):
             f"Building LookML project hierarchy for project {self.project.name}."
         )
 
-        all_models = [Model.from_json(model) for model in self.client.get_models()]
+        all_models = [
+            Model.from_json(model) for model in self.client.get_lookml_models()
+        ]
         project_models = [
             model for model in all_models if model.project == self.project.name
         ]
@@ -132,7 +135,9 @@ class SqlValidator(Validator):
             )
 
             for explore in selected_explores:
-                dimensions_json = self.client.get_dimensions(model.name, explore.name)
+                dimensions_json = self.client.get_lookml_dimensions(
+                    model.name, explore.name
+                )
                 for dimension_json in dimensions_json:
                     dimension = Dimension.from_json(dimension_json)
                     dimension.url = self.client.base_url + dimension.url
@@ -142,38 +147,6 @@ class SqlValidator(Validator):
             model.explores = selected_explores
 
         self.project.models = selected_models
-
-    def _validate_explore(
-        self, model: Model, explore: Explore, batch: bool = False
-    ) -> List[SqlError]:
-        """Queries selected dimensions in an explore and returns any errors.
-
-        Args:
-            model: Object representation of LookML model.
-            explore: Object representation of LookML explore.
-            batch: When true, runs one query per explore (using all dimensions). When
-                false, runs one query per dimension. Batch mode increases query speed
-                but can only return the first error encountered for each dimension.
-
-        Returns:
-            List[SqlError]: SqlErrors encountered while querying the explore.
-
-        """
-        loop = asyncio.get_event_loop()
-        tasks = []
-
-        if batch:
-            task = loop.create_task(self._query_explore(model, explore))
-            tasks.append(task)
-        else:
-            for dimension in explore.dimensions:
-                task = loop.create_task(
-                    self._query_dimension(model, explore, dimension)
-                )
-                tasks.append(task)
-
-        validation_errors = loop.run_until_complete(asyncio.gather(*tasks))
-        return [error for error in validation_errors if error]
 
     def validate(self, batch: bool = False) -> List[SqlError]:
         """Queries selected explores and returns any errors.
@@ -193,67 +166,64 @@ class SqlValidator(Validator):
             f"{'explore' if explore_count == 1 else 'explores'} "
             f"({'batch' if batch else 'single-dimension'} mode)."
         )
-        index = 0
 
-        validation_errors = []
+        loop = asyncio.get_event_loop()
+        tasks = []
         for model in self.project.models:
             for explore in model.explores:
-                index += 1
-                logger.info(f"Starting SQL validation for explore '{explore.name}'.")
-                validation_errors.extend(self._validate_explore(model, explore, batch))
+                if batch:
+                    task = loop.create_task(self._query_explore(model, explore))
+                    tasks.append(task)
+                else:
+                    for dimension in explore.dimensions:
+                        task = loop.create_task(
+                            self._query_dimension(model, explore, dimension)
+                        )
+                        tasks.append(task)
+
+        query_task_ids = loop.run_until_complete(asyncio.gather(*tasks))
+
+        running_task_ids, errors = self._get_query_results(query_task_ids)
+        while running_task_ids:
+            running_task_ids, more_errors = self._get_query_results(running_task_ids)
+            errors.extend(more_errors)
+
+        for model in self.project.models:
+            for explore in model.explores:
                 if explore.errored:
                     logger.info(f"Explore '{explore.name}' failed SQL validation.")
                 else:
                     logger.info(f"Explore '{explore.name}' passed SQL validation.")
 
-        return validation_errors
+        return errors
 
-    def _get_error_from_api_result(self, result: dict) -> dict:
-        """Extracts the relevant error parameters from an API result.
+    def _get_query_results(self, query_task_ids: List[str]) -> List[SqlError]:
+        results = self.client.get_query_task_multi_results(query_task_ids)
+        still_running = []
+        errors = []
 
-        Args:
-            result: JSON dictionary query result returned by the API.
+        for query_task_id, query_result in results.items():
+            if query_result["status"] == "running":
+                still_running.append(query_task_id)
+            elif query_result["status"] == "error":
+                if query_result["errors"].get("sql_error_loc"):
+                    line_number = query_result["errors"]["sql_error_loc"]["line"] - 1
+                else:
+                    line_number = None
+                lookml_object = self.query_tasks[query_task_id]
+                error = SqlError(
+                    path=lookml_object.name,
+                    message=query_result["errors"]["message_details"],
+                    sql=query_result["sql"],
+                    line_number=line_number,
+                    url=getattr(lookml_object, "url", None),
+                )
+                lookml_object.error = error
+                errors.append(error)
 
-        Returns:
-            dict: Relevant error parameters extracted from the API result.
+        return still_running, errors
 
-        """
-        error = result["errors"][0]
-        message = error["message_details"]
-        # Subtract one to account for the comment Looker appends to queries
-        if error.get("sql_error_loc"):
-            line_number = error["sql_error_loc"]["line"] - 1
-        else:
-            line_number = None
-        return {"sql": result["sql"], "line_number": line_number, "message": message}
-
-    async def _run_async_query(self, model: str, explore: str, dimensions: List[str]):
-        """Executes an asynchronous Looker query and returns the result.
-
-        Args:
-            model: LookML model name.
-            explore: LookML explore name.
-            dimensions: List of LookML dimension names.
-
-        Returns:
-            Union[list, dict]: API query result. At time of writing, the Looker Async
-                Query endpoint returns a list for a successful query and a dict for an
-                unsuccessful one.
-
-        """
-        async with aiohttp.ClientSession(
-            headers=self.client.session.headers, timeout=self.timeout
-        ) as async_session:
-            query_id = await self.client.create_query(
-                async_session, model, explore, dimensions
-            )
-            query_task_id = await self.client.run_query(async_session, query_id)
-            result = await self.client.get_query_results(async_session, query_task_id)
-            return result
-
-    async def _query_explore(
-        self, model: Model, explore: Explore
-    ) -> Optional[SqlError]:
+    async def _query_explore(self, model: Model, explore: Explore) -> str:
         """Creates and executes a query with a single explore.
 
         Args:
@@ -261,34 +231,24 @@ class SqlValidator(Validator):
             explore: Object representation of LookML explore.
 
         Returns:
-            Optional[SqlError]: SqlError encountered while querying the explore. If no
-                error occurs, returns None.
+            str: Query task ID for the running query.
 
         """
         dimensions = [dimension.name for dimension in explore.dimensions]
-        result = await self._run_async_query(model.name, explore.name, dimensions)
-
-        if isinstance(result, list):
-            return None
-        elif isinstance(result, dict) and result.get("errors"):
-            error_params = self._get_error_from_api_result(result)
-            path = f"{model.name}/{explore.name}"
-            error = SqlError(path=path, **error_params)
-
-            explore.error = error
-            explore.errored = True
-            model.errored = True
-
-            return error
-        else:
-            raise FonzException(
-                f"Unexpected API result for explore '{model.name}/{explore.name}'. "
-                f"API result obtained: {result}"
+        async with aiohttp.ClientSession(
+            headers=self.client.session.headers, timeout=self.timeout
+        ) as session:
+            query_id = await self.client.create_query(
+                session, model.name, explore.name, dimensions
             )
+            query_task_id = await self.client.create_query_task(session, query_id)
+
+        self.query_tasks[query_task_id] = explore
+        return query_task_id
 
     async def _query_dimension(
         self, model: Model, explore: Explore, dimension: Dimension
-    ) -> Optional[SqlError]:
+    ) -> str:
         """Creates and executes a query with a single dimension.
 
         Args:
@@ -297,30 +257,19 @@ class SqlValidator(Validator):
             dimension: Object representation of LookML dimension.
 
         Returns:
-            Optional[SqlError]: SqlError encountered while querying the explore. If no
-                error occurs, returns None.
+            str: Query task ID for the running query.
 
         """
-        result = await self._run_async_query(model.name, explore.name, [dimension.name])
-
-        if isinstance(result, list):
-            return None
-        elif isinstance(result, dict) and result.get("errors"):
-            error_params = self._get_error_from_api_result(result)
-            path = f"{model.name}/{dimension.name}"
-            error = SqlError(path=path, url=dimension.url, **error_params)
-
-            dimension.error = error
-            dimension.errored = True
-            explore.errored = True
-            model.errored = True
-
-            return error
-        else:
-            raise FonzException(
-                f"Unexpected API result for dimension '{model.name}/{dimension.name}'. "
-                f"API result obtained: {result}"
+        async with aiohttp.ClientSession(
+            headers=self.client.session.headers, timeout=self.timeout
+        ) as session:
+            query_id = await self.client.create_query(
+                session, model.name, explore.name, [dimension.name]
             )
+            query_task_id = await self.client.create_query_task(session, query_id)
+
+        self.query_tasks[query_task_id] = dimension
+        return query_task_id
 
     def _count_explores(self) -> int:
         """Counts the explores in the LookML project hierarchy.
