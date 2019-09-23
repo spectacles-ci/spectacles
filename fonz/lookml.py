@@ -41,8 +41,8 @@ class Dimension(LookMlObject):
     def errored(self):
         return bool(self.error)
 
-    @property.setter
-    def errored(self):
+    @errored.setter
+    def errored(self, value):
         raise AttributeError(
             "Cannot assign to 'errored' property of a Dimension instance. "
             "For a dimension to be considered errored, it must have a SqlError "
@@ -76,7 +76,7 @@ class Explore(LookMlObject):
             dimensions.errored for dimensions in self.dimensions
         )
 
-    @property.setter
+    @errored.setter
     def errored(self, value: bool):
         if not isinstance(value, bool):
             raise TypeError("Value for errored must be boolean.")
@@ -117,7 +117,7 @@ class Model(LookMlObject):
     def errored(self):
         return any(explore.errored for explore in self.explores)
 
-    @property.setter
+    @errored.setter
     def errored(self, value: bool):
         if not isinstance(value, bool):
             raise TypeError("Value for errored must be boolean.")
@@ -152,7 +152,7 @@ class Project(LookMlObject):
     def errored(self):
         return any(model.errored for model in self.models)
 
-    @property.setter
+    @errored.setter
     def errored(self, value: bool):
         if not isinstance(value, bool):
             raise TypeError("Value for errored must be boolean.")
