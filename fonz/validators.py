@@ -236,7 +236,9 @@ class SqlValidator(Validator):
         """
         dimensions = [dimension.name for dimension in explore.dimensions]
         async with aiohttp.ClientSession(
-            headers=self.client.session.headers, timeout=self.timeout
+            connector=aiohttp.TCPConnector(ssl=False),
+            headers=self.client.session.headers,
+            timeout=self.timeout,
         ) as session:
             query_id = await self.client.create_query(
                 session, model.name, explore.name, dimensions
@@ -261,7 +263,9 @@ class SqlValidator(Validator):
 
         """
         async with aiohttp.ClientSession(
-            headers=self.client.session.headers, timeout=self.timeout
+            connector=aiohttp.TCPConnector(ssl=False),
+            headers=self.client.session.headers,
+            timeout=self.timeout,
         ) as session:
             query_id = await self.client.create_query(
                 session, model.name, explore.name, [dimension.name]

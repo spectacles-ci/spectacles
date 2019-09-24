@@ -7,6 +7,10 @@ import fonz.utils as utils
 from fonz.logger import GLOBAL_LOGGER as logger
 from fonz.exceptions import FonzException, ApiConnectionError, QueryNotFinished
 
+from urllib3.exceptions import InsecureRequestWarning
+
+requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
+
 JsonDict = Dict[str, Any]
 
 
@@ -45,6 +49,7 @@ class LookerClient:
         self.base_url: str = base_url.rstrip("/")
         self.api_url: str = f"{self.base_url}:{port}/api/{api_version}/"
         self.session: requests.Session = requests.Session()
+        self.session.verify = False
 
         self.authenticate(client_id, client_secret, api_version)
 
