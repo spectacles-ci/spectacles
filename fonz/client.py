@@ -5,7 +5,7 @@ import aiohttp
 import requests
 import fonz.utils as utils
 from fonz.logger import GLOBAL_LOGGER as logger
-from fonz.exceptions import FonzException, ApiConnectionError, QueryNotFinished
+from fonz.exceptions import FonzException, ApiConnectionError
 
 from urllib3.exceptions import InsecureRequestWarning  # type: ignore
 

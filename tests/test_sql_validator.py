@@ -1,9 +1,7 @@
 from pathlib import Path
 import json
-import asyncio
 from unittest.mock import patch, Mock
 import pytest
-import asynctest
 from fonz.lookml import Project, Model, Explore, Dimension
 from fonz.client import LookerClient
 from fonz.validators import SqlValidator
