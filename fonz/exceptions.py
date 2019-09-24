@@ -25,6 +25,7 @@ class SqlError(ValidationError):
     ):
         super().__init__(message)
         self.path = path
+        self.message = message
         self.sql = sql
         self.line_number = line_number
         self.url = url
