@@ -16,17 +16,17 @@ COLORS = {
 }
 
 
+def delete_color_codes(text: str) -> str:
+    for escape_sequence in COLORS.values():
+        text = text.replace(escape_sequence, "")
+    return text
+
+
 class FileFormatter(logging.Formatter):
     def format(self, record):
         message = super().format(record=record)
-        formatted = self.delete_color_codes(message)
+        formatted = delete_color_codes(message)
         return formatted
-
-    @staticmethod
-    def delete_color_codes(message: str) -> str:
-        for escape_sequence in COLORS.values():
-            message = message.replace(escape_sequence, "")
-        return message
 
 
 LOG_DIRECTORY.mkdir(exist_ok=True)
