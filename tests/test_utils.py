@@ -1,5 +1,6 @@
-from constants import TEST_BASE_URL
 from fonz import utils
+
+TEST_BASE_URL = "https://test.looker.com"
 
 
 def test_compose_url_one_path_component():

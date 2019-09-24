@@ -67,18 +67,20 @@ def test_bad_update_session_put_raises_connection_error(
 
 
 @patch("fonz.client.requests.Session.get")
-def test_bad_get_models_raises_connection_error(mock_get, client, mock_response):
+def test_bad_get_lookml_models_raises_connection_error(mock_get, client, mock_response):
     mock_get.return_value = mock_response
     with pytest.raises(ApiConnectionError):
-        client.get_models()
+        client.get_lookml_models()
     mock_response.raise_for_status.assert_called_once()
 
 
 @patch("fonz.client.requests.Session.get")
-def test_bad_get_dimensions_raises_connection_error(mock_get, client, mock_response):
+def test_bad_get_lookml_dimensions_raises_connection_error(
+    mock_get, client, mock_response
+):
     mock_get.return_value = mock_response
     with pytest.raises(ApiConnectionError):
-        client.get_dimensions(model="test_model", explore="test_explore")
+        client.get_lookml_dimensions(model="test_model", explore="test_explore")
     mock_response.raise_for_status.assert_called_once()
 
 
@@ -105,21 +107,4 @@ async def test_create_query(mock_post, client):
             "fields": ["dimension_one", "dimension_two"],
             "limit": 1,
         },
-    )
-
-
-@pytest.mark.asyncio
-@asynctest.patch("aiohttp.ClientSession.post")
-async def test_run_query(mock_post, client):
-    QUERY_ID = 124950204921
-    QUERY_TASK_ID = "a1ds2d49d5d02wdf0we4a921e"
-    mock_post.return_value.__aenter__.return_value.json = asynctest.CoroutineMock(
-        return_value={"id": QUERY_TASK_ID}
-    )
-    async with aiohttp.ClientSession() as session:
-        query_task_id = await client.run_query(session, QUERY_ID)
-    assert query_task_id == QUERY_TASK_ID
-    mock_post.assert_called_once_with(
-        url="https://test.looker.com:19999/api/3.1/query_tasks",
-        json={"query_id": QUERY_ID, "result_format": "json"},
     )

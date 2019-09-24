@@ -58,28 +58,10 @@ def project():
     return project
 
 
-@patch("fonz.client.LookerClient.get_dimensions")
-@patch("fonz.client.LookerClient.get_models")
+@patch("fonz.client.LookerClient.get_lookml_dimensions")
+@patch("fonz.client.LookerClient.get_lookml_models")
 def test_build_project(mock_get_models, mock_get_dimensions, project, validator):
     mock_get_models.return_value = load("response_models.json")
     mock_get_dimensions.return_value = load("response_dimensions.json")
     validator.build_project(selectors=["*.*"])
     assert validator.project == project
-
-
-@asynctest.patch("fonz.validators.SqlValidator._query_dimension")
-@asynctest.patch("fonz.validators.SqlValidator._query_explore")
-def test_event_loop_is_closed_on_finish(
-    mock_query_explore, mock_query_dimension, validator, project
-):
-    validator._validate_explore(
-        model=project.models[0], explore=project.models[0].explores[0], batch=True
-    )
-    with pytest.raises(RuntimeError):
-        asyncio.get_running_loop()
-
-    validator._validate_explore(
-        model=project.models[0], explore=project.models[0].explores[0], batch=False
-    )
-    with pytest.raises(RuntimeError):
-        asyncio.get_running_loop()
