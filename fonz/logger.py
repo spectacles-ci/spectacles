@@ -1,8 +1,33 @@
 from pathlib import Path
 import logging
+import colorama
 
 LOG_DIRECTORY = Path("logs")
 LOG_FILEPATH = Path(LOG_DIRECTORY / "logs.txt")
+
+COLORS = {
+    "red": colorama.Fore.RED,
+    "green": colorama.Fore.GREEN,
+    "yellow": colorama.Fore.YELLOW,
+    "cyan": colorama.Fore.CYAN,
+    "bold": colorama.Style.BRIGHT,
+    "dim": colorama.Style.DIM,
+    "reset": colorama.Style.RESET_ALL,
+}
+
+
+class FileFormatter(logging.Formatter):
+    def format(self, record):
+        message = super().format(record=record)
+        formatted = self.delete_color_codes(message)
+        return formatted
+
+    @staticmethod
+    def delete_color_codes(message: str) -> str:
+        for escape_sequence in COLORS.values():
+            message = message.replace(escape_sequence, "")
+        return message
+
 
 LOG_DIRECTORY.mkdir(exist_ok=True)
 
@@ -15,7 +40,7 @@ fh.setLevel(logging.DEBUG)
 ch = logging.StreamHandler()
 ch.setLevel(logging.INFO)
 
-formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+formatter = FileFormatter("%(asctime)s %(levelname)s | %(message)s")
 fh.setFormatter(formatter)
 
 logger.addHandler(fh)
