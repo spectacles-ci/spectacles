@@ -81,7 +81,7 @@ class LookerClient:
         access_token = response.json()["access_token"]
         self.session.headers = {"Authorization": f"token {access_token}"}
 
-        logger.info(f"Connected to {self.base_url} using API version {api_version}.")
+        logger.info(f"Connected to {self.base_url} using Looker API {api_version}")
 
     def update_session(self, project: str, branch: str) -> None:
         """Switches to a development mode session and checks out the desired branch.
@@ -114,7 +114,7 @@ class LookerClient:
                 f'Unable to set git branch to {branch}.\nError raised: "{error}"'
             )
 
-        logger.info(f"Checked out Git branch {branch}.")
+        logger.info(f"Checked out branch {branch}")
 
     def get_lookml_models(self) -> List[JsonDict]:
         """Gets all models and explores from the LookmlModel endpoint.

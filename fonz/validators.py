@@ -8,6 +8,7 @@ from fonz.client import LookerClient
 from fonz.lookml import Project, Model, Explore, Dimension
 from fonz.logger import GLOBAL_LOGGER as logger
 from fonz.exceptions import SqlError, FonzException
+import fonz.printer as printer
 
 
 class Validator(ABC):  # pragma: no cover
@@ -86,7 +87,7 @@ class SqlValidator(Validator):
                 f"{select_from[0].__class__.__name__}"
                 f'{"" if len(difference) == 1 else "s"} '
                 + ", ".join(difference)
-                + f" not found in LookML for project '{self.project.name}'."
+                + f" not found in LookML under project '{self.project.name}'."
             )
         return [each for each in select_from if each.name in unique_choices]
 
@@ -101,7 +102,7 @@ class SqlValidator(Validator):
         """
         selection = self.parse_selectors(selectors)
         logger.info(
-            f"Building LookML project hierarchy for project {self.project.name}."
+            f"Building LookML project hierarchy for project {self.project.name}"
         )
 
         all_models = [
@@ -162,10 +163,10 @@ class SqlValidator(Validator):
 
         """
         explore_count = self._count_explores()
-        logger.info(
+        printer.print_header(
             f"Begin testing {explore_count} "
             f"{'explore' if explore_count == 1 else 'explores'} "
-            f"({'batch' if batch else 'single-dimension'} mode)."
+            f"[{'batch' if batch else 'single-dimension'} mode]"
         )
 
         loop = asyncio.get_event_loop()
@@ -191,12 +192,16 @@ class SqlValidator(Validator):
             if running_task_ids:
                 time.sleep(0.5)
 
-        for model in self.project.models:
-            for explore in model.explores:
+        for model in sorted(self.project.models, key=lambda x: x.name):
+            for explore in sorted(model.explores, key=lambda x: x.name):
                 if explore.errored:
-                    logger.info(f"Explore '{explore.name}' failed SQL validation.")
+                    logger.info(
+                        f"✗ {printer.red(model.name + '.' + explore.name)} failed"
+                    )
                 else:
-                    logger.info(f"Explore '{explore.name}' passed SQL validation.")
+                    logger.info(
+                        f"✓ {printer.green(model.name + '.' + explore.name)} passed"
+                    )
 
         return errors
 
@@ -206,18 +211,26 @@ class SqlValidator(Validator):
         errors = []
 
         for query_task_id, query_result in results.items():
-            if query_result["status"] == "running":
+            if query_result["status"] in ("running", "added"):
                 still_running.append(query_task_id)
             elif query_result["status"] == "error":
-                if query_result["errors"].get("sql_error_loc"):
-                    line_number = query_result["errors"]["sql_error_loc"]["line"] - 1
-                else:
+                if isinstance(query_result["data"], dict):
+                    response_error = query_result["data"]["errors"][0]
+                    message = response_error["message_details"]
+                    sql = query_result["data"]["sql"]
+                    if response_error.get("sql_error_loc"):
+                        line_number = response_error["sql_error_loc"]["line"]
+                    else:
+                        line_number = None
+                elif isinstance(query_result["data"], list):
+                    message = query_result["data"][0]
                     line_number = None
+                    sql = None
                 lookml_object = self.query_tasks[query_task_id]
                 error = SqlError(
                     path=lookml_object.name,
-                    message=query_result["errors"]["message_details"],
-                    sql=query_result["sql"],
+                    message=message,
+                    sql=sql,
                     line_number=line_number,
                     url=getattr(lookml_object, "url", None),
                 )

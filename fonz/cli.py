@@ -9,6 +9,7 @@ from fonz.runner import Runner
 from fonz.client import LookerClient
 from fonz.exceptions import FonzException, ValidationError
 from fonz.logger import GLOBAL_LOGGER as logger, LOG_FILEPATH
+import fonz.printer as printer
 
 
 class ConfigFileAction(argparse.Action):
@@ -28,9 +29,19 @@ class ConfigFileAction(argparse.Action):
         for dest, value in config.items():
             for action in parser._actions:
                 if dest == action.dest:
+                    """Required actions that are fulfilled by config are no longer
+                    required from the command line."""
                     action.required = False
-            if not hasattr(namespace, dest) or not getattr(namespace, dest):
-                setattr(namespace, dest, value)
+                    # Override default if not previously set by an environment variable.
+                    if not isinstance(action, EnvVarAction) or not os.environ.get(
+                        action.env_var
+                    ):
+                        setattr(namespace, dest, value)
+                    break
+            else:
+                raise FonzException(
+                    f"'{dest}' in {values} is not a valid configuration parameter."
+                )
         parser.set_defaults(**config)
 
     def parse_config(self, path) -> dict:
@@ -70,8 +81,11 @@ class EnvVarAction(argparse.Action):
     """
 
     def __init__(self, env_var, required=False, default=None, **kwargs):
+        self.env_var = env_var
+        self.in_env = False
         if env_var in os.environ:
             default = os.environ[env_var]
+            self.in_env = True
         if required and default:
             required = False
         super().__init__(default=default, required=required, **kwargs)
@@ -108,8 +122,11 @@ def handle_exceptions(function: Callable) -> Callable:
         except FonzException as error:
             logger.error(
                 f"{error}\n\n"
-                "For support, please create an issue at "
-                "https://github.com/dbanalyticsco/Fonz/issues\n"
+                + printer.dim(
+                    "For support, please create an issue at "
+                    "https://github.com/dbanalyticsco/Fonz/issues"
+                )
+                + "\n"
             )
             sys.exit(error.exit_code)
         except Exception as error:
@@ -117,8 +134,11 @@ def handle_exceptions(function: Callable) -> Callable:
             logger.error(
                 f'Encountered unexpected {error.__class__.__name__}: "{error}"\n'
                 f"Full error traceback logged to {LOG_FILEPATH}\n\n"
-                "For support, please create an issue at "
-                "https://github.com/dbanalyticsco/Fonz/issues\n"
+                + printer.dim(
+                    "For support, please create an issue at "
+                    "https://github.com/dbanalyticsco/Fonz/issues"
+                )
+                + "\n"
             )
             sys.exit(1)
 
@@ -306,7 +326,12 @@ def sql(
     )
     errors = runner.validate_sql(explores, batch)
     if errors:
+        for error in sorted(errors, key=lambda x: x["path"]):
+            printer.print_sql_error(error)
+        logger.info("")
         raise ValidationError
+    else:
+        logger.info("")
 
 
 if __name__ == "__main__":

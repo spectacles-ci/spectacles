@@ -163,3 +163,14 @@ def test_config_override_argparse_default(mock_parse_config, clean_env, parser):
     }
     args = parser.parse_args(["connect", "--config-file", "config.yml"])
     assert args.port == 8080
+
+
+@patch("fonz.cli.YamlConfigAction.parse_config")
+def test_bad_config_file_parameter(mock_parse_config, clean_env, parser):
+    mock_parse_config.return_value = {
+        "base_url": "BASE_URL_CONFIG",
+        "api_key": "CLIENT_ID_CONFIG",
+        "port": 8080,
+    }
+    with pytest.raises(FonzException, match="not a valid configuration parameter"):
+        parser.parse_args(["connect", "--config-file", "config.yml"])
