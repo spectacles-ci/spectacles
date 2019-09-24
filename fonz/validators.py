@@ -1,4 +1,4 @@
-from typing import List, Optional, Sequence, DefaultDict
+from typing import List, Sequence, DefaultDict, Tuple
 import asyncio
 import time
 from abc import ABC, abstractmethod
@@ -47,7 +47,7 @@ class SqlValidator(Validator):
     def __init__(self, client: LookerClient, project: str):
         super().__init__(client)
         self.project = Project(project, models=[])
-        self.query_tasks = {}
+        self.query_tasks: dict = {}
 
     @staticmethod
     def parse_selectors(selectors: List[str]) -> DefaultDict[str, set]:
@@ -183,7 +183,7 @@ class SqlValidator(Validator):
                         )
                         tasks.append(task)
 
-        query_task_ids = loop.run_until_complete(asyncio.gather(*tasks))
+        query_task_ids = list(loop.run_until_complete(asyncio.gather(*tasks)))
 
         running_task_ids, errors = self._get_query_results(query_task_ids)
         while running_task_ids:
@@ -205,7 +205,9 @@ class SqlValidator(Validator):
 
         return errors
 
-    def _get_query_results(self, query_task_ids: List[str]) -> List[SqlError]:
+    def _get_query_results(
+        self, query_task_ids: List[str]
+    ) -> Tuple[List[str], List[SqlError]]:
         results = self.client.get_query_task_multi_results(query_task_ids)
         still_running = []
         errors = []

@@ -1,6 +1,6 @@
 from pathlib import Path
 import logging
-import colorama
+import colorama  # type: ignore
 
 LOG_DIRECTORY = Path("logs")
 LOG_FILEPATH = Path(LOG_DIRECTORY / "logs.txt")

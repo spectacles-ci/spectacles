@@ -1,7 +1,7 @@
 import os
 import textwrap
 from typing import List
-import colorama
+import colorama  # type: ignore
 from fonz.logger import GLOBAL_LOGGER as logger, COLORS
 from fonz.exceptions import SqlError
 

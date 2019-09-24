@@ -7,7 +7,7 @@ import fonz.utils as utils
 from fonz.logger import GLOBAL_LOGGER as logger
 from fonz.exceptions import FonzException, ApiConnectionError, QueryNotFinished
 
-from urllib3.exceptions import InsecureRequestWarning
+from urllib3.exceptions import InsecureRequestWarning  # type: ignore
 
 requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
 
@@ -240,7 +240,7 @@ class LookerClient:
         )
         return query_task_id
 
-    def get_query_task_multi_results(self, query_task_ids: List[str]) -> List[JsonDict]:
+    def get_query_task_multi_results(self, query_task_ids: List[str]) -> JsonDict:
         """Returns query task results.
 
         If a ClientError or TimeoutError is received, attempts to retry.
