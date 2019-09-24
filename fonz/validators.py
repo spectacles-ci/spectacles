@@ -1,5 +1,6 @@
 from typing import List, Optional, Sequence, DefaultDict
 import asyncio
+import time
 from abc import ABC, abstractmethod
 from collections import defaultdict
 import aiohttp
@@ -187,6 +188,8 @@ class SqlValidator(Validator):
         while running_task_ids:
             running_task_ids, more_errors = self._get_query_results(running_task_ids)
             errors.extend(more_errors)
+            if running_task_ids:
+                time.sleep(0.5)
 
         for model in self.project.models:
             for explore in model.explores:
