@@ -10,10 +10,6 @@ class ValidationError(FonzException):
     exit_code = 102
 
 
-class QueryNotFinished(FonzException):
-    pass
-
-
 class SqlError(ValidationError):
     def __init__(
         self,
