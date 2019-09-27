@@ -1,104 +1,74 @@
-from typing import Dict, Any
-from fonz.logger import GLOBAL_LOGGER as logger
+import os
+import textwrap
+from typing import List
 import colorama  # type: ignore
-import time
+from fonz.logger import GLOBAL_LOGGER as logger, COLORS
 
-JsonDict = Dict[str, Any]
-
-COLOR_FG_RED = colorama.Fore.RED
-COLOR_FG_GREEN = colorama.Fore.GREEN
-COLOR_FG_YELLOW = colorama.Fore.YELLOW
-COLOR_RESET_ALL = colorama.Style.RESET_ALL
-
-PRINTER_WIDTH = 80
+LINE_WIDTH = 80
+COLOR_CODE_LENGTH = len(colorama.Fore.RED) + len(colorama.Style.RESET_ALL)
 
 
-def get_timestamp() -> str:
-    return time.strftime("%H:%M:%S")
+def color(text: str, name: str) -> str:
+    if os.environ.get("NO_COLOR") or os.environ.get("TERM") == "dumb":
+        return str(text)
+    else:
+        return f"{COLORS[name]}{text}{COLORS['reset']}"
 
 
-def color(text: str, color_code: str) -> str:
-    return "{}{}{}".format(color_code, text, COLOR_RESET_ALL)
+def bold(text: str) -> str:
+    return color(text, "bold")
 
 
-def green(text):
-    return color(text, COLOR_FG_GREEN)
+def dim(text: str) -> str:
+    return color(text, "dim")
 
 
-def red(text):
-    return color(text, COLOR_FG_RED)
+def red(text: str) -> str:
+    return color(text, "red")
 
 
-def yellow(text):
-    return color(text, COLOR_FG_YELLOW)
+def green(text: str) -> str:
+    return color(text, "green")
 
 
-def print_fancy_line(msg: str, status: str, index: int, total: int) -> None:
-    progress = "{} of {} ".format(index, total)
-    prefix = "{timestamp} | {progress}{message}".format(
-        timestamp=get_timestamp(), progress=progress, message=msg
-    )
-
-    justified = prefix.ljust(PRINTER_WIDTH, ".")
-
-    status_txt = status
-
-    output = "{justified} [{status}]".format(justified=justified, status=status_txt)
-
-    logger.info(output)
+def print_header(text: str, line_width: int = LINE_WIDTH) -> None:
+    header = f" {text} ".center(line_width, "=")
+    logger.info(f"\n{header}\n")
 
 
-def print_start(explore_name: str, index: int, total: int) -> None:
-    msg = f"CHECKING explore: {explore_name}"
-    print_fancy_line(msg, "START", index, total)
+def print_sql_error(error: dict) -> None:
+    print_header(red(error["path"]), LINE_WIDTH + COLOR_CODE_LENGTH)
+    wrapped = textwrap.fill(error["message"], LINE_WIDTH)
+    logger.info(wrapped)
+    # if error["line_number"]:
+    #     sql_context = extract_sql_context(error["sql"], error["line_number"])
+    #     logger.info("\n" + sql_context)
+    if error["url"]:
+        logger.info("\n" + f"LookML: {error['url']}")
 
 
-def print_pass(explore_name: str, index: int, total: int) -> None:
-    msg = f"PASSED explore: {explore_name}"
-    print_fancy_line(msg, green("PASS"), index, total)
+def mark_line(lines: List[str], line_number: int, char: str = "*") -> List[str]:
+    """For a list of strings, mark a specified line with a prepended character."""
+    line_number -= 1  # Align with array indexing
+    marked = []
+    for i, line in enumerate(lines):
+        if i == line_number:
+            marked.append(char + " " + line)
+        else:
+            marked.append(dim("| " + line))
+    return marked
 
 
-def print_fail(explore_name: str, index: int, total: int) -> None:
-    msg = f"FAILED explore: {explore_name}"
-    print_fancy_line(msg, red("FAIL"), index, total)
+def extract_sql_context(sql: str, line_number: int, window_size: int = 2) -> str:
+    """Extract a line of SQL with a specified amount of surrounding context."""
+    split = sql.split("\n")
+    line_number -= 1  # Align with array indexing
+    line_start = line_number - window_size
+    line_end = line_number + (window_size + 1)
+    line_start = line_start if line_start >= 0 else 0
+    line_end = line_end if line_end <= len(split) else len(split)
 
-
-def print_error(message: str):
-    logger.info(yellow("\n" + message))
-
-
-def print_stats(errors: int, total: int) -> None:
-    stats = {"error": errors, "pass": total - errors, "total": total}
-
-    stats_line = "\nDone. PASS={pass} ERROR={error} TOTAL={total}"
-    logger.info(stats_line.format(**stats))
-
-
-def print_progress(
-    iteration: int,
-    total: int,
-    prefix: str = "",
-    suffix: str = "",
-    decimals: int = 1,
-    length: int = 80,
-    fill: str = "█",
-):
-    """
-    Call in a loop to create terminal progress bar
-    @params:
-        iteration   - Required  : current iteration (Int)
-        total       - Required  : total iterations (Int)
-        prefix      - Optional  : prefix string (Str)
-        suffix      - Optional  : suffix string (Str)
-        decimals    - Optional  : positive number of decimals in percentage
-        length      - Optional  : character length of bar (Int)
-        fill        - Optional  : bar fill character (Str)
-    """
-    percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
-
-    filledLength = int(length * iteration // total)
-    bar = fill * filledLength + "-" * (length - filledLength)
-    print("\r%s |%s| %s%% %s" % (prefix, bar, percent, suffix), end="\r")
-    # Print New Line on Complete
-    if iteration == total:
-        print("\n")
+    selected_lines = split[line_start:line_end]
+    marked = mark_line(selected_lines, line_number=line_number - line_start + 1)
+    context = "\n".join(marked)
+    return context

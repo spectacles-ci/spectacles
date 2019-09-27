@@ -1,14 +1,8 @@
-import os
-import sys
-from unittest.mock import patch, Mock
-from unittest import TestCase
-import yaml
+from unittest.mock import patch
 import pytest
-import click
-from click.testing import CliRunner
-from tests.constants import TEST_BASE_URL, ENV_VARS
-from fonz.cli import create_parser, main, connect, sql
-import logging
+from tests.constants import ENV_VARS
+from fonz.cli import main, create_parser, handle_exceptions
+from fonz.exceptions import FonzException, ValidationError
 
 
 @pytest.fixture
@@ -45,310 +39,138 @@ def test_help(parser,):
         assert cm.value.code == 0
 
 
-@patch(
-    "sys.argv",
-    new=[
-        "fonz",
-        "connect",
-        "--base-url",
-        "cli_url",
-        "--client-id",
-        "cli_client_id",
-        "--client-secret",
-        "cli_client_secret",
-    ],
+@pytest.mark.parametrize(
+    "exception,exit_code",
+    [(ValueError, 1), (FonzException, 100), (ValidationError, 102)],
 )
-@patch("fonz.cli.connect")
-def test_connect_with_base_cli(mock_connect, clean_env):
-    main()
-    mock_connect.assert_called_once_with(
-        "cli_url", "cli_client_id", "cli_client_secret", "19999", "3.0"
+def test_handle_exceptions_unhandled_error(exception, exit_code):
+    @handle_exceptions
+    def raise_exception():
+        raise exception(f"This is a {exception.__class__.__name__}.")
+
+    with pytest.raises(SystemExit) as pytest_error:
+        raise_exception()
+
+    assert pytest_error.value.code == exit_code
+
+
+def test_parse_args_with_no_arguments_supplied(clean_env, parser, capsys):
+    with pytest.raises(SystemExit):
+        parser.parse_args(["connect"])
+    captured = capsys.readouterr()
+    assert (
+        "the following arguments are required: --base-url, --client-id, --client-secret"
+        in captured.err
     )
 
 
-@patch(
-    "sys.argv",
-    new=[
-        "fonz",
-        "connect",
-        "--base-url",
-        "cli_url",
-        "--client-id",
-        "cli_client_id",
-        "--client-secret",
-        "cli_client_secret",
-        "--port",
-        "272727",
-        "--api-version",
-        "3.1",
-    ],
-)
-@patch("fonz.cli.connect")
-def test_connect_with_full_cli(mock_connect, clean_env):
-    main()
-    mock_connect.assert_called_once_with(
-        "cli_url", "cli_client_id", "cli_client_secret", "272727", "3.1"
+def test_parse_args_with_one_argument_supplied(clean_env, parser, capsys):
+    with pytest.raises(SystemExit):
+        parser.parse_args(["connect", "--base-url", "BASE_URL_CLI"])
+    captured = capsys.readouterr()
+    assert (
+        "the following arguments are required: --client-id, --client-secret"
+        in captured.err
     )
 
 
-@patch("sys.argv", new=["fonz", "connect"])
-@patch("fonz.cli.connect")
-def test_connect_with_env_variables(mock_connect, env):
-    main()
-    mock_connect.assert_called_once_with(
-        "https://test.looker.com",
-        "CLIENT_ID_ENV_VAR",
-        "CLIENT_SECRET_ENV_VAR",
-        "19999",
-        "3.0",
+def test_parse_args_with_only_cli(clean_env, parser):
+    args = parser.parse_args(
+        [
+            "connect",
+            "--base-url",
+            "BASE_URL_CLI",
+            "--client-id",
+            "CLIENT_ID_CLI",
+            "--client-secret",
+            "CLIENT_SECRET_CLI",
+        ]
     )
+    assert args.base_url == "BASE_URL_CLI"
+    assert args.client_id == "CLIENT_ID_CLI"
+    assert args.client_secret == "CLIENT_SECRET_CLI"
 
 
-@patch("sys.argv", new=["fonz", "connect", "--config-file", "config.yml"])
-@patch("fonz.cli.yaml.load")
-@patch("fonz.cli.connect")
-def test_connect_with_config_file(mock_connect, mock_yaml_load, clean_env):
-    mock_yaml_load.return_value = {
-        "base_url": TEST_BASE_URL,
+@patch("fonz.cli.YamlConfigAction.parse_config")
+def test_parse_args_with_only_config_file(mock_parse_config, parser, clean_env):
+    mock_parse_config.return_value = {
+        "base_url": "BASE_URL_CONFIG",
         "client_id": "CLIENT_ID_CONFIG",
         "client_secret": "CLIENT_SECRET_CONFIG",
     }
-    main()
-    mock_connect.assert_called_once_with(
-        "https://test.looker.com",
-        "CLIENT_ID_CONFIG",
-        "CLIENT_SECRET_CONFIG",
-        "19999",
-        "3.0",
-    )
+    args = parser.parse_args(["connect", "--config-file", "config.yml"])
+    assert args.base_url == "BASE_URL_CONFIG"
+    assert args.client_id == "CLIENT_ID_CONFIG"
+    assert args.client_secret == "CLIENT_SECRET_CONFIG"
 
 
-@patch("sys.argv", new=["fonz", "connect"])
-def test_connect_no_arguments(clean_env):
-    with pytest.raises(SystemExit) as cm:
-        main()
-        assert cm.value.code == 1
+@patch("fonz.cli.YamlConfigAction.parse_config")
+def test_parse_args_with_incomplete_config_file(
+    mock_parse_config, parser, clean_env, capsys
+):
+    mock_parse_config.return_value = {
+        "base_url": "BASE_URL_CONFIG",
+        "client_id": "CLIENT_ID_CONFIG",
+    }
+    with pytest.raises(SystemExit):
+        parser.parse_args(["connect", "--config-file", "config.yml"])
+    captured = capsys.readouterr()
+    assert "the following arguments are required: --client-secret" in captured.err
 
 
-@patch(
-    "sys.argv",
-    new=[
-        "fonz",
-        "connect",
-        "--client-id",
-        "cli_client_id",
-        "--client-secret",
-        "cli_client_secret",
-    ],
-)
-@patch("fonz.cli.connect")
-def test_connect_with_limited_env_variables(mock_connect, env):
-    main()
-    mock_connect.assert_called_once_with(
-        "https://test.looker.com", "cli_client_id", "cli_client_secret", "19999", "3.0"
-    )
+def test_parse_args_with_only_env_vars(env, parser):
+    args = parser.parse_args(["connect"])
+    assert args.base_url == "BASE_URL_ENV_VAR"
+    assert args.client_id == "CLIENT_ID_ENV_VAR"
+    assert args.client_secret == "CLIENT_SECRET_ENV_VAR"
 
 
-@patch(
-    "sys.argv",
-    new=[
-        "fonz",
-        "sql",
-        "--base-url",
-        "cli_url",
-        "--client-id",
-        "cli_client_id",
-        "--client-secret",
-        "cli_client_secret",
-        "--project",
-        "cli_project",
-        "--branch",
-        "cli_branch",
-    ],
-)
-@patch("fonz.cli.sql")
-def test_sql_with_base_cli_without_batch(mock_sql, clean_env):
-    main()
-    mock_sql.assert_called_once_with(
-        "cli_project",
-        "cli_branch",
-        "cli_url",
-        "cli_client_id",
-        "cli_client_secret",
-        "19999",
-        "3.0",
-        False,
-    )
+def test_parse_args_with_incomplete_env_vars(limited_env, parser, capsys):
+    with pytest.raises(SystemExit):
+        parser.parse_args(["connect"])
+    captured = capsys.readouterr()
+    assert "the following arguments are required: --client-secret" in captured.err
 
 
-@patch(
-    "sys.argv",
-    new=[
-        "fonz",
-        "sql",
-        "--base-url",
-        "cli_url",
-        "--client-id",
-        "cli_client_id",
-        "--client-secret",
-        "cli_client_secret",
-        "--project",
-        "cli_project",
-        "--branch",
-        "cli_branch",
-        "--batch",
-    ],
-)
-@patch("fonz.cli.sql")
-def test_sql_with_base_cli_with_batch(mock_sql, clean_env):
-    main()
-    mock_sql.assert_called_once_with(
-        "cli_project",
-        "cli_branch",
-        "cli_url",
-        "cli_client_id",
-        "cli_client_secret",
-        "19999",
-        "3.0",
-        True,
-    )
-
-
-@patch(
-    "sys.argv",
-    new=[
-        "fonz",
-        "sql",
-        "--base-url",
-        "cli_url",
-        "--client-id",
-        "cli_client_id",
-        "--client-secret",
-        "cli_client_secret",
-        "--port",
-        "272727",
-        "--api-version",
-        "3.1",
-        "--project",
-        "cli_project",
-        "--branch",
-        "cli_branch",
-    ],
-)
-@patch("fonz.cli.sql")
-def test_sql_with_full_cli(mock_sql, clean_env):
-    main()
-    mock_sql.assert_called_once_with(
-        "cli_project",
-        "cli_branch",
-        "cli_url",
-        "cli_client_id",
-        "cli_client_secret",
-        "272727",
-        "3.1",
-        False,
-    )
-
-
-@patch("sys.argv", new=["fonz", "sql", "--batch"])
-@patch("fonz.cli.sql")
-def test_sql_with_env_variables(mock_sql, env):
-    main()
-    mock_sql.assert_called_once_with(
-        "PROJECT_ENV_VAR",
-        "BRANCH_ENV_VAR",
-        "https://test.looker.com",
-        "CLIENT_ID_ENV_VAR",
-        "CLIENT_SECRET_ENV_VAR",
-        "19999",
-        "3.0",
-        True,
-    )
-
-
-@patch("sys.argv", new=["fonz", "sql", "--config-file", "config.yml"])
-@patch("fonz.cli.yaml.load")
-@patch("fonz.cli.sql")
-def test_sql_with_config_file(mock_sql, mock_yaml_load, clean_env):
-    mock_yaml_load.return_value = {
-        "base_url": TEST_BASE_URL,
+@patch("fonz.cli.YamlConfigAction.parse_config")
+def test_arg_precedence(mock_parse_config, limited_env, parser):
+    # Precedence: command line > environment variables > config files
+    mock_parse_config.return_value = {
+        "base_url": "BASE_URL_CONFIG",
         "client_id": "CLIENT_ID_CONFIG",
         "client_secret": "CLIENT_SECRET_CONFIG",
-        "project": "PROJECT_ENV_VAR",
-        "branch": "BRANCH_ENV_VAR",
     }
-    main()
-    mock_sql.assert_called_once_with(
-        "PROJECT_ENV_VAR",
-        "BRANCH_ENV_VAR",
-        "https://test.looker.com",
-        "CLIENT_ID_CONFIG",
-        "CLIENT_SECRET_CONFIG",
-        "19999",
-        "3.0",
-        False,
+    args = parser.parse_args(
+        ["connect", "--config-file", "config.yml", "--base-url", "BASE_URL_CLI"]
     )
+    assert args.base_url == "BASE_URL_CLI"
+    assert args.client_id == "CLIENT_ID_ENV_VAR"
+    assert args.client_secret == "CLIENT_SECRET_CONFIG"
 
 
-@patch("sys.argv", new=["fonz", "sql"])
-def test_sql_no_arguments(clean_env):
-    with pytest.raises(SystemExit) as cm:
-        main()
-        assert cm.value.code == 1
+def test_env_var_override_argparse_default(env, parser):
+    args = parser.parse_args(["connect"])
+    assert args.port == 8080
 
 
-@patch(
-    "sys.argv",
-    new=[
-        "fonz",
-        "sql",
-        "--client-id",
-        "cli_client_id",
-        "--client-secret",
-        "cli_client_secret",
-    ],
-)
-@patch("fonz.cli.sql")
-def test_sql_with_limited_env_variables(mock_connect, env):
-    main()
-    mock_connect.assert_called_once_with(
-        "PROJECT_ENV_VAR",
-        "BRANCH_ENV_VAR",
-        "https://test.looker.com",
-        "cli_client_id",
-        "cli_client_secret",
-        "19999",
-        "3.0",
-        False,
-    )
+@patch("fonz.cli.YamlConfigAction.parse_config")
+def test_config_override_argparse_default(mock_parse_config, clean_env, parser):
+    mock_parse_config.return_value = {
+        "base_url": "BASE_URL_CONFIG",
+        "client_id": "CLIENT_ID_CONFIG",
+        "client_secret": "CLIENT_SECRET_CONFIG",
+        "port": 8080,
+    }
+    args = parser.parse_args(["connect", "--config-file", "config.yml"])
+    assert args.port == 8080
 
 
-@patch("fonz.cli.Fonz")
-def test_connect(mock_fonz, clean_env):
-    connect("https://test.looker.com", "client_id", "client_secret", "19999", "3.0")
-    mock_fonz.assert_called_once_with(
-        "https://test.looker.com", "client_id", "client_secret", "19999", "3.0"
-    )
-
-
-@patch("fonz.cli.Fonz")
-def test_sql(mock_fonz, clean_env):
-    sql(
-        "project",
-        "branch",
-        "https://test.looker.com",
-        "client_id",
-        "client_secret",
-        "19999",
-        "3.0",
-        True,
-    )
-    mock_fonz.assert_called_once_with(
-        "https://test.looker.com",
-        "client_id",
-        "client_secret",
-        "19999",
-        "3.0",
-        "project",
-        "branch",
-    )
+@patch("fonz.cli.YamlConfigAction.parse_config")
+def test_bad_config_file_parameter(mock_parse_config, clean_env, parser):
+    mock_parse_config.return_value = {
+        "base_url": "BASE_URL_CONFIG",
+        "api_key": "CLIENT_ID_CONFIG",
+        "port": 8080,
+    }
+    with pytest.raises(FonzException, match="not a valid configuration parameter"):
+        parser.parse_args(["connect", "--config-file", "config.yml"])

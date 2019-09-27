@@ -2,11 +2,11 @@ from setuptools import setup, find_packages
 
 setup(
     name="fonz",
-    version="0.0.1",
+    version="0.1.0",
     py_modules=["fonz"],
     packages=find_packages(),
     include_package_data=True,
-    install_requires=["Click", "requests", "PyYAML", "colorama", "backoff", "aiohttp"],
+    install_requires=["requests", "PyYAML", "colorama", "backoff", "aiohttp"],
     tests_require=[
         "pytest",
         "pytest-cov",
@@ -20,4 +20,6 @@ setup(
         [console_scripts]
         fonz=fonz.cli:main
     """,
+    author="Dylan Baker, Josh Temple",
+    author_email="",
 )

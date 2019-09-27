@@ -38,7 +38,13 @@ jobs:
           name: mypy
           command: |
             . venv/bin/activate
-            mypy fonz --ignore-missing-imports
+            mypy fonz
+
+      - run:
+          name: flake8
+          command: |
+            . venv/bin/activate
+            flake8 fonz tests
 
       - run:
           name: pytest

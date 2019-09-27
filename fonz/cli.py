@@ -1,33 +1,144 @@
+from pathlib import Path
 import sys
 import yaml
+from yaml.parser import ParserError
 import argparse
 import os
-from fonz.connection import Fonz
+from typing import Callable
+from fonz.runner import Runner
+from fonz.client import LookerClient
 from fonz.exceptions import FonzException, ValidationError
 from fonz.logger import GLOBAL_LOGGER as logger, LOG_FILEPATH
+import fonz.printer as printer
 
 
-def handle_exceptions(function):
+class ConfigFileAction(argparse.Action):
+    """Parses an arbitrary config file and assigns its values as arg defaults."""
+
+    def __call__(self, parser, namespace, values, option_string):
+        """Populates argument defaults with values from the config file.
+
+        Args:
+            parser: Parent argparse parser that is calling the action.
+            namespace: Object where parsed values will be set.
+            values: Parsed values to be set to the namespace.
+            option_string: Argument string, e.g. "--optional".
+
+        """
+        config = self.parse_config(path=values)
+        for dest, value in config.items():
+            for action in parser._actions:
+                if dest == action.dest:
+                    """Required actions that are fulfilled by config are no longer
+                    required from the command line."""
+                    action.required = False
+                    # Override default if not previously set by an environment variable.
+                    if not isinstance(action, EnvVarAction) or not os.environ.get(
+                        action.env_var
+                    ):
+                        setattr(namespace, dest, value)
+                    break
+            else:
+                raise FonzException(
+                    f"'{dest}' in {values} is not a valid configuration parameter."
+                )
+        parser.set_defaults(**config)
+
+    def parse_config(self, path) -> dict:
+        """Base method for parsing an arbitrary config format."""
+        raise NotImplementedError()
+
+
+class YamlConfigAction(ConfigFileAction):
+    """Parses a YAML config file and assigns its values as argument defaults."""
+
+    def parse_config(self, path: str) -> dict:
+        """Loads a YAML config file, returning its dictionary format.
+
+        Args:
+            path: Path to the config file to be loaded.
+
+        Returns:
+            dict: Dictionary representation of the config file.
+
+        """
+        try:
+            with Path(path).open("r") as file:
+                return yaml.safe_load(file)
+        except (FileNotFoundError, ParserError) as error:
+            raise argparse.ArgumentError(self, error)
+
+
+class EnvVarAction(argparse.Action):
+    """Uses an argument default defined in an environment variable.
+
+    Args:
+        env_var: The name of the environment variable to get the default from.
+        required: The argument's requirement status as defined in add_argument.
+        default: The argument default as defined in add_argument.
+        **kwargs: Arbitrary keyword arguments.
+
+    """
+
+    def __init__(self, env_var, required=False, default=None, **kwargs):
+        self.env_var = env_var
+        self.in_env = False
+        if env_var in os.environ:
+            default = os.environ[env_var]
+            self.in_env = True
+        if required and default:
+            required = False
+        super().__init__(default=default, required=required, **kwargs)
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        """Sets the argument value to the namespace during parsing.
+
+        Args:
+            parser: Parent argparse parser that is calling the action.
+            namespace: Object where parsed values will be set.
+            values: Parsed values to be set to the namespace.
+            option_string: Argument string, e.g. "--optional".
+
+        """
+        setattr(namespace, self.dest, values)
+
+
+def handle_exceptions(function: Callable) -> Callable:
+    """Wrapper for handling custom exceptions by logging them.
+
+    Args:
+        function: Callable to wrap and handle exceptions for.
+
+    Returns:
+        callable: Wrapped callable.
+
+    """
+
     def wrapper(*args, **kwargs):
         try:
             return function(*args, **kwargs)
         except ValidationError as error:
-            logger.error(f"{error}\n")
             sys.exit(error.exit_code)
         except FonzException as error:
             logger.error(
                 f"{error}\n\n"
-                "For support, please create an issue at "
-                "https://github.com/dbanalyticsco/Fonz/issues\n"
+                + printer.dim(
+                    "For support, please create an issue at "
+                    "https://github.com/dbanalyticsco/Fonz/issues"
+                )
+                + "\n"
             )
             sys.exit(error.exit_code)
         except Exception as error:
             logger.debug(error, exc_info=True)
             logger.error(
-                f'Encountered unexpected error: "{error}"\n'
+                f'Encountered unexpected {error.__class__.__name__}: "{error}"\n'
                 f"Full error traceback logged to {LOG_FILEPATH}\n\n"
-                "For support, please create an issue at "
-                "https://github.com/dbanalyticsco/Fonz/issues\n"
+                + printer.dim(
+                    "For support, please create an issue at "
+                    "https://github.com/dbanalyticsco/Fonz/issues"
+                )
+                + "\n"
             )
             sys.exit(1)
 
@@ -36,8 +147,9 @@ def handle_exceptions(function):
 
 @handle_exceptions
 def main():
+    """Runs main function. This is the entry point."""
     parser = create_parser()
-    args = parse_args(parser)
+    args = parser.parse_args()
 
     if args.command == "connect":
         connect(
@@ -51,6 +163,7 @@ def main():
         sql(
             args.project,
             args.branch,
+            args.explores,
             args.base_url,
             args.client_id,
             args.client_secret,
@@ -60,86 +173,165 @@ def main():
         )
 
 
-def create_parser():
+def create_parser() -> argparse.ArgumentParser:
+    """Creates the top-level argument parser.
+
+    Returns:
+        argparse.ArgumentParser: Top-level argument parser.
+
+    """
     parser = argparse.ArgumentParser(prog="fonz")
-
-    subs = parser.add_subparsers(title="Available sub-commands", dest="command")
+    subparser_action = parser.add_subparsers(
+        title="Available sub-commands", dest="command"
+    )
     base_subparser = _build_base_subparser()
-
-    connect_sub = _build_connect_subparser(subs, base_subparser)
-    sql_sub = _build_sql_subparser(subs, base_subparser)
-
+    _build_connect_subparser(subparser_action, base_subparser)
+    _build_sql_subparser(subparser_action, base_subparser)
     return parser
 
 
-def _build_base_subparser():
-    base_subparser = argparse.ArgumentParser(add_help=False)
+def _build_base_subparser() -> argparse.ArgumentParser:
+    """Returns the base subparser with arguments required for every subparser.
 
-    base_subparser.add_argument("--base-url", default=os.environ.get("LOOKER_BASE_URL"))
+    Returns:
+        argparse.ArgumentParser: Base subparser with url and auth arguments.
+
+    """
+    base_subparser = argparse.ArgumentParser(add_help=False)
+    base_subparser.add_argument("--config-file", action=YamlConfigAction)
     base_subparser.add_argument(
-        "--client-id", default=os.environ.get("LOOKER_CLIENT_ID")
+        "--base-url", action=EnvVarAction, env_var="LOOKER_BASE_URL", required=True
     )
     base_subparser.add_argument(
-        "--client-secret", default=os.environ.get("LOOKER_CLIENT_SECRET")
+        "--client-id", action=EnvVarAction, env_var="LOOKER_CLIENT_ID", required=True
     )
-    base_subparser.add_argument("--port", default="19999", type=str)
-    base_subparser.add_argument("--api-version", default="3.0", type=str)
-    base_subparser.add_argument("--config-file", type=str)
+    base_subparser.add_argument(
+        "--client-secret",
+        action=EnvVarAction,
+        env_var="LOOKER_CLIENT_SECRET",
+        required=True,
+    )
+    base_subparser.add_argument(
+        "--port", type=int, action=EnvVarAction, env_var="LOOKER_PORT", default=19999
+    )
+    base_subparser.add_argument(
+        "--api-version",
+        type=float,
+        action=EnvVarAction,
+        env_var="LOOKER_API_VERSION",
+        default=3.1,
+    )
 
     return base_subparser
 
 
-def _build_connect_subparser(subparsers, base_subparser):
-    connect_sub = subparsers.add_parser(
+def _build_connect_subparser(
+    subparser_action: argparse._SubParsersAction,
+    base_subparser: argparse.ArgumentParser,
+) -> None:
+    """Returns the subparser for the subcommand `connect`.
+
+    Args:
+        subparser_action (type): Description of parameter `subparser_action`.
+        base_subparser (type): Description of parameter `base_subparser`.
+
+    Returns:
+        type: Description of returned object.
+
+    """
+    subparser_action.add_parser(
         "connect",
         parents=[base_subparser],
         help="Connect to Looker instance to test credentials.",
     )
-    return connect_sub
 
 
-def _build_sql_subparser(subparsers, base_subparser):
-    sql_sub = subparsers.add_parser(
+def _build_sql_subparser(
+    subparser_action: argparse._SubParsersAction,
+    base_subparser: argparse.ArgumentParser,
+) -> None:
+    """Returns the subparser for the subcommand `sql`.
+
+    Args:
+        subparser_action: Description of parameter `subparser_action`.
+        base_subparser: Description of parameter `base_subparser`.
+
+    Returns:
+        type: Description of returned object.
+
+    """
+    subparser = subparser_action.add_parser(
         "sql",
         parents=[base_subparser],
         help="Build and run queries to test your Looker instance.",
     )
 
-    sql_sub.add_argument("--project", default=os.environ.get("LOOKER_PROJECT"))
-    sql_sub.add_argument("--branch", default=os.environ.get("LOOKER_GIT_BRANCH"))
-    sql_sub.add_argument("--batch", action="store_true")
-
-    return sql_sub
-
-
-def parse_args(parser):
-    args = parser.parse_args()
-
-    if args.config_file:
-        data = yaml.load(args.config_file)
-        arg_dict = args.__dict__
-        for key, value in data.items():
-            if isinstance(value, list):
-                arg_dict[key].extend(value)
-            else:
-                arg_dict[key] = value
-    return args
-
-
-def connect(base_url, client_id, client_secret, port, api_version):
-    client = Fonz(base_url, client_id, client_secret, port, api_version)
-    client.connect()
-
-
-def sql(project, branch, base_url, client_id, client_secret, port, api_version, batch):
-    client = Fonz(
-        base_url, client_id, client_secret, port, api_version, project, branch
+    subparser.add_argument(
+        "--project", action=EnvVarAction, env_var="LOOKER_PROJECT", required=True
     )
-    client.connect()
-    client.update_session()
-    client.build_project()
-    client.validate(batch)
-    client.report_results(batch)
+    subparser.add_argument(
+        "--branch", action=EnvVarAction, env_var="LOOKER_GIT_BRANCH", required=True
+    )
+    subparser.add_argument("--explores", nargs="+", default=["*.*"])
+    subparser.add_argument("--batch", action="store_true")
+
+
+def connect(
+    base_url: str, client_id: str, client_secret: str, port: int, api_version: float
+) -> None:
+    """Tests the connection and credentials for the Looker API.
+
+    Args:
+        base_url: Base URL for the Looker instance, e.g. https://mycompany.looker.com.
+        client_id: Looker API client ID.
+        client_secret: Looker API client secret.
+        port: Desired API port to use for requests.
+        api_version: Desired API version to use for requests.
+
+    """
+    LookerClient(base_url, client_id, client_secret, port, api_version)
+
+
+def sql(
+    project,
+    branch,
+    explores,
+    base_url,
+    client_id,
+    client_secret,
+    port,
+    api_version,
+    batch,
+) -> None:
+    """Runs and validates the SQL for each selected LookML dimension.
+
+    Args:
+        project: Name of the Looker project to use.
+        branch: Name of the Git branch to check out.
+        explores: List of selector strings in 'model_name.explore_name' format.
+            The '*' wildcard selects all models or explores. For instance,
+            'model_name.*' would select all explores in the 'model_name' model.
+        base_url: Base URL for the Looker instance, e.g. https://mycompany.looker.com.
+        client_id: Looker API client ID.
+        client_secret: Looker API client secret.
+        port: Desired API port to use for requests.
+        api_version: Desired API version to use for requests.
+        batch: When true, runs one query per explore (using all dimensions). When
+            false, runs one query per dimension. Batch mode increases query speed
+            but can only return the first error encountered for each dimension.
+
+    """
+    runner = Runner(
+        base_url, project, branch, client_id, client_secret, port, api_version
+    )
+    errors = runner.validate_sql(explores, batch)
+    if errors:
+        for error in sorted(errors, key=lambda x: x["path"]):
+            printer.print_sql_error(error)
+        logger.info("")
+        raise ValidationError
+    else:
+        logger.info("")
 
 
 if __name__ == "__main__":

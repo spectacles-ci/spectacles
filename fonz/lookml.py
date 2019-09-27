@@ -1,4 +1,5 @@
-from typing import List, Optional
+import re
+from typing import List, Sequence, Optional
 from fonz.exceptions import SqlError
 
 
@@ -13,10 +14,11 @@ class Dimension(LookMlObject):
         self.type = type
         self.sql = sql
         self.url = url
-        self.ignore = True if "fonz: ignore" in sql else False
-        self.errored = False
         self.error: Optional[SqlError] = None
-        self.query_id: Optional[int] = None
+        if re.search(r"fonz\s*:\s*ignore", sql, re.IGNORECASE):
+            self.ignore = True
+        else:
+            self.ignore = False
 
     def __repr__(self):
         return (
@@ -35,6 +37,18 @@ class Dimension(LookMlObject):
             and self.url == other.url
         )
 
+    @property
+    def errored(self):
+        return bool(self.error)
+
+    @errored.setter
+    def errored(self, value):
+        raise AttributeError(
+            "Cannot assign to 'errored' property of a Dimension instance. "
+            "For a dimension to be considered errored, it must have a SqlError "
+            "in its 'error' property."
+        )
+
     @classmethod
     def from_json(cls, json_dict):
         name = json_dict["name"]
@@ -48,15 +62,26 @@ class Explore(LookMlObject):
     def __init__(self, name: str, dimensions: List[Dimension] = None):
         self.name = name
         self.dimensions = [] if dimensions is None else dimensions
-        self.errored = False
         self.error: Optional[SqlError] = None
-        self.query_id: Optional[int] = None
 
     def __eq__(self, other):
         if not isinstance(other, Explore):
             return NotImplemented
 
         return self.name == other.name and self.dimensions == other.dimensions
+
+    @property
+    def errored(self):
+        return bool(self.error) or any(
+            dimensions.errored for dimensions in self.dimensions
+        )
+
+    @errored.setter
+    def errored(self, value: bool):
+        if not isinstance(value, bool):
+            raise TypeError("Value for errored must be boolean.")
+        for dimensions in self.dimensions:
+            dimensions.errored = value
 
     def get_errored_dimensions(self):
         for dimension in self.dimensions:
@@ -77,7 +102,6 @@ class Model(LookMlObject):
         self.name = name
         self.project = project
         self.explores = explores
-        self.errored = False
 
     def __eq__(self, other):
         if not isinstance(other, Model):
@@ -88,6 +112,17 @@ class Model(LookMlObject):
             and self.project == other.project
             and self.explores == other.explores
         )
+
+    @property
+    def errored(self):
+        return any(explore.errored for explore in self.explores)
+
+    @errored.setter
+    def errored(self, value: bool):
+        if not isinstance(value, bool):
+            raise TypeError("Value for errored must be boolean.")
+        for explore in self.explores:
+            explore.errored = value
 
     def get_errored_explores(self):
         for explore in self.explores:
@@ -103,7 +138,7 @@ class Model(LookMlObject):
 
 
 class Project(LookMlObject):
-    def __init__(self, name, models: List[Model]):
+    def __init__(self, name, models: Sequence[Model]):
         self.name = name
         self.models = models
 
@@ -112,6 +147,17 @@ class Project(LookMlObject):
             return NotImplemented
 
         return self.name == other.name and self.models == other.models
+
+    @property
+    def errored(self):
+        return any(model.errored for model in self.models)
+
+    @errored.setter
+    def errored(self, value: bool):
+        if not isinstance(value, bool):
+            raise TypeError("Value for errored must be boolean.")
+        for model in self.models:
+            model.errored = value
 
     def get_errored_models(self):
         for model in self.models:
