@@ -3,6 +3,7 @@ import sys
 import yaml
 from yaml.parser import ParserError
 import argparse
+import logging
 import os
 from typing import Callable
 from spectacles.runner import Runner
@@ -150,6 +151,9 @@ def main():
     """Runs main function. This is the entry point."""
     parser = create_parser()
     args = parser.parse_args()
+    for handler in logger.handlers:
+        if isinstance(handler, logging.StreamHandler):
+            handler.setLevel(args.log_level)
 
     if args.command == "connect":
         connect(
@@ -220,6 +224,14 @@ def _build_base_subparser() -> argparse.ArgumentParser:
         action=EnvVarAction,
         env_var="LOOKER_API_VERSION",
         default=3.1,
+    )
+    base_subparser.add_argument(
+        "-v",
+        "--verbose",
+        action="store_const",
+        dest="log_level",
+        const=logging.DEBUG,
+        default=logging.INFO,
     )
 
     return base_subparser
