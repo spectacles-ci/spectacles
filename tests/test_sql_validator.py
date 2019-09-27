@@ -37,13 +37,19 @@ def project():
             "test_view.dimension_one",
             "number",
             "${TABLE}.dimension_one",
-            "https://test.looker.com/projects/spectacles/files/test_view.view.lkml?line=340",
+            (
+                "https://test.looker.com/projects/spectacles/"
+                "files/test_view.view.lkml?line=340"
+            ),
         ),
         Dimension(
             "test_view.dimension_two",
             "number",
             "${TABLE}.dimension_two",
-            "https://test.looker.com/projects/spectacles/files/test_view.view.lkml?line=360",
+            (
+                "https://test.looker.com/projects/spectacles/"
+                "files/test_view.view.lkml?line=360"
+            ),
         ),
     ]
     explores_model_one = [Explore("test_explore_one", dimensions)]
