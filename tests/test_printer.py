@@ -1,5 +1,5 @@
-from fonz import printer
-from fonz.logger import delete_color_codes
+from spectacles import printer
+from spectacles.logger import delete_color_codes
 
 
 def test_extract_sql_context():

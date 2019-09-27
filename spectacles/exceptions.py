@@ -1,12 +1,12 @@
-class FonzException(Exception):
+class SpectaclesException(Exception):
     exit_code = 100
 
 
-class ApiConnectionError(FonzException):
+class ApiConnectionError(SpectaclesException):
     exit_code = 101
 
 
-class ValidationError(FonzException):
+class ValidationError(SpectaclesException):
     exit_code = 102
 
 

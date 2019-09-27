@@ -1,7 +1,7 @@
 from pathlib import Path
 import json
 import pytest
-from fonz.lookml import Project, Model, Explore, Dimension
+from spectacles.lookml import Project, Model, Explore, Dimension
 
 
 @pytest.fixture
@@ -56,7 +56,7 @@ def test_dimension_from_json():
     dimension = Dimension.from_json(json_dict[0])
     assert dimension.name == "test_view.dimension_one"
     assert dimension.type == "number"
-    assert dimension.url == "/projects/fonz/files/test_view.view.lkml?line=340"
+    assert dimension.url == "/projects/spectacles/files/test_view.view.lkml?line=340"
     assert dimension.sql == "${TABLE}.dimension_one "
     assert not dimension.ignore
 
@@ -64,8 +64,8 @@ def test_dimension_from_json():
 def test_ignored_dimension_with_whitespace():
     name = "test_view.dimension_one"
     dimension_type = "number"
-    url = "/projects/fonz/files/test_view.view.lkml?line=340"
-    sql = " -- fonz: ignore\n${TABLE}.dimension_one "
+    url = "/projects/spectacles/files/test_view.view.lkml?line=340"
+    sql = " -- spectacles: ignore\n${TABLE}.dimension_one "
     dimension = Dimension(name, dimension_type, sql, url)
     assert dimension.ignore
 
@@ -73,8 +73,8 @@ def test_ignored_dimension_with_whitespace():
 def test_ignored_dimension_with_no_whitespace():
     name = "test_view.dimension_one"
     dimension_type = "number"
-    url = "/projects/fonz/files/test_view.view.lkml?line=340"
-    sql = "--fonz:ignore\n${TABLE}.dimension_one "
+    url = "/projects/spectacles/files/test_view.view.lkml?line=340"
+    sql = "--spectacles:ignore\n${TABLE}.dimension_one "
     dimension = Dimension(name, dimension_type, sql, url)
     assert dimension.ignore
 

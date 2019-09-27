@@ -1,6 +1,6 @@
 import re
 from typing import List, Sequence, Optional
-from fonz.exceptions import SqlError
+from spectacles.exceptions import SqlError
 
 
 class LookMlObject:
@@ -15,7 +15,7 @@ class Dimension(LookMlObject):
         self.sql = sql
         self.url = url
         self.error: Optional[SqlError] = None
-        if re.search(r"fonz\s*:\s*ignore", sql, re.IGNORECASE):
+        if re.search(r"spectacles\s*:\s*ignore", sql, re.IGNORECASE):
             self.ignore = True
         else:
             self.ignore = False

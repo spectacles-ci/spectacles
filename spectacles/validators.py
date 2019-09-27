@@ -4,11 +4,11 @@ import time
 from abc import ABC, abstractmethod
 from collections import defaultdict
 import aiohttp
-from fonz.client import LookerClient
-from fonz.lookml import Project, Model, Explore, Dimension
-from fonz.logger import GLOBAL_LOGGER as logger
-from fonz.exceptions import SqlError, FonzException
-import fonz.printer as printer
+from spectacles.client import LookerClient
+from spectacles.lookml import Project, Model, Explore, Dimension
+from spectacles.logger import GLOBAL_LOGGER as logger
+from spectacles.exceptions import SqlError, SpectaclesException
+import spectacles.printer as printer
 
 
 class Validator(ABC):  # pragma: no cover
@@ -68,7 +68,7 @@ class SqlValidator(Validator):
             try:
                 model, explore = selector.split(".")
             except ValueError:
-                raise FonzException(
+                raise SpectaclesException(
                     f"Explore selector '{selector}' is not valid.\n"
                     "Instead, use the format 'model_name.explore_name'. "
                     f"Use 'model_name.*' to select all explores in a model."
@@ -83,7 +83,7 @@ class SqlValidator(Validator):
         select_from_names = set(each.name for each in select_from)
         difference = unique_choices.difference(select_from_names)
         if difference:
-            raise FonzException(
+            raise SpectaclesException(
                 f"{select_from[0].__class__.__name__}"
                 f'{"" if len(difference) == 1 else "s"} '
                 + ", ".join(difference)

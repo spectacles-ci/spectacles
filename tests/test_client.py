@@ -3,8 +3,8 @@ import pytest
 import requests
 import asynctest
 import aiohttp
-from fonz.client import LookerClient
-from fonz.exceptions import ApiConnectionError
+from spectacles.client import LookerClient
+from spectacles.exceptions import ApiConnectionError
 
 TEST_BASE_URL = "https://test.looker.com"
 TEST_CLIENT_ID = "test_client_id"
@@ -28,7 +28,7 @@ def mock_response():
     return mock
 
 
-@patch("fonz.client.requests.Session.post")
+@patch("spectacles.client.requests.Session.post")
 def test_bad_authenticate_raises_connection_error(mock_post, mock_response):
     mock_post.return_value = mock_response
     with pytest.raises(ApiConnectionError):
@@ -36,7 +36,7 @@ def test_bad_authenticate_raises_connection_error(mock_post, mock_response):
     mock_response.raise_for_status.assert_called_once()
 
 
-@patch("fonz.client.requests.Session.post")
+@patch("spectacles.client.requests.Session.post")
 def test_authenticate_sets_session_headers(mock_post):
     mock_response = Mock(spec=requests.Response)
     mock_response.json.return_value = {"access_token": "test_access_token"}
@@ -45,7 +45,7 @@ def test_authenticate_sets_session_headers(mock_post):
     assert client.session.headers == {"Authorization": f"token test_access_token"}
 
 
-@patch("fonz.client.requests.Session.patch")
+@patch("spectacles.client.requests.Session.patch")
 def test_bad_update_session_patch_raises_connection_error(
     mock_patch, client, mock_response
 ):
@@ -55,8 +55,8 @@ def test_bad_update_session_patch_raises_connection_error(
     mock_response.raise_for_status.assert_called_once()
 
 
-@patch("fonz.client.requests.Session.patch")
-@patch("fonz.client.requests.Session.put")
+@patch("spectacles.client.requests.Session.patch")
+@patch("spectacles.client.requests.Session.put")
 def test_bad_update_session_put_raises_connection_error(
     mock_put, mock_patch, client, mock_response
 ):
@@ -66,7 +66,7 @@ def test_bad_update_session_put_raises_connection_error(
     mock_response.raise_for_status.assert_called_once()
 
 
-@patch("fonz.client.requests.Session.get")
+@patch("spectacles.client.requests.Session.get")
 def test_bad_get_lookml_models_raises_connection_error(mock_get, client, mock_response):
     mock_get.return_value = mock_response
     with pytest.raises(ApiConnectionError):
@@ -74,7 +74,7 @@ def test_bad_get_lookml_models_raises_connection_error(mock_get, client, mock_re
     mock_response.raise_for_status.assert_called_once()
 
 
-@patch("fonz.client.requests.Session.get")
+@patch("spectacles.client.requests.Session.get")
 def test_bad_get_lookml_dimensions_raises_connection_error(
     mock_get, client, mock_response
 ):

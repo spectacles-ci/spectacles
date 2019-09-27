@@ -31,7 +31,7 @@ class FileFormatter(logging.Formatter):
 
 LOG_DIRECTORY.mkdir(exist_ok=True)
 
-logger = logging.getLogger("Fonz")
+logger = logging.getLogger("spectacles")
 logger.setLevel(logging.DEBUG)
 
 fh = logging.FileHandler(LOG_FILEPATH)

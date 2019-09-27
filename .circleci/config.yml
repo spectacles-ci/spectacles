@@ -10,7 +10,7 @@ jobs:
     docker:
       - image: circleci/python:3.7.0
 
-    working_directory: ~/Fonz
+    working_directory: ~/Spectacles
 
     steps:
       - checkout
@@ -22,7 +22,7 @@ jobs:
             - v1-dependencies-
 
       - run:
-          name: install fonz
+          name: install spectacles
           command: |
             python3 -m venv venv
             . venv/bin/activate
@@ -38,13 +38,13 @@ jobs:
           name: mypy
           command: |
             . venv/bin/activate
-            mypy fonz
+            mypy spectacles
 
       - run:
           name: flake8
           command: |
             . venv/bin/activate
-            flake8 fonz tests
+            flake8 spectacles tests
 
       - run:
           name: pytest
@@ -56,7 +56,7 @@ jobs:
           name: coverage
           command: |
             . venv/bin/activate
-            coverage run --source fonz -m pytest
+            coverage run --source spectacles -m pytest
             coverage report
             coverage html
             coverage xml

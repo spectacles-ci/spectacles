@@ -1,4 +1,4 @@
-from fonz import utils
+from spectacles import utils
 
 TEST_BASE_URL = "https://test.looker.com"
 
