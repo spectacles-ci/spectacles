@@ -5,11 +5,11 @@ from yaml.parser import ParserError
 import argparse
 import os
 from typing import Callable
-from fonz.runner import Runner
-from fonz.client import LookerClient
-from fonz.exceptions import FonzException, ValidationError
-from fonz.logger import GLOBAL_LOGGER as logger, LOG_FILEPATH
-import fonz.printer as printer
+from spectacles.runner import Runner
+from spectacles.client import LookerClient
+from spectacles.exceptions import SpectaclesException, ValidationError
+from spectacles.logger import GLOBAL_LOGGER as logger, LOG_FILEPATH
+import spectacles.printer as printer
 
 
 class ConfigFileAction(argparse.Action):
@@ -39,7 +39,7 @@ class ConfigFileAction(argparse.Action):
                         setattr(namespace, dest, value)
                     break
             else:
-                raise FonzException(
+                raise SpectaclesException(
                     f"'{dest}' in {values} is not a valid configuration parameter."
                 )
         parser.set_defaults(**config)
@@ -119,12 +119,12 @@ def handle_exceptions(function: Callable) -> Callable:
             return function(*args, **kwargs)
         except ValidationError as error:
             sys.exit(error.exit_code)
-        except FonzException as error:
+        except SpectaclesException as error:
             logger.error(
                 f"{error}\n\n"
                 + printer.dim(
                     "For support, please create an issue at "
-                    "https://github.com/dbanalyticsco/Fonz/issues"
+                    "https://github.com/dbanalyticsco/spectacles/issues"
                 )
                 + "\n"
             )
@@ -136,7 +136,7 @@ def handle_exceptions(function: Callable) -> Callable:
                 f"Full error traceback logged to {LOG_FILEPATH}\n\n"
                 + printer.dim(
                     "For support, please create an issue at "
-                    "https://github.com/dbanalyticsco/Fonz/issues"
+                    "https://github.com/dbanalyticsco/spectacles/issues"
                 )
                 + "\n"
             )
@@ -180,7 +180,7 @@ def create_parser() -> argparse.ArgumentParser:
         argparse.ArgumentParser: Top-level argument parser.
 
     """
-    parser = argparse.ArgumentParser(prog="fonz")
+    parser = argparse.ArgumentParser(prog="spectacles")
     subparser_action = parser.add_subparsers(
         title="Available sub-commands", dest="command"
     )

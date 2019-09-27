@@ -3,9 +3,9 @@ import asyncio
 import backoff  # type: ignore
 import aiohttp
 import requests
-import fonz.utils as utils
-from fonz.logger import GLOBAL_LOGGER as logger
-from fonz.exceptions import FonzException, ApiConnectionError
+import spectacles.utils as utils
+from spectacles.logger import GLOBAL_LOGGER as logger
+from spectacles.exceptions import SpectaclesException, ApiConnectionError
 
 from urllib3.exceptions import InsecureRequestWarning  # type: ignore
 
@@ -40,7 +40,7 @@ class LookerClient:
     ):
         supported_api_versions = [3.0, 3.1]
         if api_version not in supported_api_versions:
-            raise FonzException(
+            raise SpectaclesException(
                 f"API version {api_version} is not supported. "
                 "Please use one of these supported versions instead: "
                 f"{', '.join(str(ver) for ver in sorted(supported_api_versions))}"

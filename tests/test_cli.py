@@ -1,8 +1,8 @@
 from unittest.mock import patch
 import pytest
 from tests.constants import ENV_VARS
-from fonz.cli import main, create_parser, handle_exceptions
-from fonz.exceptions import FonzException, ValidationError
+from spectacles.cli import main, create_parser, handle_exceptions
+from spectacles.exceptions import SpectaclesException, ValidationError
 
 
 @pytest.fixture
@@ -32,7 +32,7 @@ def parser():
     return parser
 
 
-@patch("sys.argv", new=["fonz", "--help"])
+@patch("sys.argv", new=["spectacles", "--help"])
 def test_help(parser,):
     with pytest.raises(SystemExit) as cm:
         main()
@@ -41,7 +41,7 @@ def test_help(parser,):
 
 @pytest.mark.parametrize(
     "exception,exit_code",
-    [(ValueError, 1), (FonzException, 100), (ValidationError, 102)],
+    [(ValueError, 1), (SpectaclesException, 100), (ValidationError, 102)],
 )
 def test_handle_exceptions_unhandled_error(exception, exit_code):
     @handle_exceptions
@@ -91,7 +91,7 @@ def test_parse_args_with_only_cli(clean_env, parser):
     assert args.client_secret == "CLIENT_SECRET_CLI"
 
 
-@patch("fonz.cli.YamlConfigAction.parse_config")
+@patch("spectacles.cli.YamlConfigAction.parse_config")
 def test_parse_args_with_only_config_file(mock_parse_config, parser, clean_env):
     mock_parse_config.return_value = {
         "base_url": "BASE_URL_CONFIG",
@@ -104,7 +104,7 @@ def test_parse_args_with_only_config_file(mock_parse_config, parser, clean_env):
     assert args.client_secret == "CLIENT_SECRET_CONFIG"
 
 
-@patch("fonz.cli.YamlConfigAction.parse_config")
+@patch("spectacles.cli.YamlConfigAction.parse_config")
 def test_parse_args_with_incomplete_config_file(
     mock_parse_config, parser, clean_env, capsys
 ):
@@ -132,7 +132,7 @@ def test_parse_args_with_incomplete_env_vars(limited_env, parser, capsys):
     assert "the following arguments are required: --client-secret" in captured.err
 
 
-@patch("fonz.cli.YamlConfigAction.parse_config")
+@patch("spectacles.cli.YamlConfigAction.parse_config")
 def test_arg_precedence(mock_parse_config, limited_env, parser):
     # Precedence: command line > environment variables > config files
     mock_parse_config.return_value = {
@@ -153,7 +153,7 @@ def test_env_var_override_argparse_default(env, parser):
     assert args.port == 8080
 
 
-@patch("fonz.cli.YamlConfigAction.parse_config")
+@patch("spectacles.cli.YamlConfigAction.parse_config")
 def test_config_override_argparse_default(mock_parse_config, clean_env, parser):
     mock_parse_config.return_value = {
         "base_url": "BASE_URL_CONFIG",
@@ -165,12 +165,14 @@ def test_config_override_argparse_default(mock_parse_config, clean_env, parser):
     assert args.port == 8080
 
 
-@patch("fonz.cli.YamlConfigAction.parse_config")
+@patch("spectacles.cli.YamlConfigAction.parse_config")
 def test_bad_config_file_parameter(mock_parse_config, clean_env, parser):
     mock_parse_config.return_value = {
         "base_url": "BASE_URL_CONFIG",
         "api_key": "CLIENT_ID_CONFIG",
         "port": 8080,
     }
-    with pytest.raises(FonzException, match="not a valid configuration parameter"):
+    with pytest.raises(
+        SpectaclesException, match="not a valid configuration parameter"
+    ):
         parser.parse_args(["connect", "--config-file", "config.yml"])

@@ -1,6 +1,6 @@
 from typing import List
-from fonz.client import LookerClient
-from fonz.validators import SqlValidator
+from spectacles.client import LookerClient
+from spectacles.validators import SqlValidator
 
 
 class Runner:

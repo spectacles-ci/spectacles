@@ -8,9 +8,9 @@ Occasionally, when we make changes to LookML or transform an underlying database
 
 We wanted a tool that would check for fields with database errors and content with LookML errors. We firmly believe that analytics should adopt best practices from software engineering, and we're especially excited by the power of continuous integration (CI). We could run this tool in a CI pipeline before deploying to production or after database changes, helping to establish a baseline performance expectation for our Looker instance.
 
-We built a new tool, Fonz, to enhance the business intelligence layer of analytics CI pipelines.
+We built a new tool, `spectacles`, to enhance the business intelligence layer of analytics CI pipelines.
 
-Fonz is built on the Looker API and automatically runs queries across every enabled explore to check for database errors. Next, it performs content validation to catch any content that newly introduced code may have broken. Finally, Fonz can be run in conjunction with database code changes to catch cases where transformations will break a downstream Looker view. We believe Fonz is a valuable addition to the "Built on Looker" open-source ecosystem and will improve quality and reliability within Looker.
+`spectacles` is built on the Looker API and automatically runs queries across every enabled explore to check for database errors. Next, it performs content validation to catch any content that newly introduced code may have broken. Finally, `spectacles` can be run in conjunction with database code changes to catch cases where transformations will break a downstream Looker view. We believe `spectacles` is a valuable addition to the "Built on Looker" open-source ecosystem and will improve quality and reliability within Looker.
 
 #### Three primary concepts the audience will take away from your session.
 

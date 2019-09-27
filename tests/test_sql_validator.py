@@ -2,9 +2,9 @@ from pathlib import Path
 import json
 from unittest.mock import patch, Mock
 import pytest
-from fonz.lookml import Project, Model, Explore, Dimension
-from fonz.client import LookerClient
-from fonz.validators import SqlValidator
+from spectacles.lookml import Project, Model, Explore, Dimension
+from spectacles.client import LookerClient
+from spectacles.validators import SqlValidator
 
 TEST_BASE_URL = "https://test.looker.com"
 TEST_CLIENT_ID = "test_client_id"
@@ -37,13 +37,13 @@ def project():
             "test_view.dimension_one",
             "number",
             "${TABLE}.dimension_one",
-            "https://test.looker.com/projects/fonz/files/test_view.view.lkml?line=340",
+            "https://test.looker.com/projects/spectacles/files/test_view.view.lkml?line=340",
         ),
         Dimension(
             "test_view.dimension_two",
             "number",
             "${TABLE}.dimension_two",
-            "https://test.looker.com/projects/fonz/files/test_view.view.lkml?line=360",
+            "https://test.looker.com/projects/spectacles/files/test_view.view.lkml?line=360",
         ),
     ]
     explores_model_one = [Explore("test_explore_one", dimensions)]
@@ -56,8 +56,8 @@ def project():
     return project
 
 
-@patch("fonz.client.LookerClient.get_lookml_dimensions")
-@patch("fonz.client.LookerClient.get_lookml_models")
+@patch("spectacles.client.LookerClient.get_lookml_dimensions")
+@patch("spectacles.client.LookerClient.get_lookml_models")
 def test_build_project(mock_get_models, mock_get_dimensions, project, validator):
     mock_get_models.return_value = load("response_models.json")
     mock_get_dimensions.return_value = load("response_dimensions.json")

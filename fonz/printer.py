@@ -2,7 +2,7 @@ import os
 import textwrap
 from typing import List
 import colorama  # type: ignore
-from fonz.logger import GLOBAL_LOGGER as logger, COLORS
+from spectacles.logger import GLOBAL_LOGGER as logger, COLORS
 
 LINE_WIDTH = 80
 COLOR_CODE_LENGTH = len(colorama.Fore.RED) + len(colorama.Style.RESET_ALL)
