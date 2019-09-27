@@ -64,7 +64,7 @@ class LookerClient:
             api_version: Desired API version to use for requests.
 
         """
-        logger.debug("Authenticating Looker API credentials.")
+        logger.debug("Authenticating Looker API credentials")
 
         url = utils.compose_url(self.api_url, path=["login"])
         body = {"client_id": client_id, "client_secret": client_secret}
@@ -91,7 +91,7 @@ class LookerClient:
             branch: Name of the Git branch to check out.
 
         """
-        logger.debug("Updating session to use development workspace.")
+        logger.debug("Updating session to use development workspace")
         url = utils.compose_url(self.api_url, path=["session"])
         body = {"workspace_id": "dev"}
         response = self.session.patch(url=url, json=body)
@@ -103,7 +103,7 @@ class LookerClient:
                 f'Error raised: "{error}"'
             )
 
-        logger.debug(f"Setting Git branch to {branch}.")
+        logger.debug(f"Setting Git branch to {branch}")
         url = utils.compose_url(self.api_url, path=["projects", project, "git_branch"])
         body = {"name": branch}
         response = self.session.put(url=url, json=body)
@@ -147,7 +147,7 @@ class LookerClient:
                 names are returned in the format 'explore_name.dimension_name'.
 
         """
-        logger.debug(f"Getting all dimensions from explore {explore}.")
+        logger.debug(f"Getting all dimensions from explore {explore}")
         url = utils.compose_url(
             self.api_url, path=["lookml_models", model, "explores", explore]
         )
@@ -192,7 +192,12 @@ class LookerClient:
 
         """
         # Using old-style string formatting so that strings are formatted lazily
-        logger.debug("Creating async query for %s/%s/%s.", model, explore, dimensions)
+        logger.debug(
+            "Creating async query for %s/%s/%s",
+            model,
+            explore,
+            "*" if len(dimensions) > 1 else dimensions[0],
+        )
         body = {"model": model, "view": explore, "fields": dimensions, "limit": 1}
         url = utils.compose_url(self.api_url, path=["queries"])
         async with session.post(url=url, json=body) as response:
@@ -200,10 +205,10 @@ class LookerClient:
             response.raise_for_status()
         query_id = result["id"]
         logger.debug(
-            "Query for %s/%s/%s created as query %d.",
+            "Query for %s/%s/%s created as query %d",
             model,
             explore,
-            dimensions,
+            "*" if len(dimensions) > 1 else dimensions[0],
             query_id,
         )
         return query_id
@@ -228,16 +233,14 @@ class LookerClient:
 
         """
         # Using old-style string formatting so that strings are formatted lazily
-        logger.debug("Starting query %d.", query_id)
+        logger.debug("Starting query %d", query_id)
         body = {"query_id": query_id, "result_format": "json"}
         url = utils.compose_url(self.api_url, path=["query_tasks"])
         async with session.post(url=url, json=body) as response:
             result = await response.json()
             response.raise_for_status()
         query_task_id = result["id"]
-        logger.debug(
-            "Query %d is running under query task %s.", query_id, query_task_id
-        )
+        logger.debug("Query %d is running under query task %s", query_id, query_task_id)
         return query_task_id
 
     def get_query_task_multi_results(self, query_task_ids: List[str]) -> JsonDict:
