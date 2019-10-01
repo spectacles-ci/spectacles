@@ -81,7 +81,7 @@ class LookerClient:
         access_token = response.json()["access_token"]
         self.session.headers = {"Authorization": f"token {access_token}"}
 
-        logger.info(f"Connected to {self.base_url} using Looker API {api_version}")
+        logger.info(f"Connected using Looker API {api_version}")
 
     def update_session(self, project: str, branch: str) -> None:
         """Switches to a development mode session and checks out the desired branch.
