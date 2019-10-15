@@ -7,7 +7,7 @@ import aiohttp
 from spectacles.client import LookerClient
 from spectacles.lookml import Project, Model, Explore, Dimension
 from spectacles.logger import GLOBAL_LOGGER as logger
-from spectacles.exceptions import SqlError, SpectaclesException
+from spectacles.exceptions import SqlError, DataTestError, SpectaclesException
 import spectacles.printer as printer
 
 
@@ -27,6 +27,26 @@ class Validator(ABC):  # pragma: no cover
     @abstractmethod
     def validate(self):
         raise NotImplementedError
+
+
+class DataTestValidator(Validator):
+    def __init__(self, client: LookerClient, project: str):
+        super().__init__(client)
+        self.project = project
+
+    def validate(self) -> List[DataTestError]:
+        errors = []
+        test_results = self.client.run_lookml_test(self.project)
+        for result in test_results:
+            if not result["success"]:
+                for error in result["errors"]:
+                    errors.append(
+                        DataTestError(
+                            path=f"{result['model_name']}/{result['test_name']}",
+                            message=error["message"],
+                        )
+                    )
+        return errors
 
 
 class SqlValidator(Validator):
