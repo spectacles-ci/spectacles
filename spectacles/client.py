@@ -123,6 +123,39 @@ class LookerClient:
 
         logger.info(f"Checked out branch {branch}")
 
+    def run_lookml_test(self, project: str, model: str = None) -> List[JsonDict]:
+        """Runs all LookML/data tests for a given project and model (optional)
+
+        This command only runs tests in production, as the Looker API doesn't currently
+        allow us to run data tests on a specific branch.
+
+        Args:
+            project: Name of the Looker project to use
+            model: Optional name of the LookML model to restrict testing to
+
+        Returns:
+            List[JsonDict]: JSON response containing any LookML/data test errors
+
+        """
+        logger.debug(f"Running LookML tests for project {project}")
+        url = utils.compose_url(
+            self.api_url, path=["projects", project, "lookml_tests", "run"]
+        )
+        if model is not None:
+            response = self.session.get(url=url, params={"model": model})
+        else:
+            response = self.session.get(url=url)
+
+        try:
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as error:
+            raise ApiConnectionError(
+                f"Failed to run data tests for project {project}\n"
+                f'Error raised: "{error}"'
+            )
+
+        return response.json()
+
     def get_lookml_models(self) -> List[JsonDict]:
         """Gets all models and explores from the LookmlModel endpoint.
 
