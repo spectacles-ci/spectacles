@@ -28,3 +28,13 @@ class SqlError(ValidationError):
 
     def __repr__(self):
         return self.message
+
+
+class DataTestError(ValidationError):
+    def __init__(self, path: str, message: str):
+        super().__init__(message)
+        self.path = path
+        self.message = message
+
+    def __repr__(self):
+        return self.message
