@@ -30,6 +30,14 @@ class Validator(ABC):  # pragma: no cover
 
 
 class DataTestValidator(Validator):
+    """Runs LookML/data tests for a given project.
+
+    Args:
+        client: Looker API client.
+        project: Name of the LookML project to validate.
+
+    """
+
     def __init__(self, client: LookerClient, project: str):
         super().__init__(client)
         self.project = project
@@ -62,8 +70,8 @@ class SqlValidator(Validator):
         project: Name of the LookML project to validate.
 
     Attributes:
-        timeout: aiohttp object to limit duration of running requests.
         project: LookML project object representation.
+        query_tasks: Mapping of query task IDs to LookML objects
 
     """
 

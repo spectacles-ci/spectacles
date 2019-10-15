@@ -123,7 +123,16 @@ class LookerClient:
 
         logger.info(f"Checked out branch {branch}")
 
-    def all_lookml_tests(self, project: str):
+    def all_lookml_tests(self, project: str) -> List[JsonDict]:
+        """Gets all LookML/data tests for a given project.
+
+        Args:
+            project: Name of the Looker project to use
+
+        Returns:
+            List[JsonDict]: JSON response containing all LookML/data tests
+
+        """
         logger.debug(f"Getting LookML tests for project {project}")
         url = utils.compose_url(
             self.api_url, path=["projects", project, "lookml_tests"]
