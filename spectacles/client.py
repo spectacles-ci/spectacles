@@ -72,10 +72,13 @@ class LookerClient:
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError as error:
+            details = utils.details_from_http_error(response)
             raise ApiConnectionError(
                 f"Failed to authenticate to {url}\n"
-                f'Attempted authentication with client ID "{client_id}"\n'
-                f'Error raised: "{error}"'
+                f"Attempted authentication with client ID {client_id}\n"
+                f"Looker API error encountered: {error}\n"
+                + "Message received from Looker's API: "
+                f'"{details}"'
             )
 
         access_token = response.json()["access_token"]
@@ -98,9 +101,12 @@ class LookerClient:
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError as error:
+            details = utils.details_from_http_error(response)
             raise ApiConnectionError(
                 f"Unable to update session to development workspace.\n"
-                f'Error raised: "{error}"'
+                f"Looker API error encountered: {error}\n"
+                + "Message received from Looker's API: "
+                f'"{details}"'
             )
 
         logger.debug(f"Setting Git branch to {branch}")
@@ -110,8 +116,14 @@ class LookerClient:
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError as error:
+            details = utils.details_from_http_error(response)
             raise ApiConnectionError(
-                f'Unable to set git branch to {branch}.\nError raised: "{error}"'
+                f"Unable to checkout Git branch {branch}. "
+                "If you have uncommitted changes on the current branch, "
+                "please commit or revert them, then try again.\n\n"
+                f"Looker API error encountered: {error}\n"
+                + "Message received from Looker's API: "
+                f'"{details}"'
             )
 
         logger.info(f"Checked out branch {branch}")
@@ -129,8 +141,12 @@ class LookerClient:
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError as error:
+            details = utils.details_from_http_error(response)
             raise ApiConnectionError(
-                f'Unable to retrieve explores.\nError raised: "{error}"'
+                f"Unable to retrieve explores.\n"
+                f"Looker API error encountered: {error}\n"
+                + "Message received from Looker's API: "
+                f'"{details}"'
             )
 
         return response.json()
@@ -155,9 +171,12 @@ class LookerClient:
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError as error:
+            details = utils.details_from_http_error(response)
             raise ApiConnectionError(
                 f'Unable to get dimensions for explore "{explore}".\n'
-                f'Error raised: "{error}"'
+                f"Looker API error encountered: {error}\n"
+                + "Message received from Looker's API: "
+                f'"{details}"'
             )
 
         return response.json()["fields"]["dimensions"]
@@ -267,5 +286,10 @@ class LookerClient:
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError as error:
-            raise ApiConnectionError(error)
+            details = utils.details_from_http_error(response)
+            raise ApiConnectionError(
+                f"Looker API error encountered: {error}\n"
+                + "Message received from Looker's API: "
+                f'"{details}"'
+            )
         return response.json()
