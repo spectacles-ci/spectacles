@@ -35,6 +35,11 @@ class DataTestValidator(Validator):
         self.project = project
 
     def validate(self) -> List[DataTestError]:
+        tests = self.client.all_lookml_tests(self.project)
+        test_count = len(tests)
+        printer.print_header(
+            f"Running {test_count} {'test' if test_count == 1 else 'tests'}"
+        )
         errors = []
         test_results = self.client.run_lookml_test(self.project)
         for result in test_results:
@@ -184,7 +189,7 @@ class SqlValidator(Validator):
         """
         explore_count = self._count_explores()
         printer.print_header(
-            f"Begin testing {explore_count} "
+            f"Testing {explore_count} "
             f"{'explore' if explore_count == 1 else 'explores'} "
             f"[{'batch' if batch else 'single-dimension'} mode]"
         )
