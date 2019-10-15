@@ -123,6 +123,23 @@ class LookerClient:
 
         logger.info(f"Checked out branch {branch}")
 
+    def all_lookml_tests(self, project: str):
+        logger.debug(f"Getting LookML tests for project {project}")
+        url = utils.compose_url(
+            self.api_url, path=["projects", project, "lookml_tests"]
+        )
+        response = self.session.get(url=url)
+
+        try:
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as error:
+            raise ApiConnectionError(
+                f"Failed to retrieve data tests for project {project}\n"
+                f'Error raised: "{error}"'
+            )
+
+        return response.json()
+
     def run_lookml_test(self, project: str, model: str = None) -> List[JsonDict]:
         """Runs all LookML/data tests for a given project and model (optional)
 
