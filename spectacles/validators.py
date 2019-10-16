@@ -170,20 +170,28 @@ class SqlValidator(Validator):
         )
 
         loop = asyncio.get_event_loop()
+        session = aiohttp.ClientSession(
+            loop=loop, headers=self.client.session.headers, timeout=self.timeout
+        )
         tasks = []
         for model in self.project.models:
             for explore in model.explores:
                 if batch:
-                    task = loop.create_task(self._query_explore(model, explore))
+                    task = loop.create_task(
+                        self._query_explore(session, model, explore)
+                    )
                     tasks.append(task)
                 else:
                     for dimension in explore.dimensions:
                         task = loop.create_task(
-                            self._query_dimension(model, explore, dimension)
+                            self._query_dimension(session, model, explore, dimension)
                         )
                         tasks.append(task)
 
         query_task_ids = list(loop.run_until_complete(asyncio.gather(*tasks)))
+        loop.run_until_complete(session.close())
+        loop.run_until_complete(asyncio.sleep(0.250))
+        loop.close()
 
         running_task_ids, errors = self._get_query_results(query_task_ids)
         while running_task_ids:
@@ -241,7 +249,9 @@ class SqlValidator(Validator):
 
         return still_running, errors
 
-    async def _query_explore(self, model: Model, explore: Explore) -> str:
+    async def _query_explore(
+        self, session: aiohttp.ClientSession, model: Model, explore: Explore
+    ) -> str:
         """Creates and executes a query with a single explore.
 
         Args:
@@ -253,19 +263,20 @@ class SqlValidator(Validator):
 
         """
         dimensions = [dimension.name for dimension in explore.dimensions]
-        async with aiohttp.ClientSession(
-            headers=self.client.session.headers, timeout=self.timeout
-        ) as session:
-            query_id = await self.client.create_query(
-                session, model.name, explore.name, dimensions
-            )
-            query_task_id = await self.client.create_query_task(session, query_id)
+        query_id = await self.client.create_query(
+            session, model.name, explore.name, dimensions
+        )
+        query_task_id = await self.client.create_query_task(session, query_id)
 
         self.query_tasks[query_task_id] = explore
         return query_task_id
 
     async def _query_dimension(
-        self, model: Model, explore: Explore, dimension: Dimension
+        self,
+        session: aiohttp.ClientSession,
+        model: Model,
+        explore: Explore,
+        dimension: Dimension,
     ) -> str:
         """Creates and executes a query with a single dimension.
 
@@ -278,13 +289,10 @@ class SqlValidator(Validator):
             str: Query task ID for the running query.
 
         """
-        async with aiohttp.ClientSession(
-            headers=self.client.session.headers, timeout=self.timeout
-        ) as session:
-            query_id = await self.client.create_query(
-                session, model.name, explore.name, [dimension.name]
-            )
-            query_task_id = await self.client.create_query_task(session, query_id)
+        query_id = await self.client.create_query(
+            session, model.name, explore.name, [dimension.name]
+        )
+        query_task_id = await self.client.create_query_task(session, query_id)
 
         self.query_tasks[query_task_id] = dimension
         return query_task_id
