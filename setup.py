@@ -28,8 +28,8 @@ setup(
     entry_points={"console_scripts": ["spectacles = spectacles.cli:main"]},
     author="Dylan Baker, Josh Temple",
     author_email="",
-    url="https://github.com/dbanalyticsco/spectacles",
-    download_url="https://github.com/dbanalyticsco/spectacles/tarball/" + __version__,
+    url="https://github.com/spectacles-ci/spectacles",
+    download_url="https://github.com/spectacles-ci/spectacles/tarball/" + __version__,
     long_description=long_description,
     long_description_content_type="text/markdown",
 )

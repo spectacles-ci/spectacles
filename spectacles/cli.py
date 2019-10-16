@@ -125,7 +125,7 @@ def handle_exceptions(function: Callable) -> Callable:
                 f"{error}\n\n"
                 + printer.dim(
                     "For support, please create an issue at "
-                    "https://github.com/dbanalyticsco/spectacles/issues"
+                    "https://github.com/spectacles-ci/spectacles/issues"
                 )
                 + "\n"
             )
@@ -137,7 +137,7 @@ def handle_exceptions(function: Callable) -> Callable:
                 f"Full error traceback logged to {LOG_FILEPATH}\n\n"
                 + printer.dim(
                     "For support, please create an issue at "
-                    "https://github.com/dbanalyticsco/spectacles/issues"
+                    "https://github.com/spectacles-ci/spectacles/issues"
                 )
                 + "\n"
             )
