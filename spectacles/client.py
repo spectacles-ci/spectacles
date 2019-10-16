@@ -253,7 +253,7 @@ class LookerClient:
         """
         # Using old-style string formatting so that strings are formatted lazily
         logger.debug("Starting query %d", query_id)
-        body = {"query_id": query_id, "result_format": "json"}
+        body = {"query_id": query_id, "result_format": "json_detail"}
         url = utils.compose_url(self.api_url, path=["query_tasks"])
         async with session.post(url=url, json=body) as response:
             result = await response.json()
