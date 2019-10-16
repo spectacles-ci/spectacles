@@ -7,10 +7,6 @@ import spectacles.utils as utils
 from spectacles.logger import GLOBAL_LOGGER as logger
 from spectacles.exceptions import SpectaclesException, ApiConnectionError
 
-from urllib3.exceptions import InsecureRequestWarning  # type: ignore
-
-requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
-
 JsonDict = Dict[str, Any]
 
 
@@ -49,7 +45,6 @@ class LookerClient:
         self.base_url: str = base_url.rstrip("/")
         self.api_url: str = f"{self.base_url}:{port}/api/{api_version}/"
         self.session: requests.Session = requests.Session()
-        self.session.verify = False
 
         self.authenticate(client_id, client_secret, api_version)
 
