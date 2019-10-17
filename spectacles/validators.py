@@ -193,11 +193,21 @@ class SqlValidator(Validator):
         loop.run_until_complete(asyncio.sleep(0.250))
         loop.close()
 
-        running_task_ids, errors = self._get_query_results(query_task_ids)
-        while running_task_ids:
-            running_task_ids, more_errors = self._get_query_results(running_task_ids)
+        MAX_QUERY_FETCH = 292
+
+        tasks_to_check = query_task_ids[:MAX_QUERY_FETCH]
+        del query_task_ids[:MAX_QUERY_FETCH]
+        logger.debug(f"{len(query_task_ids)} left in queue.")
+        tasks_to_check, errors = self._get_query_results(tasks_to_check)
+
+        while tasks_to_check or query_task_ids:
+            number_of_tasks_to_add = MAX_QUERY_FETCH - len(tasks_to_check)
+            tasks_to_check.extend(query_task_ids[:number_of_tasks_to_add])
+            del query_task_ids[:number_of_tasks_to_add]
+            logger.debug(f"{len(query_task_ids)} left in queue.")
+            tasks_to_check, more_errors = self._get_query_results(tasks_to_check)
             errors.extend(more_errors)
-            if running_task_ids:
+            if tasks_to_check or query_task_ids:
                 time.sleep(0.5)
 
         for model in sorted(self.project.models, key=lambda x: x.name):
