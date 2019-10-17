@@ -193,7 +193,7 @@ class SqlValidator(Validator):
         loop.run_until_complete(asyncio.sleep(0.250))
         loop.close()
 
-        MAX_QUERY_FETCH = 292
+        MAX_QUERY_FETCH = 250
 
         tasks_to_check = query_task_ids[:MAX_QUERY_FETCH]
         del query_task_ids[:MAX_QUERY_FETCH]
