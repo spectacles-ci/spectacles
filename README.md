@@ -1,6 +1,6 @@
 # spectacles
-[![CircleCI](https://circleci.com/gh/dbanalyticsco/spectacles/tree/master.svg?style=svg)](https://circleci.com/gh/dbanalyticsco/spectacles/tree/master)
-[![codecov](https://codecov.io/gh/dbanalyticsco/spectacles/branch/master/graph/badge.svg)](https://codecov.io/gh/dbanalyticsco/spectacles)
+[![CircleCI](https://circleci.com/gh/spectacles-ci/spectacles.svg?style=svg)](https://circleci.com/gh/spectacles-ci/spectacles)
+[![codecov](https://codecov.io/gh/spectacles-ci/spectacles/branch/master/graph/badge.svg)](https://codecov.io/gh/spectacles-ci/spectacles)
 
 `spectacles` helps verify that your Looker instance functions as expected. `spectacles` is a diagnostic tool that checks all explore **dimensions for database errors** and **validates Looks and Dashboards**.
 
