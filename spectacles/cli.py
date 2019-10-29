@@ -152,7 +152,7 @@ def main():
     parser = create_parser()
     args = parser.parse_args()
     for handler in logger.handlers:
-        if isinstance(handler, logging.StreamHandler):
+        if not isinstance(handler, logging.FileHandler):
             handler.setLevel(args.log_level)
 
     if args.command == "connect":
