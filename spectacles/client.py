@@ -250,7 +250,9 @@ class LookerClient:
         logger.debug("Starting query %d", query_id)
         body = {"query_id": query_id, "result_format": "json_detail"}
         url = utils.compose_url(self.api_url, path=["query_tasks"])
-        async with session.post(url=url, json=body) as response:
+        async with session.post(
+            url=url, json=body, params={"cache": "false"}
+        ) as response:
             result = await response.json()
             response.raise_for_status()
         query_task_id = result["id"]
