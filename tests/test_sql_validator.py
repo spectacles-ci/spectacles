@@ -5,7 +5,6 @@ import pytest
 from spectacles.lookml import Project, Model, Explore, Dimension
 from spectacles.client import LookerClient
 from spectacles.validators import SqlValidator
-from spectacles.exceptions import SpectaclesException, SqlError
 
 TEST_BASE_URL = "https://test.looker.com"
 TEST_CLIENT_ID = "test_client_id"
@@ -117,7 +116,6 @@ def test_get_query_results_task_error_list(
     lookml_object = project.models[0].explores[0]
     validator.query_tasks = {"query_task_a": lookml_object}
     mock_message = "An error message."
-    mock_sql = "SELECT * FROM orders"
     mock_response = {"status": "error", "data": [mock_message]}
     mock_get_query_task_multi_results.return_value = {"query_task_a": mock_response}
     still_running, errors = validator._get_query_results(["query_task_a"])
