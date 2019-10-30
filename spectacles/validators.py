@@ -197,14 +197,14 @@ class SqlValidator(Validator):
 
         tasks_to_check = query_task_ids[:MAX_QUERY_FETCH]
         del query_task_ids[:MAX_QUERY_FETCH]
-        logger.debug(f"{len(query_task_ids)} left in queue.")
+        logger.debug(f"{len(query_task_ids)} left in queue")
         tasks_to_check, errors = self._get_query_results(tasks_to_check)
 
         while tasks_to_check or query_task_ids:
             number_of_tasks_to_add = MAX_QUERY_FETCH - len(tasks_to_check)
             tasks_to_check.extend(query_task_ids[:number_of_tasks_to_add])
             del query_task_ids[:number_of_tasks_to_add]
-            logger.debug(f"{len(query_task_ids)} left in queue.")
+            logger.debug(f"{len(query_task_ids)} left in queue")
             tasks_to_check, more_errors = self._get_query_results(tasks_to_check)
             errors.extend(more_errors)
             if tasks_to_check or query_task_ids:
@@ -231,21 +231,38 @@ class SqlValidator(Validator):
         errors = []
 
         for query_task_id, query_result in results.items():
-            if query_result["status"] in ("running", "added"):
+            query_status = query_result["status"]
+            logger.debug("Query task %s status is %s", query_task_id, query_status)
+
+            if query_status in ("running", "added", "expired"):
                 still_running.append(query_task_id)
-            elif query_result["status"] == "error":
-                if isinstance(query_result["data"], dict):
-                    response_error = query_result["data"]["errors"][0]
+            elif query_status == "complete":
+                pass
+            elif query_status == "error":
+                response = query_result["data"]
+                if isinstance(response, dict):
+                    response_error = response["errors"][0]
                     message = response_error["message_details"]
-                    sql = query_result["data"]["sql"]
+                    if not isinstance(message, str):
+                        raise TypeError(
+                            "Unexpected message type. Expected a str, "
+                            f"received type {type(message)}: {message}"
+                        )
+                    sql = response["sql"]
                     if response_error.get("sql_error_loc"):
                         line_number = response_error["sql_error_loc"]["line"]
                     else:
                         line_number = None
-                elif isinstance(query_result["data"], list):
-                    message = query_result["data"][0]
+                elif isinstance(response, list):
+                    message = response[0]
                     line_number = None
                     sql = None
+                else:
+                    raise TypeError(
+                        f"Unexpected error response type. Expected a dict or a list, "
+                        f"received type {type(response)}: {response}"
+                    )
+
                 lookml_object = self.query_tasks[query_task_id]
                 error = SqlError(
                     path=lookml_object.name,
@@ -256,6 +273,11 @@ class SqlValidator(Validator):
                 )
                 lookml_object.error = error
                 errors.append(error)
+            else:
+                raise SpectaclesException(
+                    f'Unexpected query result status "{query_status}" '
+                    "returned by the Looker API"
+                )
 
         return still_running, errors
 
