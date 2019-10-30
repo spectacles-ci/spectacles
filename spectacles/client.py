@@ -7,10 +7,6 @@ import spectacles.utils as utils
 from spectacles.logger import GLOBAL_LOGGER as logger
 from spectacles.exceptions import SpectaclesException, ApiConnectionError
 
-from urllib3.exceptions import InsecureRequestWarning  # type: ignore
-
-requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
-
 JsonDict = Dict[str, Any]
 
 
@@ -49,7 +45,6 @@ class LookerClient:
         self.base_url: str = base_url.rstrip("/")
         self.api_url: str = f"{self.base_url}:{port}/api/{api_version}/"
         self.session: requests.Session = requests.Session()
-        self.session.verify = False
 
         self.authenticate(client_id, client_secret, api_version)
 
@@ -253,9 +248,11 @@ class LookerClient:
         """
         # Using old-style string formatting so that strings are formatted lazily
         logger.debug("Starting query %d", query_id)
-        body = {"query_id": query_id, "result_format": "json"}
+        body = {"query_id": query_id, "result_format": "json_detail"}
         url = utils.compose_url(self.api_url, path=["query_tasks"])
-        async with session.post(url=url, json=body) as response:
+        async with session.post(
+            url=url, json=body, params={"cache": "false"}
+        ) as response:
             result = await response.json()
             response.raise_for_status()
         query_task_id = result["id"]
