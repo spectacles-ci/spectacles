@@ -150,7 +150,7 @@ class SqlValidator(Validator):
 
         self.project.models = selected_models
 
-    def validate(self, batch: bool = False) -> List[SqlError]:
+    def validate(self, mode: str = "batch") -> List[SqlError]:
         """Queries selected explores and returns any errors.
 
         Args:
@@ -166,7 +166,7 @@ class SqlValidator(Validator):
         printer.print_header(
             f"Begin testing {explore_count} "
             f"{'explore' if explore_count == 1 else 'explores'} "
-            f"[{'batch' if batch else 'single-dimension'} mode]"
+            f"[{mode} mode]"
         )
 
         loop = asyncio.get_event_loop()
@@ -176,17 +176,22 @@ class SqlValidator(Validator):
         tasks = []
         for model in self.project.models:
             for explore in model.explores:
-                if batch:
+                if mode == "batch":
                     task = loop.create_task(
                         self._query_explore(session, model, explore)
                     )
                     tasks.append(task)
-                else:
+                elif mode == "single":
                     for dimension in explore.dimensions:
                         task = loop.create_task(
                             self._query_dimension(session, model, explore, dimension)
                         )
                         tasks.append(task)
+                else:
+                    raise NotImplementedError(
+                        f"{mode.title()} mode does not exist or "
+                        "has not been implemented yet."
+                    )
 
         query_task_ids = list(loop.run_until_complete(asyncio.gather(*tasks)))
         loop.run_until_complete(session.close())

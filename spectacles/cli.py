@@ -173,7 +173,7 @@ def main():
             args.client_secret,
             args.port,
             args.api_version,
-            args.batch,
+            args.mode,
         )
 
 
@@ -285,7 +285,9 @@ def _build_sql_subparser(
         "--branch", action=EnvVarAction, env_var="LOOKER_GIT_BRANCH", required=True
     )
     subparser.add_argument("--explores", nargs="+", default=["*.*"])
-    subparser.add_argument("--batch", action="store_true")
+    subparser.add_argument(
+        "--mode", choices=["batch", "single", "hybrid"], default="batch"
+    )
 
 
 def connect(
@@ -313,7 +315,7 @@ def sql(
     client_secret,
     port,
     api_version,
-    batch,
+    mode,
 ) -> None:
     """Runs and validates the SQL for each selected LookML dimension.
 
@@ -336,7 +338,7 @@ def sql(
     runner = Runner(
         base_url, project, branch, client_id, client_secret, port, api_version
     )
-    errors = runner.validate_sql(explores, batch)
+    errors = runner.validate_sql(explores, mode)
     if errors:
         for error in sorted(errors, key=lambda x: x["path"]):
             printer.print_sql_error(error)
