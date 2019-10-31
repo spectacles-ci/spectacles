@@ -226,7 +226,8 @@ def _build_base_subparser() -> argparse.ArgumentParser:
         action=EnvVarAction,
         env_var="LOOKER_CLIENT_SECRET",
         required=True,
-        help="The client secret of the Looker user that spectacles will authenticate as.",
+        help="The client secret of the Looker user that spectacles \
+            will authenticate as.",
     )
     base_subparser.add_argument(
         "--port",
@@ -251,7 +252,8 @@ def _build_base_subparser() -> argparse.ArgumentParser:
         dest="log_level",
         const=logging.DEBUG,
         default=logging.INFO,
-        help="Display debug logging during spectacles execution. Useful for debugging and making bug reports.",
+        help="Display debug logging during spectacles execution. \
+            Useful for debugging and making bug reports.",
     )
 
     return base_subparser
