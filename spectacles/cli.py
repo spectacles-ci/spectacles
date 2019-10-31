@@ -202,21 +202,39 @@ def _build_base_subparser() -> argparse.ArgumentParser:
 
     """
     base_subparser = argparse.ArgumentParser(add_help=False)
-    base_subparser.add_argument("--config-file", action=YamlConfigAction)
     base_subparser.add_argument(
-        "--base-url", action=EnvVarAction, env_var="LOOKER_BASE_URL", required=True
+        "--config-file",
+        action=YamlConfigAction,
+        help="The path to an optional YAML config file.",
     )
     base_subparser.add_argument(
-        "--client-id", action=EnvVarAction, env_var="LOOKER_CLIENT_ID", required=True
+        "--base-url",
+        action=EnvVarAction,
+        env_var="LOOKER_BASE_URL",
+        required=True,
+        help="The URL of your Looker instance, e.g. https://company-name.looker.com",
+    )
+    base_subparser.add_argument(
+        "--client-id",
+        action=EnvVarAction,
+        env_var="LOOKER_CLIENT_ID",
+        required=True,
+        help="The client ID of the Looker user that spectacles will authenticate as.",
     )
     base_subparser.add_argument(
         "--client-secret",
         action=EnvVarAction,
         env_var="LOOKER_CLIENT_SECRET",
         required=True,
+        help="The client secret of the Looker user that spectacles will authenticate as.",
     )
     base_subparser.add_argument(
-        "--port", type=int, action=EnvVarAction, env_var="LOOKER_PORT", default=19999
+        "--port",
+        type=int,
+        action=EnvVarAction,
+        env_var="LOOKER_PORT",
+        default=19999,
+        help="The port of your Looker instance’s API. The default is port 19999.",
     )
     base_subparser.add_argument(
         "--api-version",
@@ -224,6 +242,7 @@ def _build_base_subparser() -> argparse.ArgumentParser:
         action=EnvVarAction,
         env_var="LOOKER_API_VERSION",
         default=3.1,
+        help="The version of the Looker API to use. The default is version 3.1.",
     )
     base_subparser.add_argument(
         "-v",
@@ -232,6 +251,7 @@ def _build_base_subparser() -> argparse.ArgumentParser:
         dest="log_level",
         const=logging.DEBUG,
         default=logging.INFO,
+        help="Display debug logging during spectacles execution. Useful for debugging and making bug reports.",
     )
 
     return base_subparser
@@ -279,12 +299,25 @@ def _build_sql_subparser(
     )
 
     subparser.add_argument(
-        "--project", action=EnvVarAction, env_var="LOOKER_PROJECT", required=True
+        "--project",
+        action=EnvVarAction,
+        env_var="LOOKER_PROJECT",
+        required=True,
+        help="The LookML project you want to test.",
     )
     subparser.add_argument(
-        "--branch", action=EnvVarAction, env_var="LOOKER_GIT_BRANCH", required=True
+        "--branch",
+        action=EnvVarAction,
+        env_var="LOOKER_GIT_BRANCH",
+        required=True,
+        help="The branch of your project that spectacles will use to run queries.",
     )
-    subparser.add_argument("--explores", nargs="+", default=["*.*"])
+    subparser.add_argument(
+        "--explores",
+        nargs="+",
+        default=["*.*"],
+        help="Specify the explores spectacles should test.",
+    )
     subparser.add_argument("--batch", action="store_true")
 
 
