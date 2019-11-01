@@ -236,16 +236,17 @@ class SqlValidator(Validator):
     def _extract_error_details(query_result: dict) -> dict:
         data = query_result["data"]
         if isinstance(data, dict):
-            error = data["errors"][0]
-            message = error["message_details"]
+            errors = data.get("errors") or [data.get("error")]
+            first_error = errors[0]
+            message = first_error["message_details"]
             if not isinstance(message, str):
                 raise TypeError(
                     "Unexpected message type. Expected a str, "
                     f"received type {type(message)}: {message}"
                 )
             sql = data["sql"]
-            if error.get("sql_error_loc"):
-                line_number = error["sql_error_loc"]["line"]
+            if first_error.get("sql_error_loc"):
+                line_number = first_error["sql_error_loc"]["line"]
             else:
                 line_number = None
         elif isinstance(data, list):
@@ -285,7 +286,14 @@ class SqlValidator(Validator):
                 )
 
             if query_status == "error":
-                details = self._extract_error_details(query_result)
+                try:
+                    details = self._extract_error_details(query_result)
+                except (KeyError, TypeError, IndexError) as error:
+                    raise SpectaclesException(
+                        "Encountered an unexpected API query result format, "
+                        "unable to extract error details. "
+                        f"The query result was: {query_result}"
+                    ) from error
                 error = SqlError(
                     path=lookml_object.name,
                     url=getattr(lookml_object, "url", None),
