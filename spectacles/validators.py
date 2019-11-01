@@ -294,13 +294,13 @@ class SqlValidator(Validator):
                         "unable to extract error details. "
                         f"The query result was: {query_result}"
                     ) from error
-                error = SqlError(
+                sql_error = SqlError(
                     path=lookml_object.name,
                     url=getattr(lookml_object, "url", None),
                     **details,
                 )
-                lookml_object.error = error
-                errors.append(error)
+                lookml_object.error = sql_error
+                errors.append(sql_error)
 
         return still_running, errors
 
