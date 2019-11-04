@@ -9,11 +9,12 @@ class LookMlObject:
 
 
 class Dimension(LookMlObject):
-    def __init__(self, name: str, type: str, sql: str, url: str):
+    def __init__(self, name: str, type: str, sql: str, url: Optional[str]):
         self.name = name
         self.type = type
         self.sql = sql
         self.url = url
+        self.queried: bool = False
         self.error: Optional[SqlError] = None
         if re.search(r"spectacles\s*:\s*ignore", sql, re.IGNORECASE):
             self.ignore = True
@@ -39,7 +40,7 @@ class Dimension(LookMlObject):
 
     @property
     def errored(self):
-        return bool(self.error)
+        return bool(self.error) if self.queried else None
 
     @errored.setter
     def errored(self, value):
@@ -62,6 +63,7 @@ class Explore(LookMlObject):
     def __init__(self, name: str, dimensions: List[Dimension] = None):
         self.name = name
         self.dimensions = [] if dimensions is None else dimensions
+        self.queried: bool = False
         self.error: Optional[SqlError] = None
 
     def __eq__(self, other):
@@ -72,9 +74,12 @@ class Explore(LookMlObject):
 
     @property
     def errored(self):
-        return bool(self.error) or any(
-            dimensions.errored for dimensions in self.dimensions
-        )
+        if self.queried:
+            return bool(self.error) or any(
+                dimension.errored for dimension in self.dimensions
+            )
+        else:
+            return None
 
     @errored.setter
     def errored(self, value: bool):
@@ -82,6 +87,17 @@ class Explore(LookMlObject):
             raise TypeError("Value for errored must be boolean.")
         for dimensions in self.dimensions:
             dimensions.errored = value
+
+    @property
+    def queried(self):
+        return any(dimension.queried for dimension in self.dimensions)
+
+    @queried.setter
+    def queried(self, value: bool):
+        if not isinstance(value, bool):
+            raise TypeError("Value for queried must be boolean.")
+        for dimensions in self.dimensions:
+            dimensions.queried = value
 
     def get_errored_dimensions(self):
         for dimension in self.dimensions:
@@ -115,7 +131,10 @@ class Model(LookMlObject):
 
     @property
     def errored(self):
-        return any(explore.errored for explore in self.explores)
+        if self.queried:
+            return any(explore.errored for explore in self.explores)
+        else:
+            return None
 
     @errored.setter
     def errored(self, value: bool):
@@ -123,6 +142,17 @@ class Model(LookMlObject):
             raise TypeError("Value for errored must be boolean.")
         for explore in self.explores:
             explore.errored = value
+
+    @property
+    def queried(self):
+        return any(explore.queried for explore in self.explores)
+
+    @queried.setter
+    def queried(self, value: bool):
+        if not isinstance(value, bool):
+            raise TypeError("Value for queried must be boolean.")
+        for explore in self.explores:
+            explore.queried = value
 
     def get_errored_explores(self):
         for explore in self.explores:
@@ -150,7 +180,10 @@ class Project(LookMlObject):
 
     @property
     def errored(self):
-        return any(model.errored for model in self.models)
+        if self.queried:
+            return any(model.errored for model in self.models)
+        else:
+            return None
 
     @errored.setter
     def errored(self, value: bool):
@@ -158,6 +191,17 @@ class Project(LookMlObject):
             raise TypeError("Value for errored must be boolean.")
         for model in self.models:
             model.errored = value
+
+    @property
+    def queried(self):
+        return any(model.queried for model in self.models)
+
+    @queried.setter
+    def queried(self, value: bool):
+        if not isinstance(value, bool):
+            raise TypeError("Value for queried must be boolean.")
+        for model in self.models:
+            model.queried = value
 
     def get_errored_models(self):
         for model in self.models:

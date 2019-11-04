@@ -36,8 +36,8 @@ class Runner:
         )
         self.client.update_session(project, branch)
 
-    def validate_sql(self, selectors: List[str], batch: bool = False) -> List[dict]:
+    def validate_sql(self, selectors: List[str], mode: str = "batch") -> List[dict]:
         sql_validator = SqlValidator(self.client, self.project)
         sql_validator.build_project(selectors)
-        errors = sql_validator.validate(batch)
+        errors = sql_validator.validate(mode)
         return [vars(error) for error in errors]
