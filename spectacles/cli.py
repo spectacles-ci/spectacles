@@ -174,6 +174,7 @@ def main():
             args.port,
             args.api_version,
             args.mode,
+            args.remote_reset,
         )
 
 
@@ -333,6 +334,13 @@ def _build_sql_subparser(
             query per explore. In hybrid mode, the SQL validator will run in \
             batch mode and then run errored explores in single-dimension mode.",
     )
+    subparser.add_argument(
+        "--remote-reset",
+        action="store_true",
+        help="When set to true, the SQL validator will tell Looker to reset the \
+            user's branch to the revision of the branch that is on the remote. \
+            This will delete any uncommited changes in the user's workspace.",
+    )
 
 
 def connect(
@@ -352,10 +360,18 @@ def sql(
     port,
     api_version,
     mode,
+    remote_reset,
 ) -> None:
     """Runs and validates the SQL for each selected LookML dimension."""
     runner = Runner(
-        base_url, project, branch, client_id, client_secret, port, api_version
+        base_url,
+        project,
+        branch,
+        client_id,
+        client_secret,
+        port,
+        api_version,
+        remote_reset,
     )
     errors = runner.validate_sql(explores, mode)
     if errors:
