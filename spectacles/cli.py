@@ -173,7 +173,7 @@ def main():
             args.client_secret,
             args.port,
             args.api_version,
-            args.batch,
+            args.mode,
         )
 
 
@@ -323,22 +323,16 @@ def _build_sql_subparser(
             The '*' wildcard selects all models or explores. For instance,\
             'model_name.*' would select all explores in the 'model_name' model.",
     )
-    subparser.add_argument("--batch", action="store_true")
+    subparser.add_argument(
+        "--mode", choices=["batch", "single", "hybrid"], default="batch"
+    )
+
 
 
 def connect(
     base_url: str, client_id: str, client_secret: str, port: int, api_version: float
 ) -> None:
-    """Tests the connection and credentials for the Looker API.
-
-    Args:
-        base_url: Base URL for the Looker instance, e.g. https://mycompany.looker.com.
-        client_id: Looker API client ID.
-        client_secret: Looker API client secret.
-        port: Desired API port to use for requests.
-        api_version: Desired API version to use for requests.
-
-    """
+    """Tests the connection and credentials for the Looker API."""
     LookerClient(base_url, client_id, client_secret, port, api_version)
 
 
@@ -351,30 +345,13 @@ def sql(
     client_secret,
     port,
     api_version,
-    batch,
+    mode,
 ) -> None:
-    """Runs and validates the SQL for each selected LookML dimension.
-
-    Args:
-        project: Name of the Looker project to use.
-        branch: Name of the Git branch to check out.
-        explores: List of selector strings in 'model_name.explore_name' format.
-            The '*' wildcard selects all models or explores. For instance,
-            'model_name.*' would select all explores in the 'model_name' model.
-        base_url: Base URL for the Looker instance, e.g. https://mycompany.looker.com.
-        client_id: Looker API client ID.
-        client_secret: Looker API client secret.
-        port: Desired API port to use for requests.
-        api_version: Desired API version to use for requests.
-        batch: When true, runs one query per explore (using all dimensions). When
-            false, runs one query per dimension. Batch mode increases query speed
-            but can only return the first error encountered for each dimension.
-
-    """
+    """Runs and validates the SQL for each selected LookML dimension."""
     runner = Runner(
         base_url, project, branch, client_id, client_secret, port, api_version
     )
-    errors = runner.validate_sql(explores, batch)
+    errors = runner.validate_sql(explores, mode)
     if errors:
         for error in sorted(errors, key=lambda x: x["path"]):
             printer.print_sql_error(error)

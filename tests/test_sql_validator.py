@@ -5,6 +5,7 @@ import pytest
 from spectacles.lookml import Project, Model, Explore, Dimension
 from spectacles.client import LookerClient
 from spectacles.validators import SqlValidator
+from spectacles.exceptions import SpectaclesException
 
 TEST_BASE_URL = "https://test.looker.com"
 TEST_CLIENT_ID = "test_client_id"
@@ -90,7 +91,11 @@ def test_get_query_results_task_running(mock_get_query_task_multi_results, valid
 
 
 @patch("spectacles.client.LookerClient.get_query_task_multi_results")
-def test_get_query_results_task_complete(mock_get_query_task_multi_results, validator):
+def test_get_query_results_task_complete(
+    mock_get_query_task_multi_results, validator, project
+):
+    lookml_object = project.models[0].explores[0]
+    validator.query_tasks = {"query_task_a": lookml_object}
     mock_response = {"status": "complete"}
     mock_get_query_task_multi_results.return_value = {"query_task_a": mock_response}
     still_running, errors = validator._get_query_results(["query_task_a"])
@@ -136,11 +141,13 @@ def test_get_query_results_task_error_list(
 
 @patch("spectacles.client.LookerClient.get_query_task_multi_results")
 def test_get_query_results_task_error_other(
-    mock_get_query_task_multi_results, validator
+    mock_get_query_task_multi_results, validator, project
 ):
+    lookml_object = project.models[0].explores[0]
+    validator.query_tasks = {"query_task_a": lookml_object}
     mock_response = {"status": "error", "data": "some string"}
     mock_get_query_task_multi_results.return_value = {"query_task_a": mock_response}
-    with pytest.raises(TypeError):
+    with pytest.raises(SpectaclesException):
         still_running, errors = validator._get_query_results(["query_task_a"])
 
 
@@ -157,5 +164,5 @@ def test_get_query_results_non_str_message_details(
         "data": {"errors": [{"message_details": mock_message}], "sql": mock_sql},
     }
     mock_get_query_task_multi_results.return_value = {"query_task_a": mock_response}
-    with pytest.raises(TypeError):
+    with pytest.raises(SpectaclesException):
         still_running, errors = validator._get_query_results(["query_task_a"])

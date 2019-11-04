@@ -159,7 +159,7 @@ class SqlValidator(Validator):
 
         self.project.models = selected_models
 
-    def validate(self, batch: bool = False) -> List[SqlError]:
+    def validate(self, mode: str = "batch") -> List[SqlError]:
         """Queries selected explores and returns any errors.
 
         Args:
@@ -175,22 +175,42 @@ class SqlValidator(Validator):
         printer.print_header(
             f"Begin testing {explore_count} "
             f"{'explore' if explore_count == 1 else 'explores'} "
-            f"[{'batch' if batch else 'single-dimension'} mode]"
+            f"[{mode} mode]"
         )
 
-        loop = asyncio.get_event_loop()
+        errors = self._query(mode)
+        if mode == "hybrid":
+            errors = self._query(mode)
+
+        for model in sorted(self.project.models, key=lambda x: x.name):
+            for explore in sorted(model.explores, key=lambda x: x.name):
+                if explore.errored:
+                    logger.info(
+                        f"✗ {printer.red(model.name + '.' + explore.name)} failed"
+                    )
+                else:
+                    logger.info(
+                        f"✓ {printer.green(model.name + '.' + explore.name)} passed"
+                    )
+
+        return errors
+
+    def _query(self, mode: str = "batch") -> List[SqlError]:
+        loop = asyncio.new_event_loop()
         session = aiohttp.ClientSession(
             loop=loop, headers=self.client.session.headers, timeout=self.timeout
         )
         tasks = []
         for model in self.project.models:
             for explore in model.explores:
-                if batch:
+                if mode == "batch" or (mode == "hybrid" and not explore.queried):
+                    logger.debug("Querying one explore at at time")
                     task = loop.create_task(
                         self._query_explore(session, model, explore)
                     )
                     tasks.append(task)
-                else:
+                elif mode == "single" or (mode == "hybrid" and explore.errored):
+                    logger.debug("Querying one dimension at at time")
                     for dimension in explore.dimensions:
                         task = loop.create_task(
                             self._query_dimension(session, model, explore, dimension)
@@ -219,18 +239,37 @@ class SqlValidator(Validator):
             if tasks_to_check or query_task_ids:
                 time.sleep(0.5)
 
-        for model in sorted(self.project.models, key=lambda x: x.name):
-            for explore in sorted(model.explores, key=lambda x: x.name):
-                if explore.errored:
-                    logger.info(
-                        f"✗ {printer.red(model.name + '.' + explore.name)} failed"
-                    )
-                else:
-                    logger.info(
-                        f"✓ {printer.green(model.name + '.' + explore.name)} passed"
-                    )
-
         return errors
+
+    @staticmethod
+    def _extract_error_details(query_result: dict) -> dict:
+        data = query_result["data"]
+        if isinstance(data, dict):
+            errors = data.get("errors") or [data.get("error")]
+            first_error = errors[0]
+            message = first_error["message_details"]
+            if not isinstance(message, str):
+                raise TypeError(
+                    "Unexpected message type. Expected a str, "
+                    f"received type {type(message)}: {message}"
+                )
+            sql = data["sql"]
+            if first_error.get("sql_error_loc"):
+                line_number = first_error["sql_error_loc"]["line"]
+            else:
+                line_number = None
+        elif isinstance(data, list):
+            message = data[0]
+            line_number = None
+            sql = None
+        else:
+            raise TypeError(
+                "Unexpected error response type. "
+                "Expected a dict or a list, "
+                f"received type {type(data)}: {data}"
+            )
+
+        return {"message": message, "sql": sql, "line_number": line_number}
 
     def _get_query_results(
         self, query_task_ids: List[str]
@@ -245,48 +284,32 @@ class SqlValidator(Validator):
 
             if query_status in ("running", "added", "expired"):
                 still_running.append(query_task_id)
-            elif query_status == "complete":
-                pass
-            elif query_status == "error":
-                response = query_result["data"]
-                if isinstance(response, dict):
-                    response_error = response["errors"][0]
-                    message = response_error["message_details"]
-                    if not isinstance(message, str):
-                        raise TypeError(
-                            "Unexpected message type. Expected a str, "
-                            f"received type {type(message)}: {message}"
-                        )
-                    sql = response["sql"]
-                    if response_error.get("sql_error_loc"):
-                        line_number = response_error["sql_error_loc"]["line"]
-                    else:
-                        line_number = None
-                elif isinstance(response, list):
-                    message = response[0]
-                    line_number = None
-                    sql = None
-                else:
-                    raise TypeError(
-                        f"Unexpected error response type. Expected a dict or a list, "
-                        f"received type {type(response)}: {response}"
-                    )
-
+                continue
+            elif query_status in ("complete", "error"):
                 lookml_object = self.query_tasks[query_task_id]
-                error = SqlError(
-                    path=lookml_object.name,
-                    message=message,
-                    sql=sql,
-                    line_number=line_number,
-                    url=getattr(lookml_object, "url", None),
-                )
-                lookml_object.error = error
-                errors.append(error)
+                lookml_object.queried = True
             else:
                 raise SpectaclesException(
                     f'Unexpected query result status "{query_status}" '
                     "returned by the Looker API"
                 )
+
+            if query_status == "error":
+                try:
+                    details = self._extract_error_details(query_result)
+                except (KeyError, TypeError, IndexError) as error:
+                    raise SpectaclesException(
+                        "Encountered an unexpected API query result format, "
+                        "unable to extract error details. "
+                        f"The query result was: {query_result}"
+                    ) from error
+                sql_error = SqlError(
+                    path=lookml_object.name,
+                    url=getattr(lookml_object, "url", None),
+                    **details,
+                )
+                lookml_object.error = sql_error
+                errors.append(sql_error)
 
         return still_running, errors
 
