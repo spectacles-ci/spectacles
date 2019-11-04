@@ -328,10 +328,10 @@ def _build_sql_subparser(
         choices=["batch", "single", "hybrid"],
         default="batch",
         help="Specify the mode the SQL validator should run.\
-        	In single-dimension mode, the SQL validator will run one query \
-        	per dimension. In batch mode, the SQL validator will create one \
-        	query per explore. In hybrid mode, the SQL validator will run in \
-        	batch mode and then run errored explores in single-dimension mode.",
+            In single-dimension mode, the SQL validator will run one query \
+            per dimension. In batch mode, the SQL validator will create one \
+            query per explore. In hybrid mode, the SQL validator will run in \
+            batch mode and then run errored explores in single-dimension mode.",
     )
 
 
