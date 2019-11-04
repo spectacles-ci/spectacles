@@ -328,7 +328,6 @@ def _build_sql_subparser(
     )
 
 
-
 def connect(
     base_url: str, client_id: str, client_secret: str, port: int, api_version: float
 ) -> None:
