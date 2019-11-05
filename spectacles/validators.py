@@ -197,6 +197,7 @@ class SqlValidator(Validator):
 
     def _query(self, mode: str = "batch") -> List[SqlError]:
         loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
         session = aiohttp.ClientSession(
             loop=loop, headers=self.client.session.headers, timeout=self.timeout
         )
