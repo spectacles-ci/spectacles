@@ -13,6 +13,16 @@ You can run the following validators as subcommands (e.g. `spectacles sql`):
 - **Content** validation _(coming soon)_
 - **Linting** _(coming soon)_
 
+## Installation and Documentation
+
+spectacles is distributed on PyPi and is easy to install with pip:
+
+```shell
+pip install spectacles
+```
+
+You can find detailed documentation on our website [spectacles.dev](https://spectacles.dev/docs/).
+
 ## Why we built this
 
 Occasionally, when we make changes to LookML or our data warehouse, we break downstream experiences in Looker. For example:
@@ -25,7 +35,3 @@ Occasionally, when we make changes to LookML or our data warehouse, we break dow
 We believe in the power of continuous integration for analytics. We believe that automated testing should catch these errors before they are ever pushed to production. Automated testing allows developers to maintain their speed of development high, without compromising on the quality of their code or the quality data they produce.
 
 We wanted a single tool to perform these checks for us and establish baseline performance expectations for our Looker instances. We built spectacles to enhance the business intelligence layer of analytics CI pipelines.
-
-## Documentation
-
-You can find documentation [here](https://spectacles.dev/docs/).
