@@ -147,39 +147,58 @@ class LookerClient:
             branch: Name of the Git branch to check out.
 
         """
-        logger.debug("Updating session to use development workspace")
-        url = utils.compose_url(self.api_url, path=["session"])
-        body = {"workspace_id": "dev"}
-        response = self.session.patch(url=url, json=body)
-        try:
-            response.raise_for_status()
-        except requests.exceptions.HTTPError as error:
-            details = utils.details_from_http_error(response)
-            raise ApiConnectionError(
-                f"Unable to update session to development workspace.\n"
-                f"Looker API error encountered: {error}\n"
-                + "Message received from Looker's API: "
-                f'"{details}"'
-            )
+        if branch == "master":
+            logger.debug("Updating session to use production workspace")
+            url = utils.compose_url(self.api_url, path=["session"])
+            body = {"workspace_id": "production"}
+            response = self.session.patch(url=url, json=body)
+            try:
+                response.raise_for_status()
+            except requests.exceptions.HTTPError as error:
+                details = utils.details_from_http_error(response)
+                raise ApiConnectionError(
+                    f"Unable to update session to production workspace.\n"
+                    f"Looker API error encountered: {error}\n"
+                    + "Message received from Looker's API: "
+                    f'"{details}"'
+                )
 
-        logger.debug(f"Setting Git branch to {branch}")
-        url = utils.compose_url(self.api_url, path=["projects", project, "git_branch"])
-        body = {"name": branch}
-        response = self.session.put(url=url, json=body)
-        try:
-            response.raise_for_status()
-        except requests.exceptions.HTTPError as error:
-            details = utils.details_from_http_error(response)
-            raise ApiConnectionError(
-                f"Unable to checkout Git branch {branch}. "
-                "If you have uncommitted changes on the current branch, "
-                "please commit or revert them, then try again.\n\n"
-                f"Looker API error encountered: {error}\n"
-                + "Message received from Looker's API: "
-                f'"{details}"'
-            )
+        else:
+            logger.debug("Updating session to use development workspace")
+            url = utils.compose_url(self.api_url, path=["session"])
+            body = {"workspace_id": "dev"}
+            response = self.session.patch(url=url, json=body)
+            try:
+                response.raise_for_status()
+            except requests.exceptions.HTTPError as error:
+                details = utils.details_from_http_error(response)
+                raise ApiConnectionError(
+                    f"Unable to update session to development workspace.\n"
+                    f"Looker API error encountered: {error}\n"
+                    + "Message received from Looker's API: "
+                    f'"{details}"'
+                )
 
-        logger.info(f"Checked out branch {branch}")
+            logger.debug(f"Setting Git branch to {branch}")
+            url = utils.compose_url(
+                self.api_url, path=["projects", project, "git_branch"]
+            )
+            body = {"name": branch}
+            response = self.session.put(url=url, json=body)
+            try:
+                response.raise_for_status()
+            except requests.exceptions.HTTPError as error:
+                details = utils.details_from_http_error(response)
+                raise ApiConnectionError(
+                    f"Unable to checkout Git branch {branch}. "
+                    "If you have uncommitted changes on the current branch, "
+                    "please commit or revert them, then try again.\n\n"
+                    f"Looker API error encountered: {error}\n"
+                    + "Message received from Looker's API: "
+                    f'"{details}"'
+                )
+
+            logger.info(f"Checked out branch {branch}")
 
     def get_lookml_models(self) -> List[JsonDict]:
         """Gets all models and explores from the LookmlModel endpoint.
