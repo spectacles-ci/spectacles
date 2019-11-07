@@ -179,7 +179,7 @@ class SqlValidator(Validator):
         )
 
         errors = self._query(mode)
-        if mode == "hybrid":
+        if mode == "hybrid" and self.project.errored:
             errors = self._query(mode)
 
         for model in sorted(self.project.models, key=lambda x: x.name):
