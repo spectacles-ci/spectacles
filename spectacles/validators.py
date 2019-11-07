@@ -7,7 +7,7 @@ import aiohttp
 from spectacles.client import LookerClient
 from spectacles.lookml import Project, Model, Explore, Dimension
 from spectacles.logger import GLOBAL_LOGGER as logger
-from spectacles.exceptions import SqlError, SpectaclesException
+from spectacles.exceptions import SqlError, DataTestError, SpectaclesException
 import spectacles.printer as printer
 
 
@@ -29,6 +29,39 @@ class Validator(ABC):  # pragma: no cover
         raise NotImplementedError
 
 
+class DataTestValidator(Validator):
+    """Runs LookML/data tests for a given project.
+
+    Args:
+        client: Looker API client.
+        project: Name of the LookML project to validate.
+
+    """
+
+    def __init__(self, client: LookerClient, project: str):
+        super().__init__(client)
+        self.project = project
+
+    def validate(self) -> List[DataTestError]:
+        tests = self.client.all_lookml_tests(self.project)
+        test_count = len(tests)
+        printer.print_header(
+            f"Running {test_count} {'test' if test_count == 1 else 'tests'}"
+        )
+        errors = []
+        test_results = self.client.run_lookml_test(self.project)
+        for result in test_results:
+            if not result["success"]:
+                for error in result["errors"]:
+                    errors.append(
+                        DataTestError(
+                            path=f"{result['model_name']}/{result['test_name']}",
+                            message=error["message"],
+                        )
+                    )
+        return errors
+
+
 class SqlValidator(Validator):
     """Runs and validates the SQL for each selected LookML dimension.
 
@@ -37,8 +70,8 @@ class SqlValidator(Validator):
         project: Name of the LookML project to validate.
 
     Attributes:
-        timeout: aiohttp object to limit duration of running requests.
         project: LookML project object representation.
+        query_tasks: Mapping of query task IDs to LookML objects
 
     """
 
@@ -173,7 +206,7 @@ class SqlValidator(Validator):
         """
         explore_count = self._count_explores()
         printer.print_header(
-            f"Begin testing {explore_count} "
+            f"Testing {explore_count} "
             f"{'explore' if explore_count == 1 else 'explores'} "
             f"[{mode} mode]"
         )

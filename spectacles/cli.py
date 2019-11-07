@@ -156,7 +156,7 @@ def main():
             handler.setLevel(args.log_level)
 
     if args.command == "connect":
-        connect(
+        run_connect(
             args.base_url,
             args.client_id,
             args.client_secret,
@@ -164,7 +164,7 @@ def main():
             args.api_version,
         )
     elif args.command == "sql":
-        sql(
+        run_sql(
             args.project,
             args.branch,
             args.explores,
@@ -174,6 +174,16 @@ def main():
             args.port,
             args.api_version,
             args.mode,
+        )
+    elif args.command == "assert":
+        run_assert(
+            args.project,
+            args.branch,
+            args.base_url,
+            args.client_id,
+            args.client_secret,
+            args.port,
+            args.api_version,
         )
 
 
@@ -191,6 +201,7 @@ def create_parser() -> argparse.ArgumentParser:
     base_subparser = _build_base_subparser()
     _build_connect_subparser(subparser_action, base_subparser)
     _build_sql_subparser(subparser_action, base_subparser)
+    _build_assert_subparser(subparser_action, base_subparser)
     return parser
 
 
@@ -335,14 +346,56 @@ def _build_sql_subparser(
     )
 
 
-def connect(
+def _build_assert_subparser(
+    subparser_action: argparse._SubParsersAction,
+    base_subparser: argparse.ArgumentParser,
+) -> None:
+    """Returns the subparser for the subcommand `assert`.
+
+    Args:
+        subparser_action: Description of parameter `subparser_action`.
+        base_subparser: Description of parameter `base_subparser`.
+
+    Returns:
+        type: Description of returned object.
+
+    """
+    subparser = subparser_action.add_parser(
+        "assert", parents=[base_subparser], help="Run Looker data tests."
+    )
+
+    subparser.add_argument(
+        "--project", action=EnvVarAction, env_var="LOOKER_PROJECT", required=True
+    )
+    subparser.add_argument(
+        "--branch", action=EnvVarAction, env_var="LOOKER_GIT_BRANCH", required=True
+    )
+
+
+def run_connect(
     base_url: str, client_id: str, client_secret: str, port: int, api_version: float
 ) -> None:
     """Tests the connection and credentials for the Looker API."""
     LookerClient(base_url, client_id, client_secret, port, api_version)
 
 
-def sql(
+def run_assert(
+    project, branch, base_url, client_id, client_secret, port, api_version
+) -> None:
+    runner = Runner(
+        base_url, project, branch, client_id, client_secret, port, api_version
+    )
+    errors = runner.validate_data_tests()
+    if errors:
+        for error in sorted(errors, key=lambda x: x["path"]):
+            printer.print_data_test_error(error)
+        logger.info("")
+        raise ValidationError
+    else:
+        logger.info("")
+
+
+def run_sql(
     project,
     branch,
     explores,
