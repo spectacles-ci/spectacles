@@ -239,10 +239,11 @@ class SqlValidator(Validator):
             for explore in model.explores:
                 if mode == "batch" or (mode == "hybrid" and not explore.queried):
                     logger.debug("Querying one explore at at time")
-                    task = loop.create_task(
-                        self._query_explore(session, model, explore)
-                    )
-                    tasks.append(task)
+                    if explore.dimensions:
+                      task = loop.create_task(
+                          self._query_explore(session, model, explore)
+                      )
+                      tasks.append(task)
                 elif mode == "single" or (mode == "hybrid" and explore.errored):
                     logger.debug("Querying one dimension at at time")
                     for dimension in explore.dimensions:
