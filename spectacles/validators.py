@@ -237,20 +237,20 @@ class SqlValidator(Validator):
         tasks = []
         for model in self.project.models:
             for explore in model.explores:
-                if mode == "batch" or (mode == "hybrid" and not explore.queried):
-                    logger.debug("Querying one explore at at time")
-                    if explore.dimensions:
+                if explore.dimensions:
+                  if mode == "batch" or (mode == "hybrid" and not explore.queried):
+                      logger.debug("Querying one explore at at time")
                       task = loop.create_task(
                           self._query_explore(session, model, explore)
                       )
                       tasks.append(task)
-                elif mode == "single" or (mode == "hybrid" and explore.errored):
-                    logger.debug("Querying one dimension at at time")
-                    for dimension in explore.dimensions:
-                        task = loop.create_task(
-                            self._query_dimension(session, model, explore, dimension)
-                        )
-                        tasks.append(task)
+                  elif mode == "single" or (mode == "hybrid" and explore.errored):
+                      logger.debug("Querying one dimension at at time")
+                      for dimension in explore.dimensions:
+                          task = loop.create_task(
+                              self._query_dimension(session, model, explore, dimension)
+                          )
+                          tasks.append(task)
 
         query_task_ids = list(loop.run_until_complete(asyncio.gather(*tasks)))
         loop.run_until_complete(session.close())
