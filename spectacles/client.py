@@ -401,7 +401,6 @@ class LookerClient:
         If a ClientError or TimeoutError is received, attempts to retry.
 
         Args:
-            session: Existing asychronous HTTP session.
             query_task_ids: IDs for the query tasks running asynchronously.
 
         Returns:
