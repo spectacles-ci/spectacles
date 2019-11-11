@@ -22,16 +22,7 @@ def load(filename):
 @pytest.fixture
 def client(monkeypatch):
     mock_authenticate = Mock(spec=LookerClient.authenticate)
-    mock_validate_looker_release_version = Mock(
-        spec=LookerClient.validate_looker_release_version
-    )
-    mock_validate_looker_release_version.return_value = True
     monkeypatch.setattr(LookerClient, "authenticate", mock_authenticate)
-    monkeypatch.setattr(
-        LookerClient,
-        "validate_looker_release_version",
-        mock_validate_looker_release_version,
-    )
     return LookerClient(TEST_BASE_URL, TEST_CLIENT_ID, TEST_CLIENT_SECRET)
 
 
