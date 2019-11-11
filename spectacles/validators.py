@@ -319,10 +319,10 @@ class SqlValidator(Validator):
             query_status = query_result["status"]
             logger.debug("Query task %s status is %s", query_task_id, query_status)
 
-            if query_status in ("running", "added", "expired"):
+            if query_status in ("running", "added"):
                 still_running.append(query_task_id)
                 continue
-            elif query_status in ("complete", "error"):
+            elif query_status in ("complete", "error", "expired"):
                 lookml_object = self.query_tasks[query_task_id]
                 lookml_object.queried = True
             else:
@@ -344,6 +344,16 @@ class SqlValidator(Validator):
                     path=lookml_object.name,
                     url=getattr(lookml_object, "url", None),
                     **details,
+                )
+                lookml_object.error = sql_error
+                errors.append(sql_error)
+            elif query_status == "expired":
+                sql_error = SqlError(
+                    path=lookml_object.name,
+                    url=getattr(lookml_object, "url", None),
+                    message="Query expired",
+                    sql="",
+                    line_number=None,
                 )
                 lookml_object.error = sql_error
                 errors.append(sql_error)
