@@ -108,7 +108,7 @@ class SqlValidator(Validator):
         selection: DefaultDict = defaultdict(set)
         for selector in selectors:
             try:
-                model, explore = selector.split(".")
+                model, explore = selector.rsplit(".", 1)
             except ValueError:
                 raise SpectaclesException(
                     f"Explore selector '{selector}' is not valid.\n"

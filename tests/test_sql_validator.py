@@ -66,8 +66,9 @@ def project():
     explores_model_two = [Explore("test_explore_two", dimensions)]
     models = [
         Model("test_model_one", "test_project", explores_model_one),
-        Model("test_model_two", "test_project", explores_model_two),
+        Model("test_model.two", "test_project", explores_model_two),
     ]
+
     project = Project("test_project", models)
     return project
 
@@ -79,6 +80,19 @@ def test_build_project(mock_get_models, mock_get_dimensions, project, validator)
     mock_get_dimensions.return_value = load("response_dimensions.json")
     validator.build_project(selectors=["*.*"])
     assert validator.project == project
+
+
+@patch("spectacles.client.LookerClient.get_lookml_dimensions")
+@patch("spectacles.client.LookerClient.get_lookml_models")
+def test_build_project_using_periods_in_name(
+    mock_get_models, mock_get_dimensions, project, validator
+):
+    mock_get_models.return_value = load("response_models.json")
+    mock_get_dimensions.return_value = load("response_dimensions.json")
+
+    for model in project.models:
+        validator.build_project(selectors=[f"{model.name}.*"])
+        assert validator.project.models == [model]
 
 
 @patch("spectacles.client.LookerClient.get_query_task_multi_results")
