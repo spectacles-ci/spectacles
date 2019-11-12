@@ -284,8 +284,9 @@ class SqlValidator(Validator):
                     f"received type {type(message)}: {message}"
                 )
             sql = data["sql"]
-            if first_error.get("sql_error_loc"):
-                line_number = first_error["sql_error_loc"].get("line")
+            error_loc = first_error.get("sql_error_loc")
+            if error_loc:
+                line_number = error_loc.get("line")
             else:
                 line_number = None
         elif isinstance(data, list):
