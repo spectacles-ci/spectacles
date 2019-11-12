@@ -1,4 +1,4 @@
-# spectacles
+# spectacles - small change
 [![CircleCI](https://circleci.com/gh/spectacles-ci/spectacles.svg?style=svg)](https://circleci.com/gh/spectacles-ci/spectacles)
 [![codecov](https://codecov.io/gh/spectacles-ci/spectacles/branch/master/graph/badge.svg)](https://codecov.io/gh/spectacles-ci/spectacles)
 
