@@ -277,7 +277,7 @@ class SqlValidator(Validator):
         if isinstance(data, dict):
             errors = data.get("errors") or [data.get("error")]
             first_error = errors[0]
-            message = first_error["message_details"]
+            message = first_error.get("message_details") or first_error["message"]
             if not isinstance(message, str):
                 raise TypeError(
                     "Unexpected message type. Expected a str, "
