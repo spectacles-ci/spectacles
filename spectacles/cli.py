@@ -339,7 +339,7 @@ def _build_sql_subparser(
         action="store_true",
         help="When set to true, the SQL validator will tell Looker to reset the \
             user's branch to the revision of the branch that is on the remote. \
-            This will delete any uncommited changes in the user's workspace.",
+            WARNING: This will delete any uncommited changes in the user's workspace.",
     )
 
 
