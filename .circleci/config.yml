@@ -47,6 +47,12 @@ jobs:
             flake8 spectacles tests
 
       - run:
+          name: black
+          command: |
+            . venv/bin/activate
+            black --check spectacles tests
+
+      - run:
           name: pytest
           command: |
             . venv/bin/activate

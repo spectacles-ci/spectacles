@@ -249,7 +249,8 @@ class SqlValidator(Validator):
                         for dimension in explore.dimensions:
                             task = loop.create_task(
                                 self._query_dimension(
-                                    session, model, explore, dimension)
+                                    session, model, explore, dimension
+                                )
                             )
                             tasks.append(task)
 
