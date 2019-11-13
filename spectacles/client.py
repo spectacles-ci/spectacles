@@ -139,7 +139,9 @@ class LookerClient:
         # Loop exits successfully if current version == required version
         return True
 
-    def update_session(self, project: str, branch: str) -> None:
+    def update_session(
+        self, project: str, branch: str, remote_reset: bool = False
+    ) -> None:
         """Switches to a development mode session and checks out the desired branch.
 
         Args:
@@ -197,6 +199,23 @@ class LookerClient:
                     + "Message received from Looker's API: "
                     f'"{details}"'
                 )
+
+            if remote_reset:
+                logger.debug(f"Resetting branch {branch} to remote.")
+                url = utils.compose_url(
+                    self.api_url, path=["projects", project, "reset_to_remote"]
+                )
+                response = self.session.post(url=url)
+                try:
+                    response.raise_for_status()
+                except requests.exceptions.HTTPError as error:
+                    details = utils.details_from_http_error(response)
+                    raise ApiConnectionError(
+                        f"Unable to reset branch to remote.\n"
+                        f"Looker API error encountered: {error}\n"
+                        + "Message received from Looker's API: "
+                        f'"{details}"'
+                    )
 
             logger.info(f"Checked out branch {branch}")
 
