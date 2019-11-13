@@ -1,6 +1,6 @@
 from typing import List
 from spectacles.client import LookerClient
-from spectacles.validators import SqlValidator
+from spectacles.validators import SqlValidator, DataTestValidator
 
 
 class Runner:
@@ -41,4 +41,9 @@ class Runner:
         sql_validator = SqlValidator(self.client, self.project)
         sql_validator.build_project(selectors)
         errors = sql_validator.validate(mode)
+        return [vars(error) for error in errors]
+
+    def validate_data_tests(self):
+        data_test_validator = DataTestValidator(self.client, self.project)
+        errors = data_test_validator.validate()
         return [vars(error) for error in errors]

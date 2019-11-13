@@ -36,6 +36,12 @@ def print_header(text: str, line_width: int = LINE_WIDTH) -> None:
     logger.info(f"\n{header}\n")
 
 
+def print_data_test_error(error: dict) -> None:
+    print_header(red(error["path"]), LINE_WIDTH + COLOR_CODE_LENGTH)
+    wrapped = textwrap.fill(error["message"], LINE_WIDTH)
+    logger.info(wrapped)
+
+
 def print_sql_error(error: dict) -> None:
     print_header(red(error["path"]), LINE_WIDTH + COLOR_CODE_LENGTH)
     wrapped = textwrap.fill(error["message"], LINE_WIDTH)
