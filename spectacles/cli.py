@@ -329,11 +329,11 @@ def _build_sql_subparser(
     subparser.add_argument(
         "--explores",
         nargs="+",
-        default=["*.*"],
+        default=["*/*"],
         help="Specify the explores spectacles should test. \
-            List of selector strings in 'model_name.explore_name' format. \
+            List of selector strings in 'model_name/explore_name' format. \
             The '*' wildcard selects all models or explores. For instance,\
-            'model_name.*' would select all explores in the 'model_name' model.",
+            'model_name/*' would select all explores in the 'model_name' model.",
     )
     subparser.add_argument(
         "--mode",

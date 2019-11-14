@@ -57,7 +57,7 @@ def project():
     explores_model_two = [Explore("test_explore_two", dimensions)]
     models = [
         Model("test_model_one", "test_project", explores_model_one),
-        Model("test_model_two", "test_project", explores_model_two),
+        Model("test_model.two", "test_project", explores_model_two),
     ]
     project = Project("test_project", models)
     return project
@@ -68,7 +68,7 @@ def project():
 def test_build_project(mock_get_models, mock_get_dimensions, project, validator):
     mock_get_models.return_value = load("response_models.json")
     mock_get_dimensions.return_value = load("response_dimensions.json")
-    validator.build_project(selectors=["*.*"])
+    validator.build_project(selectors=["*/*"])
     assert validator.project == project
 
 
