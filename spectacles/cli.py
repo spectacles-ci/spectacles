@@ -192,7 +192,7 @@ def main():
         run_sql(
             args.project,
             args.branch,
-            args.explores,
+            args.filters,
             args.base_url,
             args.client_id,
             args.client_secret,
@@ -201,6 +201,7 @@ def main():
             args.mode,
             args.remote_reset,
             args.concurrency,
+            args.display,
         )
     elif args.command == "assert":
         run_assert(
@@ -361,13 +362,17 @@ def _build_sql_subparser(
         help="The branch of your project that spectacles will use to run queries.",
     )
     subparser.add_argument(
-        "--explores",
+        "--filter",
         nargs="+",
-        default=["*/*"],
-        help="Specify the explores spectacles should test. \
-            List of selector strings in 'model_name/explore_name' format. \
-            The '*' wildcard selects all models or explores. For instance,\
-            'model_name/*' would select all explores in the 'model_name' model.",
+        default=["*"],
+        dest="filters",
+        help="Filter which models/explores/dimensions should be tested. \
+            Filters should be specified with a path convention like: \
+                model/explore/dimension \
+            Shell-style globbing can be used for matching any part of the path. \
+            eg: mod* will match everything within models named mod1, modfoo, etc. \
+                mod1/*exp will match all explores w/names ending in 'exp' in mymodel1 \
+            Multiple filters will be combined using OR logic.",
     )
     subparser.add_argument(
         "--mode",
@@ -392,6 +397,9 @@ def _build_sql_subparser(
         type=int,
         help="Specify how many concurrent queries you want to have running \
             against your data warehouse. The default is 10.",
+    )
+    subparser.add_argument(
+        "--display", action="store_true", help="Display the hierarchy of the project."
     )
 
 
@@ -461,7 +469,7 @@ def run_assert(
 def run_sql(
     project,
     branch,
-    explores,
+    filters,
     base_url,
     client_id,
     client_secret,
@@ -470,6 +478,7 @@ def run_sql(
     mode,
     remote_reset,
     concurrency,
+    display,
 ) -> None:
     """Runs and validates the SQL for each selected LookML dimension."""
     runner = Runner(
@@ -482,14 +491,17 @@ def run_sql(
         api_version,
         remote_reset,
     )
-    errors = runner.validate_sql(explores, mode, concurrency)
-    if errors:
-        for error in sorted(errors, key=lambda x: x["path"]):
-            printer.print_sql_error(error)
-        logger.info("")
-        raise ValidationError
+    if display:
+        runner.display_project(filters, concurrency)
     else:
-        logger.info("")
+        errors = runner.validate_sql(filters, mode, concurrency)
+        if errors:
+            for error in sorted(errors, key=lambda x: x["path"]):
+                printer.print_sql_error(error)
+            logger.info("")
+            raise ValidationError
+        else:
+            logger.info("")
 
 
 if __name__ == "__main__":

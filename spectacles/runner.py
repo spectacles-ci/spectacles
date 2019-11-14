@@ -39,11 +39,17 @@ class Runner:
         self.client.update_session(project, branch, remote_reset)
 
     @log_duration
+    def display_project(self, filters: List[str], concurrency: int = 10) -> None:
+        sql_validator = SqlValidator(self.client, self.project, concurrency)
+        sql_validator.build_project(filters)
+        print("\n".join(sql_validator.project.paths()))
+
+    @log_duration
     def validate_sql(
-        self, selectors: List[str], mode: str = "batch", concurrency: int = 10
+        self, filters: List[str], mode: str = "batch", concurrency: int = 10
     ) -> List[dict]:
         sql_validator = SqlValidator(self.client, self.project, concurrency)
-        sql_validator.build_project(selectors)
+        sql_validator.build_project(filters)
         errors = sql_validator.validate(mode)
         return [vars(error) for error in errors]
 

@@ -68,7 +68,7 @@ def project():
 def test_build_project(mock_get_models, mock_get_dimensions, project, validator):
     mock_get_models.return_value = load("response_models.json")
     mock_get_dimensions.return_value = load("response_dimensions.json")
-    validator.build_project(selectors=["*/*"])
+    validator.build_project(filters=["*/*"])
     assert validator.project == project
 
 

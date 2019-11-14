@@ -1,11 +1,13 @@
-from typing import List, Sequence, DefaultDict
+from typing import List, Sequence
 import asyncio
+import re
 from abc import ABC, abstractmethod
-from collections import defaultdict
+from fnmatch import translate as glob_to_regex
 import aiohttp
 from spectacles.client import LookerClient
 from spectacles.lookml import Project, Model, Explore, Dimension
 from spectacles.logger import GLOBAL_LOGGER as logger
+from spectacles.hierarchy import Hierarchy
 from spectacles.exceptions import SqlError, DataTestError, SpectaclesException
 import spectacles.printer as printer
 import signal
@@ -89,106 +91,47 @@ class SqlValidator(Validator):
         self.query_slots = asyncio.BoundedSemaphore(concurrency)
         self.running_query_tasks: asyncio.Queue = asyncio.Queue()
 
-    @staticmethod
-    def parse_selectors(selectors: List[str]) -> DefaultDict[str, set]:
-        """Parses explore selectors with the format 'model_name/explore_name'.
+    def _filter(self, names: Sequence[str], patterns: Sequence[str]) -> Sequence:
+        """Filter a collection of names to the results which match ANY of the patterns
 
         Args:
-            selectors: List of selector strings in 'model_name/explore_name' format.
-                The '*' wildcard selects all models or explores. For instance,
-                'model_name/*' would select all explores in the 'model_name' model.
+            names: List of candidates
+            patterns: List to filter candidates by, optionally globs to match.
 
         Returns:
-            DefaultDict[str, set]: A hierarchy of selected model names (keys) and
-                explore names (values).
-
+            names which match any of the  patterns
         """
-        selection: DefaultDict = defaultdict(set)
-        for selector in selectors:
-            try:
-                model, explore = selector.split("/")
-            except ValueError:
-                raise SpectaclesException(
-                    f"Explore selector '{selector}' is not valid.\n"
-                    "Instead, use the format 'model_name/explore_name'. "
-                    f"Use 'model_name/*' to select all explores in a model."
-                )
-            else:
-                selection[model].add(explore)
-        return selection
+        if len(patterns) == 0:
+            return names
 
-    # TODO: Refactor this so it's more obvious how selection works
-    def _select(self, choices: Sequence[str], select_from: Sequence) -> Sequence:
-        unique_choices = set(choices)
-        select_from_names = set(each.name for each in select_from)
-        difference = unique_choices.difference(select_from_names)
-        if difference:
-            raise SpectaclesException(
-                f"{select_from[0].__class__.__name__}"
-                f'{"" if len(difference) == 1 else "s"} '
-                + ", ".join(difference)
-                + f" not found in LookML under project '{self.project.name}'"
-            )
-        return [each for each in select_from if each.name in unique_choices]
+        # translate patterns into actual regexs via fnmatch.translate to allow
+        # for shell-style globbing of the names.
+        rx_patterns = [glob_to_regex(p) for p in patterns]
 
-    def build_project(self, selectors: List[str]) -> None:
+        # formulate a compound regex to test the names against
+        rx = "|".join("(?:{0})".format(p) for p in rx_patterns)
+
+        # run the names through the gauntlet
+        matches = [name for name in names if re.match(rx, name)]
+
+        return matches
+
+    def build_project(self, filters: List[str]) -> None:
         """Creates an object representation of the project's LookML.
 
         Args:
-            selectors: List of selector strings in 'model_name/explore_name' format.
-                The '*' wildcard selects all models or explores. For instance,
-                'model_name/*' would select all explores in the 'model_name' model.
+            filters: List of strings in 'model_name/explore_name/dimension_name'
+                form. Shell-style globbing is supported to select specific
+                entities. eg:
+                'mo*'         Would include all explores and dimensions of the
+                              models with names starting with 'mo'.
+
+                '*/*/bo*'     Would include any dimension in any model or
+                              explore where the dimension name began with 'bo'.
 
         """
-        selection = self.parse_selectors(selectors)
-        logger.info(
-            f"Building LookML project hierarchy for project {self.project.name}"
-        )
-
-        all_models = [
-            Model.from_json(model) for model in self.client.get_lookml_models()
-        ]
-        project_models = [
-            model for model in all_models if model.project == self.project.name
-        ]
-
-        # Expand wildcard operator to include all specified or discovered models
-        selected_model_names = selection.keys()
-        if "*" in selected_model_names:
-            explore_names = selection.pop("*")
-            for model in project_models:
-                selection[model.name].update(explore_names)
-
-        selected_models = self._select(
-            choices=tuple(selection.keys()), select_from=project_models
-        )
-
-        for model in selected_models:
-            # Expand wildcard operator to include all specified or discovered explores
-            selected_explore_names = selection[model.name]
-            if "*" in selected_explore_names:
-                selected_explore_names.remove("*")
-                selected_explore_names.update(
-                    set(explore.name for explore in model.explores)
-                )
-
-            selected_explores = self._select(
-                choices=tuple(selected_explore_names), select_from=model.explores
-            )
-
-            for explore in selected_explores:
-                dimensions_json = self.client.get_lookml_dimensions(
-                    model.name, explore.name
-                )
-                for dimension_json in dimensions_json:
-                    dimension = Dimension.from_json(dimension_json)
-                    dimension.url = self.client.base_url + dimension.url
-                    if not dimension.ignore:
-                        explore.add_dimension(dimension)
-
-            model.explores = selected_explores
-
-        self.project.models = selected_models
+        hierarchy = Hierarchy(self.client, self.project.name, filters)
+        self.project = hierarchy.project
 
     def validate(self, mode: str = "batch") -> List[SqlError]:
         """Queries selected explores and returns any errors.
@@ -203,9 +146,12 @@ class SqlValidator(Validator):
 
         """
         explore_count = self._count_explores()
+        dimension_count = self._count_dimensions()
         printer.print_header(
             f"Testing {explore_count} "
             f"{'explore' if explore_count == 1 else 'explores'} "
+            f"({dimension_count} "
+            f"{'dimension' if dimension_count == 1 else 'dimensions'}) "
             f"[{mode} mode]"
         )
 
@@ -247,18 +193,51 @@ class SqlValidator(Validator):
 
         query_tasks = []
         for model in self.project.models:
+            if model.filtered and not model.has_unfiltered_children:
+                logger.debug(f"Model {model.path} is filtered, skipping")
+                continue
+
             for explore in model.explores:
-                if mode == "batch" or (mode == "hybrid" and not explore.queried):
-                    task = asyncio.create_task(
-                        self._query_explore(session, model, explore)
-                    )
-                    query_tasks.append(task)
-                elif mode == "single" or (mode == "hybrid" and explore.errored):
-                    for dimension in explore.dimensions:
+                if explore.filtered and not explore.has_unfiltered_dimensions:
+                    logger.debug(f"Explore {explore.path} is filtered, skipping")
+                elif explore.dimensions:
+                    if mode == "batch" or (mode == "hybrid" and not explore.queried):
+                        logger.debug(
+                            "Querying one explore at at time, model: "
+                            f"{model.name}, explore: {explore.name}"
+                        )
                         task = asyncio.create_task(
-                            self._query_dimension(session, model, explore, dimension)
+                            self._query_explore(session, model, explore)
                         )
                         query_tasks.append(task)
+                    elif mode == "single" or (mode == "hybrid" and explore.errored):
+                        logger.debug(
+                            f"Querying {model.name}/{explore.name} "
+                            "explore one dimension at at time"
+                        )
+                        total = ignored = filtered = 0
+                        for dimension in explore.dimensions:
+                            total += 1
+                            if dimension.ignore:
+                                ignored += 1
+                            elif dimension.filtered:
+                                filtered += 1
+                            else:
+                                task = asyncio.create_task(
+                                    self._query_dimension(
+                                        session, model, explore, dimension
+                                    )
+                                )
+                                query_tasks.append(task)
+                        logger.debug(
+                            "{total-ignored-filtered} of {total} total dimensions "
+                            "queued, {ignored} ignored, {filtered} filtered in "
+                            "{model.name}/{explore.name}"
+                        )
+                elif explore.dimensions:
+                    logger.debug(
+                        f"{model.name}/{explore.name} has no dimensions, skipping"
+                    )
 
         queries = asyncio.gather(*query_tasks)
         query_results = asyncio.create_task(
@@ -433,7 +412,9 @@ class SqlValidator(Validator):
             str: Query task ID for the running query.
 
         """
-        dimensions = [dimension.name for dimension in explore.dimensions]
+        dimensions = [
+            dimension.name for dimension in explore.dimensions if not dimension.filtered
+        ]
         query_task_id = await self._run_query(
             session, model.name, explore.name, dimensions
         )
@@ -475,3 +456,16 @@ class SqlValidator(Validator):
         for model in self.project.models:
             explore_count += len(model.explores)
         return explore_count
+
+    def _count_dimensions(self) -> int:
+        """Counts the dimensions in the LookML project hierarchy.
+
+        Returns:
+            int: The number of dimensions in the LookML project.
+
+        """
+        dimension_count = 0
+        for model in self.project.models:
+            for explore in model.explores:
+                dimension_count += len(explore.dimensions)
+        return dimension_count
