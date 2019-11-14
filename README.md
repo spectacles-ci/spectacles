@@ -4,6 +4,8 @@
 
 ## What is spectacles?
 
+Trivial Change.
+
 **spectacles is a command-line, continuous integration tool for Looker and LookML.** spectacles runs **validators** which perform a range of tests on your Looker instance and your LookML. Each validator interacts with the Looker API to run tests that ensure your Looker instance is running smoothly. You can run spectacles locally during LookML and content development, or you can run it in production as a continuous integration pipeline.
 
 You can run the following validators as subcommands (e.g. `spectacles sql`):
