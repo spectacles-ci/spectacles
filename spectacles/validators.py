@@ -284,7 +284,7 @@ class SqlValidator(Validator):
                 )
             sql = data["sql"]
             if first_error.get("sql_error_loc"):
-                line_number = first_error["sql_error_loc"]["line"]
+                line_number = first_error["sql_error_loc"].get("line")
             else:
                 line_number = None
         elif isinstance(data, list):
