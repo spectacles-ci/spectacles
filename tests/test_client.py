@@ -110,5 +110,6 @@ async def test_create_query(mock_post, client):
             "view": "test_explore_one",
             "fields": ["dimension_one", "dimension_two"],
             "limit": 0,
+            "filter_expression": "1=2",
         },
     )

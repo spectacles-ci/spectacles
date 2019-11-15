@@ -338,7 +338,13 @@ class LookerClient:
             explore,
             "*" if len(dimensions) > 1 else dimensions[0],
         )
-        body = {"model": model, "view": explore, "fields": dimensions, "limit": 0}
+        body = {
+            "model": model,
+            "view": explore,
+            "fields": dimensions,
+            "limit": 0,
+            "filter_expression": "1=2",
+        }
         url = utils.compose_url(self.api_url, path=["queries"])
         async with session.post(url=url, json=body) as response:
             result = await response.json()
