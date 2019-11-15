@@ -101,15 +101,19 @@ def test_get_query_results_task_error_dict(
     lookml_object = project.models[0].explores[0]
     validator.query_tasks = {"query_task_a": lookml_object}
     mock_message = "An error message."
+    mock_details = "Shocking details."
     mock_sql = "SELECT * FROM orders"
     mock_response = {
         "status": "error",
-        "data": {"errors": [{"message_details": mock_message}], "sql": mock_sql},
+        "data": {
+            "errors": [{"message": mock_message, "message_details": mock_details}],
+            "sql": mock_sql,
+        },
     }
     mock_get_query_task_multi_results.return_value = {"query_task_a": mock_response}
     still_running, errors = validator._get_query_results(["query_task_a"])
     assert errors[0].path == lookml_object.name
-    assert errors[0].message == mock_message
+    assert errors[0].message == f"{mock_message} {mock_details}"
     assert errors[0].sql == mock_sql
     assert not still_running
 
