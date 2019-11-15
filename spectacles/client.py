@@ -79,7 +79,11 @@ class LookerClient:
         access_token = response.json()["access_token"]
         self.session.headers = {"Authorization": f"token {access_token}"}
 
-        logger.info(f"Connected using Looker API {api_version}")
+        looker_version = self.get_looker_release_version()
+        logger.info(
+            f"Connected to Looker version {looker_version} "
+            f"using Looker API {api_version}"
+        )
 
     def get_looker_release_version(self) -> str:
         """Gets the version number of connected Looker instance.
