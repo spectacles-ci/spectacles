@@ -85,12 +85,12 @@ class SqlValidator(Validator):
 
     @staticmethod
     def parse_selectors(selectors: List[str]) -> DefaultDict[str, set]:
-        """Parses explore selectors with the format 'model_name.explore_name'.
+        """Parses explore selectors with the format 'model_name/explore_name'.
 
         Args:
-            selectors: List of selector strings in 'model_name.explore_name' format.
+            selectors: List of selector strings in 'model_name/explore_name' format.
                 The '*' wildcard selects all models or explores. For instance,
-                'model_name.*' would select all explores in the 'model_name' model.
+                'model_name/*' would select all explores in the 'model_name' model.
 
         Returns:
             DefaultDict[str, set]: A hierarchy of selected model names (keys) and
@@ -100,12 +100,12 @@ class SqlValidator(Validator):
         selection: DefaultDict = defaultdict(set)
         for selector in selectors:
             try:
-                model, explore = selector.split(".")
+                model, explore = selector.split("/")
             except ValueError:
                 raise SpectaclesException(
                     f"Explore selector '{selector}' is not valid.\n"
-                    "Instead, use the format 'model_name.explore_name'. "
-                    f"Use 'model_name.*' to select all explores in a model."
+                    "Instead, use the format 'model_name/explore_name'. "
+                    f"Use 'model_name/*' to select all explores in a model."
                 )
             else:
                 selection[model].add(explore)
@@ -129,9 +129,9 @@ class SqlValidator(Validator):
         """Creates an object representation of the project's LookML.
 
         Args:
-            selectors: List of selector strings in 'model_name.explore_name' format.
+            selectors: List of selector strings in 'model_name/explore_name' format.
                 The '*' wildcard selects all models or explores. For instance,
-                'model_name.*' would select all explores in the 'model_name' model.
+                'model_name/*' would select all explores in the 'model_name' model.
 
         """
         selection = self.parse_selectors(selectors)
