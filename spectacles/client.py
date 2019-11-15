@@ -106,40 +106,9 @@ class LookerClient:
 
         return response.json()["looker_release_version"]
 
-    def validate_looker_release_version(self, required_version: str) -> bool:
-        """Checks that the current Looker version meets a specified minimum.
-
-        Args:
-            required_version: Minimum instance version number (e.g. 6.22.12)
-
-        Returns:
-            bool: True if the current Looker version >= the required version
-
-        """
-        current_version = self.get_looker_release_version()
-        logger.info(f"Looker instance version is {current_version}")
-
-        def expand_version(version: str):
-            return [int(number) for number in version.split(".")]
-
-        current = expand_version(current_version)
-        required = expand_version(required_version)
-
-        # If version is provided in format 6.20 or 7, extend with .0(s)
-        # e.g. 6.20 would become 6.20.0, 7 would become 7.0.0
-        if len(current) < 3:
-            current.extend([0] * (3 - len(current)))
-
-        for current_num, required_num in zip(current, required):
-            if current_num < required_num:
-                return False
-            elif current_num > required_num:
-                return True
-
-        # Loop exits successfully if current version == required version
-        return True
-
-    def update_session(self, project: str, branch: str) -> None:
+    def update_session(
+        self, project: str, branch: str, remote_reset: bool = False
+    ) -> None:
         """Switches to a development mode session and checks out the desired branch.
 
         Args:
@@ -197,6 +166,23 @@ class LookerClient:
                     + "Message received from Looker's API: "
                     f'"{details}"'
                 )
+
+            if remote_reset:
+                logger.debug(f"Resetting branch {branch} to remote.")
+                url = utils.compose_url(
+                    self.api_url, path=["projects", project, "reset_to_remote"]
+                )
+                response = self.session.post(url=url)
+                try:
+                    response.raise_for_status()
+                except requests.exceptions.HTTPError as error:
+                    details = utils.details_from_http_error(response)
+                    raise ApiConnectionError(
+                        f"Unable to reset branch to remote.\n"
+                        f"Looker API error encountered: {error}\n"
+                        + "Message received from Looker's API: "
+                        f'"{details}"'
+                    )
 
             logger.info(f"Checked out branch {branch}")
 

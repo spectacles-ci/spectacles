@@ -29,12 +29,13 @@ class Runner:
         client_secret: str,
         port: int = 19999,
         api_version: float = 3.1,
+        remote_reset: bool = False,
     ):
         self.project = project
         self.client = LookerClient(
             base_url, client_id, client_secret, port, api_version
         )
-        self.client.update_session(project, branch)
+        self.client.update_session(project, branch, remote_reset)
 
     def validate_sql(self, selectors: List[str], mode: str = "batch") -> List[dict]:
         sql_validator = SqlValidator(self.client, self.project)

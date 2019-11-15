@@ -76,18 +76,10 @@ class SqlValidator(Validator):
     """
 
     timeout = aiohttp.ClientTimeout(total=300)
-    MIN_LOOKER_VERSION = "6.22.12"
 
     def __init__(self, client: LookerClient, project: str):
         super().__init__(client)
-        meets_required_version = self.client.validate_looker_release_version(
-            required_version=self.MIN_LOOKER_VERSION
-        )
-        if not meets_required_version:
-            raise SpectaclesException(
-                "SQL validation requires version "
-                f"{self.MIN_LOOKER_VERSION} of Looker or higher."
-            )
+
         self.project = Project(project, models=[])
         self.query_tasks: dict = {}
 
@@ -249,7 +241,8 @@ class SqlValidator(Validator):
                         for dimension in explore.dimensions:
                             task = loop.create_task(
                                 self._query_dimension(
-                                    session, model, explore, dimension)
+                                    session, model, explore, dimension
+                                )
                             )
                             tasks.append(task)
 
