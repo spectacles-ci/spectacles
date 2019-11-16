@@ -40,8 +40,8 @@ def test_human_readable(elapsed, expected):
 
 class TestLogTimeDecorator(unittest.TestCase):
     def test_log_time(self):
-        with self.assertLogs(logger=logger, level='INFO') as cm:
+        with self.assertLogs(logger=logger, level="INFO") as cm:
             func = MagicMock()
             decorated_func = utils.log_time(func)
             decorated_func()
-        self.assertIn('INFO:spectacles:\nCompleted SQL validation in', cm.output[0])
+        self.assertIn("INFO:spectacles:\nCompleted SQL validation in", cm.output[0])

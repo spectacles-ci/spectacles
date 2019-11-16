@@ -31,7 +31,7 @@ def human_readable(elapsed: int):
     num_secs = f"{seconds:.0f} second{'s' if round(seconds) != 1 else ''}"
     separator = " and " if seconds and minutes else ""
 
-    return(f"{num_mins if minutes else ''}{separator}{num_secs if seconds else ''}")
+    return f"{num_mins if minutes else ''}{separator}{num_secs if seconds else ''}"
 
 
 def log_time(fn: Callable):
@@ -41,8 +41,7 @@ def log_time(fn: Callable):
         start_time = timeit.default_timer()
         result = fn(*args, **kwargs)
         elapsed = timeit.default_timer() - start_time
-        logger.info(
-            f"\nCompleted SQL validation in {human_readable(elapsed)}."
-            )
+        logger.info(f"\nCompleted SQL validation in {human_readable(elapsed)}.")
         return result
+
     return timed_function
