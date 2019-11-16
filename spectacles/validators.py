@@ -8,6 +8,7 @@ from spectacles.client import LookerClient
 from spectacles.lookml import Project, Model, Explore, Dimension
 from spectacles.logger import GLOBAL_LOGGER as logger
 from spectacles.exceptions import SqlError, DataTestError, SpectaclesException
+from spectacles.utils import log_time
 import spectacles.printer as printer
 
 
@@ -184,6 +185,7 @@ class SqlValidator(Validator):
 
         self.project.models = selected_models
 
+    @log_time
     def validate(self, mode: str = "batch") -> List[SqlError]:
         """Queries selected explores and returns any errors.
 
