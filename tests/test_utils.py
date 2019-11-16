@@ -1,6 +1,6 @@
 from spectacles import utils
 from spectacles.logger import GLOBAL_LOGGER as logger
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 import pytest
 import unittest
 
