@@ -27,14 +27,16 @@ def details_from_http_error(response: requests.Response) -> str:
 
 def human_readable(elapsed: int):
     minutes, seconds = divmod(elapsed, 60)
-    num_minutes = f"{minutes:.0f} minute{'s' if minutes > 1 else ''}{' and ' if seconds else ''}"
-    num_seconds = f"{seconds:.0f} second{'s' if round(seconds) != 1 else ''}"
+    num_mins = f"{minutes:.0f} minute{'s' if minutes > 1 else ''}"
+    num_secs = f"{seconds:.0f} second{'s' if round(seconds) != 1 else ''}"
+    separator = " and " if seconds and minutes else ""
 
-    return(f"{num_minutes if minutes else ''}{num_seconds if seconds else ''}")
+    return(f"{num_mins if minutes else ''}{separator}{num_secs if seconds else ''}")
 
 
 def log_time(fn: Callable):
     functools.wraps(fn)
+
     def timed_function(*args, **kwargs):
         start_time = timeit.default_timer()
         result = fn(*args, **kwargs)

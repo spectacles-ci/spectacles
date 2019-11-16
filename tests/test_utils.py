@@ -44,4 +44,4 @@ class TestLogTimeDecorator(unittest.TestCase):
             func = MagicMock()
             decorated_func = utils.log_time(func)
             decorated_func()
-        self.assertIn('INFO:spectacles:Completed SQL validation in', cm.output[0])
+        self.assertIn('INFO:spectacles:\nCompleted SQL validation in', cm.output[0])
