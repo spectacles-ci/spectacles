@@ -34,6 +34,14 @@ def human_readable(elapsed: int):
     return f"{num_mins if minutes else ''}{separator}{num_secs if seconds else ''}"
 
 
+def get_detail(qual_name: str):
+    detail_map = {
+        "DataTestValidator.validate": "test ",
+        "SqlValidator.validate": "SQL ",
+    }
+    return detail_map.get(qual_name, "")
+
+
 def log_time(fn: Callable):
     functools.wraps(fn)
 
@@ -41,7 +49,10 @@ def log_time(fn: Callable):
         start_time = timeit.default_timer()
         result = fn(*args, **kwargs)
         elapsed = timeit.default_timer() - start_time
-        logger.info(f"\nCompleted SQL validation in {human_readable(elapsed)}.")
+        elapsed_str = human_readable(elapsed)
+        message_detail = get_detail(fn.__qualname__)
+
+        logger.info(f"\nCompleted {message_detail}validation in {elapsed_str}.")
         return result
 
     return timed_function

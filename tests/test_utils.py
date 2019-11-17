@@ -38,10 +38,40 @@ def test_human_readable(elapsed, expected):
     assert human_readable == expected
 
 
+get_detail_testcases = [
+    ("SqlValidator.validate", "SQL "),
+    ("DataTestValidator.validate", "test "),
+    ("OtherClass.validate", ""),
+]
+
+
+@pytest.mark.parametrize("qual_name,expected", get_detail_testcases)
+def test_get_detail(qual_name, expected):
+    detail = utils.get_detail(qual_name)
+    assert detail == expected
+
+
 class TestLogTimeDecorator(unittest.TestCase):
-    def test_log_time(self):
+    def test_log_SQL(self):
         with self.assertLogs(logger=logger, level="INFO") as cm:
             func = MagicMock()
+            func.__qualname__ = "SqlValidator.validate"
             decorated_func = utils.log_time(func)
             decorated_func()
         self.assertIn("INFO:spectacles:\nCompleted SQL validation in", cm.output[0])
+
+    def test_log_assert(self):
+        with self.assertLogs(logger=logger, level="INFO") as cm:
+            func = MagicMock()
+            func.__qualname__ = "DataTestValidator.validate"
+            decorated_func = utils.log_time(func)
+            decorated_func()
+        self.assertIn("INFO:spectacles:\nCompleted test validation in", cm.output[0])
+
+    def test_log_other(self):
+        with self.assertLogs(logger=logger, level="INFO") as cm:
+            func = MagicMock()
+            func.__qualname__ = "OtherValidator.validate"
+            decorated_func = utils.log_time(func)
+            decorated_func()
+        self.assertIn("INFO:spectacles:\nCompleted validation in", cm.output[0])
