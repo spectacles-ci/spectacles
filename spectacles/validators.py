@@ -51,8 +51,12 @@ class DataTestValidator(Validator):
         errors = []
         test_results = self.client.run_lookml_test(self.project)
         for result in test_results:
-            if not result["success"]:
+            message = f"{result['model_name']}.{result['test_name']}"
+            if result["success"]:
+                printer.print_validation_result("success", message)
+            else:
                 for error in result["errors"]:
+                    printer.print_validation_result("error", message)
                     errors.append(
                         DataTestError(
                             path=f"{result['model_name']}/{result['test_name']}",
@@ -209,14 +213,11 @@ class SqlValidator(Validator):
 
         for model in sorted(self.project.models, key=lambda x: x.name):
             for explore in sorted(model.explores, key=lambda x: x.name):
+                message = f"{model.name}.{explore.name}"
                 if explore.errored:
-                    logger.info(
-                        f"✗ {printer.red(model.name + '.' + explore.name)} failed"
-                    )
+                    printer.print_validation_result("error", message)
                 else:
-                    logger.info(
-                        f"✓ {printer.green(model.name + '.' + explore.name)} passed"
-                    )
+                    printer.print_validation_result("success", message)
 
         return errors
 
