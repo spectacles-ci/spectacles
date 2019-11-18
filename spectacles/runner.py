@@ -1,6 +1,7 @@
 from typing import List
 from spectacles.client import LookerClient
 from spectacles.validators import SqlValidator, DataTestValidator
+from spectacles.utils import log_duration
 
 
 class Runner:
@@ -37,12 +38,14 @@ class Runner:
         )
         self.client.update_session(project, branch, remote_reset)
 
+    @log_duration
     def validate_sql(self, selectors: List[str], mode: str = "batch") -> List[dict]:
         sql_validator = SqlValidator(self.client, self.project)
         sql_validator.build_project(selectors)
         errors = sql_validator.validate(mode)
         return [vars(error) for error in errors]
 
+    @log_duration
     def validate_data_tests(self):
         data_test_validator = DataTestValidator(self.client, self.project)
         errors = data_test_validator.validate()
