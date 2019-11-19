@@ -277,15 +277,13 @@ class SqlValidator(Validator):
         if isinstance(data, dict):
             errors = data.get("errors") or [data.get("error")]
             first_error = errors[0]
-            message = first_error["message_details"]
-            if not isinstance(message, str):
-                raise TypeError(
-                    "Unexpected message type. Expected a str, "
-                    f"received type {type(message)}: {message}"
-                )
+            message = " ".join(
+                [first_error.get("message", ""), first_error.get("message_details", "")]
+            ).strip()
             sql = data["sql"]
-            if first_error.get("sql_error_loc"):
-                line_number = first_error["sql_error_loc"].get("line")
+            error_loc = first_error.get("sql_error_loc")
+            if error_loc:
+                line_number = error_loc.get("line")
             else:
                 line_number = None
         elif isinstance(data, list):
