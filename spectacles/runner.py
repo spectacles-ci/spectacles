@@ -38,11 +38,11 @@ class Runner:
         self.client.update_session(project, branch, remote_reset)
 
     def validate_sql(
-        self, selectors: List[str], mode: str = "batch", max_concurrent: int = 0
+        self, selectors: List[str], mode: str = "batch", query_slots: int = 10
     ) -> List[dict]:
-        sql_validator = SqlValidator(self.client, self.project)
+        sql_validator = SqlValidator(self.client, self.project, query_slots)
         sql_validator.build_project(selectors)
-        errors = sql_validator.validate(mode, max_concurrent)
+        errors = sql_validator.validate(mode)
         return [vars(error) for error in errors]
 
     def validate_data_tests(self):

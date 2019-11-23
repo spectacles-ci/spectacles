@@ -175,7 +175,7 @@ def main():
             args.api_version,
             args.mode,
             args.remote_reset,
-            args.max_concurrency,
+            args.query_slots,
         )
     elif args.command == "assert":
         run_assert(
@@ -354,12 +354,11 @@ def _build_sql_subparser(
             WARNING: This will delete any uncommited changes in the user's workspace.",
     )
     subparser.add_argument(
-        "--max-concurrency",
-        default=0,
+        "--query-slots",
+        default=10,
         type=int,
         help="Specify how many concurrent queries you want to have running \
-            against Looker. If not specified or 0, it will execute as many \
-            queries as you have explores/dimensions.",
+            against your data warehouse. The default is 10.",
     )
 
 
@@ -423,7 +422,7 @@ def run_sql(
     api_version,
     mode,
     remote_reset,
-    max_concurrency,
+    query_slots,
 ) -> None:
     """Runs and validates the SQL for each selected LookML dimension."""
     runner = Runner(
@@ -436,7 +435,7 @@ def run_sql(
         api_version,
         remote_reset,
     )
-    errors = runner.validate_sql(explores, mode, max_concurrency)
+    errors = runner.validate_sql(explores, mode, query_slots)
     if errors:
         for error in sorted(errors, key=lambda x: x["path"]):
             printer.print_sql_error(error)

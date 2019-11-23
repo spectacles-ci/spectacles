@@ -77,7 +77,7 @@ class SqlValidator(Validator):
     timeout = aiohttp.ClientTimeout(total=300)
     MIN_LOOKER_VERSION = "6.22.12"
 
-    def __init__(self, client: LookerClient, project: str):
+    def __init__(self, client: LookerClient, project: str, query_slots: int = 10):
         super().__init__(client)
         meets_required_version = self.client.validate_looker_release_version(
             required_version=self.MIN_LOOKER_VERSION
@@ -89,6 +89,8 @@ class SqlValidator(Validator):
             )
         self.project = Project(project, models=[])
         self.query_tasks: dict = {}
+        self.query_slots = asyncio.BoundedSemaphore(query_slots)
+        self.running_query_tasks: asyncio.Queue = asyncio.Queue()
 
     @staticmethod
     def parse_selectors(selectors: List[str]) -> DefaultDict[str, set]:
@@ -191,16 +193,13 @@ class SqlValidator(Validator):
 
         self.project.models = selected_models
 
-    def validate(self, mode: str = "batch", max_concurrency: int = 0) -> List[SqlError]:
+    def validate(self, mode: str = "batch") -> List[SqlError]:
         """Queries selected explores and returns any errors.
 
         Args:
             batch: When true, runs one query per explore (using all dimensions). When
                 false, runs one query per dimension. Batch mode increases query speed
                 but can only return the first error encountered for each dimension.
-            max_concurrency: When > 0 then we ensure we only trigger <max_concurrency>
-                Looker queries at a time, we wait for them to finish before creating
-                new ones
 
         Returns:
             List[SqlError]: SqlErrors encountered while querying the explore.
@@ -214,9 +213,9 @@ class SqlValidator(Validator):
         )
 
         loop = asyncio.get_event_loop()
-        errors = list(loop.run_until_complete(self._query(mode, max_concurrency)))
+        errors = list(loop.run_until_complete(self._query(mode)))
         if mode == "hybrid" and self.project.errored:
-            errors = list(loop.run_until_complete(self._query(mode, max_concurrency)))
+            errors = list(loop.run_until_complete(self._query(mode)))
 
         for model in sorted(self.project.models, key=lambda x: x.name):
             for explore in sorted(model.explores, key=lambda x: x.name):
@@ -231,91 +230,30 @@ class SqlValidator(Validator):
 
         return errors
 
-    async def _wait_for_query_to_complete(
-        self, query_task_ids: list, is_final: bool = False
-    ) -> Tuple[list, List[SqlError]]:
-        errors = []
-        remaining_query_task_ids = query_task_ids
-        while remaining_query_task_ids:
-            remaining_query_task_ids, more_errors = self._get_query_results(
-                remaining_query_task_ids
-            )
-            errors.extend(more_errors)
-            if not is_final and len(query_task_ids) > len(remaining_query_task_ids):
-                return remaining_query_task_ids, errors
-            await asyncio.sleep(0.5)
-        return remaining_query_task_ids, errors
-
-    async def _process_finished_tasks(self, tasks, is_final=False):
-        return_when = asyncio.FIRST_COMPLETED
-        if is_final:
-            return_when = asyncio.ALL_COMPLETED
-        _done, tasks = await asyncio.wait(tasks, return_when=return_when)
-        query_ids = []
-        while _done:
-            task = _done.pop()
-            result = task.result()
-            query_ids.append(result)
-        return tasks, query_ids
-
-    async def _query(
-        self, mode: str = "batch", max_concurrency: int = 0
-    ) -> List[SqlError]:
+    async def _query(self, mode: str = "batch") -> List[SqlError]:
         session = aiohttp.ClientSession(
             headers=self.client.session.headers, timeout=self.timeout
         )
-        task_calls: List[Tuple[Callable, Tuple]] = []
-        # first we gather all parameters for the tasks
+
+        query_tasks = []
         for model in self.project.models:
             for explore in model.explores:
                 if mode == "batch" or (mode == "hybrid" and not explore.queried):
-                    task_calls.append((self._query_explore, (session, model, explore)))
+                    task = asyncio.create_task(
+                        self._query_explore(session, model, explore)
+                    )
+                    query_tasks.append(task)
                 elif mode == "single" or (mode == "hybrid" and explore.errored):
                     for dimension in explore.dimensions:
-                        task_calls.append(
-                            (
-                                self._query_dimension,
-                                (session, model, explore, dimension),
-                            )
+                        task = asyncio.create_task(
+                            self._query_dimension(session, model, explore, dimension)
                         )
+                        query_tasks.append(task)
 
-        tasks: Set = set()
-        query_task_ids: List = []
-        errors = []
-        logger.debug(
-            "we are going to schedule %s tasks at concurrency of %s",
-            len(task_calls),
-            max_concurrency,
-        )
-        while task_calls:
-            logger.debug(
-                "max_concurrency=%s pending_tasks=%s running_tasks=%s "
-                "query_task_ids=%s",
-                max_concurrency,
-                len(task_calls),
-                len(tasks),
-                len(query_task_ids),
-            )
-            if max_concurrency > 0 and len(tasks) >= max_concurrency:
-                tasks, _query_ids = await self._process_finished_tasks(tasks)
-                query_task_ids.extend(_query_ids)
-
-            if len(query_task_ids) >= max_concurrency:
-                query_task_ids, more_errors = await self._wait_for_query_to_complete(
-                    query_task_ids
-                )
-                errors.extend(more_errors)
-            else:
-                func, args = task_calls.pop(0)
-                task = asyncio.create_task(func(*args))
-                tasks.add(task)
-        # we're now triggered all queries and we just need a final check
-        tasks, _query_ids = await self._process_finished_tasks(tasks, is_final=True)
-        query_task_ids.extend(_query_ids)
-        query_task_ids, more_errors = await self._wait_for_query_to_complete(
-            query_task_ids, is_final=True
-        )
-        errors.extend(more_errors)
+        queries = asyncio.gather(*query_tasks)
+        query_results = asyncio.gather(self._check_for_results(session, query_tasks))
+        results = await asyncio.gather(queries, query_results)
+        errors = results[1][0]  # Ignore the results from creating the queries
 
         await session.close()
 
@@ -351,47 +289,88 @@ class SqlValidator(Validator):
 
         return {"message": message, "sql": sql, "line_number": line_number}
 
-    def _get_query_results(
-        self, query_task_ids: List[str]
-    ) -> Tuple[List[str], List[SqlError]]:
-        results = self.client.get_query_task_multi_results(query_task_ids)
-        still_running = []
+    async def _run_query(
+        self,
+        session: aiohttp.ClientSession,
+        model: str,
+        explore: str,
+        dimensions: List[str],
+    ) -> str:
+        query_id = await self.client.create_query(session, model, explore, dimensions)
+        await self.query_slots.acquire()  # Wait for available slots before launching
+        query_task_id = await self.client.create_query_task(session, query_id)
+        await self.running_query_tasks.put(query_task_id)
+        return query_task_id
+
+    async def _get_query_results(
+        self, session: aiohttp.ClientSession
+    ) -> List[SqlError]:
+        logger.debug("%d queries running", self.running_query_tasks.qsize())
+
+        # Empty the queue (up to 250) to get all running query tasks
+        query_task_ids: List[str] = []
+        while not self.running_query_tasks.empty() and len(query_task_ids) <= 250:
+            query_task_ids.append(await self.running_query_tasks.get())
+
+        logger.debug("Getting results for %d query tasks", len(query_task_ids))
+        results = await self.client.get_query_task_multi_results(
+            session, query_task_ids
+        )
+        pending_task_ids = []
         errors = []
 
         for query_task_id, query_result in results.items():
             query_status = query_result["status"]
             logger.debug("Query task %s status is %s", query_task_id, query_status)
-
             if query_status in ("running", "added", "expired"):
-                still_running.append(query_task_id)
+                pending_task_ids.append(query_task_id)
+                # Put the running query tasks back in the queue
+                await self.running_query_tasks.put(query_task_id)
                 continue
             elif query_status in ("complete", "error"):
+                # We can release a query slot for each completed query
+                self.query_slots.release()
                 lookml_object = self.query_tasks[query_task_id]
                 lookml_object.queried = True
+
+                if query_status == "error":
+                    try:
+                        details = self._extract_error_details(query_result)
+                    except (KeyError, TypeError, IndexError) as error:
+                        raise SpectaclesException(
+                            "Encountered an unexpected API query result format, "
+                            "unable to extract error details. "
+                            f"The query result was: {query_result}"
+                        ) from error
+                    sql_error = SqlError(
+                        path=lookml_object.name,
+                        url=getattr(lookml_object, "url", None),
+                        **details,
+                    )
+                    lookml_object.error = sql_error
+                    errors.append(sql_error)
             else:
                 raise SpectaclesException(
                     f'Unexpected query result status "{query_status}" '
                     "returned by the Looker API"
                 )
 
-            if query_status == "error":
-                try:
-                    details = self._extract_error_details(query_result)
-                except (KeyError, TypeError, IndexError) as error:
-                    raise SpectaclesException(
-                        "Encountered an unexpected API query result format, "
-                        "unable to extract error details. "
-                        f"The query result was: {query_result}"
-                    ) from error
-                sql_error = SqlError(
-                    path=lookml_object.name,
-                    url=getattr(lookml_object, "url", None),
-                    **details,
-                )
-                lookml_object.error = sql_error
-                errors.append(sql_error)
+        return errors
 
-        return still_running, errors
+    async def _check_for_results(
+        self, session: aiohttp.ClientSession, query_tasks: List[asyncio.Task]
+    ):
+        results = []
+        while (
+            any(not task.done() for task in query_tasks)
+            or not self.running_query_tasks.empty()
+        ):
+            if not self.running_query_tasks.empty():
+                result = await self._get_query_results(session)
+                results.extend(result)
+            await asyncio.sleep(0.5)
+
+        return results
 
     async def _query_explore(
         self, session: aiohttp.ClientSession, model: Model, explore: Explore
@@ -407,11 +386,9 @@ class SqlValidator(Validator):
 
         """
         dimensions = [dimension.name for dimension in explore.dimensions]
-        query_id = await self.client.create_query(
+        query_task_id = await self._run_query(
             session, model.name, explore.name, dimensions
         )
-        query_task_id = await self.client.create_query_task(session, query_id)
-
         self.query_tasks[query_task_id] = explore
         return query_task_id
 
@@ -433,11 +410,9 @@ class SqlValidator(Validator):
             str: Query task ID for the running query.
 
         """
-        query_id = await self.client.create_query(
+        query_task_id = await self._run_query(
             session, model.name, explore.name, [dimension.name]
         )
-        query_task_id = await self.client.create_query_task(session, query_id)
-
         self.query_tasks[query_task_id] = dimension
         return query_task_id
 
