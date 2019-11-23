@@ -50,8 +50,12 @@ class DataTestValidator(Validator):
         errors = []
         test_results = self.client.run_lookml_test(self.project)
         for result in test_results:
-            if not result["success"]:
+            message = f"{result['model_name']}.{result['test_name']}"
+            if result["success"]:
+                printer.print_validation_result("success", message)
+            else:
                 for error in result["errors"]:
+                    printer.print_validation_result("error", message)
                     errors.append(
                         DataTestError(
                             path=f"{result['model_name']}/{result['test_name']}",
@@ -75,18 +79,10 @@ class SqlValidator(Validator):
     """
 
     timeout = aiohttp.ClientTimeout(total=300)
-    MIN_LOOKER_VERSION = "6.22.12"
 
     def __init__(self, client: LookerClient, project: str, query_slots: int = 10):
         super().__init__(client)
-        meets_required_version = self.client.validate_looker_release_version(
-            required_version=self.MIN_LOOKER_VERSION
-        )
-        if not meets_required_version:
-            raise SpectaclesException(
-                "SQL validation requires version "
-                f"{self.MIN_LOOKER_VERSION} of Looker or higher."
-            )
+
         self.project = Project(project, models=[])
         self.query_tasks: dict = {}
         self.query_slots = asyncio.BoundedSemaphore(query_slots)
@@ -94,12 +90,12 @@ class SqlValidator(Validator):
 
     @staticmethod
     def parse_selectors(selectors: List[str]) -> DefaultDict[str, set]:
-        """Parses explore selectors with the format 'model_name.explore_name'.
+        """Parses explore selectors with the format 'model_name/explore_name'.
 
         Args:
-            selectors: List of selector strings in 'model_name.explore_name' format.
+            selectors: List of selector strings in 'model_name/explore_name' format.
                 The '*' wildcard selects all models or explores. For instance,
-                'model_name.*' would select all explores in the 'model_name' model.
+                'model_name/*' would select all explores in the 'model_name' model.
 
         Returns:
             DefaultDict[str, set]: A hierarchy of selected model names (keys) and
@@ -109,12 +105,12 @@ class SqlValidator(Validator):
         selection: DefaultDict = defaultdict(set)
         for selector in selectors:
             try:
-                model, explore = selector.split(".")
+                model, explore = selector.split("/")
             except ValueError:
                 raise SpectaclesException(
                     f"Explore selector '{selector}' is not valid.\n"
-                    "Instead, use the format 'model_name.explore_name'. "
-                    f"Use 'model_name.*' to select all explores in a model."
+                    "Instead, use the format 'model_name/explore_name'. "
+                    f"Use 'model_name/*' to select all explores in a model."
                 )
             else:
                 selection[model].add(explore)
@@ -138,9 +134,9 @@ class SqlValidator(Validator):
         """Creates an object representation of the project's LookML.
 
         Args:
-            selectors: List of selector strings in 'model_name.explore_name' format.
+            selectors: List of selector strings in 'model_name/explore_name' format.
                 The '*' wildcard selects all models or explores. For instance,
-                'model_name.*' would select all explores in the 'model_name' model.
+                'model_name/*' would select all explores in the 'model_name' model.
 
         """
         selection = self.parse_selectors(selectors)
@@ -219,14 +215,11 @@ class SqlValidator(Validator):
 
         for model in sorted(self.project.models, key=lambda x: x.name):
             for explore in sorted(model.explores, key=lambda x: x.name):
+                message = f"{model.name}.{explore.name}"
                 if explore.errored:
-                    logger.info(
-                        f"✗ {printer.red(model.name + '.' + explore.name)} failed"
-                    )
+                    printer.print_validation_result("error", message)
                 else:
-                    logger.info(
-                        f"✓ {printer.green(model.name + '.' + explore.name)} passed"
-                    )
+                    printer.print_validation_result("success", message)
 
         return errors
 
@@ -265,15 +258,13 @@ class SqlValidator(Validator):
         if isinstance(data, dict):
             errors = data.get("errors") or [data.get("error")]
             first_error = errors[0]
-            message = first_error["message_details"]
-            if not isinstance(message, str):
-                raise TypeError(
-                    "Unexpected message type. Expected a str, "
-                    f"received type {type(message)}: {message}"
-                )
+            message = " ".join(
+                [first_error.get("message", ""), first_error.get("message_details", "")]
+            ).strip()
             sql = data["sql"]
-            if first_error.get("sql_error_loc"):
-                line_number = first_error["sql_error_loc"]["line"]
+            error_loc = first_error.get("sql_error_loc")
+            if error_loc:
+                line_number = error_loc.get("line")
             else:
                 line_number = None
         elif isinstance(data, list):

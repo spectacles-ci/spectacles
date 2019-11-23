@@ -79,7 +79,11 @@ class LookerClient:
         access_token = response.json()["access_token"]
         self.session.headers = {"Authorization": f"token {access_token}"}
 
-        logger.info(f"Connected using Looker API {api_version}")
+        looker_version = self.get_looker_release_version()
+        logger.info(
+            f"Connected to Looker version {looker_version} "
+            f"using Looker API {api_version}"
+        )
 
     def get_looker_release_version(self) -> str:
         """Gets the version number of connected Looker instance.
@@ -105,39 +109,6 @@ class LookerClient:
             )
 
         return response.json()["looker_release_version"]
-
-    def validate_looker_release_version(self, required_version: str) -> bool:
-        """Checks that the current Looker version meets a specified minimum.
-
-        Args:
-            required_version: Minimum instance version number (e.g. 6.22.12)
-
-        Returns:
-            bool: True if the current Looker version >= the required version
-
-        """
-        current_version = self.get_looker_release_version()
-        logger.info(f"Looker instance version is {current_version}")
-
-        def expand_version(version: str):
-            return [int(number) for number in version.split(".")]
-
-        current = expand_version(current_version)
-        required = expand_version(required_version)
-
-        # If version is provided in format 6.20 or 7, extend with .0(s)
-        # e.g. 6.20 would become 6.20.0, 7 would become 7.0.0
-        if len(current) < 3:
-            current.extend([0] * (3 - len(current)))
-
-        for current_num, required_num in zip(current, required):
-            if current_num < required_num:
-                return False
-            elif current_num > required_num:
-                return True
-
-        # Loop exits successfully if current version == required version
-        return True
 
     def update_session(
         self, project: str, branch: str, remote_reset: bool = False
@@ -367,7 +338,13 @@ class LookerClient:
             explore,
             "*" if len(dimensions) > 1 else dimensions[0],
         )
-        body = {"model": model, "view": explore, "fields": dimensions, "limit": 0}
+        body = {
+            "model": model,
+            "view": explore,
+            "fields": dimensions,
+            "limit": 0,
+            "filter_expression": "1=2",
+        }
         url = utils.compose_url(self.api_url, path=["queries"])
         async with session.post(url=url, json=body) as response:
             result = await response.json()

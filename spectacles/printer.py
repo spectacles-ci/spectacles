@@ -53,6 +53,13 @@ def print_sql_error(error: dict) -> None:
         logger.info("\n" + f"LookML: {error['url']}")
 
 
+def print_validation_result(type: str, source: str):
+    bullet = "✓" if type == "success" else "✗"
+    message = green(source) if type == "success" else red(source)
+    status = "passed" if type == "success" else "failed"
+    logger.info(f"{bullet} {message} {status}")
+
+
 def mark_line(lines: List[str], line_number: int, char: str = "*") -> List[str]:
     """For a list of strings, mark a specified line with a prepended character."""
     line_number -= 1  # Align with array indexing

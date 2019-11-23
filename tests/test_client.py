@@ -37,10 +37,14 @@ def test_bad_authenticate_raises_connection_error(mock_post, mock_response):
 
 
 @patch("spectacles.client.requests.Session.post")
-def test_authenticate_sets_session_headers(mock_post):
-    mock_response = Mock(spec=requests.Response)
-    mock_response.json.return_value = {"access_token": "test_access_token"}
-    mock_post.return_value = mock_response
+def test_authenticate_sets_session_headers(mock_post, monkeypatch):
+    mock_looker_version = Mock(spec=LookerClient.get_looker_release_version)
+    mock_looker_version.return_value("1.2.3")
+    monkeypatch.setattr(LookerClient, "get_looker_release_version", mock_looker_version)
+
+    mock_post_response = Mock(spec=requests.Response)
+    mock_post_response.json.return_value = {"access_token": "test_access_token"}
+    mock_post.return_value = mock_post_response
     client = LookerClient(TEST_BASE_URL, TEST_CLIENT_ID, TEST_CLIENT_SECRET)
     assert client.session.headers == {"Authorization": f"token test_access_token"}
 
@@ -106,5 +110,6 @@ async def test_create_query(mock_post, client):
             "view": "test_explore_one",
             "fields": ["dimension_one", "dimension_two"],
             "limit": 0,
+            "filter_expression": "1=2",
         },
     )
