@@ -40,9 +40,9 @@ class Runner:
 
     @log_duration
     def validate_sql(
-        self, selectors: List[str], mode: str = "batch", query_slots: int = 10
+        self, selectors: List[str], mode: str = "batch", concurrency: int = 10
     ) -> List[dict]:
-        sql_validator = SqlValidator(self.client, self.project, query_slots)
+        sql_validator = SqlValidator(self.client, self.project, concurrency)
         sql_validator.build_project(selectors)
         errors = sql_validator.validate(mode)
         return [vars(error) for error in errors]

@@ -80,12 +80,12 @@ class SqlValidator(Validator):
 
     timeout = aiohttp.ClientTimeout(total=300)
 
-    def __init__(self, client: LookerClient, project: str, query_slots: int = 10):
+    def __init__(self, client: LookerClient, project: str, concurrency: int = 10):
         super().__init__(client)
 
         self.project = Project(project, models=[])
         self.query_tasks: dict = {}
-        self.query_slots = asyncio.BoundedSemaphore(query_slots)
+        self.query_slots = asyncio.BoundedSemaphore(concurrency)
         self.running_query_tasks: asyncio.Queue = asyncio.Queue()
 
     @staticmethod
