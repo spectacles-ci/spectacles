@@ -391,7 +391,9 @@ class LookerClient:
         logger.debug("Query %d is running under query task %s", query_id, query_task_id)
         return query_task_id
 
-    def get_query_task_multi_results(self, query_task_ids: List[str]) -> JsonDict:
+    async def get_query_task_multi_results(
+        self, session: aiohttp.ClientSession, query_task_ids: List[str]
+    ) -> JsonDict:
         """Returns query task results.
 
         If a ClientError or TimeoutError is received, attempts to retry.
@@ -408,16 +410,9 @@ class LookerClient:
             "Attempting to get results for %d query tasks", len(query_task_ids)
         )
         url = utils.compose_url(self.api_url, path=["query_tasks", "multi_results"])
-        response = self.session.get(
+        async with session.get(
             url=url, params={"query_task_ids": ",".join(query_task_ids)}
-        )
-        try:
+        ) as response:
+            result = await response.json()
             response.raise_for_status()
-        except requests.exceptions.HTTPError as error:
-            details = utils.details_from_http_error(response)
-            raise ApiConnectionError(
-                f"Looker API error encountered: {error}\n"
-                + "Message received from Looker's API: "
-                f'"{details}"'
-            )
-        return response.json()
+        return result
