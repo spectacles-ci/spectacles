@@ -8,6 +8,7 @@ from spectacles.lookml import Project, Model, Explore, Dimension
 from spectacles.logger import GLOBAL_LOGGER as logger
 from spectacles.exceptions import SqlError, DataTestError, SpectaclesException
 import spectacles.printer as printer
+import signal
 
 
 class Validator(ABC):  # pragma: no cover
@@ -209,6 +210,13 @@ class SqlValidator(Validator):
         )
 
         loop = asyncio.get_event_loop()
+
+        signals = (signal.SIGHUP, signal.SIGTERM, signal.SIGINT)
+        for s in signals:
+            loop.add_signal_handler(
+                s, lambda s=s: asyncio.create_task(self.shutdown(s, loop))
+            )
+
         errors = list(loop.run_until_complete(self._query(mode)))
         if mode == "hybrid" and self.project.errored:
             errors = list(loop.run_until_complete(self._query(mode)))
@@ -222,6 +230,14 @@ class SqlValidator(Validator):
                     printer.print_validation_result("success", message)
 
         return errors
+
+    async def shutdown(self, signal, loop):
+        logger.debug("Cleaning up Spectacles async tasks.")
+        tasks = [t for t in asyncio.all_tasks() if t is not asyncio.current_task()]
+        [task.cancel() for task in tasks]
+        await asyncio.gather(*tasks)
+        loop.stop()
+        logger.debug("Spectacles async tasks terminated.")
 
     async def _query(self, mode: str = "batch") -> List[SqlError]:
         session = aiohttp.ClientSession(
@@ -242,15 +258,34 @@ class SqlValidator(Validator):
                             self._query_dimension(session, model, explore, dimension)
                         )
                         query_tasks.append(task)
+        try:
+            queries = asyncio.gather(*query_tasks)
+            query_results = asyncio.gather(
+                self._check_for_results(session, query_tasks)
+            )
+            results = await asyncio.gather(queries, query_results)
+        except asyncio.CancelledError:
+            query_task_ids = []
+            while not self.running_query_tasks.empty():
+                query_task_ids.append(await self.running_query_tasks.get())
+            cancel_query_tasks = []
+            for query_task_id in query_task_ids:
+                task = asyncio.create_task(
+                    self.client.cancel_query_task(session, query_task_id)
+                )
+                cancel_query_tasks.append(task)
 
-        queries = asyncio.gather(*query_tasks)
-        query_results = asyncio.gather(self._check_for_results(session, query_tasks))
-        results = await asyncio.gather(queries, query_results)
-        errors = results[1][0]  # Ignore the results from creating the queries
+            cancelled_queries = await asyncio.gather(*cancel_query_tasks)
 
-        await session.close()
-
-        return errors
+            raise SpectaclesException(
+                "Spectaces was interrupted."
+                "All running Looker queries have been attempted to be cancelled."
+            )
+        else:
+            errors = results[1][0]  # Ignore the results from creating the queries
+            return errors
+        finally:
+            await session.close()
 
     @staticmethod
     def _extract_error_details(query_result: dict) -> dict:

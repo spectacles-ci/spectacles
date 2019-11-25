@@ -416,3 +416,20 @@ class LookerClient:
             result = await response.json()
             response.raise_for_status()
         return result
+
+    async def cancel_query_task(
+        self, session: aiohttp.ClientSession, query_task_id: str
+    ):
+        """ Cancels a query task.
+
+        Args:
+            query_task_id: ID for the query task to cancel.
+
+        """
+        logger.debug(f"Cancelling query task: {query_task_id}")
+        url = utils.compose_url(self.api_url, path=["running_queries", query_task_id])
+        async with session.delete(url=url) as response:
+            result = await response.read()
+
+            # No raise_for_status() here because Looker API seems to give a 404
+            # if you try to cancel a finished query which can happen as part of cleanup
