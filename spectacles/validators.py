@@ -275,7 +275,7 @@ class SqlValidator(Validator):
                 )
                 cancel_query_tasks.append(task)
 
-            cancelled_queries = await asyncio.gather(*cancel_query_tasks)
+            await asyncio.gather(*cancel_query_tasks)
 
             raise SpectaclesException(
                 "Spectaces was interrupted."
