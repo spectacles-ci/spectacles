@@ -2,6 +2,7 @@ from pathlib import Path
 import json
 from unittest.mock import patch, Mock
 import pytest
+import asynctest
 from spectacles.lookml import Project, Model, Explore, Dimension
 from spectacles.client import LookerClient
 from spectacles.validators import SqlValidator
@@ -72,135 +73,95 @@ def test_build_project(mock_get_models, mock_get_dimensions, project, validator)
     assert validator.project == project
 
 
-@patch("spectacles.client.LookerClient.get_query_task_multi_results")
-def test_get_query_results_task_running(mock_get_query_task_multi_results, validator):
+@pytest.mark.asyncio
+@asynctest.patch("spectacles.client.LookerClient.get_query_task_multi_results")
+async def test_get_query_results_task_running(
+    mock_get_query_task_multi_results, validator
+):
+    await validator.query_slots.acquire()
     mock_response = {"status": "running"}
     mock_get_query_task_multi_results.return_value = {"query_task_a": mock_response}
-    still_running, errors = validator._get_query_results(["query_task_a"])
-    assert not errors
-    assert still_running == ["query_task_a"]
+    errors = validator._get_query_results(["query_task_a"])
+    assert not await errors
 
 
-@patch("spectacles.client.LookerClient.get_query_task_multi_results")
-def test_get_query_results_task_complete(
+@pytest.mark.asyncio
+@asynctest.patch("spectacles.client.LookerClient.get_query_task_multi_results")
+async def test_get_query_results_task_complete(
     mock_get_query_task_multi_results, validator, project
 ):
+    await validator.query_slots.acquire()
     lookml_object = project.models[0].explores[0]
     validator.query_tasks = {"query_task_a": lookml_object}
     mock_response = {"status": "complete"}
     mock_get_query_task_multi_results.return_value = {"query_task_a": mock_response}
-    still_running, errors = validator._get_query_results(["query_task_a"])
-    assert not errors
-    assert not still_running
+    errors = validator._get_query_results(["query_task_a"])
+    assert not await errors
 
 
-@patch("spectacles.client.LookerClient.get_query_task_multi_results")
-def test_get_query_results_task_error_dict(
-    mock_get_query_task_multi_results, validator, project
-):
-    lookml_object = project.models[0].explores[0]
-    validator.query_tasks = {"query_task_a": lookml_object}
-    mock_message = "An error message."
-    mock_details = "Shocking details."
-    mock_sql = "SELECT * FROM orders"
-    mock_response = {
+def test_extract_error_details_error_dict(validator, project):
+    message = "An error message."
+    message_details = "Shocking details."
+    sql = "SELECT * FROM orders"
+    query_result = {
         "status": "error",
         "data": {
-            "errors": [{"message": mock_message, "message_details": mock_details}],
-            "sql": mock_sql,
+            "errors": [{"message": message, "message_details": message_details}],
+            "sql": sql,
         },
     }
-    mock_get_query_task_multi_results.return_value = {"query_task_a": mock_response}
-    still_running, errors = validator._get_query_results(["query_task_a"])
-    assert errors[0].path == lookml_object.name
-    assert errors[0].message == f"{mock_message} {mock_details}"
-    assert errors[0].sql == mock_sql
-    assert not still_running
+    extracted = validator._extract_error_details(query_result)
+    assert extracted["message"] == f"{message} {message_details}"
+    assert extracted["sql"] == sql
 
 
-@patch("spectacles.client.LookerClient.get_query_task_multi_results")
-def test_get_query_results_task_error_list(
-    mock_get_query_task_multi_results, validator, project
-):
-    lookml_object = project.models[0].explores[0]
-    validator.query_tasks = {"query_task_a": lookml_object}
-    mock_message = "An error message."
-    mock_response = {"status": "error", "data": [mock_message]}
-    mock_get_query_task_multi_results.return_value = {"query_task_a": mock_response}
-    still_running, errors = validator._get_query_results(["query_task_a"])
-    assert errors[0].path == lookml_object.name
-    assert errors[0].message == mock_message
-    assert errors[0].sql is None
-    assert not still_running
+def test_extract_error_details_error_list(validator, project):
+    message = "An error message."
+    query_result = {"status": "error", "data": [message]}
+    extracted = validator._extract_error_details(query_result)
+    assert extracted["message"] == message
+    assert extracted["sql"] is None
 
 
-@patch("spectacles.client.LookerClient.get_query_task_multi_results")
-def test_get_query_results_task_error_other(
-    mock_get_query_task_multi_results, validator, project
-):
-    lookml_object = project.models[0].explores[0]
-    validator.query_tasks = {"query_task_a": lookml_object}
-    mock_response = {"status": "error", "data": "some string"}
-    mock_get_query_task_multi_results.return_value = {"query_task_a": mock_response}
-    with pytest.raises(SpectaclesException):
-        still_running, errors = validator._get_query_results(["query_task_a"])
+def test_extract_error_details_error_other(validator, project):
+    query_result = {"status": "error", "data": "some string"}
+    with pytest.raises(TypeError):
+        validator._extract_error_details(query_result)
 
 
-@patch("spectacles.client.LookerClient.get_query_task_multi_results")
-def test_get_query_results_non_str_message_details(
-    mock_get_query_task_multi_results, validator, project
-):
-    lookml_object = project.models[0].explores[0]
-    validator.query_tasks = {"query_task_a": lookml_object}
-    mock_message = {"message": "An error messsage.", "details": "More details."}
-    mock_sql = "SELECT * FROM orders"
-    mock_response = {
+def test_extract_error_details_error_non_str_message_details(validator, project):
+    message = {"message": "An error messsage.", "details": "More details."}
+    sql = "SELECT * FROM orders"
+    query_result = {
         "status": "error",
-        "data": {"errors": [{"message_details": mock_message}], "sql": mock_sql},
+        "data": {"errors": [{"message_details": message}], "sql": sql},
     }
-    mock_get_query_task_multi_results.return_value = {"query_task_a": mock_response}
-    with pytest.raises(SpectaclesException):
-        still_running, errors = validator._get_query_results(["query_task_a"])
+    with pytest.raises(TypeError):
+        validator._extract_error_details(query_result)
 
 
-@patch("spectacles.client.LookerClient.get_query_task_multi_results")
-def test_get_query_results_task_error_loc_wo_msg_details(
-    mock_get_query_task_multi_results, validator, project
-):
-    lookml_object = project.models[0].explores[0]
-    validator.query_tasks = {"query_task_a": lookml_object}
-    mock_message = "An error message."
-    mock_sql = "SELECT * FROM orders"
-    mock_response = {
+def test_extract_error_details_error_loc_wo_msg_details(validator, project):
+    message = "An error message."
+    sql = "SELECT * FROM orders"
+    query_result = {
         "status": "error",
-        "data": {"errors": [{"message": mock_message}], "sql": mock_sql},
+        "data": {"errors": [{"message": message}], "sql": sql},
     }
-    mock_get_query_task_multi_results.return_value = {"query_task_a": mock_response}
-    still_running, errors = validator._get_query_results(["query_task_a"])
-    assert errors[0].path == lookml_object.name
-    assert errors[0].message == mock_message
-    assert errors[0].sql == mock_sql
-    assert not still_running
+    extracted = validator._extract_error_details(query_result)
+    assert extracted["message"] == message
+    assert extracted["sql"] == sql
 
 
-@patch("spectacles.client.LookerClient.get_query_task_multi_results")
-def test_get_query_results_task_error_loc_wo_line(
-    mock_get_query_task_multi_results, validator, project
-):
-    lookml_object = project.models[0].explores[0]
-    validator.query_tasks = {"query_task_a": lookml_object}
-    mock_message = "An error message."
-    mock_sql = "SELECT x FROM orders"
-    mock_response = {
+def test_extract_error_details_error_loc_wo_line(validator, project):
+    message = "An error message."
+    sql = "SELECT x FROM orders"
+    query_result = {
         "status": "error",
         "data": {
-            "errors": [{"message": mock_message, "sql_error_loc": {"character": 8}}],
-            "sql": mock_sql,
+            "errors": [{"message": message, "sql_error_loc": {"character": 8}}],
+            "sql": sql,
         },
     }
-    mock_get_query_task_multi_results.return_value = {"query_task_a": mock_response}
-    still_running, errors = validator._get_query_results(["query_task_a"])
-    assert errors[0].path == lookml_object.name
-    assert errors[0].message == mock_message
-    assert errors[0].sql == mock_sql
-    assert not still_running
+    extracted = validator._extract_error_details(query_result)
+    assert extracted["message"] == message
+    assert extracted["sql"] == sql
