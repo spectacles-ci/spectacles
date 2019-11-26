@@ -233,13 +233,12 @@ class SqlValidator(Validator):
 
     async def shutdown(self, signal, loop):
         logger.info("\n\n" + "Please wait, asking Looker to cancel any running queries")
-        logger.debug("Cleaning up Spectacles async tasks.")
+        logger.debug("Cleaning up async tasks.")
         tasks = [t for t in asyncio.all_tasks() if t is not asyncio.current_task()]
         for task in tasks:
             task.cancel()
-        await asyncio.gather(*tasks)
-        loop.stop()
-        logger.debug("Spectacles async tasks terminated.")
+        await asyncio.wait(tasks, return_when=asyncio.ALL_COMPLETED)
+        # Nothing executes beyond this point because of CancelledErrors
 
     async def _query(self, mode: str = "batch") -> List[SqlError]:
         session = aiohttp.ClientSession(
@@ -341,54 +340,65 @@ class SqlValidator(Validator):
         self, session: aiohttp.ClientSession
     ) -> List[SqlError]:
         logger.debug("%d queries running", self.running_query_tasks.qsize())
+        try:
+            # Empty the queue (up to 250) to get all running query tasks
+            query_task_ids: List[str] = []
+            while not self.running_query_tasks.empty() and len(query_task_ids) <= 250:
+                query_task_ids.append(await self.running_query_tasks.get())
 
-        # Empty the queue (up to 250) to get all running query tasks
-        query_task_ids: List[str] = []
-        while not self.running_query_tasks.empty() and len(query_task_ids) <= 250:
-            query_task_ids.append(await self.running_query_tasks.get())
+            logger.debug("Getting results for %d query tasks", len(query_task_ids))
+            results = await self.client.get_query_task_multi_results(
+                session, query_task_ids
+            )
+            pending_task_ids = []
+            errors = []
 
-        logger.debug("Getting results for %d query tasks", len(query_task_ids))
-        results = await self.client.get_query_task_multi_results(
-            session, query_task_ids
-        )
-        pending_task_ids = []
-        errors = []
+            for query_task_id, query_result in results.items():
+                query_status = query_result["status"]
+                logger.debug("Query task %s status is %s", query_task_id, query_status)
+                if query_status in ("running", "added", "expired"):
+                    pending_task_ids.append(query_task_id)
+                    # Put the running query tasks back in the queue
+                    await self.running_query_tasks.put(query_task_id)
+                    query_task_ids.remove(query_task_id)
+                    continue
+                elif query_status in ("complete", "error"):
+                    query_task_ids.remove(query_task_id)
+                    # We can release a query slot for each completed query
+                    self.query_slots.release()
+                    lookml_object = self.query_tasks[query_task_id]
+                    lookml_object.queried = True
 
-        for query_task_id, query_result in results.items():
-            query_status = query_result["status"]
-            logger.debug("Query task %s status is %s", query_task_id, query_status)
-            if query_status in ("running", "added", "expired"):
-                pending_task_ids.append(query_task_id)
-                # Put the running query tasks back in the queue
-                await self.running_query_tasks.put(query_task_id)
-                continue
-            elif query_status in ("complete", "error"):
-                # We can release a query slot for each completed query
-                self.query_slots.release()
-                lookml_object = self.query_tasks[query_task_id]
-                lookml_object.queried = True
-
-                if query_status == "error":
-                    try:
-                        details = self._extract_error_details(query_result)
-                    except (KeyError, TypeError, IndexError) as error:
-                        raise SpectaclesException(
-                            "Encountered an unexpected API query result format, "
-                            "unable to extract error details. "
-                            f"The query result was: {query_result}"
-                        ) from error
-                    sql_error = SqlError(
-                        path=lookml_object.name,
-                        url=getattr(lookml_object, "url", None),
-                        **details,
+                    if query_status == "error":
+                        try:
+                            details = self._extract_error_details(query_result)
+                        except (KeyError, TypeError, IndexError) as error:
+                            raise SpectaclesException(
+                                "Encountered an unexpected API query result format, "
+                                "unable to extract error details. "
+                                f"The query result was: {query_result}"
+                            ) from error
+                        sql_error = SqlError(
+                            path=lookml_object.name,
+                            url=getattr(lookml_object, "url", None),
+                            **details,
+                        )
+                        lookml_object.error = sql_error
+                        errors.append(sql_error)
+                else:
+                    raise SpectaclesException(
+                        f'Unexpected query result status "{query_status}" '
+                        "returned by the Looker API"
                     )
-                    lookml_object.error = sql_error
-                    errors.append(sql_error)
-            else:
-                raise SpectaclesException(
-                    f'Unexpected query result status "{query_status}" '
-                    "returned by the Looker API"
-                )
+        except asyncio.CancelledError:
+            logger.debug(
+                "Cancelled result fetching, putting "
+                f"{self.running_query_tasks.qsize()} query task IDs back in the queue"
+            )
+            for query_task_id in query_task_ids:
+                await self.running_query_tasks.put(query_task_id)
+            logger.debug("Restored query task IDs to queue")
+            raise
 
         return errors
 
@@ -401,7 +411,7 @@ class SqlValidator(Validator):
             or not self.running_query_tasks.empty()
         ):
             if not self.running_query_tasks.empty():
-                result = await asyncio.shield(self._get_query_results(session))
+                result = await self._get_query_results(session)
                 results.extend(result)
             await asyncio.sleep(0.5)
 
