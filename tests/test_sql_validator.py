@@ -78,6 +78,7 @@ async def test_get_query_results_task_running(
     mock_get_query_task_multi_results, validator
 ):
     await validator.query_slots.acquire()
+    await validator.running_query_tasks.put("query_task_a")
     mock_response = {"status": "running"}
     mock_get_query_task_multi_results.return_value = {"query_task_a": mock_response}
     errors = validator._get_query_results(["query_task_a"])
@@ -90,6 +91,7 @@ async def test_get_query_results_task_complete(
     mock_get_query_task_multi_results, validator, project
 ):
     await validator.query_slots.acquire()
+    await validator.running_query_tasks.put("query_task_a")
     lookml_object = project.models[0].explores[0]
     validator.query_tasks = {"query_task_a": lookml_object}
     mock_response = {"status": "complete"}
