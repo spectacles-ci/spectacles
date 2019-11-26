@@ -281,7 +281,7 @@ class SqlValidator(Validator):
 
             raise SpectaclesException(
                 "\n\n" + "Spectacles was manually interrupted. "
-                "All running Looker queries have been attempted to be cancelled."
+                "Spectacles attempted to cancel all running queries."
             )
         else:
             errors = results[1]  # Ignore the results from creating the queries
