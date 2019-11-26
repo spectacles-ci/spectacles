@@ -234,7 +234,8 @@ class SqlValidator(Validator):
     async def shutdown(self, signal, loop):
         logger.debug("Cleaning up Spectacles async tasks.")
         tasks = [t for t in asyncio.all_tasks() if t is not asyncio.current_task()]
-        [task.cancel() for task in tasks]
+        for task in tasks:
+            task.cancel()
         await asyncio.gather(*tasks)
         loop.stop()
         logger.debug("Spectacles async tasks terminated.")
@@ -258,11 +259,12 @@ class SqlValidator(Validator):
                             self._query_dimension(session, model, explore, dimension)
                         )
                         query_tasks.append(task)
+
+        queries = asyncio.gather(*query_tasks)
+        query_results = asyncio.create_task(
+            self._check_for_results(session, query_tasks)
+        )
         try:
-            queries = asyncio.gather(*query_tasks)
-            query_results = asyncio.gather(
-                self._check_for_results(session, query_tasks)
-            )
             results = await asyncio.gather(queries, query_results)
         except asyncio.CancelledError:
             query_task_ids = []
@@ -282,7 +284,7 @@ class SqlValidator(Validator):
                 "All running Looker queries have been attempted to be cancelled."
             )
         else:
-            errors = results[1][0]  # Ignore the results from creating the queries
+            errors = results[1]  # Ignore the results from creating the queries
             return errors
         finally:
             await session.close()
