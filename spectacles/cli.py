@@ -132,8 +132,7 @@ def handle_exceptions(function: Callable) -> Callable:
             sys.exit(error.exit_code)
         except KeyboardInterrupt as error:
             logger.debug(error, exc_info=True)
-            logger.info("ctrl-c")
-            logger.info("Encountered KeyboardInterrupt.")
+            logger.info("Spectacles was manually interrupted.")
             sys.exit(1)
         except Exception as error:
             logger.debug(error, exc_info=True)

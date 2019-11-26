@@ -232,7 +232,7 @@ class SqlValidator(Validator):
         return errors
 
     async def shutdown(self, signal, loop):
-        logger.debug("Cleaning up Spectacles async tasks.")
+        logger.debug("\n" + "Cleaning up Spectacles async tasks.")
         tasks = [t for t in asyncio.all_tasks() if t is not asyncio.current_task()]
         for task in tasks:
             task.cancel()
@@ -280,7 +280,7 @@ class SqlValidator(Validator):
             await asyncio.gather(*cancel_query_tasks)
 
             raise SpectaclesException(
-                "Spectaces was interrupted. "
+                "\n\n" + "Spectacles was manually interrupted. "
                 "All running Looker queries have been attempted to be cancelled."
             )
         else:
