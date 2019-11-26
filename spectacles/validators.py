@@ -278,7 +278,7 @@ class SqlValidator(Validator):
             await asyncio.gather(*cancel_query_tasks)
 
             raise SpectaclesException(
-                "Spectaces was interrupted."
+                "Spectaces was interrupted. "
                 "All running Looker queries have been attempted to be cancelled."
             )
         else:
