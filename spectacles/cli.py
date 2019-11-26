@@ -130,6 +130,11 @@ def handle_exceptions(function: Callable) -> Callable:
                 + "\n"
             )
             sys.exit(error.exit_code)
+        except KeyboardInterrupt as error:
+            logger.debug(error, exc_info=True)
+            logger.info("ctrl-c")
+            logger.info("Encountered KeyboardInterrupt.")
+            sys.exit(1)
         except Exception as error:
             logger.debug(error, exc_info=True)
             logger.error(
