@@ -394,7 +394,7 @@ class SqlValidator(Validator):
             or not self.running_query_tasks.empty()
         ):
             if not self.running_query_tasks.empty():
-                result = await self._get_query_results(session)
+                result = await asyncio.shield(self._get_query_results(session))
                 results.extend(result)
             await asyncio.sleep(0.5)
 
