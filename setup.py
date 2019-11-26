@@ -1,7 +1,7 @@
 from pathlib import Path
 from setuptools import setup, find_packages
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 here = Path(__file__).parent.resolve()
 
@@ -11,6 +11,7 @@ with (here / "README.md").open(encoding="utf-8") as file:
 
 setup(
     name="spectacles",
+    description="A command-line, continuous integration tool for Looker and LookML.",
     version=__version__,
     py_modules=["spectacles"],
     packages=find_packages(exclude=["docs", "tests*", "scripts"]),
