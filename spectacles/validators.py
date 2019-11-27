@@ -302,9 +302,12 @@ class SqlValidator(Validator):
             errors = data.get("errors") or [data.get("error")]
             first_error = errors[0]
             message = " ".join(
-                [first_error.get("message", ""), first_error.get("message_details", "")]
-            ).strip()
-            sql = data["sql"]
+                filter(
+                    None,
+                    [first_error.get("message"), first_error.get("message_details")],
+                )
+            )
+            sql = data.get("sql")
             error_loc = first_error.get("sql_error_loc")
             if error_loc:
                 line_number = error_loc.get("line")
