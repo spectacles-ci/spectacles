@@ -411,7 +411,14 @@ def run_assert(
     project, branch, base_url, client_id, client_secret, port, api_version, remote_reset
 ) -> None:
     runner = Runner(
-        base_url, project, branch, client_id, client_secret, port, api_version, remote_reset,
+        base_url,
+        project,
+        branch,
+        client_id,
+        client_secret,
+        port,
+        api_version,
+        remote_reset,
     )
     errors = runner.validate_data_tests()
     if errors:
