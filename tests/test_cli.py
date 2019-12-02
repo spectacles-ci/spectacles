@@ -176,3 +176,8 @@ def test_bad_config_file_parameter(mock_parse_config, clean_env, parser):
         SpectaclesException, match="not a valid configuration parameter"
     ):
         parser.parse_args(["connect", "--config-file", "config.yml"])
+
+
+def test_parse_remote_reset_with_assert(env, parser):
+    args = parser.parse_args(["assert", "--remote-reset"])
+    assert args.remote_reset
