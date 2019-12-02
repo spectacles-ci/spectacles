@@ -141,32 +141,15 @@ def test_extract_error_details_error_non_str_message_details(validator, project)
         validator._extract_error_details(query_result)
 
 
-def test_extract_error_details_for_unset_access_filter(validator, project):
-    message = (
-        'Access filter field "foo.bar" on model "baz.qux" '
-        + "is unset for the current user."
-    )
-    sql = None
+def test_extract_error_details_no_message_details(validator, project):
+    message = "An error message."
     query_result = {
         "status": "error",
-        "data": {
-            "errors": [
-                {
-                    "message": message,
-                    "message_details": None,
-                    "params": None,
-                    "edit_url": None,
-                    "error_pos": None,
-                    "fatal": True,
-                    "level": "fatal",
-                    "login_required_oauth_application_id": None,
-                }
-            ]
-        },
+        "data": {"errors": [{"message": message, "message_details": None}]},
     }
     extracted = validator._extract_error_details(query_result)
     assert extracted["message"] == message
-    assert extracted["sql"] == sql
+    assert extracted["sql"] is None
 
 
 def test_extract_error_details_error_loc_wo_line(validator, project):
