@@ -190,6 +190,7 @@ def main():
             args.client_secret,
             args.port,
             args.api_version,
+            args.remote_reset,
         )
 
 
@@ -390,6 +391,13 @@ def _build_assert_subparser(
     subparser.add_argument(
         "--branch", action=EnvVarAction, env_var="LOOKER_GIT_BRANCH", required=True
     )
+    subparser.add_argument(
+        "--remote-reset",
+        action="store_true",
+        help="When set to true, the SQL validator will tell Looker to reset the \
+            user's branch to the revision of the branch that is on the remote. \
+            WARNING: This will delete any uncommited changes in the user's workspace.",
+    )
 
 
 def run_connect(
@@ -400,10 +408,17 @@ def run_connect(
 
 
 def run_assert(
-    project, branch, base_url, client_id, client_secret, port, api_version
+    project, branch, base_url, client_id, client_secret, port, api_version, remote_reset
 ) -> None:
     runner = Runner(
-        base_url, project, branch, client_id, client_secret, port, api_version
+        base_url,
+        project,
+        branch,
+        client_id,
+        client_secret,
+        port,
+        api_version,
+        remote_reset,
     )
     errors = runner.validate_data_tests()
     if errors:
