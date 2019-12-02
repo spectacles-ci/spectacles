@@ -161,7 +161,7 @@ def set_file_handler(directory: str) -> None:
     LOG_FILEPATH = Path(log_directory / LOG_FILENAME)
     log_directory.mkdir(exist_ok=True)
 
-    fh = logging.FileHandler(log_filepath)
+    fh = logging.FileHandler(LOG_FILEPATH)
     fh.setLevel(logging.DEBUG)
 
     formatter = FileFormatter("%(asctime)s %(levelname)s | %(message)s")
