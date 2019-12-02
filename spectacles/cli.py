@@ -9,8 +9,11 @@ from typing import Callable
 from spectacles.runner import Runner
 from spectacles.client import LookerClient
 from spectacles.exceptions import SpectaclesException, ValidationError
-from spectacles.logger import GLOBAL_LOGGER as logger, LOG_FILEPATH
+from spectacles.logger import GLOBAL_LOGGER as logger, FileFormatter
 import spectacles.printer as printer
+from pathlib import Path
+
+LOG_FILENAME = "spectacles.log"
 
 
 class ConfigFileAction(argparse.Action):
@@ -150,14 +153,32 @@ def handle_exceptions(function: Callable) -> Callable:
     return wrapper
 
 
+def set_file_handler(directory: str) -> None:
+
+    global LOG_FILEPATH
+
+    log_directory = Path(directory)
+    LOG_FILEPATH = Path(log_directory / LOG_FILENAME)
+    log_directory.mkdir(exist_ok=True)
+
+    fh = logging.FileHandler(log_filepath)
+    fh.setLevel(logging.DEBUG)
+
+    formatter = FileFormatter("%(asctime)s %(levelname)s | %(message)s")
+    fh.setFormatter(formatter)
+
+    logger.addHandler(fh)
+
+
 @handle_exceptions
 def main():
     """Runs main function. This is the entry point."""
     parser = create_parser()
     args = parser.parse_args()
     for handler in logger.handlers:
-        if not isinstance(handler, logging.FileHandler):
-            handler.setLevel(args.log_level)
+        handler.setLevel(args.log_level)
+
+    set_file_handler(args.log_directory)
 
     if args.command == "connect":
         run_connect(
@@ -271,6 +292,13 @@ def _build_base_subparser() -> argparse.ArgumentParser:
         default=logging.INFO,
         help="Display debug logging during spectacles execution. \
             Useful for debugging and making bug reports.",
+    )
+    base_subparser.add_argument(
+        "--log-directory",
+        action=EnvVarAction,
+        env_var="LOG_DIRECTORY",
+        default="logs",
+        help="The directory that Spectacles will write logs to.",
     )
 
     return base_subparser
