@@ -13,7 +13,7 @@ from spectacles.logger import GLOBAL_LOGGER as logger, FileFormatter
 import spectacles.printer as printer
 
 LOG_FILENAME = "spectacles.log"
-global LOG_FILEPATH
+LOG_FILEPATH: Path
 
 
 class ConfigFileAction(argparse.Action):
