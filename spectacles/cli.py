@@ -13,7 +13,7 @@ from spectacles.logger import GLOBAL_LOGGER as logger, FileFormatter
 import spectacles.printer as printer
 
 LOG_FILENAME = "spectacles.log"
-LOG_FILEPATH: Path
+LOG_FILEPATH = Path()
 
 
 class ConfigFileAction(argparse.Action):
@@ -154,6 +154,8 @@ def handle_exceptions(function: Callable) -> Callable:
 
 
 def set_file_handler(directory: str) -> None:
+
+    global LOG_FILEPATH
 
     log_directory = Path(directory)
     LOG_FILEPATH = Path(log_directory / LOG_FILENAME)
