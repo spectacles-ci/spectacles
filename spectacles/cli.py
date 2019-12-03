@@ -11,7 +11,6 @@ from spectacles.client import LookerClient
 from spectacles.exceptions import SpectaclesException, ValidationError
 from spectacles.logger import GLOBAL_LOGGER as logger, FileFormatter
 import spectacles.printer as printer
-from pathlib import Path
 
 LOG_FILENAME = "spectacles.log"
 
@@ -295,9 +294,9 @@ def _build_base_subparser() -> argparse.ArgumentParser:
             Useful for debugging and making bug reports.",
     )
     base_subparser.add_argument(
-        "--log-directory",
+        "--log-dir",
         action=EnvVarAction,
-        env_var="LOG_DIRECTORY",
+        env_var="SPECTACLES_LOG_DIR",
         default="logs",
         help="The directory that Spectacles will write logs to.",
     )
