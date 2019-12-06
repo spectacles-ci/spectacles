@@ -100,7 +100,7 @@ async def test_get_query_results_task_complete(
     assert not await errors
 
 
-def test_extract_error_details_error_dict(validator, project):
+def test_extract_error_details_error_dict(validator):
     message = "An error message."
     message_details = "Shocking details."
     sql = "SELECT * FROM orders"
@@ -116,7 +116,7 @@ def test_extract_error_details_error_dict(validator, project):
     assert extracted["sql"] == sql
 
 
-def test_extract_error_details_error_list(validator, project):
+def test_extract_error_details_error_list(validator):
     message = "An error message."
     query_result = {"status": "error", "data": [message]}
     extracted = validator._extract_error_details(query_result)
@@ -124,13 +124,13 @@ def test_extract_error_details_error_list(validator, project):
     assert extracted["sql"] is None
 
 
-def test_extract_error_details_error_other(validator, project):
+def test_extract_error_details_error_other(validator):
     query_result = {"status": "error", "data": "some string"}
     with pytest.raises(TypeError):
         validator._extract_error_details(query_result)
 
 
-def test_extract_error_details_error_non_str_message_details(validator, project):
+def test_extract_error_details_error_non_str_message_details(validator):
     message = {"message": "An error messsage.", "details": "More details."}
     sql = "SELECT * FROM orders"
     query_result = {
@@ -141,19 +141,18 @@ def test_extract_error_details_error_non_str_message_details(validator, project)
         validator._extract_error_details(query_result)
 
 
-def test_extract_error_details_error_loc_wo_msg_details(validator, project):
+def test_extract_error_details_no_message_details(validator):
     message = "An error message."
-    sql = "SELECT * FROM orders"
     query_result = {
         "status": "error",
-        "data": {"errors": [{"message": message}], "sql": sql},
+        "data": {"errors": [{"message": message, "message_details": None}]},
     }
     extracted = validator._extract_error_details(query_result)
     assert extracted["message"] == message
-    assert extracted["sql"] == sql
+    assert extracted["sql"] is None
 
 
-def test_extract_error_details_error_loc_wo_line(validator, project):
+def test_extract_error_details_error_loc_wo_line(validator):
     message = "An error message."
     sql = "SELECT x FROM orders"
     query_result = {
