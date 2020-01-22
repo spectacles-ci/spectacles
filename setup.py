@@ -1,7 +1,6 @@
 from pathlib import Path
 from setuptools import setup, find_packages
-
-__version__ = "0.1.1"
+from spectacles import __version__
 
 here = Path(__file__).parent.resolve()
 
