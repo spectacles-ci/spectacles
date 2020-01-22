@@ -28,7 +28,7 @@ You can find detailed documentation on our website [spectacles.dev](https://spec
 Occasionally, when we make changes to LookML or our data warehouse, we break downstream experiences in Looker. For example:
 
 * We change the name of a database column without changing the corresponding `sql` field in our Looker view, leaving our users with a database error when using that field.
-* We add an invalid join to an explore that fans out our dataa, inflating a key metric that drives our business without realising.
+* We add an invalid join to an explore that fans out our data, inflating a key metric that drives our business without realising.
 * We make changes to LookML without remembering to check the Content Validator for errors, disrupting Dashboards and Looks that our users rely on
 * We give a new dimension a confusing name, causing other developers in our team to spend extra time trying to figure out how it should be used.
 
