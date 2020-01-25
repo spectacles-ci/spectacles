@@ -6,6 +6,7 @@ import argparse
 import logging
 import os
 from typing import Callable
+from spectacles import __version__
 from spectacles.runner import Runner
 from spectacles.client import LookerClient
 from spectacles.exceptions import SpectaclesException, ValidationError
@@ -223,6 +224,7 @@ def create_parser() -> argparse.ArgumentParser:
 
     """
     parser = argparse.ArgumentParser(prog="spectacles")
+    parser.add_argument("--version", action="version", version=__version__)
     subparser_action = parser.add_subparsers(
         title="Available sub-commands", dest="command"
     )
