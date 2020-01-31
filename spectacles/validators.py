@@ -296,27 +296,33 @@ class SqlValidator(Validator):
             await session.close()
 
     @staticmethod
-    def _extract_error_details(query_result: dict) -> dict:
+    def _extract_error_details(query_result: dict) -> List[dict]:
+        details = []
         data = query_result["data"]
         if isinstance(data, dict):
-            errors = data.get("errors") or [data.get("error")]
-            first_error = errors[0]
-            message = " ".join(
-                filter(
-                    None,
-                    [first_error.get("message"), first_error.get("message_details")],
-                )
-            )
             sql = data.get("sql")
-            error_loc = first_error.get("sql_error_loc")
-            if error_loc:
-                line_number = error_loc.get("line")
-            else:
-                line_number = None
+            errors = data.get("errors") or [data.get("error")]
+            for error in errors:
+                if isinstance(error, str):
+                    details.append({"message": error, "sql": sql, "line_number": None})
+                else:
+                    message = " ".join(
+                        filter(
+                            None, [error.get("message"), error.get("message_details")]
+                        )
+                    )
+                    line_number = None
+                    error_loc = error.get("sql_error_loc")
+                    if error_loc:
+                        line_number = error_loc.get("line")
+
+                    details.append(
+                        {"message": message, "sql": sql, "line_number": line_number}
+                    )
+
         elif isinstance(data, list):
-            message = data[0]
-            line_number = None
-            sql = None
+            for error in data:
+                details.append({"message": error, "sql": None, "line_number": None})
         else:
             raise TypeError(
                 "Unexpected error response type. "
@@ -324,7 +330,7 @@ class SqlValidator(Validator):
                 f"received type {type(data)}: {data}"
             )
 
-        return {"message": message, "sql": sql, "line_number": line_number}
+        return details
 
     async def _run_query(
         self,
@@ -381,13 +387,14 @@ class SqlValidator(Validator):
                                 "unable to extract error details. "
                                 f"The query result was: {query_result}"
                             ) from error
-                        sql_error = SqlError(
-                            path=lookml_object.name,
-                            url=getattr(lookml_object, "url", None),
-                            **details,
-                        )
-                        lookml_object.error = sql_error
-                        errors.append(sql_error)
+                        for detail in details:
+                            sql_error = SqlError(
+                                path=lookml_object.name,
+                                url=getattr(lookml_object, "url", None),
+                                **detail,
+                            )
+                            lookml_object.error = sql_error
+                            errors.append(sql_error)
                 else:
                     raise SpectaclesException(
                         f'Unexpected query result status "{query_status}" '
