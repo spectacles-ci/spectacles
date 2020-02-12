@@ -1,8 +1,7 @@
 from typing import List, Dict, Any
-import asyncio
 import backoff  # type: ignore
-import aiohttp
 import requests
+from requests.exceptions import Timeout
 import spectacles.utils as utils
 from spectacles.logger import GLOBAL_LOGGER as logger
 from spectacles.exceptions import SpectaclesException, ApiConnectionError
@@ -302,33 +301,15 @@ class LookerClient:
 
         return response.json()["fields"]["dimensions"]
 
-    @backoff.on_exception(
-        backoff.expo, (aiohttp.ClientError, asyncio.TimeoutError), max_tries=2
-    )
-    async def create_query(
-        self,
-        session: aiohttp.ClientSession,
-        model: str,
-        explore: str,
-        dimensions: List[str],
-    ) -> int:
+    @backoff.on_exception(backoff.expo, (Timeout,), max_tries=2)
+    def create_query(self, model: str, explore: str, dimensions: List[str]) -> int:
         """Creates a Looker async query for one or more specified dimensions.
 
         The query created is a SELECT query, selecting all dimensions specified for a
         certain model and explore. Looker builds the query using the `sql` field in the
         LookML for each dimension.
 
-        If a ClientError or TimeoutError is received, attempts to retry.
-
-        Args:
-            session: Existing asychronous HTTP session.
-            model: Name of LookML model to query.
-            explore: Name of LookML explore to query.
-            dimensions: Names of the LookML dimensions in the specified explore to
-                query.
-
-        Returns:
-            int: ID for the created query.
+        If a Timeout exception is received, attempts to retry.
 
         """
         # Using old-style string formatting so that strings are formatted lazily
@@ -346,9 +327,10 @@ class LookerClient:
             "filter_expression": "1=2",
         }
         url = utils.compose_url(self.api_url, path=["queries"])
-        async with session.post(url=url, json=body) as response:
-            result = await response.json()
-            response.raise_for_status()
+        response = self.session.post(url=url, json=body)
+        response.raise_for_status()
+        result = response.json()
+
         query_id = result["id"]
         logger.debug(
             "Query for %s/%s/%s created as query %d",
@@ -359,12 +341,8 @@ class LookerClient:
         )
         return query_id
 
-    @backoff.on_exception(
-        backoff.expo, (aiohttp.ClientError, asyncio.TimeoutError), max_tries=2
-    )
-    async def create_query_task(
-        self, session: aiohttp.ClientSession, query_id: int
-    ) -> str:
+    @backoff.on_exception(backoff.expo, (Timeout,), max_tries=2)
+    def create_query_task(self, query_id: int) -> str:
         """Runs a previously created query asynchronously and returns the query task ID.
 
         If a ClientError or TimeoutError is received, attempts to retry.
@@ -382,18 +360,14 @@ class LookerClient:
         logger.debug("Starting query %d", query_id)
         body = {"query_id": query_id, "result_format": "json_detail"}
         url = utils.compose_url(self.api_url, path=["query_tasks"])
-        async with session.post(
-            url=url, json=body, params={"cache": "false"}
-        ) as response:
-            result = await response.json()
-            response.raise_for_status()
+        response = self.session.post(url=url, json=body, params={"cache": "false"})
+        response.raise_for_status()
+        result = response.json()
         query_task_id = result["id"]
         logger.debug("Query %d is running under query task %s", query_id, query_task_id)
         return query_task_id
 
-    async def get_query_task_multi_results(
-        self, session: aiohttp.ClientSession, query_task_ids: List[str]
-    ) -> JsonDict:
+    def get_query_task_multi_results(self, query_task_ids: List[str]) -> JsonDict:
         """Returns query task results.
 
         If a ClientError or TimeoutError is received, attempts to retry.
@@ -410,17 +384,15 @@ class LookerClient:
             "Attempting to get results for %d query tasks", len(query_task_ids)
         )
         url = utils.compose_url(self.api_url, path=["query_tasks", "multi_results"])
-        async with session.get(
+        response = self.session.get(
             url=url, params={"query_task_ids": ",".join(query_task_ids)}
-        ) as response:
-            result = await response.json()
-            response.raise_for_status()
+        )
+        response.raise_for_status()
+        result = response.json()
         return result
 
-    async def cancel_query_task(
-        self, session: aiohttp.ClientSession, query_task_id: str
-    ):
-        """ Cancels a query task.
+    def cancel_query_task(self, query_task_id: str):
+        """Cancels a query task.
 
         Args:
             query_task_id: ID for the query task to cancel.
@@ -428,8 +400,7 @@ class LookerClient:
         """
         logger.debug(f"Cancelling query task: {query_task_id}")
         url = utils.compose_url(self.api_url, path=["running_queries", query_task_id])
-        async with session.delete(url=url) as response:
-            await response.read()
+        response = self.session.delete(url=url)
 
-            # No raise_for_status() here because Looker API seems to give a 404
-            # if you try to cancel a finished query which can happen as part of cleanup
+        # No raise_for_status() here because Looker API seems to give a 404
+        # if you try to cancel a finished query which can happen as part of cleanup
