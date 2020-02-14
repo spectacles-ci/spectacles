@@ -44,8 +44,8 @@ class Runner:
     ) -> List[dict]:
         sql_validator = SqlValidator(self.client, self.project, concurrency)
         sql_validator.build_project(selectors)
-        errors = sql_validator.validate(mode)
-        return [vars(error) for error in errors]
+        project = sql_validator.validate(mode)
+        return project
 
     @log_duration
     def validate_data_tests(self):
