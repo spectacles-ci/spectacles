@@ -484,7 +484,7 @@ def run_sql(
         api_version,
         remote_reset,
     )
-    errors = runner.validate_sql(explores, mode, concurrency)
+    project = runner.validate_sql(explores, mode, concurrency)
     if errors:
         for error in sorted(errors, key=lambda x: x["path"]):
             printer.print_sql_error(error)
