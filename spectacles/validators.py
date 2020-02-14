@@ -243,6 +243,7 @@ class SqlValidator(Validator):
         return errors
 
     def _create_and_run(self, mode: str = "batch") -> List[SqlError]:
+        """Runs a single validation using a specified mode"""
         queries = self._create_queries(mode)
         try:
             errors = self._run_queries(queries)
@@ -378,6 +379,7 @@ class SqlValidator(Validator):
 
     @staticmethod
     def _extract_error_details(query_result: Dict) -> Dict:
+        """Extracts the relevant error fields from a Looker API response"""
         data = query_result["data"]
         if isinstance(data, dict):
             errors = data.get("errors") or [data.get("error")]
