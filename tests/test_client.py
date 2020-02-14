@@ -1,8 +1,6 @@
 from unittest.mock import Mock, patch
 import pytest
 import requests
-import asynctest
-import aiohttp
 from spectacles.client import LookerClient
 from spectacles.exceptions import ApiConnectionError
 
@@ -93,9 +91,7 @@ def test_create_query(mock_post, client):
     QUERY_ID = 124950204921
     mock_post.return_value.json.return_value = {"id": QUERY_ID}
     query_id = client.create_query(
-        "test_model",
-        "test_explore_one",
-        ["dimension_one", "dimension_two"],
+        "test_model", "test_explore_one", ["dimension_one", "dimension_two"]
     )
     assert query_id == QUERY_ID
     mock_post.assert_called_once_with(
