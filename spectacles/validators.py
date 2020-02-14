@@ -107,9 +107,19 @@ class SqlValidator(Validator):
 
         self.project = Project(project, models=[])
         self.query_slots = concurrency
-        self.query_by_task_id: Dict[
-            str, Query
-        ] = {}  # Lookup used to retrieve the LookML object
+        self._running_queries: List[Query] = []
+        # Lookup used to retrieve the LookML object
+        self._query_by_task_id: Dict[str, Query] = {}
+
+    def get_query_by_task_id(self, query_task_id: str) -> Query:
+        return self._query_by_task_id[query_task_id]
+
+    def get_running_query_tasks(self) -> List[str]:
+        return [
+            query.query_task_id
+            for query in self._running_queries
+            if query.query_task_id
+        ]
 
     @staticmethod
     def parse_selectors(selectors: List[str]) -> DefaultDict[str, set]:
@@ -213,17 +223,7 @@ class SqlValidator(Validator):
         self.project.models = selected_models
 
     def validate(self, mode: str = "batch") -> List[SqlError]:
-        """Queries selected explores and returns any errors.
-
-        Args:
-            batch: When true, runs one query per explore (using all dimensions). When
-                false, runs one query per dimension. Batch mode increases query speed
-                but can only return the first error encountered for each dimension.
-
-        Returns:
-            List[SqlError]: SqlErrors encountered while querying the explore.
-
-        """
+        """Queries selected explores and returns the project tree with errors."""
         explore_count = self._count_explores()
         printer.print_header(
             f"Testing {explore_count} "
@@ -255,7 +255,7 @@ class SqlValidator(Validator):
             logger.info(
                 "\n\n" + "Please wait, asking Looker to cancel any running queries"
             )
-            query_tasks = list(self.query_by_task_id.keys())
+            query_tasks = self.get_running_query_tasks()
             self._cancel_queries(query_tasks)
             message = "SQL validation was interrupted. "
             if query_tasks:
@@ -307,9 +307,8 @@ class SqlValidator(Validator):
         for query_task_id in query_task_ids:
             self.client.cancel_query_task(query_task_id)
 
-    def _fill_query_slots(self, queries: List[Query]) -> Dict[str, Query]:
+    def _fill_query_slots(self, queries: List[Query]) -> None:
         """Creates query tasks until all slots are used or all queries are running"""
-        query_tasks: Dict[str, Query] = {}
         while queries and self.query_slots > 0:
             logger.debug(
                 f"{self.query_slots} available query slots, creating query task"
@@ -318,10 +317,12 @@ class SqlValidator(Validator):
             query_task_id = self.client.create_query_task(query.query_id)
             self.query_slots -= 1
             query.query_task_id = query_task_id
-            query_tasks[query_task_id] = query
-        return query_tasks
+            self._query_by_task_id[query_task_id] = query
+            self._running_queries.append(query)
 
-    def _get_completed_query_tasks(self, query_task_ids) -> List[QueryResult]:
+    def _get_completed_query_tasks(
+        self, query_task_ids: List[str]
+    ) -> List[QueryResult]:
         """Returns ID, status, and error message for completed and errored tasks"""
         query_results = []
         results = self.client.get_query_task_multi_results(query_task_ids)
@@ -350,28 +351,65 @@ class SqlValidator(Validator):
                 )
         return query_results
 
+    def _get_query_results(self, query_task_ids: List[str]) -> List[QueryResult]:
+        """Returns ID, status, and error message for all query tasks"""
+        query_results = []
+        results = self.client.get_query_task_multi_results(query_task_ids)
+        for query_task_id, result in results.items():
+            status = result["status"]
+            if status not in ("complete", "error", "running", "added", "expired"):
+                raise SpectaclesException(
+                    f'Unexpected query result status "{status}" '
+                    "returned by the Looker API"
+                )
+            logger.debug(f"Query task {query_task_id} status is: {status}")
+            query_result = QueryResult(query_task_id, status)
+            if status == "error":
+                try:
+                    error_details = self._extract_error_details(result)
+                except (KeyError, TypeError, IndexError) as error:
+                    raise SpectaclesException(
+                        "Encountered an unexpected API query result format, "
+                        "unable to extract error details. "
+                        f"The query result was: {result}"
+                    ) from error
+                else:
+                    query_result.error = error_details
+            query_results.append(query_result)
+        return query_results
+
+    def _handle_query_result(self, result: QueryResult) -> Optional[SqlError]:
+        query = self.get_query_by_task_id(result.query_task_id)
+        if result.status in ("complete", "error"):
+            self._running_queries.remove(query)
+            self.query_slots += 1
+            lookml_object = query.lookml_ref
+            lookml_object.queried = True
+
+            if result.status == "error" and result.error:
+                sql_error = SqlError(
+                    path=lookml_object.name,
+                    url=getattr(lookml_object, "url", None),
+                    **result.error,
+                )
+                lookml_object.error = sql_error
+                return sql_error
+        return None
+
     def _run_queries(self, queries: List[Query]) -> List[SqlError]:
         """Creates and runs queries with a maximum concurrency defined by query slots"""
         QUERY_TASK_LIMIT = 250
         errors: List[SqlError] = []
 
-        while queries:
-            logger.debug(f"Starting a new loop, {len(queries)} queries queued")
-            query_tasks = self._fill_query_slots(queries)
-            self.query_by_task_id.update(query_tasks)
-            query_task_ids = list(self.query_by_task_id.keys())[:QUERY_TASK_LIMIT]
-            logger.debug(f"Checking results for {len(query_task_ids)} query tasks")
-            for query_result in self._get_completed_query_tasks(query_task_ids):
-                query = self.query_by_task_id.pop(query_result.query_task_id)
-                lookml_object = query.lookml_ref
-                lookml_object.queried = True
-                if query_result.status == "error" and query_result.error:
-                    sql_error = SqlError(
-                        path=lookml_object.name,
-                        url=getattr(lookml_object, "url", None),
-                        **query_result.error,
-                    )
-                    lookml_object.error = sql_error
+        while queries or self._running_queries:
+            if queries:
+                logger.debug(f"Starting a new loop, {len(queries)} queries queued")
+                self._fill_query_slots(queries)
+            query_tasks = self.get_running_query_tasks()[:QUERY_TASK_LIMIT]
+            logger.debug(f"Checking for results of {len(query_tasks)} query tasks")
+            for query_result in self._get_query_results(query_tasks):
+                sql_error = self._handle_query_result(query_result)
+                if sql_error:
                     errors.append(sql_error)
             time.sleep(0.5)
         return errors
