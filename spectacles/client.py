@@ -328,7 +328,14 @@ class LookerClient:
         }
         url = utils.compose_url(self.api_url, path=["queries"])
         response = self.session.post(url=url, json=body, timeout=TIMEOUT_SEC)
-        response.raise_for_status()
+        try:
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as error:
+            raise ApiConnectionError(
+                f"Failed to run create query for {model}/{explore}/"
+                f'{"*" if len(dimensions) > 1 else dimensions[0]}\n'
+                f'Error raised: "{error}"'
+            )
         result = response.json()
 
         query_id = result["id"]
