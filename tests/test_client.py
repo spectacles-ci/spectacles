@@ -48,6 +48,43 @@ def client_kwargs():
     )
 
 
+def get_client_method_names() -> List[str]:
+    """Extracts method names from LookerClient to test for bad responses"""
+    client_members: List[Tuple[str, Callable]] = inspect.getmembers(
+        LookerClient, predicate=inspect.isroutine
+    )
+    client_methods: List[str] = [
+        member[0] for member in client_members if not member[0].startswith("__")
+    ]
+    for skip_method in ("authenticate", "cancel_query_task"):
+        client_methods.remove(skip_method)
+    return client_methods
+
+
+@pytest.fixture
+def client_kwargs():
+    return dict(
+        authenticate={
+            "client_id": TEST_CLIENT_ID,
+            "client_secret": TEST_CLIENT_SECRET,
+            "api_version": 3.1,
+        },
+        get_looker_release_version={},
+        update_session={"project": "project_name", "branch": "branch_name"},
+        all_lookml_tests={"project": "project_name"},
+        run_lookml_test={"project": "project_name"},
+        get_lookml_models={},
+        get_lookml_dimensions={"model": "model_name", "explore": "explore_name"},
+        create_query={
+            "model": "model_name",
+            "explore": "explore_name",
+            "dimensions": ["dimension_a", "dimension_b"],
+        },
+        create_query_task={"query_id": 13041},
+        get_query_task_multi_results={"query_task_ids": ["ajsdkgj", "askkwk"]},
+    )
+
+
 @pytest.fixture
 def client(monkeypatch):
     mock_authenticate = Mock(spec=LookerClient.authenticate)
