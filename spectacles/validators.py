@@ -107,6 +107,9 @@ class SqlValidator(Validator):
 
         self.project = Project(project, models=[])
         self.query_slots = concurrency
+        self.query_by_task_id: Dict[
+            str, Query
+        ] = {}  # Lookup used to retrieve the LookML object
 
     @staticmethod
     def parse_selectors(selectors: List[str]) -> DefaultDict[str, set]:
@@ -244,16 +247,15 @@ class SqlValidator(Validator):
 
     def _create_and_run(self, mode: str = "batch") -> List[SqlError]:
         """Runs a single validation using a specified mode"""
-        queries = self._create_queries(mode)
+        queries: List[Query] = []
         try:
+            queries = self._create_queries(mode)
             errors = self._run_queries(queries)
         except KeyboardInterrupt:
             logger.info(
                 "\n\n" + "Please wait, asking Looker to cancel any running queries"
             )
-            query_tasks = [
-                query.query_task_id for query in queries if query.query_task_id
-            ]
+            query_tasks = list(self.query_by_task_id.keys())
             self._cancel_queries(query_tasks)
             message = "SQL validation was interrupted. "
             if query_tasks:
@@ -351,19 +353,16 @@ class SqlValidator(Validator):
     def _run_queries(self, queries: List[Query]) -> List[SqlError]:
         """Creates and runs queries with a maximum concurrency defined by query slots"""
         QUERY_TASK_LIMIT = 250
-        query_by_task_id: Dict[
-            str, Query
-        ] = {}  # Lookup used to retrieve the LookML object
         errors: List[SqlError] = []
 
         while queries:
             logger.debug(f"Starting a new loop, {len(queries)} queries queued")
             query_tasks = self._fill_query_slots(queries)
-            query_by_task_id.update(query_tasks)
-            query_task_ids = list(query_by_task_id.keys())[:QUERY_TASK_LIMIT]
+            self.query_by_task_id.update(query_tasks)
+            query_task_ids = list(self.query_by_task_id.keys())[:QUERY_TASK_LIMIT]
             logger.debug(f"Checking results for {len(query_task_ids)} query tasks")
             for query_result in self._get_completed_query_tasks(query_task_ids):
-                query = query_by_task_id.pop(query_result.query_task_id)
+                query = self.query_by_task_id.pop(query_result.query_task_id)
                 lookml_object = query.lookml_ref
                 lookml_object.queried = True
                 if query_result.status == "error" and query_result.error:
