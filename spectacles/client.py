@@ -400,7 +400,7 @@ class LookerClient:
         """
         logger.debug(f"Cancelling query task: {query_task_id}")
         url = utils.compose_url(self.api_url, path=["running_queries", query_task_id])
-        response = self.session.delete(url=url)
+        self.session.delete(url=url)
 
         # No raise_for_status() here because Looker API seems to give a 404
         # if you try to cancel a finished query which can happen as part of cleanup

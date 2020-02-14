@@ -1,5 +1,5 @@
 import time
-from typing import Any, List, Dict, NamedTuple, Sequence, DefaultDict, Union, Optional
+from typing import Any, List, Dict, Sequence, DefaultDict, Union, Optional
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from spectacles.client import LookerClient
@@ -24,7 +24,7 @@ class Query:
 
 
 class QueryResult:
-    """Stores ID, query status, and error details for a completed or errored query task"""
+    """Stores ID, query status, and error details for a completed query task"""
 
     def __init__(
         self, query_task_id: str, status: str, error: Optional[Dict[str, Any]] = None
@@ -305,7 +305,7 @@ class SqlValidator(Validator):
             self.client.cancel_query_task(query_task_id)
 
     def _fill_query_slots(self, queries: List[Query]) -> Dict[str, Query]:
-        """Creates query tasks until all slots are being used or all queries are running"""
+        """Creates query tasks until all slots are used or all queries are running"""
         query_tasks: Dict[str, Query] = {}
         while queries and self.query_slots > 0:
             logger.debug(
