@@ -9,7 +9,7 @@ class LookMlObject:
 
 
 class Dimension(LookMlObject):
-    def __init__(self, name: str, type: str, sql: str, url: Optional[str]):
+    def __init__(self, name: str, type: str, sql: str, url: Optional[str] = None):
         self.name = name
         self.type = type
         self.sql = sql
