@@ -17,7 +17,7 @@ def client(monkeypatch):
 
 
 @pytest.fixture
-def mock_response():
+def mock_404_response():
     mock = Mock(spec=requests.Response)
     mock.status_code = 404
     mock.raise_for_status.side_effect = requests.exceptions.HTTPError(
@@ -27,11 +27,11 @@ def mock_response():
 
 
 @patch("spectacles.client.requests.Session.post")
-def test_bad_authenticate_raises_connection_error(mock_post, mock_response):
-    mock_post.return_value = mock_response
+def test_bad_authenticate_raises_connection_error(mock_post, mock_404_response):
+    mock_post.return_value = mock_404_response
     with pytest.raises(ApiConnectionError):
         LookerClient(TEST_BASE_URL, TEST_CLIENT_ID, TEST_CLIENT_SECRET)
-    mock_response.raise_for_status.assert_called_once()
+    mock_404_response.raise_for_status.assert_called_once()
 
 
 @patch("spectacles.client.requests.Session.post")
@@ -49,41 +49,41 @@ def test_authenticate_sets_session_headers(mock_post, monkeypatch):
 
 @patch("spectacles.client.requests.Session.patch")
 def test_bad_update_session_patch_raises_connection_error(
-    mock_patch, client, mock_response
+    mock_patch, client, mock_404_response
 ):
-    mock_patch.return_value = mock_response
+    mock_patch.return_value = mock_404_response
     with pytest.raises(ApiConnectionError):
         client.update_session(project="test_project", branch="test_branch")
-    mock_response.raise_for_status.assert_called_once()
+    mock_404_response.raise_for_status.assert_called_once()
 
 
 @patch("spectacles.client.requests.Session.patch")
 @patch("spectacles.client.requests.Session.put")
 def test_bad_update_session_put_raises_connection_error(
-    mock_put, mock_patch, client, mock_response
+    mock_put, mock_patch, client, mock_404_response
 ):
-    mock_put.return_value = mock_response
+    mock_put.return_value = mock_404_response
     with pytest.raises(ApiConnectionError):
         client.update_session(project="test_project", branch="test_branch")
-    mock_response.raise_for_status.assert_called_once()
+    mock_404_response.raise_for_status.assert_called_once()
 
 
 @patch("spectacles.client.requests.Session.get")
-def test_bad_get_lookml_models_raises_connection_error(mock_get, client, mock_response):
-    mock_get.return_value = mock_response
+def test_bad_get_lookml_models_raises_connection_error(mock_get, client, mock_404_response):
+    mock_get.return_value = mock_404_response
     with pytest.raises(ApiConnectionError):
         client.get_lookml_models()
-    mock_response.raise_for_status.assert_called_once()
+    mock_404_response.raise_for_status.assert_called_once()
 
 
 @patch("spectacles.client.requests.Session.get")
 def test_bad_get_lookml_dimensions_raises_connection_error(
-    mock_get, client, mock_response
+    mock_get, client, mock_404_response
 ):
-    mock_get.return_value = mock_response
+    mock_get.return_value = mock_404_response
     with pytest.raises(ApiConnectionError):
         client.get_lookml_dimensions(model="test_model", explore="test_explore")
-    mock_response.raise_for_status.assert_called_once()
+    mock_404_response.raise_for_status.assert_called_once()
 
 
 @patch("spectacles.client.requests.Session.post")
