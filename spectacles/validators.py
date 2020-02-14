@@ -268,6 +268,21 @@ class SqlValidator(Validator):
             raise SpectaclesException(message)
         return errors
 
+    def _create_queries(self, mode: str) -> List[Query]:
+        """Creates a list of queries to be executed for validation"""
+        queries: List[Query] = []
+        for model in self.project.models:
+            for explore in model.explores:
+                if mode == "batch" or (mode == "hybrid" and not explore.queried):
+                    query = self._create_explore_query(explore, model.name)
+                    queries.append(query)
+                elif mode == "single" or (mode == "hybrid" and explore.errored):
+                    explore_queries = self._create_dimension_queries(
+                        explore, model.name
+                    )
+                    queries.extend(explore_queries)
+        return queries
+
     def _create_explore_query(self, explore: Explore, model_name: str) -> Query:
         """Creates a single query with all dimensions of an explore"""
         dimensions = [dimension.name for dimension in explore.dimensions]
@@ -287,25 +302,23 @@ class SqlValidator(Validator):
             queries.append(query)
         return queries
 
-    def _create_queries(self, mode: str) -> List[Query]:
-        """Creates a list of queries to be executed for validation"""
-        queries: List[Query] = []
-        for model in self.project.models:
-            for explore in model.explores:
-                if mode == "batch" or (mode == "hybrid" and not explore.queried):
-                    query = self._create_explore_query(explore, model.name)
-                    queries.append(query)
-                elif mode == "single" or (mode == "hybrid" and explore.errored):
-                    explore_queries = self._create_dimension_queries(
-                        explore, model.name
-                    )
-                    queries.extend(explore_queries)
-        return queries
+    def _run_queries(self, queries: List[Query]) -> List[SqlError]:
+        """Creates and runs queries with a maximum concurrency defined by query slots"""
+        QUERY_TASK_LIMIT = 250
+        errors: List[SqlError] = []
 
-    def _cancel_queries(self, query_task_ids: List[str]) -> None:
-        """Asks the Looker API to cancel specified queries"""
-        for query_task_id in query_task_ids:
-            self.client.cancel_query_task(query_task_id)
+        while queries or self._running_queries:
+            if queries:
+                logger.debug(f"Starting a new loop, {len(queries)} queries queued")
+                self._fill_query_slots(queries)
+            query_tasks = self.get_running_query_tasks()[:QUERY_TASK_LIMIT]
+            logger.debug(f"Checking for results of {len(query_tasks)} query tasks")
+            for query_result in self._get_query_results(query_tasks):
+                sql_error = self._handle_query_result(query_result)
+                if sql_error:
+                    errors.append(sql_error)
+            time.sleep(0.5)
+        return errors
 
     def _fill_query_slots(self, queries: List[Query]) -> None:
         """Creates query tasks until all slots are used or all queries are running"""
@@ -396,24 +409,6 @@ class SqlValidator(Validator):
                 return sql_error
         return None
 
-    def _run_queries(self, queries: List[Query]) -> List[SqlError]:
-        """Creates and runs queries with a maximum concurrency defined by query slots"""
-        QUERY_TASK_LIMIT = 250
-        errors: List[SqlError] = []
-
-        while queries or self._running_queries:
-            if queries:
-                logger.debug(f"Starting a new loop, {len(queries)} queries queued")
-                self._fill_query_slots(queries)
-            query_tasks = self.get_running_query_tasks()[:QUERY_TASK_LIMIT]
-            logger.debug(f"Checking for results of {len(query_tasks)} query tasks")
-            for query_result in self._get_query_results(query_tasks):
-                sql_error = self._handle_query_result(query_result)
-                if sql_error:
-                    errors.append(sql_error)
-            time.sleep(0.5)
-        return errors
-
     @staticmethod
     def _extract_error_details(query_result: Dict) -> Dict:
         """Extracts the relevant error fields from a Looker API response"""
@@ -445,6 +440,11 @@ class SqlValidator(Validator):
             )
 
         return {"message": message, "sql": sql, "line_number": line_number}
+
+    def _cancel_queries(self, query_task_ids: List[str]) -> None:
+        """Asks the Looker API to cancel specified queries"""
+        for query_task_id in query_task_ids:
+            self.client.cancel_query_task(query_task_id)
 
     def _count_explores(self) -> int:
         """Counts the explores in the LookML project hierarchy."""
