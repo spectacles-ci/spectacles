@@ -88,20 +88,15 @@ def test_bad_get_lookml_dimensions_raises_connection_error(
     mock_response.raise_for_status.assert_called_once()
 
 
-@pytest.mark.asyncio
-@asynctest.patch("aiohttp.ClientSession.post")
-async def test_create_query(mock_post, client):
+@patch("spectacles.client.requests.Session.post")
+def test_create_query(mock_post, client):
     QUERY_ID = 124950204921
-    mock_post.return_value.__aenter__.return_value.json = asynctest.CoroutineMock(
-        return_value={"id": QUERY_ID}
+    mock_post.return_value.json.return_value = {"id": QUERY_ID}
+    query_id = client.create_query(
+        "test_model",
+        "test_explore_one",
+        ["dimension_one", "dimension_two"],
     )
-    async with aiohttp.ClientSession() as session:
-        query_id = await client.create_query(
-            session,
-            "test_model",
-            "test_explore_one",
-            ["dimension_one", "dimension_two"],
-        )
     assert query_id == QUERY_ID
     mock_post.assert_called_once_with(
         url="https://test.looker.com:19999/api/3.1/queries",

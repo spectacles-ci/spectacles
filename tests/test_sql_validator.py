@@ -72,34 +72,6 @@ def test_build_project(mock_get_models, mock_get_dimensions, project, validator)
     assert validator.project == project
 
 
-@pytest.mark.asyncio
-@asynctest.patch("spectacles.client.LookerClient.get_query_task_multi_results")
-async def test_get_query_results_task_running(
-    mock_get_query_task_multi_results, validator
-):
-    await validator.query_slots.acquire()
-    await validator.running_query_tasks.put("query_task_a")
-    mock_response = {"status": "running"}
-    mock_get_query_task_multi_results.return_value = {"query_task_a": mock_response}
-    errors = validator._get_query_results(["query_task_a"])
-    assert not await errors
-
-
-@pytest.mark.asyncio
-@asynctest.patch("spectacles.client.LookerClient.get_query_task_multi_results")
-async def test_get_query_results_task_complete(
-    mock_get_query_task_multi_results, validator, project
-):
-    await validator.query_slots.acquire()
-    await validator.running_query_tasks.put("query_task_a")
-    lookml_object = project.models[0].explores[0]
-    validator.query_tasks = {"query_task_a": lookml_object}
-    mock_response = {"status": "complete"}
-    mock_get_query_task_multi_results.return_value = {"query_task_a": mock_response}
-    errors = validator._get_query_results(["query_task_a"])
-    assert not await errors
-
-
 def test_extract_error_details_error_dict(validator):
     message = "An error message."
     message_details = "Shocking details."
