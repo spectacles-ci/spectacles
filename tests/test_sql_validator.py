@@ -2,7 +2,6 @@ from pathlib import Path
 import json
 from unittest.mock import patch, Mock
 import pytest
-import asynctest
 from spectacles.lookml import Project, Model, Explore, Dimension
 from spectacles.client import LookerClient
 from spectacles.validators import SqlValidator
