@@ -7,7 +7,7 @@ from spectacles.logger import GLOBAL_LOGGER as logger
 from spectacles.exceptions import SpectaclesException, ApiConnectionError
 
 JsonDict = Dict[str, Any]
-
+TIMEOUT_SEC = 300
 
 class LookerClient:
     """Wraps some endpoints of the Looker API, issues requests and handles responses.
@@ -62,7 +62,7 @@ class LookerClient:
 
         url = utils.compose_url(self.api_url, path=["login"])
         body = {"client_id": client_id, "client_secret": client_secret}
-        response = self.session.post(url=url, data=body)
+        response = self.session.post(url=url, data=body, timeout=TIMEOUT_SEC)
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError as error:
@@ -95,7 +95,7 @@ class LookerClient:
 
         url = utils.compose_url(self.api_url, path=["versions"])
 
-        response = self.session.get(url=url)
+        response = self.session.get(url=url, timeout=TIMEOUT_SEC)
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError as error:
@@ -123,7 +123,7 @@ class LookerClient:
             logger.debug("Updating session to use production workspace")
             url = utils.compose_url(self.api_url, path=["session"])
             body = {"workspace_id": "production"}
-            response = self.session.patch(url=url, json=body)
+            response = self.session.patch(url=url, json=body, timeout=TIMEOUT_SEC)
             try:
                 response.raise_for_status()
             except requests.exceptions.HTTPError as error:
@@ -139,7 +139,7 @@ class LookerClient:
             logger.debug("Updating session to use development workspace")
             url = utils.compose_url(self.api_url, path=["session"])
             body = {"workspace_id": "dev"}
-            response = self.session.patch(url=url, json=body)
+            response = self.session.patch(url=url, json=body, timeout=TIMEOUT_SEC)
             try:
                 response.raise_for_status()
             except requests.exceptions.HTTPError as error:
@@ -156,7 +156,7 @@ class LookerClient:
                 self.api_url, path=["projects", project, "git_branch"]
             )
             body = {"name": branch}
-            response = self.session.put(url=url, json=body)
+            response = self.session.put(url=url, json=body, timeout=TIMEOUT_SEC)
             try:
                 response.raise_for_status()
             except requests.exceptions.HTTPError as error:
@@ -175,7 +175,7 @@ class LookerClient:
                 url = utils.compose_url(
                     self.api_url, path=["projects", project, "reset_to_remote"]
                 )
-                response = self.session.post(url=url)
+                response = self.session.post(url=url, timeout=TIMEOUT_SEC)
                 try:
                     response.raise_for_status()
                 except requests.exceptions.HTTPError as error:
@@ -203,7 +203,7 @@ class LookerClient:
         url = utils.compose_url(
             self.api_url, path=["projects", project, "lookml_tests"]
         )
-        response = self.session.get(url=url)
+        response = self.session.get(url=url, timeout=TIMEOUT_SEC)
 
         try:
             response.raise_for_status()
@@ -234,9 +234,9 @@ class LookerClient:
             self.api_url, path=["projects", project, "lookml_tests", "run"]
         )
         if model is not None:
-            response = self.session.get(url=url, params={"model": model})
+            response = self.session.get(url=url, params={"model": model}, timeout=TIMEOUT_SEC)
         else:
-            response = self.session.get(url=url)
+            response = self.session.get(url=url, timeout=TIMEOUT_SEC)
 
         try:
             response.raise_for_status()
@@ -257,7 +257,7 @@ class LookerClient:
         """
         logger.debug(f"Getting all models and explores from {self.base_url}")
         url = utils.compose_url(self.api_url, path=["lookml_models"])
-        response = self.session.get(url=url)
+        response = self.session.get(url=url, timeout=TIMEOUT_SEC)
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError as error:
@@ -287,7 +287,7 @@ class LookerClient:
         url = utils.compose_url(
             self.api_url, path=["lookml_models", model, "explores", explore]
         )
-        response = self.session.get(url=url)
+        response = self.session.get(url=url, timeout=TIMEOUT_SEC)
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError as error:
@@ -327,7 +327,7 @@ class LookerClient:
             "filter_expression": "1=2",
         }
         url = utils.compose_url(self.api_url, path=["queries"])
-        response = self.session.post(url=url, json=body)
+        response = self.session.post(url=url, json=body, timeout=TIMEOUT_SEC)
         response.raise_for_status()
         result = response.json()
 
@@ -360,7 +360,7 @@ class LookerClient:
         logger.debug("Starting query %d", query_id)
         body = {"query_id": query_id, "result_format": "json_detail"}
         url = utils.compose_url(self.api_url, path=["query_tasks"])
-        response = self.session.post(url=url, json=body, params={"cache": "false"})
+        response = self.session.post(url=url, json=body, params={"cache": "false"}, timeout=TIMEOUT_SEC)
         response.raise_for_status()
         result = response.json()
         query_task_id = result["id"]
@@ -385,7 +385,7 @@ class LookerClient:
         )
         url = utils.compose_url(self.api_url, path=["query_tasks", "multi_results"])
         response = self.session.get(
-            url=url, params={"query_task_ids": ",".join(query_task_ids)}
+            url=url, params={"query_task_ids": ",".join(query_task_ids)}, timeout=TIMEOUT_SEC
         )
         response.raise_for_status()
         result = response.json()
@@ -400,7 +400,7 @@ class LookerClient:
         """
         logger.debug(f"Cancelling query task: {query_task_id}")
         url = utils.compose_url(self.api_url, path=["running_queries", query_task_id])
-        self.session.delete(url=url)
+        self.session.delete(url=url, timeout=TIMEOUT_SEC)
 
         # No raise_for_status() here because Looker API seems to give a 404
         # if you try to cancel a finished query which can happen as part of cleanup
