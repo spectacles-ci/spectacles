@@ -96,15 +96,16 @@ def test_build_project(mock_get_models, mock_get_dimensions, project, validator)
     assert validator.project == project
 
 
-# If get_query_results returns an error for a mapped query task ID,
-# The corresponding explore should be set to errored and
-# The SqlError instance should be present and validated
-
-# TODO: Refactor error responses into fixtures
-# TODO: Should query IDs be ints instead of strings?
-
-
 def test_error_is_set_on_project(project, validator):
+    """
+    If get_query_results returns an error for a mapped query task ID,
+    The corresponding explore should be set to errored and
+    The SqlError instance should be present and validated
+
+    TODO: Refactor error responses into fixtures
+    TODO: Should query IDs be ints instead of strings?
+
+    """
     query_task_id = "akdk13kkidi2mkv029rld"
     message = "An error has occurred"
     sql = "SELECT DISTINCT 1 FROM table_name"
