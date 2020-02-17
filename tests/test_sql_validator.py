@@ -100,6 +100,7 @@ def test_error_is_set_on_project(project, validator):
     assert returned_sql_error == explore.error
     assert explore.queried
     assert explore.errored
+    assert not validator._running_queries
     assert validator.project.errored
     assert validator.project.models[0].errored
     # Batch mode, so none of the dimensions should have errored set
@@ -120,6 +121,22 @@ def test_cancel_queries(mock_client_cancel, validator):
     validator._cancel_queries(query_task_ids)
     for task_id in query_task_ids:
         mock_client_cancel.assert_called_with(task_id)
+
+
+def test_handle_running_query(validator):
+    query_task_id = 'sakgwj392jfkajgjcks'
+    query = Query(
+        query_id='19428',
+        lookml_ref=Dimension('dimension_one', 'string', '${TABLE}.dimension_one'),
+        query_task_id=query_task_id
+    )
+    query_result = QueryResult(query_task_id=query_task_id, status='running')
+    validator._running_queries = [query]
+    validator._query_by_task_id[query_task_id] = query
+    returned_sql_error = validator._handle_query_result(query_result)
+
+    assert validator._running_queries == [query]
+    assert not returned_sql_error
 
 
 def test_count_explores(validator, project):
