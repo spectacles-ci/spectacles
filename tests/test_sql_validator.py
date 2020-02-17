@@ -4,7 +4,8 @@ from unittest.mock import patch, Mock
 import pytest
 from spectacles.lookml import Project, Model, Explore, Dimension
 from spectacles.client import LookerClient
-from spectacles.validators import SqlValidator
+from spectacles.validators import SqlValidator, Query, QueryResult
+from spectacles.exceptions import SqlError
 
 TEST_BASE_URL = "https://test.looker.com"
 TEST_CLIENT_ID = "test_client_id"
@@ -69,6 +70,48 @@ def test_build_project(mock_get_models, mock_get_dimensions, project, validator)
     mock_get_dimensions.return_value = load("response_dimensions.json")
     validator.build_project(selectors=["*/*"])
     assert validator.project == project
+
+# If get_query_results returns an error for a mapped query task ID,
+# The corresponding explore should be set to errored and
+# The SqlError instance should be present and validated
+
+# TODO: Refactor error responses into fixtures
+# TODO: Should query IDs be ints instead of strings?
+
+def test_error_is_set_on_project(project, validator):
+    query_task_id = 'akdk13kkidi2mkv029rld'
+    message = 'An error has occurred'
+    sql = 'SELECT DISTINCT 1 FROM table_name'
+    error_details = {
+        "message": message,
+        "sql": sql,
+    }
+    validator.project = project
+    explore = project.models[0].explores[0]
+    query = Query(
+        query_id='10319',
+        lookml_ref=explore,
+        query_task_id=query_task_id
+    )
+    validator._running_queries.append(query)
+    query_result = QueryResult(query_task_id, status='error', error=error_details)
+    validator._query_by_task_id[query_task_id] = query
+    returned_sql_error = validator._handle_query_result(query_result)
+    expected_sql_error = SqlError(
+        path='test_explore_one',
+        url=None,
+        message=message,
+        sql=sql
+    )
+    assert returned_sql_error == expected_sql_error
+    assert returned_sql_error == explore.error
+    assert explore.queried
+    assert explore.errored
+    assert validator.project.errored
+    assert validator.project.models[0].errored
+    # Batch mode, so none of the dimensions should have errored set
+    assert not any(dimension.errored for dimension in explore.dimensions)
+    assert all(dimension.queried for dimension in explore.dimensions)
 
 
 def test_extract_error_details_error_dict(validator):
