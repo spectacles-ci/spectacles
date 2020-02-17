@@ -72,15 +72,16 @@ def test_build_project(mock_get_models, mock_get_dimensions, project, validator)
     assert validator.project == project
 
 
-# If get_query_results returns an error for a mapped query task ID,
-# The corresponding explore should be set to errored and
-# The SqlError instance should be present and validated
-
-# TODO: Refactor error responses into fixtures
-# TODO: Should query IDs be ints instead of strings?
-
-
 def test_error_is_set_on_project(project, validator):
+    """
+    If get_query_results returns an error for a mapped query task ID,
+    The corresponding explore should be set to errored and
+    The SqlError instance should be present and validated
+
+    TODO: Refactor error responses into fixtures
+    TODO: Should query IDs be ints instead of strings?
+
+    """
     query_task_id = "akdk13kkidi2mkv029rld"
     message = "An error has occurred"
     sql = "SELECT DISTINCT 1 FROM table_name"
@@ -105,6 +106,29 @@ def test_error_is_set_on_project(project, validator):
     assert not any(dimension.errored for dimension in explore.dimensions)
     assert all(dimension.queried for dimension in explore.dimensions)
 
+
+@patch('spectacles.validators.LookerClient.cancel_query_task')
+def test_cancel_queries(mock_client_cancel, validator):
+    """
+    Cancelling queries should result in the same number of client calls as
+    query tasks IDs passed in, with the corresponding query task IDs called
+
+    TODO: Use the correct mock method for testing how many times called for each
+
+    """
+    query_task_ids = ['A', 'B', 'C']
+    validator._cancel_queries(query_task_ids)
+    for task_id in query_task_ids:
+        mock_client_cancel.assert_called_with(task_id)
+
+
+def test_count_explores(validator, project):
+    validator.project = project
+    assert validator._count_explores() == 2
+
+    explore = validator.project.models[0].explores[0]
+    validator.project.models[0].explores.extend([explore, explore])
+    assert validator._count_explores() == 4
 
 def test_extract_error_details_error_dict(validator):
     message = "An error message."
