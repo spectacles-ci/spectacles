@@ -238,13 +238,13 @@ def test_handle_running_query(validator):
 
 
 def test_handle_running_query(validator):
-    query_task_id = 'sakgwj392jfkajgjcks'
+    query_task_id = "sakgwj392jfkajgjcks"
     query = Query(
-        query_id='19428',
-        lookml_ref=Dimension('dimension_one', 'string', '${TABLE}.dimension_one'),
-        query_task_id=query_task_id
+        query_id="19428",
+        lookml_ref=Dimension("dimension_one", "string", "${TABLE}.dimension_one"),
+        query_task_id=query_task_id,
     )
-    query_result = QueryResult(query_task_id=query_task_id, status='running')
+    query_result = QueryResult(query_task_id=query_task_id, status="running")
     validator._running_queries = [query]
     validator._query_by_task_id[query_task_id] = query
     returned_sql_error = validator._handle_query_result(query_result)
