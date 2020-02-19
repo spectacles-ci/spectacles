@@ -120,7 +120,7 @@ def test_cancel_queries(mock_client_cancel, validator):
     query_task_ids = ['A', 'B', 'C']
     validator._cancel_queries(query_task_ids)
     for task_id in query_task_ids:
-        mock_client_cancel.assert_called_with(task_id)
+        mock_client_cancel.assert_any_call(task_id)
 
 
 def test_handle_running_query(validator):
