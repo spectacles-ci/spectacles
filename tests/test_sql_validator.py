@@ -112,9 +112,7 @@ def test_error_is_set_on_project(project, validator):
 def test_cancel_queries(mock_client_cancel, validator):
     """
     Cancelling queries should result in the same number of client calls as
-    query tasks IDs passed in, with the corresponding query task IDs called
-
-    TODO: Use the correct mock method for testing how many times called for each
+    query tasks IDs passed in, with the corresponding query task IDs called.
 
     """
     query_task_ids = ['A', 'B', 'C']
