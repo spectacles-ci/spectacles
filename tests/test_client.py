@@ -108,17 +108,6 @@ def test_get_looker_release_version(mock_get, client):
     assert version == "6.24.12"
 
 
-@patch("spectacles.client.requests.Session.get")
-def test_get_looker_release_version(mock_get, client):
-    mock_get.return_value.json.return_value = {
-        "looker_release_version": "6.24.12",
-        "current_version": "6.24.12",
-        "supported_version": ["6.24.10", "6.24.10"],
-    }
-    version = client.get_looker_release_version()
-    assert version == "6.24.12"
-
-
 @patch("spectacles.client.requests.Session.post")
 def test_create_query(mock_post, client):
     QUERY_ID = 124950204921
