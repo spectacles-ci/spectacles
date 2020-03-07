@@ -9,6 +9,7 @@ from spectacles.exceptions import SpectaclesException, ApiConnectionError
 JsonDict = Dict[str, Any]
 TIMEOUT_SEC = 300
 
+
 class LookerClient:
     """Wraps some endpoints of the Looker API, issues requests and handles responses.
 
@@ -234,7 +235,9 @@ class LookerClient:
             self.api_url, path=["projects", project, "lookml_tests", "run"]
         )
         if model is not None:
-            response = self.session.get(url=url, params={"model": model}, timeout=TIMEOUT_SEC)
+            response = self.session.get(
+                url=url, params={"model": model}, timeout=TIMEOUT_SEC
+            )
         else:
             response = self.session.get(url=url, timeout=TIMEOUT_SEC)
 
@@ -367,7 +370,9 @@ class LookerClient:
         logger.debug("Starting query %d", query_id)
         body = {"query_id": query_id, "result_format": "json_detail"}
         url = utils.compose_url(self.api_url, path=["query_tasks"])
-        response = self.session.post(url=url, json=body, params={"cache": "false"}, timeout=TIMEOUT_SEC)
+        response = self.session.post(
+            url=url, json=body, params={"cache": "false"}, timeout=TIMEOUT_SEC
+        )
         response.raise_for_status()
         result = response.json()
         query_task_id = result["id"]
@@ -392,7 +397,9 @@ class LookerClient:
         )
         url = utils.compose_url(self.api_url, path=["query_tasks", "multi_results"])
         response = self.session.get(
-            url=url, params={"query_task_ids": ",".join(query_task_ids)}, timeout=TIMEOUT_SEC
+            url=url,
+            params={"query_task_ids": ",".join(query_task_ids)},
+            timeout=TIMEOUT_SEC,
         )
         response.raise_for_status()
         result = response.json()

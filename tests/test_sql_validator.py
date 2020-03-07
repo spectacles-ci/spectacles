@@ -108,27 +108,27 @@ def test_error_is_set_on_project(project, validator):
     assert all(dimension.queried for dimension in explore.dimensions)
 
 
-@patch('spectacles.validators.LookerClient.cancel_query_task')
+@patch("spectacles.validators.LookerClient.cancel_query_task")
 def test_cancel_queries(mock_client_cancel, validator):
     """
     Cancelling queries should result in the same number of client calls as
     query tasks IDs passed in, with the corresponding query task IDs called.
 
     """
-    query_task_ids = ['A', 'B', 'C']
+    query_task_ids = ["A", "B", "C"]
     validator._cancel_queries(query_task_ids)
     for task_id in query_task_ids:
         mock_client_cancel.assert_any_call(task_id)
 
 
 def test_handle_running_query(validator):
-    query_task_id = 'sakgwj392jfkajgjcks'
+    query_task_id = "sakgwj392jfkajgjcks"
     query = Query(
-        query_id='19428',
-        lookml_ref=Dimension('dimension_one', 'string', '${TABLE}.dimension_one'),
-        query_task_id=query_task_id
+        query_id="19428",
+        lookml_ref=Dimension("dimension_one", "string", "${TABLE}.dimension_one"),
+        query_task_id=query_task_id,
     )
-    query_result = QueryResult(query_task_id=query_task_id, status='running')
+    query_result = QueryResult(query_task_id=query_task_id, status="running")
     validator._running_queries = [query]
     validator._query_by_task_id[query_task_id] = query
     returned_sql_error = validator._handle_query_result(query_result)
@@ -144,6 +144,7 @@ def test_count_explores(validator, project):
     explore = validator.project.models[0].explores[0]
     validator.project.models[0].explores.extend([explore, explore])
     assert validator._count_explores() == 4
+
 
 def test_extract_error_details_error_dict(validator):
     message = "An error message."
