@@ -336,7 +336,7 @@ class LookerClient:
             "Creating async query for %s/%s/%s",
             model,
             explore,
-            "*" if len(dimensions) > 1 else dimensions[0],
+            "*" if len(dimensions) != 1 else dimensions[0],
         )
         body = {
             "model": model,
@@ -354,7 +354,7 @@ class LookerClient:
             "Query for %s/%s/%s created as query %d",
             model,
             explore,
-            "*" if len(dimensions) > 1 else dimensions[0],
+            "*" if len(dimensions) != 1 else dimensions[0],
             query_id,
         )
         return query_id
