@@ -72,6 +72,48 @@ def test_build_project(mock_get_models, mock_get_dimensions, project, validator)
     assert validator.project == project
 
 
+@patch("spectacles.client.LookerClient.get_lookml_dimensions")
+@patch("spectacles.client.LookerClient.get_lookml_models")
+def test_build_project_all_models_excluded(
+    mock_get_models, mock_get_dimensions, project, validator
+):
+    mock_get_models.return_value = load("response_models.json")
+    mock_get_dimensions.return_value = load("response_dimensions.json")
+    validator.build_project(
+        selectors=["*/*"], exclusions=["test_model_one/*", "test_model.two/*"]
+    )
+    project.models = []
+    assert validator.project == project
+
+
+@patch("spectacles.client.LookerClient.get_lookml_dimensions")
+@patch("spectacles.client.LookerClient.get_lookml_models")
+def test_build_project_one_model_excluded(
+    mock_get_models, mock_get_dimensions, project, validator
+):
+    mock_get_models.return_value = load("response_models.json")
+    mock_get_dimensions.return_value = load("response_dimensions.json")
+    validator.build_project(selectors=["*/*"], exclusions=["test_model_one/*"])
+    for model in project.models:
+        if model.name != "test_model.two":
+            project.models.remove(model)
+    assert validator.project == project
+
+
+@patch("spectacles.client.LookerClient.get_lookml_dimensions")
+@patch("spectacles.client.LookerClient.get_lookml_models")
+def test_build_project_one_model_selected(
+    mock_get_models, mock_get_dimensions, project, validator
+):
+    mock_get_models.return_value = load("response_models.json")
+    mock_get_dimensions.return_value = load("response_dimensions.json")
+    validator.build_project(selectors=["test_model.two/*"], exclusions=[])
+    for model in project.models:
+        if model.name != "test_model.two":
+            project.models.remove(model)
+    assert validator.project == project
+
+
 def test_error_is_set_on_project(project, validator):
     """
     If get_query_results returns an error for a mapped query task ID,
