@@ -95,7 +95,7 @@ def test_build_project_one_model_excluded(
     mock_get_dimensions.return_value = load("response_dimensions.json")
     validator.build_project(selectors=["*/*"], exclusions=["test_model_one/*"])
     for model in project.models:
-        if model.name != "test_model.two":
+        if model.name == "test_model_one":
             project.models.remove(model)
     assert validator.project == project
 
@@ -108,6 +108,38 @@ def test_build_project_one_model_selected(
     mock_get_models.return_value = load("response_models.json")
     mock_get_dimensions.return_value = load("response_dimensions.json")
     validator.build_project(selectors=["test_model.two/*"], exclusions=[])
+    for model in project.models:
+        if model.name != "test_model.two":
+            project.models.remove(model)
+    assert validator.project == project
+
+
+@patch("spectacles.client.LookerClient.get_lookml_dimensions")
+@patch("spectacles.client.LookerClient.get_lookml_models")
+def test_build_project_one_explore_excluded(
+    mock_get_models, mock_get_dimensions, project, validator
+):
+    mock_get_models.return_value = load("response_models.json")
+    mock_get_dimensions.return_value = load("response_dimensions.json")
+    validator.build_project(
+        selectors=["*/*"], exclusions=["test_model_one/test_explore_one"]
+    )
+    for model in project.models:
+        if model.name == "test_model_one":
+            project.models.remove(model)
+    assert validator.project == project
+
+
+@patch("spectacles.client.LookerClient.get_lookml_dimensions")
+@patch("spectacles.client.LookerClient.get_lookml_models")
+def test_build_project_one_explore_selected(
+    mock_get_models, mock_get_dimensions, project, validator
+):
+    mock_get_models.return_value = load("response_models.json")
+    mock_get_dimensions.return_value = load("response_dimensions.json")
+    validator.build_project(
+        selectors=["test_model.two/test_explore_two"], exclusions=[]
+    )
     for model in project.models:
         if model.name != "test_model.two":
             project.models.remove(model)
