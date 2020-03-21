@@ -163,7 +163,7 @@ class SqlValidator(Validator):
             )
         return [each for each in select_from if each.name in unique_choices]
 
-    def build_project(self, selectors: List[str]) -> None:
+    def build_project(self, selectors: List[str], exclusions: List[str]) -> None:
         """Creates an object representation of the project's LookML.
 
         Args:
@@ -173,6 +173,7 @@ class SqlValidator(Validator):
 
         """
         selection = self.parse_selectors(selectors)
+        exclusion = self.parse_selectors(exclusions)
         logger.info(
             f"Building LookML project hierarchy for project {self.project.name}"
         )
@@ -194,9 +195,25 @@ class SqlValidator(Validator):
         selected_models = self._select(
             choices=tuple(selection.keys()), select_from=project_models
         )
+        excluded_models = self._select(
+            choices=tuple(exclusion.keys()), select_from=project_models
+        )
+
+        excluded_explores = {}
+        for model in excluded_models:
+            # Expand wildcard operator to include all specified or discovered explores
+            excluded_explore_names = exclusion[model.name]
+            if "*" in excluded_explore_names:
+                excluded_explore_names.remove("*")
+                excluded_explore_names.update(
+                    set(explore.name for explore in model.explores)
+                )
+
+            excluded_explores[model.name] = self._select(
+                choices=tuple(excluded_explore_names), select_from=model.explores
+            )
 
         for model in selected_models:
-            # Expand wildcard operator to include all specified or discovered explores
             selected_explore_names = selection[model.name]
             if "*" in selected_explore_names:
                 selected_explore_names.remove("*")
@@ -207,6 +224,12 @@ class SqlValidator(Validator):
             selected_explores = self._select(
                 choices=tuple(selected_explore_names), select_from=model.explores
             )
+            if model.name in excluded_explores:
+                selected_explores = [
+                    explore
+                    for explore in selected_explores
+                    if explore not in excluded_explores[model.name]
+                ]
 
             for explore in selected_explores:
                 dimensions_json = self.client.get_lookml_dimensions(

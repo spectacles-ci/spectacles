@@ -47,7 +47,7 @@ class Runner:
         concurrency: int = 10,
     ) -> List[dict]:
         sql_validator = SqlValidator(self.client, self.project, concurrency)
-        sql_validator.build_project(selectors)
+        sql_validator.build_project(selectors, exclusions)
         errors = sql_validator.validate(mode)
         return [vars(error) for error in errors]
 
