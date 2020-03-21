@@ -243,7 +243,9 @@ class SqlValidator(Validator):
 
             model.explores = selected_explores
 
-        self.project.models = selected_models
+        self.project.models = [
+            model for model in selected_models if len(model.explores) > 0
+        ]
 
     def validate(self, mode: str = "batch") -> List[SqlError]:
         """Queries selected explores and returns the project tree with errors."""
