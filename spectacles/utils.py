@@ -3,6 +3,8 @@ from spectacles.logger import GLOBAL_LOGGER as logger
 import functools
 import requests
 import timeit
+import hashlib
+import time
 
 
 def compose_url(base_url: str, path: List) -> str:
@@ -53,3 +55,9 @@ def log_duration(fn: Callable):
         return result
 
     return timed_function
+
+
+def time_hash() -> str:
+    hash = hashlib.sha1()
+    hash.update(str(time.time()).encode("utf-8"))
+    return hash.hexdigest()[:10]

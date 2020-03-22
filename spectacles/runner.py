@@ -2,7 +2,7 @@ from typing import List, Callable
 import functools
 from spectacles.client import LookerClient
 from spectacles.validators import SqlValidator, DataTestValidator
-from spectacles.utils import log_duration
+from spectacles.utils import log_duration, time_hash
 
 
 class Runner:
@@ -45,9 +45,19 @@ class Runner:
         def wrapper(*args, **kwargs):
             runner = args[0]
             dependents = runner.client.get_dependent_projects(runner.project)
-            runner.client.set_dependent_branches(dependents)
+
+            for project in dependents:
+                project["active_branch"] = runner.client.get_active_branch(
+                    project["name"]
+                )
+                project["temp_branch"] = "tmp_spectacles_" + time_hash()
+                runner.client.create_branch(project["name"], project["temp_branch"])
+
             fn(*args, **kwargs)
-            runner.client.cleanup_dependent_branches(dependents)
+
+            for project in dependents:
+                runner.client.update_session(project["name"], project["active_branch"])
+                runner.client.delete_branch(project["name"], project["temp_branch"])
 
         return wrapper
 
