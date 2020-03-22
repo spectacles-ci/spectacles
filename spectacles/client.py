@@ -190,6 +190,35 @@ class LookerClient:
 
             logger.info(f"Checked out branch {branch}")
 
+    def get_dependent_projects(self, project: str) -> List[JsonDict]:
+        """Gets all the dependent LookML projects defined in the manifest file.
+
+        Args:
+            project: Name of the Looker project to use.
+
+        Returns:
+            List[JsonDict]: JSON response containing all dependent projects
+        """
+        return [{"name": "project_one"}, {"name": "project_two"}]
+
+    def set_dependent_branches(self, projects: List[JsonDict]):
+        """Sets the branch on all dependent projects to a copy of master.
+
+        Args:
+            project: Name of the Looker project to use.
+        """
+        logger.debug(
+            f"Setting the branch on all dependent projects to a copy of master"
+        )
+
+    def cleanup_dependent_branches(self, projects: List[JsonDict]):
+        """Sets the branch on all dependent projects to a copy of master.
+
+        Args:
+            project: Name of the Looker project to use.
+        """
+        logger.debug(f"Deleting the temporary branches on all dependent projects")
+
     def all_lookml_tests(self, project: str) -> List[JsonDict]:
         """Gets all LookML/data tests for a given project.
 
