@@ -199,7 +199,26 @@ class LookerClient:
         Returns:
             List[JsonDict]: JSON response containing all dependent projects
         """
-        return [{"name": "project_one"}, {"name": "project_two"}]
+        logger.debug(f"Finding all dependent projects")
+        url = utils.compose_url(self.api_url, path=["projects", project, "manifest"])
+        response = self.session.get(url=url, timeout=TIMEOUT_SEC)
+
+        try:
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as error:
+            raise ApiConnectionError(
+                f"Failed to retrieve manifest for project {project}\n"
+                f"Make sure you have a 'manifest.lkml' file in your project"
+                f'Error raised: "{error}"'
+            )
+
+        all_dependent_projects = response.json()
+
+        local_dependencies = [
+            p for p in all_dependent_projects["imports"] if not p["is_remote"]
+        ]
+
+        return local_dependencies
 
     def set_dependent_branches(self, projects: List[JsonDict]):
         """Sets the branch on all dependent projects to a copy of master.
