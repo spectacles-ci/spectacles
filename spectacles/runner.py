@@ -1,4 +1,5 @@
-from typing import List
+from typing import List, Callable
+import functools
 from spectacles.client import LookerClient
 from spectacles.validators import SqlValidator, DataTestValidator
 from spectacles.utils import log_duration
@@ -38,6 +39,19 @@ class Runner:
         )
         self.client.update_session(project, branch, remote_reset)
 
+    def manage_dependent_branches(fn: Callable):
+        functools.wraps(fn)
+
+        def wrapper(*args, **kwargs):
+            runner = args[0]
+            dependents = runner.client.get_dependent_projects(runner.project)
+            runner.client.set_dependent_branches(dependents)
+            fn(*args, **kwargs)
+            runner.client.cleanup_dependent_branches(dependents)
+
+        return wrapper
+
+    @manage_dependent_branches
     @log_duration
     def validate_sql(
         self, selectors: List[str], mode: str = "batch", concurrency: int = 10
@@ -47,6 +61,7 @@ class Runner:
         errors = sql_validator.validate(mode)
         return [vars(error) for error in errors]
 
+    @manage_dependent_branches
     @log_duration
     def validate_data_tests(self):
         data_test_validator = DataTestValidator(self.client, self.project)
