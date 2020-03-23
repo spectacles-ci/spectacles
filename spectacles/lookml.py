@@ -9,14 +9,15 @@ class LookMlObject:
 
 
 class Dimension(LookMlObject):
-    def __init__(self, name: str, type: str, sql: str, url: Optional[str],hidden: bool):
+    def __init__(self, name: str, type: str, sql: str, url: Optional[str], hidden: bool):
         self.name = name
         self.type = type
         self.sql = sql
         self.url = url
         self.queried: bool = False
-        self.hidden = hidden
         self.error: Optional[SqlError] = None
+        self.hidden = hidden
+
 
         if re.search(r"spectacles\s*:\s*ignore", sql, re.IGNORECASE):
             self.ignore = True

@@ -11,6 +11,7 @@ def dimension():
         type="string",
         sql="${TABLE}.dimension_name",
         url="https://test.looker.com",
+	hidden="no"
     )
 
 
@@ -58,15 +59,26 @@ def test_dimension_from_json():
     assert dimension.type == "number"
     assert dimension.url == "/projects/spectacles/files/test_view.view.lkml?line=340"
     assert dimension.sql == "${TABLE}.dimension_one "
+    assert dimension.hidden == False
     assert not dimension.ignore
 
+
+def test_hidden_dimension():
+    name = "test_view.dimension_one"
+    dimension_type = "sql"
+    url = "/projects/spectacles/files/test_view.view.lkml?line=340"
+    sql = "${TABLE}.dimension_one "
+    hidden = "yes"
+    dimension = Dimension(name, dimension_type, sql, url, hidden)
+    assert dimension.ignore
 
 def test_ignored_dimension_with_whitespace():
     name = "test_view.dimension_one"
     dimension_type = "number"
     url = "/projects/spectacles/files/test_view.view.lkml?line=340"
     sql = " -- spectacles: ignore\n${TABLE}.dimension_one "
-    dimension = Dimension(name, dimension_type, sql, url)
+    hidden = False
+    dimension = Dimension(name, dimension_type, sql, url, hidden)
     assert dimension.ignore
 
 
@@ -75,7 +87,8 @@ def test_ignored_dimension_with_no_whitespace():
     dimension_type = "number"
     url = "/projects/spectacles/files/test_view.view.lkml?line=340"
     sql = "--spectacles:ignore\n${TABLE}.dimension_one "
-    dimension = Dimension(name, dimension_type, sql, url)
+    hidden = False
+    dimension = Dimension(name, dimension_type, sql, url, hidden)
     assert dimension.ignore
 
 
