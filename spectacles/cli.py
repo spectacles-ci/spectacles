@@ -201,6 +201,7 @@ def main():
             args.api_version,
             args.mode,
             args.remote_reset,
+            args.manifest_dependency,
             args.concurrency,
         )
     elif args.command == "assert":
@@ -389,6 +390,13 @@ def _build_sql_subparser(
             WARNING: This will delete any uncommited changes in the user's workspace.",
     )
     subparser.add_argument(
+        "--manifest-dependency",
+        action="store_true",
+        help="When set to true, the SQL Validator will create temporary branches \
+            that are clones of master for any project that is a local dependency of the \
+            of the project being tested. These branches are deleted at the end of the run",
+    )
+    subparser.add_argument(
         "--concurrency",
         default=10,
         type=int,
@@ -471,6 +479,7 @@ def run_sql(
     api_version,
     mode,
     remote_reset,
+    manifest_dependency,
     concurrency,
 ) -> None:
     """Runs and validates the SQL for each selected LookML dimension."""
@@ -483,6 +492,7 @@ def run_sql(
         port,
         api_version,
         remote_reset,
+        manifest_dependency,
     )
     errors = runner.validate_sql(explores, mode, concurrency)
     if errors:

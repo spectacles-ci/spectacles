@@ -32,8 +32,10 @@ class Runner:
         port: int = 19999,
         api_version: float = 3.1,
         remote_reset: bool = False,
+        manifest_dependency: bool = False,
     ):
         self.project = project
+        self.manifest_dependency = manifest_dependency
         self.client = LookerClient(
             base_url, client_id, client_secret, port, api_version
         )
@@ -44,20 +46,26 @@ class Runner:
 
         def wrapper(*args, **kwargs):
             runner = args[0]
-            dependents = runner.client.get_dependent_projects(runner.project)
+            if runner.manifest_dependency:
+                dependents = runner.client.get_dependent_projects(runner.project)
 
-            for project in dependents:
-                project["active_branch"] = runner.client.get_active_branch(
-                    project["name"]
-                )
-                project["temp_branch"] = "tmp_spectacles_" + time_hash()
-                runner.client.create_branch(project["name"], project["temp_branch"])
+                for project in dependents:
+                    project["active_branch"] = runner.client.get_active_branch(
+                        project["name"]
+                    )
+                    project["temp_branch"] = "tmp_spectacles_" + time_hash()
+                    runner.client.create_branch(project["name"], project["temp_branch"])
 
-            fn(*args, **kwargs)
+                fn(*args, **kwargs)
 
-            for project in dependents:
-                runner.client.update_session(project["name"], project["active_branch"])
-                runner.client.delete_branch(project["name"], project["temp_branch"])
+                for project in dependents:
+                    runner.client.update_session(
+                        project["name"], project["active_branch"]
+                    )
+                    runner.client.delete_branch(project["name"], project["temp_branch"])
+
+            else:
+                fn(*args, **kwargs)
 
         return wrapper
 
