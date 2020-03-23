@@ -45,6 +45,10 @@ def client_kwargs():
         },
         create_query_task={"query_id": 13041},
         get_query_task_multi_results={"query_task_ids": ["ajsdkgj", "askkwk"]},
+        create_branch={"project": "project_name", "branch": "branch_name"},
+        delete_branch={"project": "project_name", "branch": "branch_name"},
+        get_active_branch={"project": "project_name"},
+        get_dependent_projects={"project": "project_name"},
     )
 
 
