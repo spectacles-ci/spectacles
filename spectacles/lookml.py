@@ -9,17 +9,20 @@ class LookMlObject:
 
 
 class Dimension(LookMlObject):
-    def __init__(self, name: str, type: str, sql: str, url: Optional[str]):
+    def __init__(self, name: str, type: str, sql: str, url: Optional[str],hidden: bool):
         self.name = name
         self.type = type
         self.sql = sql
         self.url = url
         self.queried: bool = False
+        self.hidden = hidden
         self.error: Optional[SqlError] = None
+
         if re.search(r"spectacles\s*:\s*ignore", sql, re.IGNORECASE):
             self.ignore = True
         else:
             self.ignore = False
+        self.ignore = self.ignore or hidden
 
     def __repr__(self):
         return (
@@ -54,9 +57,10 @@ class Dimension(LookMlObject):
     def from_json(cls, json_dict):
         name = json_dict["name"]
         type = json_dict["type"]
+        hidden = json_dict["hidden"]
         sql = json_dict["sql"]
         url = json_dict["lookml_link"]
-        return cls(name, type, sql, url)
+        return cls(name, type, sql, url, hidden)
 
 
 class Explore(LookMlObject):
