@@ -131,3 +131,49 @@ def test_create_query(mock_post, client):
             "filter_expression": "1=2",
         },
     )
+
+
+@patch("spectacles.client.requests.Session.get")
+def test_get_dependent_projects(mock_get, client):
+    mock_get.return_value.json.return_value = {
+        "imports": [
+            {"name": "local_one", "is_remote": False},
+            {"name": "remote_one", "is_remote": True},
+        ]
+    }
+    local_dependencies = client.get_dependent_projects("project_name")
+    assert local_dependencies == [{"name": "local_one", "is_remote": False}]
+    mock_get.assert_called_once_with(
+        url="https://test.looker.com:19999/api/3.1/projects/project_name/manifest",
+        timeout=300,
+    )
+
+
+@patch("spectacles.client.requests.Session.get")
+def test_get_active_branch(mock_get, client):
+    mock_get.return_value.json.return_value = {"name": "test_active_branch"}
+    active_branch = client.get_active_branch("project_name")
+    assert active_branch == "test_active_branch"
+    mock_get.assert_called_once_with(
+        url="https://test.looker.com:19999/api/3.1/projects/project_name/git_branch",
+        timeout=300,
+    )
+
+
+@patch("spectacles.client.requests.Session.post")
+def test_create_branch(mock_post, client):
+    client.create_branch("project_name", "test_branch_name")
+    mock_post.assert_called_once_with(
+        url="https://test.looker.com:19999/api/3.1/projects/project_name/git_branch",
+        timeout=300,
+        json={"name": "test_branch_name", "ref": "master"},
+    )
+
+
+@patch("spectacles.client.requests.Session.delete")
+def test_delete_branch(mock_delete, client):
+    client.delete_branch("project_name", "test_branch_name")
+    mock_delete.assert_called_once_with(
+        url="https://test.looker.com:19999/api/3.1/projects/project_name/git_branch/test_branch_name",
+        timeout=300,
+    )
