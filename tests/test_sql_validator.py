@@ -1,7 +1,7 @@
 from pathlib import Path
 import json
 from collections import defaultdict
-from unittest.mock import patch, Mock
+from unittest.mock import patch, create_autospec, Mock
 import pytest
 from spectacles.lookml import Project, Model, Explore, Dimension
 from spectacles.client import LookerClient
@@ -73,7 +73,9 @@ def test_parse_selectors_handles_duplicates():
 
 
 def test_parse_selectors_handles_same_explore_different_model():
-    expected = defaultdict(set, model_one=set(["explore_one"]), model_two=set(["explore_one"]))
+    expected = defaultdict(
+        set, model_one=set(["explore_one"]), model_two=set(["explore_one"])
+    )
     assert (
         SqlValidator.parse_selectors(["model_one/explore_one", "model_two/explore_one"])
         == expected
@@ -101,6 +103,37 @@ def test_get_running_query_tasks(validator):
     ]
     validator._running_queries = queries
     assert validator.get_running_query_tasks() == ["abc", "def"]
+
+
+def test_validate_hybrid_mode_no_errors_does_not_repeat(validator):
+    mock_run: Mock = create_autospec(validator._create_and_run)
+    validator.project.errored = False
+    validator._create_and_run = mock_run
+    validator.validate(mode="hybrid")
+    validator._create_and_run.assert_called_once_with(mode="hybrid")
+
+
+def test_validate_hybrid_mode_with_errors_does_repeat(validator):
+    mock_run: Mock = create_autospec(validator._create_and_run)
+    validator.project.errored = True
+    validator._create_and_run = mock_run
+    validator.validate(mode="hybrid")
+    validator._create_and_run.call_count == 2
+
+
+def test_create_and_run_keyboard_interrupt_cancels_queries(validator):
+    validator._running_queries = [
+        Query(query_id="12345", lookml_ref=None, query_task_id="abc")
+    ]
+    mock_create_queries = create_autospec(validator._create_queries)
+    mock_create_queries.side_effect = KeyboardInterrupt()
+    validator._create_queries = mock_create_queries
+    mock_cancel_queries = create_autospec(validator._cancel_queries)
+    validator._cancel_queries = mock_cancel_queries
+    try:
+        validator._create_and_run(mode="batch")
+    except SpectaclesException:
+        mock_cancel_queries.assert_called_once_with(query_task_ids=["abc"])
 
 
 def test_error_is_set_on_project(project, validator):
