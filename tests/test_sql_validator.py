@@ -5,7 +5,7 @@ import pytest
 from spectacles.lookml import Project, Model, Explore, Dimension
 from spectacles.client import LookerClient
 from spectacles.validators import SqlValidator, Query, QueryResult
-from spectacles.exceptions import SqlError
+from spectacles.exceptions import SqlError, SpectaclesException
 
 TEST_BASE_URL = "https://test.looker.com"
 TEST_CLIENT_ID = "test_client_id"
@@ -62,6 +62,17 @@ def project():
     project = Project("test_project", models)
     return project
 
+def test_parse_selectors_handles_duplicates():
+    expected = {'model_one': set('explore_one')}
+    SqlValidator.parse_selectors(['model_one/explore_one', 'model_one/explore_one']) == expected
+
+def test_parse_selectors_handles_same_explore_different_model():
+    expected = {'model_one': set('explore_one'), 'model_two': set('explore_one')}
+    SqlValidator.parse_selectors(['model_one/explore_one', 'model_two/explore_one']) == expected
+
+def test_parse_selectors_bad_format_raises_error():
+    with pytest.raises(SpectaclesException):
+        SqlValidator.parse_selectors(['model_one.explore_one', 'model_two:explore_one'])
 
 @patch("spectacles.client.LookerClient.get_lookml_dimensions")
 @patch("spectacles.client.LookerClient.get_lookml_models")
