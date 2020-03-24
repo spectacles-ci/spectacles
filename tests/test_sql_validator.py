@@ -1,5 +1,6 @@
 from pathlib import Path
 import json
+from collections import defaultdict
 from unittest.mock import patch, Mock
 import pytest
 from spectacles.lookml import Project, Model, Explore, Dimension
@@ -62,17 +63,27 @@ def project():
     project = Project("test_project", models)
     return project
 
+
 def test_parse_selectors_handles_duplicates():
-    expected = {'model_one': set('explore_one')}
-    SqlValidator.parse_selectors(['model_one/explore_one', 'model_one/explore_one']) == expected
+    expected = defaultdict(set, model_one=set(["explore_one"]))
+    assert (
+        SqlValidator.parse_selectors(["model_one/explore_one", "model_one/explore_one"])
+        == expected
+    )
+
 
 def test_parse_selectors_handles_same_explore_different_model():
-    expected = {'model_one': set('explore_one'), 'model_two': set('explore_one')}
-    SqlValidator.parse_selectors(['model_one/explore_one', 'model_two/explore_one']) == expected
+    expected = defaultdict(set, model_one=set(["explore_one"]), model_two=set(["explore_one"]))
+    assert (
+        SqlValidator.parse_selectors(["model_one/explore_one", "model_two/explore_one"])
+        == expected
+    )
+
 
 def test_parse_selectors_bad_format_raises_error():
     with pytest.raises(SpectaclesException):
-        SqlValidator.parse_selectors(['model_one.explore_one', 'model_two:explore_one'])
+        SqlValidator.parse_selectors(["model_one.explore_one", "model_two:explore_one"])
+
 
 @patch("spectacles.client.LookerClient.get_lookml_dimensions")
 @patch("spectacles.client.LookerClient.get_lookml_models")
@@ -81,6 +92,15 @@ def test_build_project(mock_get_models, mock_get_dimensions, project, validator)
     mock_get_dimensions.return_value = load("response_dimensions.json")
     validator.build_project(selectors=["*/*"])
     assert validator.project == project
+
+
+def test_get_running_query_tasks(validator):
+    queries = [
+        Query(query_id="12345", lookml_ref=None, query_task_id="abc"),
+        Query(query_id="67890", lookml_ref=None, query_task_id="def"),
+    ]
+    validator._running_queries = queries
+    assert validator.get_running_query_tasks() == ["abc", "def"]
 
 
 def test_error_is_set_on_project(project, validator):
