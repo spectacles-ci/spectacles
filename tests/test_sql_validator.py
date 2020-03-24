@@ -1,11 +1,12 @@
 from pathlib import Path
 import json
-from unittest.mock import patch, Mock
+from collections import defaultdict
+from unittest.mock import patch, create_autospec, Mock
 import pytest
 from spectacles.lookml import Project, Model, Explore, Dimension
 from spectacles.client import LookerClient
 from spectacles.validators import SqlValidator, Query, QueryResult
-from spectacles.exceptions import SqlError
+from spectacles.exceptions import SqlError, SpectaclesException
 
 TEST_BASE_URL = "https://test.looker.com"
 TEST_CLIENT_ID = "test_client_id"
@@ -63,6 +64,29 @@ def project():
     return project
 
 
+def test_parse_selectors_handles_duplicates():
+    expected = defaultdict(set, model_one=set(["explore_one"]))
+    assert (
+        SqlValidator.parse_selectors(["model_one/explore_one", "model_one/explore_one"])
+        == expected
+    )
+
+
+def test_parse_selectors_handles_same_explore_different_model():
+    expected = defaultdict(
+        set, model_one=set(["explore_one"]), model_two=set(["explore_one"])
+    )
+    assert (
+        SqlValidator.parse_selectors(["model_one/explore_one", "model_two/explore_one"])
+        == expected
+    )
+
+
+def test_parse_selectors_bad_format_raises_error():
+    with pytest.raises(SpectaclesException):
+        SqlValidator.parse_selectors(["model_one.explore_one", "model_two:explore_one"])
+
+
 @patch("spectacles.client.LookerClient.get_lookml_dimensions")
 @patch("spectacles.client.LookerClient.get_lookml_models")
 def test_build_project(mock_get_models, mock_get_dimensions, project, validator):
@@ -70,6 +94,46 @@ def test_build_project(mock_get_models, mock_get_dimensions, project, validator)
     mock_get_dimensions.return_value = load("response_dimensions.json")
     validator.build_project(selectors=["*/*"])
     assert validator.project == project
+
+
+def test_get_running_query_tasks(validator):
+    queries = [
+        Query(query_id="12345", lookml_ref=None, query_task_id="abc"),
+        Query(query_id="67890", lookml_ref=None, query_task_id="def"),
+    ]
+    validator._running_queries = queries
+    assert validator.get_running_query_tasks() == ["abc", "def"]
+
+
+def test_validate_hybrid_mode_no_errors_does_not_repeat(validator):
+    mock_run: Mock = create_autospec(validator._create_and_run)
+    validator.project.errored = False
+    validator._create_and_run = mock_run
+    validator.validate(mode="hybrid")
+    validator._create_and_run.assert_called_once_with(mode="hybrid")
+
+
+def test_validate_hybrid_mode_with_errors_does_repeat(validator):
+    mock_run: Mock = create_autospec(validator._create_and_run)
+    validator.project.errored = True
+    validator._create_and_run = mock_run
+    validator.validate(mode="hybrid")
+    validator._create_and_run.call_count == 2
+
+
+def test_create_and_run_keyboard_interrupt_cancels_queries(validator):
+    validator._running_queries = [
+        Query(query_id="12345", lookml_ref=None, query_task_id="abc")
+    ]
+    mock_create_queries = create_autospec(validator._create_queries)
+    mock_create_queries.side_effect = KeyboardInterrupt()
+    validator._create_queries = mock_create_queries
+    mock_cancel_queries = create_autospec(validator._cancel_queries)
+    validator._cancel_queries = mock_cancel_queries
+    try:
+        validator._create_and_run(mode="batch")
+    except SpectaclesException:
+        mock_cancel_queries.assert_called_once_with(query_task_ids=["abc"])
 
 
 def test_error_is_set_on_project(project, validator):

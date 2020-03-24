@@ -177,3 +177,21 @@ def test_delete_branch(mock_delete, client):
         url="https://test.looker.com:19999/api/3.1/projects/project_name/git_branch/test_branch_name",
         timeout=300,
     )
+      
+@patch("spectacles.client.requests.Session.post")
+def test_create_query_lacking_dimensions(mock_post, client):
+    QUERY_ID = 124950204921
+    mock_post.return_value.json.return_value = {"id": QUERY_ID}
+    query_id = client.create_query("test_model", "test_explore_one", [])
+    assert query_id == QUERY_ID
+    mock_post.assert_called_once_with(
+        url="https://test.looker.com:19999/api/3.1/queries",
+        json={
+            "model": "test_model",
+            "view": "test_explore_one",
+            "fields": [],
+            "limit": 0,
+            "filter_expression": "1=2",
+        },
+        timeout=300,
+    )
