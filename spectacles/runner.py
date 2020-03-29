@@ -41,31 +41,30 @@ class Runner:
         )
         self.client.update_session(project, branch, remote_reset)
 
-    def manage_dependent_branches(fn: Callable):
+    def manage_dependent_branches(fn: Callable) -> Callable:
         functools.wraps(fn)
 
-        def wrapper(*args, **kwargs):
-            runner = args[0]
-            if runner.manifest_dependency:
-                dependents = runner.client.get_dependent_projects(runner.project)
+        def wrapper(self, *args, **kwargs):
+            if self.manifest_dependency:
+                dependents = self.client.get_dependent_projects(self.project)
 
                 for project in dependents:
-                    project["active_branch"] = runner.client.get_active_branch(
+                    project["active_branch"] = self.client.get_active_branch(
                         project["name"]
                     )
                     project["temp_branch"] = "tmp_spectacles_" + time_hash()
-                    runner.client.create_branch(project["name"], project["temp_branch"])
+                    self.client.create_branch(project["name"], project["temp_branch"])
 
-                fn(*args, **kwargs)
+                fn(self, *args, **kwargs)
 
                 for project in dependents:
-                    runner.client.update_session(
+                    self.client.update_session(
                         project["name"], project["active_branch"]
                     )
-                    runner.client.delete_branch(project["name"], project["temp_branch"])
+                    self.client.delete_branch(project["name"], project["temp_branch"])
 
             else:
-                fn(*args, **kwargs)
+                fn(self, *args, **kwargs)
 
         return wrapper
 
