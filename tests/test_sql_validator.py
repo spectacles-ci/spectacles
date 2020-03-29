@@ -169,7 +169,7 @@ def test_build_project_one_explore_selected(
             project.models.remove(model)
     assert validator.project == project
 
-    
+
 def test_get_running_query_tasks(validator):
     queries = [
         Query(query_id="12345", lookml_ref=None, query_task_id="abc"),
