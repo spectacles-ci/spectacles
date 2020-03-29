@@ -228,7 +228,8 @@ class SqlValidator(Validator):
         printer.print_header(
             f"Testing {explore_count} "
             f"{'explore' if explore_count == 1 else 'explores'} "
-            f"[{mode} mode]"
+            f"[{mode} mode] "
+            f"[concurrency = {self.query_slots}]"
         )
 
         errors = self._create_and_run(mode)
