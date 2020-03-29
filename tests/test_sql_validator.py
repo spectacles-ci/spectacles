@@ -170,42 +170,6 @@ def test_build_project_one_explore_selected(
     assert validator.project == project
 
 
-def test_error_is_set_on_project(project, validator):
-    """
-    If get_query_results returns an error for a mapped query task ID,
-    The corresponding explore should be set to errored and
-    The SqlError instance should be present and validated
-
-    TODO: Refactor error responses into fixtures
-    TODO: Should query IDs be ints instead of strings?
-
-    """
-    query_task_id = "akdk13kkidi2mkv029rld"
-    message = "An error has occurred"
-    sql = "SELECT DISTINCT 1 FROM table_name"
-    error_details = {"message": message, "sql": sql}
-    validator.project = project
-    explore = project.models[0].explores[0]
-    query = Query(query_id="10319", lookml_ref=explore, query_task_id=query_task_id)
-    validator._running_queries.append(query)
-    query_result = QueryResult(query_task_id, status="error", error=error_details)
-    validator._query_by_task_id[query_task_id] = query
-    returned_sql_error = validator._handle_query_result(query_result)
-    expected_sql_error = SqlError(
-        path="test_explore_one", url=None, message=message, sql=sql
-    )
-    assert returned_sql_error == expected_sql_error
-    assert returned_sql_error == explore.error
-    assert explore.queried
-    assert explore.errored
-    assert not validator._running_queries
-    assert validator.project.errored
-    assert validator.project.models[0].errored
-    # Batch mode, so none of the dimensions should have errored set
-    assert not any(dimension.errored for dimension in explore.dimensions)
-    assert all(dimension.queried for dimension in explore.dimensions)
-
-
 def test_get_running_query_tasks(validator):
     queries = [
         Query(query_id="12345", lookml_ref=None, query_task_id="abc"),
@@ -293,22 +257,6 @@ def test_cancel_queries(mock_client_cancel, validator):
     validator._cancel_queries(query_task_ids)
     for task_id in query_task_ids:
         mock_client_cancel.assert_any_call(task_id)
-
-
-def test_handle_running_query(validator):
-    query_task_id = "sakgwj392jfkajgjcks"
-    query = Query(
-        query_id="19428",
-        lookml_ref=Dimension("dimension_one", "string", "${TABLE}.dimension_one"),
-        query_task_id=query_task_id,
-    )
-    query_result = QueryResult(query_task_id=query_task_id, status="running")
-    validator._running_queries = [query]
-    validator._query_by_task_id[query_task_id] = query
-    returned_sql_error = validator._handle_query_result(query_result)
-
-    assert validator._running_queries == [query]
-    assert not returned_sql_error
 
 
 def test_handle_running_query(validator):
