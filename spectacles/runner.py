@@ -41,6 +41,7 @@ class Runner:
         )
         self.client.update_session(project, branch, remote_reset)
 
+    @staticmethod
     def manage_dependent_branches(fn: Callable) -> Callable:
         functools.wraps(fn)
 
