@@ -133,7 +133,6 @@ def test_create_query(mock_post, client):
     )
 
 
-<<<<<<< HEAD
 @patch("spectacles.client.requests.Session.post")
 def test_create_query_lacking_dimensions(mock_post, client):
     QUERY_ID = 124950204921
@@ -149,9 +148,8 @@ def test_create_query_lacking_dimensions(mock_post, client):
             "limit": 0,
             "filter_expression": "1=2",
         },
-        timeout=300
+        timeout=300,
     )
-
 
 
 @patch("spectacles.client.requests.Session.get")
