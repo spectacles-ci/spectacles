@@ -1,7 +1,8 @@
-from typing import List
+from typing import List, Dict
 from spectacles.client import LookerClient
 from spectacles.validators import SqlValidator, DataTestValidator
 from spectacles.utils import log_duration
+from spectacles.lookml import Project
 
 
 class Runner:
@@ -41,14 +42,14 @@ class Runner:
     @log_duration
     def validate_sql(
         self, selectors: List[str], mode: str = "batch", concurrency: int = 10
-    ) -> List[dict]:
+    ) -> Project:
         sql_validator = SqlValidator(self.client, self.project, concurrency)
         sql_validator.build_project(selectors)
         project = sql_validator.validate(mode)
         return project
 
     @log_duration
-    def validate_data_tests(self):
+    def validate_data_tests(self) -> List[Dict]:
         data_test_validator = DataTestValidator(self.client, self.project)
         errors = data_test_validator.validate()
         return [vars(error) for error in errors]

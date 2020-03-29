@@ -3,6 +3,7 @@ import textwrap
 from typing import List
 import colorama  # type: ignore
 from spectacles.logger import GLOBAL_LOGGER as logger, COLORS
+from spectacles.exceptions import SqlError
 
 LINE_WIDTH = 80
 COLOR_CODE_LENGTH = len(colorama.Fore.RED) + len(colorama.Style.RESET_ALL)
@@ -42,15 +43,15 @@ def print_data_test_error(error: dict) -> None:
     logger.info(wrapped)
 
 
-def print_sql_error(error: dict) -> None:
-    print_header(red(error["path"]), LINE_WIDTH + COLOR_CODE_LENGTH)
-    wrapped = textwrap.fill(error["message"], LINE_WIDTH)
+def print_sql_error(error: SqlError) -> None:
+    print_header(red(error.path), LINE_WIDTH + COLOR_CODE_LENGTH)
+    wrapped = textwrap.fill(error.message, LINE_WIDTH)
     logger.info(wrapped)
     # if error["line_number"]:
     #     sql_context = extract_sql_context(error["sql"], error["line_number"])
     #     logger.info("\n" + sql_context)
-    if error["url"]:
-        logger.info("\n" + f"LookML: {error['url']}")
+    if error.url:
+        logger.info("\n" + f"LookML: {error.url}")
 
 
 def print_validation_result(type: str, source: str):
