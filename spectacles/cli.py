@@ -378,7 +378,7 @@ def _build_sql_subparser(
         default=[],
         help="Specify the explores spectacles should exclude when testing. \
             List of selector strings in 'model_name/explore_name' format. \
-            The '*' wildcard selects all models or explores. For instance,\
+            The '*' wildcard excludes all models or explores. For instance,\
             'model_name/*' would select all explores in the 'model_name' model.",
     )
     subparser.add_argument(
