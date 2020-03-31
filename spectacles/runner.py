@@ -5,6 +5,32 @@ from spectacles.validators import SqlValidator, DataTestValidator
 from spectacles.utils import log_duration, time_hash
 
 
+def manage_dependent_branches(fn: Callable) -> Callable:
+    functools.wraps(fn)
+
+    def wrapper(self: Runner, *args, **kwargs):
+        if self.manifest_dependency:
+            dependents = self.client.get_dependent_projects(self.project)
+
+            for project in dependents:
+                project["active_branch"] = self.client.get_active_branch(
+                    project["name"]
+                )
+                project["temp_branch"] = "tmp_spectacles_" + time_hash()
+                self.client.create_branch(project["name"], project["temp_branch"])
+
+            fn(self, *args, **kwargs)
+
+            for project in dependents:
+                self.client.update_session(project["name"], project["active_branch"])
+                self.client.delete_branch(project["name"], project["temp_branch"])
+
+        else:
+            fn(self, *args, **kwargs)
+
+    return wrapper
+
+
 class Runner:
     """Runs validations and returns JSON-style dictionaries with validation results.
 
