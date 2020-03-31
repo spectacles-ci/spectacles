@@ -1,8 +1,9 @@
-from typing import List, Dict
+from typing import List
 from spectacles.client import LookerClient
 from spectacles.validators import SqlValidator, DataTestValidator
 from spectacles.utils import log_duration
 from spectacles.lookml import Project
+from spectacles.exceptions import DataTestError
 
 
 class Runner:
@@ -49,7 +50,7 @@ class Runner:
         return project
 
     @log_duration
-    def validate_data_tests(self) -> List[Dict]:
+    def validate_data_tests(self) -> List[DataTestError]:
         data_test_validator = DataTestValidator(self.client, self.project)
         errors = data_test_validator.validate()
-        return [vars(error) for error in errors]
+        return errors

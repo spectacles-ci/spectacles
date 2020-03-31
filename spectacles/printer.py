@@ -3,7 +3,7 @@ import textwrap
 from typing import List
 import colorama  # type: ignore
 from spectacles.logger import GLOBAL_LOGGER as logger, COLORS
-from spectacles.exceptions import SqlError
+from spectacles.exceptions import SqlError, DataTestError
 
 LINE_WIDTH = 80
 COLOR_CODE_LENGTH = len(colorama.Fore.RED) + len(colorama.Style.RESET_ALL)
@@ -37,9 +37,9 @@ def print_header(text: str, line_width: int = LINE_WIDTH) -> None:
     logger.info(f"\n{header}\n")
 
 
-def print_data_test_error(error: dict) -> None:
-    print_header(red(error["path"]), LINE_WIDTH + COLOR_CODE_LENGTH)
-    wrapped = textwrap.fill(error["message"], LINE_WIDTH)
+def print_data_test_error(error: DataTestError) -> None:
+    print_header(red(error.path), LINE_WIDTH + COLOR_CODE_LENGTH)
+    wrapped = textwrap.fill(error.message, LINE_WIDTH)
     logger.info(wrapped)
 
 

@@ -452,7 +452,7 @@ def run_assert(
     )
     errors = runner.validate_data_tests()
     if errors:
-        for error in sorted(errors, key=lambda x: x["path"]):
+        for error in sorted(errors, key=lambda x: x.path):
             printer.print_data_test_error(error)
         logger.info("")
         raise ValidationError
