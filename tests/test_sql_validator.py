@@ -55,7 +55,10 @@ def project():
         ),
     ]
     explores_model_one = [Explore("test_explore_one", dimensions)]
-    explores_model_two = [Explore("test_explore_two", dimensions)]
+    explores_model_two = [
+        Explore("test_explore_one", dimensions),
+        Explore("test_explore_two", dimensions),
+    ]
     models = [
         Model("test_model_one", "test_project", explores_model_one),
         Model("test_model.two", "test_project", explores_model_two),
@@ -118,9 +121,9 @@ def test_build_project_one_model_excluded(
     mock_get_models.return_value = load("response_models.json")
     mock_get_dimensions.return_value = load("response_dimensions.json")
     validator.build_project(selectors=["*/*"], exclusions=["test_model_one/*"])
-    for model in project.models:
-        if model.name == "test_model_one":
-            project.models.remove(model)
+    project.models = [
+        model for model in project.models if model.name != "test_model_one"
+    ]
     assert validator.project == project
 
 
@@ -132,9 +135,9 @@ def test_build_project_one_model_selected(
     mock_get_models.return_value = load("response_models.json")
     mock_get_dimensions.return_value = load("response_dimensions.json")
     validator.build_project(selectors=["test_model.two/*"], exclusions=[])
-    for model in project.models:
-        if model.name != "test_model.two":
-            project.models.remove(model)
+    project.models = [
+        model for model in project.models if model.name == "test_model.two"
+    ]
     assert validator.project == project
 
 
@@ -148,9 +151,9 @@ def test_build_project_one_explore_excluded(
     validator.build_project(
         selectors=["*/*"], exclusions=["test_model_one/test_explore_one"]
     )
-    for model in project.models:
-        if model.name == "test_model_one":
-            project.models.remove(model)
+    project.models = [
+        model for model in project.models if model.name != "test_model_one"
+    ]
     assert validator.project == project
 
 
@@ -164,9 +167,34 @@ def test_build_project_one_explore_selected(
     validator.build_project(
         selectors=["test_model.two/test_explore_two"], exclusions=[]
     )
+    project.models = [
+        model for model in project.models if model.name == "test_model.two"
+    ]
+    project.models[0].explores = [
+        explore
+        for explore in project.models[0].explores
+        if explore.name == "test_explore_two"
+    ]
+    assert validator.project == project
+
+
+@patch("spectacles.client.LookerClient.get_lookml_dimensions")
+@patch("spectacles.client.LookerClient.get_lookml_models")
+def test_build_project_one_ambiguous_explore_excluded(
+    mock_get_models, mock_get_dimensions, project, validator
+):
+    mock_get_models.return_value = load("response_models.json")
+    mock_get_dimensions.return_value = load("response_dimensions.json")
+    validator.build_project(
+        selectors=["*/*"], exclusions=["test_model.two/test_explore_one"]
+    )
     for model in project.models:
-        if model.name != "test_model.two":
-            project.models.remove(model)
+        if model.name == "test_model.two":
+            model.explores = [
+                explore
+                for explore in model.explores
+                if explore.name != "test_explore_one"
+            ]
     assert validator.project == project
 
 
@@ -277,11 +305,11 @@ def test_handle_running_query(validator):
 
 def test_count_explores(validator, project):
     validator.project = project
-    assert validator._count_explores() == 2
+    assert validator._count_explores() == 3
 
     explore = validator.project.models[0].explores[0]
     validator.project.models[0].explores.extend([explore, explore])
-    assert validator._count_explores() == 4
+    assert validator._count_explores() == 5
 
 
 def test_extract_error_details_error_dict(validator):
