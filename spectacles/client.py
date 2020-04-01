@@ -214,6 +214,8 @@ class LookerClient:
 
         manifest = response.json()
 
+        print(manifest)
+
         return manifest
 
     def get_active_branch(self, project: str) -> str:

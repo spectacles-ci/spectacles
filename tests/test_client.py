@@ -48,7 +48,7 @@ def client_kwargs():
         create_branch={"project": "project_name", "branch": "branch_name"},
         delete_branch={"project": "project_name", "branch": "branch_name"},
         get_active_branch={"project": "project_name"},
-        get_dependent_projects={"project": "project_name"},
+        get_manifest={"project": "project_name"},
     )
 
 
@@ -153,15 +153,22 @@ def test_create_query_lacking_dimensions(mock_post, client):
 
 
 @patch("spectacles.client.requests.Session.get")
-def test_get_dependent_projects(mock_get, client):
+def test_get_manifest(mock_get, client):
     mock_get.return_value.json.return_value = {
+        "name": "project_name",
         "imports": [
             {"name": "local_one", "is_remote": False},
             {"name": "remote_one", "is_remote": True},
-        ]
+        ],
     }
-    local_dependencies = client.get_dependent_projects("project_name")
-    assert local_dependencies == [{"name": "local_one", "is_remote": False}]
+    local_dependencies = client.get_manifest("project_name")
+    assert local_dependencies == {
+        "name": "project_name",
+        "imports": [
+            {"name": "local_one", "is_remote": False},
+            {"name": "remote_one", "is_remote": True},
+        ],
+    }
     mock_get.assert_called_once_with(
         url="https://test.looker.com:19999/api/3.1/projects/project_name/manifest",
         timeout=300,
