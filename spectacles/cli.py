@@ -12,6 +12,7 @@ from spectacles.client import LookerClient
 from spectacles.exceptions import SpectaclesException, GenericValidationError
 from spectacles.logger import GLOBAL_LOGGER as logger, set_file_handler
 import spectacles.printer as printer
+import spectacles.tracking as tracking
 
 
 class ConfigFileAction(argparse.Action):
@@ -184,6 +185,10 @@ def main():
 
     set_file_handler(args.log_dir)
 
+    invocation_id = tracking.track_invocation_start(
+        args.base_url, args.command, args.project
+    )
+
     if args.command == "connect":
         run_connect(
             args.base_url,
@@ -221,6 +226,10 @@ def main():
             args.remote_reset,
             args.import_projects,
         )
+
+    tracking.track_invocation_end(
+        args.base_url, args.command, args.project, invocation_id
+    )
 
 
 def create_parser() -> argparse.ArgumentParser:
