@@ -1,4 +1,4 @@
-import analytics
+import analytics  # type: ignore
 import hashlib
 import uuid
 
