@@ -27,6 +27,7 @@ def test_track_invocation_start_sql(mock_track):
             "invocation_id": "123456",
         },
     )
+    assert invocation_id == "123456"
 
 
 @patch("analytics.track")
@@ -44,6 +45,7 @@ def test_track_invocation_start_assert(mock_track):
             "invocation_id": "123456",
         },
     )
+    assert invocation_id == "123456"
 
 
 @patch("analytics.track")
@@ -61,6 +63,7 @@ def test_track_invocation_end_sql(mock_track):
             "invocation_id": "123456",
         },
     )
+    assert invocation_id == "123456"
 
 
 @patch("analytics.track")
@@ -78,3 +81,4 @@ def test_track_invocation_end_assert(mock_track):
             "invocation_id": "123456",
         },
     )
+    assert invocation_id == "123456"
