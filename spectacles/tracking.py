@@ -10,8 +10,9 @@ def anonymise(trait: str) -> str:
     return trait
 
 
-def track_invocation_start(base_url: str, command: str, project: str) -> str:
-    invocation_id = str(uuid.uuid4())
+def track_invocation_start(
+    base_url: str, command: str, project: str, invocation_id: str = str(uuid.uuid4())
+) -> str:
     url_hash = anonymise(base_url.rstrip("/"))
     project_hash = anonymise(project)
     analytics.track(
