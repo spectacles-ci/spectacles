@@ -190,7 +190,7 @@ class LookerClient:
 
             logger.info(f"Checked out branch {branch}")
 
-    def get_dependent_projects(self, project: str) -> List[JsonDict]:
+    def get_manifest(self, project: str) -> JsonDict:
         """Gets all the dependent LookML projects defined in the manifest file.
 
         Args:
@@ -199,7 +199,7 @@ class LookerClient:
         Returns:
             List[JsonDict]: JSON response containing all dependent projects
         """
-        logger.debug(f"Finding all dependent projects")
+        logger.debug(f"Getting manifest details")
         url = utils.compose_url(self.api_url, path=["projects", project, "manifest"])
         response = self.session.get(url=url, timeout=TIMEOUT_SEC)
 
@@ -212,13 +212,9 @@ class LookerClient:
                 f'Error raised: "{error}"'
             )
 
-        all_dependent_projects = response.json()
+        manifest = response.json()
 
-        local_dependencies = [
-            p for p in all_dependent_projects["imports"] if not p["is_remote"]
-        ]
-
-        return local_dependencies
+        return manifest
 
     def get_active_branch(self, project: str) -> str:
         """Gets the active branch for the user in the given project.
@@ -252,9 +248,7 @@ class LookerClient:
             project: Name of the Looker project to use.
             branch: Name of the branch to create.
         """
-        logger.debug(
-            f"Setting the branch on all dependent projects to a copy of master"
-        )
+        logger.debug(f"Creating branch {branch} on project {project}")
 
         body = {"name": branch, "ref": "master"}
         url = utils.compose_url(self.api_url, path=["projects", project, "git_branch"])
