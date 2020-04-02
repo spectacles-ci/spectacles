@@ -35,3 +35,7 @@ Occasionally, when we make changes to LookML or our data warehouse, we break dow
 We believe in the power of continuous integration for analytics. We believe that automated testing should catch these errors before they are ever pushed to production. Automated testing allows developers to maintain their speed of development high, without compromising on the quality of their code or the quality data they produce.
 
 We wanted a single tool to perform these checks for us and establish baseline performance expectations for our Looker instances. We built spectacles to enhance the business intelligence layer of analytics CI pipelines.
+
+## Community
+
+Have a question or just want to chat Spectacles and Looker? [Join us in Slack.](https://join.slack.com/t/spectacles-ci/shared_invite/zt-akmm4mo6-XnPcUUaG3Z5~giRc_5JaUQ)
