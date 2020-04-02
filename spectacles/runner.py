@@ -74,10 +74,14 @@ class Runner:
     @manage_dependent_branches
     @log_duration
     def validate_sql(
-        self, selectors: List[str], mode: str = "batch", concurrency: int = 10
+        self,
+        selectors: List[str],
+        exclusions: List[str],
+        mode: str = "batch",
+        concurrency: int = 10,
     ) -> Project:
         sql_validator = SqlValidator(self.client, self.project, concurrency)
-        sql_validator.build_project(selectors)
+        sql_validator.build_project(selectors, exclusions)
         project = sql_validator.validate(mode)
         return project
 

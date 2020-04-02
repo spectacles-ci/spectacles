@@ -194,6 +194,7 @@ def main():
             args.project,
             args.branch,
             args.explores,
+            args.exclude,
             args.base_url,
             args.client_id,
             args.client_secret,
@@ -373,6 +374,15 @@ def _build_sql_subparser(
             'model_name/*' would select all explores in the 'model_name' model.",
     )
     subparser.add_argument(
+        "--exclude",
+        nargs="+",
+        default=[],
+        help="Specify the explores spectacles should exclude when testing. \
+            List of selector strings in 'model_name/explore_name' format. \
+            The '*' wildcard excludes all models or explores. For instance,\
+            'model_name/*' would select all explores in the 'model_name' model.",
+    )
+    subparser.add_argument(
         "--mode",
         choices=["batch", "single", "hybrid"],
         default="batch",
@@ -472,6 +482,7 @@ def run_sql(
     project,
     branch,
     explores,
+    exclude,
     base_url,
     client_id,
     client_secret,
