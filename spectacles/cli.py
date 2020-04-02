@@ -5,7 +5,7 @@ from yaml.parser import ParserError
 import argparse
 import logging
 import os
-from typing import Callable
+from typing import Callable, Iterable, List
 from spectacles import __version__
 from spectacles.runner import Runner
 from spectacles.client import LookerClient
@@ -462,7 +462,7 @@ def run_assert(
     )
     errors = runner.validate_data_tests()
     if errors:
-        for error in sorted(errors, key=lambda x: x["path"]):
+        for error in sorted(errors, key=lambda x: x.path):
             printer.print_data_test_error(error)
         logger.info("")
         raise ValidationError
@@ -495,10 +495,23 @@ def run_sql(
         api_version,
         remote_reset,
     )
-    errors = runner.validate_sql(explores, exclude, mode, concurrency)
-    if errors:
-        for error in sorted(errors, key=lambda x: x["path"]):
-            printer.print_sql_error(error)
+
+    def iter_errors(lookml: List) -> Iterable:
+        for item in lookml:
+            if item.errored:
+                yield item
+
+    project = runner.validate_sql(explores, mode, concurrency)
+
+    if project.errored:
+        for model in iter_errors(project.models):
+            for explore in iter_errors(model.explores):
+                if explore.error:
+                    printer.print_sql_error(explore.error)
+                else:
+                    for dimension in iter_errors(explore.dimensions):
+                        printer.print_sql_error(dimension.error)
+
         logger.info("")
         raise ValidationError
     else:
