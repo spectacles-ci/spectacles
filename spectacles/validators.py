@@ -222,7 +222,7 @@ class SqlValidator(Validator):
 
         self.project.models = selected_models
 
-    def validate(self, mode: str = "batch") -> List[SqlError]:
+    def validate(self, mode: str = "batch") -> Project:
         """Queries selected explores and returns the project tree with errors."""
         explore_count = self._count_explores()
         printer.print_header(
@@ -232,9 +232,9 @@ class SqlValidator(Validator):
             f"[concurrency = {self.query_slots}]"
         )
 
-        errors = self._create_and_run(mode)
+        self._create_and_run(mode)
         if mode == "hybrid" and self.project.errored:
-            errors = self._create_and_run(mode)
+            self._create_and_run(mode)
 
         for model in sorted(self.project.models, key=lambda x: x.name):
             for explore in sorted(model.explores, key=lambda x: x.name):
@@ -244,14 +244,14 @@ class SqlValidator(Validator):
                 else:
                     printer.print_validation_result("success", message)
 
-        return errors
+        return self.project
 
-    def _create_and_run(self, mode: str = "batch") -> List[SqlError]:
+    def _create_and_run(self, mode: str = "batch") -> None:
         """Runs a single validation using a specified mode"""
         queries: List[Query] = []
         try:
             queries = self._create_queries(mode)
-            errors = self._run_queries(queries)
+            self._run_queries(queries)
         except KeyboardInterrupt:
             logger.info(
                 "\n\n" + "Please wait, asking Looker to cancel any running queries"
@@ -267,7 +267,6 @@ class SqlValidator(Validator):
             else:
                 message += "No queries were running at the time."
             raise SpectaclesException(message)
-        return errors
 
     def _create_queries(self, mode: str) -> List[Query]:
         """Creates a list of queries to be executed for validation"""
@@ -303,10 +302,9 @@ class SqlValidator(Validator):
             queries.append(query)
         return queries
 
-    def _run_queries(self, queries: List[Query]) -> List[SqlError]:
+    def _run_queries(self, queries: List[Query]) -> None:
         """Creates and runs queries with a maximum concurrency defined by query slots"""
         QUERY_TASK_LIMIT = 250
-        errors: List[SqlError] = []
 
         while queries or self._running_queries:
             if queries:
@@ -315,11 +313,8 @@ class SqlValidator(Validator):
             query_tasks = self.get_running_query_tasks()[:QUERY_TASK_LIMIT]
             logger.debug(f"Checking for results of {len(query_tasks)} query tasks")
             for query_result in self._get_query_results(query_tasks):
-                sql_error = self._handle_query_result(query_result)
-                if sql_error:
-                    errors.append(sql_error)
+                self._handle_query_result(query_result)
             time.sleep(0.5)
-        return errors
 
     def _fill_query_slots(self, queries: List[Query]) -> None:
         """Creates query tasks until all slots are used or all queries are running"""
