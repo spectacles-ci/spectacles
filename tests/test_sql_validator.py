@@ -269,22 +269,19 @@ def test_error_is_set_on_project(project, validator):
     error_details = {"message": message, "sql": sql}
     validator.project = project
     explore = project.models[0].explores[0]
+    query_url = "https://example.looker.com/x/12345"
     query = Query(
         query_id="10319",
         lookml_ref=explore,
         query_task_id=query_task_id,
-        query_url="https://example.looker.com/x/12345",
+        query_url=query_url,
     )
     validator._running_queries.append(query)
     query_result = QueryResult(query_task_id, status="error", error=error_details)
     validator._query_by_task_id[query_task_id] = query
     returned_sql_error = validator._handle_query_result(query_result)
     expected_sql_error = SqlError(
-        path="test_explore_one",
-        url=None,
-        message=message,
-        sql=sql,
-        query_url="https://example.looker.com/x/12345",
+        path="test_explore_one", url=None, message=message, sql=sql, query_url=query_url
     )
     assert returned_sql_error == expected_sql_error
     assert returned_sql_error == explore.error
