@@ -200,8 +200,18 @@ def test_build_project_one_ambiguous_explore_excluded(
 
 def test_get_running_query_tasks(validator):
     queries = [
-        Query(query_id="12345", lookml_ref=None, query_task_id="abc"),
-        Query(query_id="67890", lookml_ref=None, query_task_id="def"),
+        Query(
+            query_id="12345",
+            lookml_ref=None,
+            query_task_id="abc",
+            query_url="https://example.looker.com/x/12345",
+        ),
+        Query(
+            query_id="67890",
+            lookml_ref=None,
+            query_task_id="def",
+            query_url="https://example.looker.com/x/67890",
+        ),
     ]
     validator._running_queries = queries
     assert validator.get_running_query_tasks() == ["abc", "def"]
@@ -225,7 +235,12 @@ def test_validate_hybrid_mode_with_errors_does_repeat(validator):
 
 def test_create_and_run_keyboard_interrupt_cancels_queries(validator):
     validator._running_queries = [
-        Query(query_id="12345", lookml_ref=None, query_task_id="abc")
+        Query(
+            query_id="12345",
+            lookml_ref=None,
+            query_task_id="abc",
+            query_url="https://example.looker.com/x/12345",
+        )
     ]
     mock_create_queries = create_autospec(validator._create_queries)
     mock_create_queries.side_effect = KeyboardInterrupt()
@@ -254,13 +269,22 @@ def test_error_is_set_on_project(project, validator):
     error_details = {"message": message, "sql": sql}
     validator.project = project
     explore = project.models[0].explores[0]
-    query = Query(query_id="10319", lookml_ref=explore, query_task_id=query_task_id)
+    query = Query(
+        query_id="10319",
+        lookml_ref=explore,
+        query_task_id=query_task_id,
+        query_url="https://example.looker.com/x/12345",
+    )
     validator._running_queries.append(query)
     query_result = QueryResult(query_task_id, status="error", error=error_details)
     validator._query_by_task_id[query_task_id] = query
     returned_sql_error = validator._handle_query_result(query_result)
     expected_sql_error = SqlError(
-        path="test_explore_one", url=None, message=message, sql=sql
+        path="test_explore_one",
+        url=None,
+        message=message,
+        sql=sql,
+        query_url="https://example.looker.com/x/12345",
     )
     assert returned_sql_error == expected_sql_error
     assert returned_sql_error == explore.error
@@ -293,6 +317,7 @@ def test_handle_running_query(validator):
         query_id="19428",
         lookml_ref=Dimension("dimension_one", "string", "${TABLE}.dimension_one"),
         query_task_id=query_task_id,
+        query_url="https://example.looker.com/x/12345",
     )
     query_result = QueryResult(query_task_id=query_task_id, status="running")
     validator._running_queries = [query]
