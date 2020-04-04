@@ -5,7 +5,7 @@ from yaml.parser import ParserError
 import argparse
 import logging
 import os
-from typing import Callable, Iterable, List
+from typing import Callable, Iterable, List, Optional
 from spectacles import __version__
 from spectacles.runner import Runner
 from spectacles.client import LookerClient
@@ -500,9 +500,9 @@ def run_sql(
 
     def log_failing_sql(
         error: SqlError,
-        model_name: str = None,
-        explore_name: str = None,
-        dimension_name: str = None,
+        model_name: str,
+        explore_name: str,
+        dimension_name: Optional[str] = None,
     ):
         file_directory = Path(LOG_DIRECTORY / "queries")
         file_directory.mkdir(exist_ok=True)
