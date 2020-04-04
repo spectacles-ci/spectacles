@@ -442,6 +442,32 @@ def _build_assert_subparser(
     )
 
 
+def log_failing_sql(
+    error: SqlError,
+    log_directory: Path,
+    model_name: str,
+    explore_name: str,
+    dimension_name: Optional[str] = None,
+):
+    file_directory = Path(log_directory / "queries")
+    file_directory.mkdir(exist_ok=True)
+
+    file_name = (
+        model_name
+        + "__"
+        + explore_name
+        + ("__" + dimension_name if dimension_name else "")
+        + ".sql"
+    )
+    file_path = Path(file_directory / file_name)
+
+    logger.debug(f"Logging failing SQL query for '{error.path}' to '{file_path}'")
+    logger.debug(f"Failing SQL for {error.path}: \n{error.sql}")
+
+    with open(file_path, "w") as file:
+        file.write(error.sql)
+
+
 def run_connect(
     base_url: str, client_id: str, client_secret: str, port: int, api_version: float
 ) -> None:
@@ -498,30 +524,6 @@ def run_sql(
         remote_reset,
     )
 
-    def log_failing_sql(
-        error: SqlError,
-        model_name: str,
-        explore_name: str,
-        dimension_name: Optional[str] = None,
-    ):
-        file_directory = Path(LOG_DIRECTORY / "queries")
-        file_directory.mkdir(exist_ok=True)
-
-        file_name = (
-            model_name
-            + "__"
-            + explore_name
-            + ("__" + dimension_name if dimension_name else "")
-            + ".sql"
-        )
-        file_path = Path(file_directory / file_name)
-
-        logger.debug(f"Logging failing SQL query for '{error.path}' to '{file_path}'")
-        logger.debug(f"Failing SQL for {error.path}: \n{error.sql}")
-
-        with open(file_path, "w") as file:
-            file.write(error.sql)
-
     def iter_errors(lookml: List) -> Iterable:
         for item in lookml:
             if item.errored:
@@ -534,12 +536,18 @@ def run_sql(
             for explore in iter_errors(model.explores):
                 if explore.error:
                     printer.print_sql_error(explore.error)
-                    log_failing_sql(explore.error, model.name, explore.name)
+                    log_failing_sql(
+                        explore.error, LOG_DIRECTORY, model.name, explore.name
+                    )
                 else:
                     for dimension in iter_errors(explore.dimensions):
                         printer.print_sql_error(dimension.error)
                         log_failing_sql(
-                            dimension.error, model.name, explore.name, dimension.name
+                            dimension.error,
+                            LOG_DIRECTORY,
+                            model.name,
+                            explore.name,
+                            dimension.name,
                         )
 
         logger.info("")
