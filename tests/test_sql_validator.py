@@ -198,6 +198,22 @@ def test_build_project_one_ambiguous_explore_excluded(
     assert validator.project == project
 
 
+@patch("spectacles.client.LookerClient.create_query")
+def test_create_explore_query(mock_create_query, project, validator):
+    query_id = 123
+    query_url = "https://example.looker.com/x/12345"
+    mock_create_query.return_value = {"id": query_id, "share_url": query_url}
+    model = project.models[0]
+    explore = model.explores[0]
+    query = validator._create_explore_query(explore, model.name)
+
+    expected_result = Query(query_id, explore, query_url)
+
+    assert query.query_id == expected_result.query_id
+    assert query.lookml_ref == expected_result.lookml_ref
+    assert query.query_url == expected_result.query_url
+
+
 def test_get_running_query_tasks(validator):
     queries = [
         Query(
