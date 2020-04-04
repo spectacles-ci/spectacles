@@ -202,7 +202,7 @@ def main():
             args.api_version,
             args.mode,
             args.remote_reset,
-            args.manifest_dependency,
+            args.import_projects,
             args.concurrency,
         )
     elif args.command == "assert":
@@ -400,7 +400,7 @@ def _build_sql_subparser(
             WARNING: This will delete any uncommited changes in the user's workspace.",
     )
     subparser.add_argument(
-        "--manifest-dependency",
+        "--import-projects",
         action="store_true",
         help="When set to true, the SQL Validator will create temporary branches \
             that are clones of master for any project that is a local dependency of the \
@@ -490,7 +490,7 @@ def run_sql(
     api_version,
     mode,
     remote_reset,
-    manifest_dependency,
+    import_projects,
     concurrency,
 ) -> None:
     """Runs and validates the SQL for each selected LookML dimension."""
@@ -503,7 +503,7 @@ def run_sql(
         port,
         api_version,
         remote_reset,
-        manifest_dependency,
+        import_projects,
     )
 
     def iter_errors(lookml: List) -> Iterable:

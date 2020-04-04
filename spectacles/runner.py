@@ -11,7 +11,7 @@ def manage_dependent_branches(fn: Callable) -> Callable:
     functools.wraps(fn)
 
     def wrapper(self, *args, **kwargs):
-        if self.manifest_dependency:
+        if self.import_projects:
             manifest = self.client.get_manifest(self.project)
 
             local_dependencies = [p for p in manifest["imports"] if not p["is_remote"]]
@@ -23,14 +23,16 @@ def manage_dependent_branches(fn: Callable) -> Callable:
                 project["temp_branch"] = "tmp_spectacles_" + time_hash()
                 self.client.create_branch(project["name"], project["temp_branch"])
 
-            fn(self, *args, **kwargs)
+            response = fn(self, *args, **kwargs)
 
             for project in local_dependencies:
                 self.client.update_session(project["name"], project["active_branch"])
                 self.client.delete_branch(project["name"], project["temp_branch"])
 
         else:
-            fn(self, *args, **kwargs)
+            response = fn(self, *args, **kwargs)
+
+        return response
 
     return wrapper
 
@@ -62,10 +64,10 @@ class Runner:
         port: int = 19999,
         api_version: float = 3.1,
         remote_reset: bool = False,
-        manifest_dependency: bool = False,
+        import_projects: bool = False,
     ):
         self.project = project
-        self.manifest_dependency = manifest_dependency
+        self.import_projects = import_projects
         self.client = LookerClient(
             base_url, client_id, client_secret, port, api_version
         )
