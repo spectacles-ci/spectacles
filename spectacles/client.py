@@ -349,7 +349,7 @@ class LookerClient:
             "*" if len(dimensions) != 1 else dimensions[0],
             query_id,
         )
-        return query_id
+        return result
 
     @backoff.on_exception(backoff.expo, (Timeout,), max_tries=2)
     def create_query_task(self, query_id: int) -> str:

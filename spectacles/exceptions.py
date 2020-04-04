@@ -16,6 +16,7 @@ class SqlError(ValidationError):
         path: str,
         message: str,
         sql: str,
+        query_url: str,
         line_number: int = None,
         url: str = None,
     ):
@@ -23,6 +24,7 @@ class SqlError(ValidationError):
         self.path = path
         self.message = message
         self.sql = sql
+        self.query_url = query_url
         self.line_number = line_number
         self.url = url
 
