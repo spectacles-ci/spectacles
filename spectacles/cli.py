@@ -511,7 +511,7 @@ def run_sql(
             if item.errored:
                 yield item
 
-    project = runner.validate_sql(explores, mode, concurrency)
+    project = runner.validate_sql(explores, exclude, mode, concurrency)
 
     if project.errored:
         for model in iter_errors(project.models):
