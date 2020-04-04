@@ -9,12 +9,13 @@ from typing import Callable, Iterable, List
 from spectacles import __version__
 from spectacles.runner import Runner
 from spectacles.client import LookerClient
-from spectacles.exceptions import SpectaclesException, ValidationError
+from spectacles.exceptions import SpectaclesException, ValidationError, SqlError
 from spectacles.logger import GLOBAL_LOGGER as logger, FileFormatter
 import spectacles.printer as printer
 
 LOG_FILENAME = "spectacles.log"
 LOG_FILEPATH = Path()
+LOG_DIRECTORY = Path("logs")
 
 
 class ConfigFileAction(argparse.Action):
@@ -157,10 +158,11 @@ def handle_exceptions(function: Callable) -> Callable:
 def set_file_handler(directory: str) -> None:
 
     global LOG_FILEPATH
+    global LOG_DIRECTORY
 
-    log_directory = Path(directory)
-    LOG_FILEPATH = Path(log_directory / LOG_FILENAME)
-    log_directory.mkdir(exist_ok=True)
+    LOG_DIRECTORY = Path(directory)
+    LOG_FILEPATH = Path(LOG_DIRECTORY / LOG_FILENAME)
+    LOG_DIRECTORY.mkdir(exist_ok=True)
 
     fh = logging.FileHandler(LOG_FILEPATH)
     fh.setLevel(logging.DEBUG)
@@ -496,6 +498,30 @@ def run_sql(
         remote_reset,
     )
 
+    def log_failing_sql(
+        error: SqlError,
+        model_name: str = None,
+        explore_name: str = None,
+        dimension_name: str = None,
+    ):
+        file_directory = Path(LOG_DIRECTORY / "queries")
+        file_directory.mkdir(exist_ok=True)
+
+        file_name = (
+            model_name
+            + "__"
+            + explore_name
+            + ("__" + dimension_name if dimension_name else "")
+            + ".sql"
+        )
+        file_path = Path(file_directory / file_name)
+
+        logger.debug(f"Logging failing SQL query for '{error.path}' to '{file_path}'")
+        logger.debug(f"Failing SQL for {error.path}: \n{error.sql}")
+
+        with open(file_path, "w") as file:
+            file.write(error.sql)
+
     def iter_errors(lookml: List) -> Iterable:
         for item in lookml:
             if item.errored:
@@ -508,9 +534,13 @@ def run_sql(
             for explore in iter_errors(model.explores):
                 if explore.error:
                     printer.print_sql_error(explore.error)
+                    log_failing_sql(explore.error, model.name, explore.name)
                 else:
                     for dimension in iter_errors(explore.dimensions):
                         printer.print_sql_error(dimension.error)
+                        log_failing_sql(
+                            dimension.error, model.name, explore.name, dimension.name
+                        )
 
         logger.info("")
         raise ValidationError
