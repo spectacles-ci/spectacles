@@ -34,6 +34,8 @@ def client_kwargs():
         },
         get_looker_release_version={},
         update_session={"project": "project_name", "branch": "branch_name"},
+        git_branch={"project": "project_name", "branch": "branch_name", "ref": "ref"},
+        reset_to_remote={"project": "project_name", "branch": "branch_name"},
         all_lookml_tests={"project": "project_name"},
         run_lookml_test={"project": "project_name"},
         get_lookml_models={},
@@ -62,6 +64,13 @@ def mock_404_response():
     mock.raise_for_status.side_effect = requests.exceptions.HTTPError(
         "An HTTP error occurred."
     )
+    return mock
+
+
+@pytest.fixture
+def mock_200_response():
+    mock = Mock(spec=requests.Response)
+    mock.status_code = 200
     return mock
 
 
@@ -146,3 +155,76 @@ def test_create_query_lacking_dimensions(mock_post, client):
         },
         timeout=300,
     )
+
+
+@patch("spectacles.client.requests.Session.patch")
+def test_update_session_uses_prod_for_master(mock_patch, client, mock_200_response):
+    mock_patch.return_value = mock_200_response
+
+    client.update_session(project="test_project", branch="master")
+    mock_patch.assert_called_once_with(
+        url="https://test.looker.com:19999/api/3.1/session",
+        json={"workspace_id": "production"},
+        timeout=300,
+    )
+
+
+@patch("spectacles.client.requests.Session.patch")
+def test_update_session_uses_dev_for_others(mock_patch, client, mock_200_response):
+    mock_patch.return_value = mock_200_response
+
+    client.update_session(project="test_project", branch="notmaster")
+    mock_patch.assert_called_once_with(
+        url="https://test.looker.com:19999/api/3.1/session",
+        json={"workspace_id": "dev"},
+        timeout=300,
+    )
+
+
+@patch("spectacles.client.requests.Session.put")
+def test_git_branch_master_does_nothing(mock_put, client, mock_200_response):
+    mock_put.return_value = mock_200_response
+    client.git_branch(project="test_project", branch="master")
+
+    mock_put.assert_not_called()
+
+
+@patch("spectacles.client.requests.Session.put")
+def test_git_branch_checks_out_named_branch(mock_put, client, mock_200_response):
+    mock_put.return_value = mock_200_response
+    client.git_branch(project="test_project", branch="notmaster")
+
+    mock_put.assert_called_once_with(
+        url="https://test.looker.com:19999/api/3.1/projects/test_project/git_branch",
+        json={"name": "notmaster"},
+        timeout=300,
+    )
+
+
+@patch("spectacles.client.requests.Session.put")
+def test_git_branch_passes_ref(mock_put, client, mock_200_response):
+    mock_put.return_value = mock_200_response
+    client.git_branch(project="test_project", branch="notmaster", ref="123abc")
+
+    mock_put.assert_called_once_with(
+        url="https://test.looker.com:19999/api/3.1/projects/test_project/git_branch",
+        json={"name": "notmaster", "ref": "123abc"},
+        timeout=300,
+    )
+
+
+@patch("spectacles.client.requests.Session.post")
+def test_reset_to_remote_master_does_nothing(mock_post, client, mock_200_response):
+    mock_post.return_value = mock_200_response
+    client.reset_to_remote(project="test_project", branch="master")
+
+    mock_post.assert_not_called()
+
+
+@patch("spectacles.client.requests.Session.post")
+def test_reset_to_remote(mock_post, client, mock_200_response):
+    mock_post.return_value = mock_200_response
+    client.reset_to_remote(project="test_project", branch="notmaster")
+
+    url = "https://test.looker.com:19999/api/3.1/projects/test_project/reset_to_remote"
+    mock_post.assert_called_once_with(url=url, timeout=300)

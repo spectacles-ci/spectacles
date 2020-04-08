@@ -17,6 +17,8 @@ class Runner:
         client_secret: Looker API client secret.
         port: Desired API port to use for requests.
         api_version: Desired API version to use for requests.
+        remote_reset: Reset state of the branch in Looker to match remote. (reset --hard)
+        ref: The git ref to check out. (This will use a reset --hard in Looker)
 
     Attributes:
         client: Looker API client used for making requests.
@@ -33,12 +35,16 @@ class Runner:
         port: int = 19999,
         api_version: float = 3.1,
         remote_reset: bool = False,
+        ref: str = None,
     ):
         self.project = project
         self.client = LookerClient(
             base_url, client_id, client_secret, port, api_version
         )
-        self.client.update_session(project, branch, remote_reset)
+        self.client.update_session(project, branch)
+        self.client.git_branch(project, branch, ref)
+        if remote_reset:
+            self.client.reset_to_remote(project, branch)
 
     @log_duration
     def validate_sql(

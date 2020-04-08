@@ -110,15 +110,15 @@ class LookerClient:
 
         return response.json()["looker_release_version"]
 
-    def update_session(
-        self, project: str, branch: str, remote_reset: bool = False
-    ) -> None:
-        """Switches to a development mode session and checks out the desired branch.
+    def update_session(self, project: str, branch: str) -> None:
+        """Establishes session appropriate for branch.
+
+           If master branch, then "production" workspace will be used.
+           If any other branch, then "dev" workspace will be used.
 
         Args:
             project: Name of the Looker project to use.
             branch: Name of the Git branch to check out.
-
         """
         if branch == "master":
             logger.debug("Updating session to use production workspace")
@@ -152,43 +152,73 @@ class LookerClient:
                     f'"{details}"'
                 )
 
-            logger.debug(f"Setting Git branch to {branch}")
-            url = utils.compose_url(
-                self.api_url, path=["projects", project, "git_branch"]
+    def git_branch(self, project: str, branch: str, ref: str = None) -> None:
+        """Checks out and/or reset --hard an existing branch.
+
+           Note that specifying a ref (sha) will result in any uncommitted
+           changes to lookml files made within Looker being lost.
+
+           Args:
+               project: Name of the Looker project to use.
+               branch: Name of the Git branch to check out.
+               ref: The resolved ref of this branch remote,
+                    if specified will reset --hard to this ref.
+        """
+
+        if branch == "master":
+            logger.debug("git branch operations not applicable to master branch.")
+            return
+
+        logger.debug(f"Setting Git branch to {branch}")
+        url = utils.compose_url(self.api_url, path=["projects", project, "git_branch"])
+        body = {"name": branch}
+        if ref:
+            logger.debug(f"Resetting Git branch {branch} to: {ref}")
+            body.update(ref=ref)
+
+        response = self.session.put(url=url, json=body, timeout=TIMEOUT_SEC)
+        try:
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as error:
+            details = utils.details_from_http_error(response)
+            raise ApiConnectionError(
+                f"Unable to checkout Git branch {branch}. "
+                "If you have uncommitted changes on the current branch, "
+                "please commit or revert them, then try again.\n\n"
+                f"Looker API error encountered: {error}\n"
+                + "Message received from Looker's API: "
+                f'"{details}"'
             )
-            body = {"name": branch}
-            response = self.session.put(url=url, json=body, timeout=TIMEOUT_SEC)
-            try:
-                response.raise_for_status()
-            except requests.exceptions.HTTPError as error:
-                details = utils.details_from_http_error(response)
-                raise ApiConnectionError(
-                    f"Unable to checkout Git branch {branch}. "
-                    "If you have uncommitted changes on the current branch, "
-                    "please commit or revert them, then try again.\n\n"
-                    f"Looker API error encountered: {error}\n"
-                    + "Message received from Looker's API: "
-                    f'"{details}"'
-                )
 
-            if remote_reset:
-                logger.debug(f"Resetting branch {branch} to remote.")
-                url = utils.compose_url(
-                    self.api_url, path=["projects", project, "reset_to_remote"]
-                )
-                response = self.session.post(url=url, timeout=TIMEOUT_SEC)
-                try:
-                    response.raise_for_status()
-                except requests.exceptions.HTTPError as error:
-                    details = utils.details_from_http_error(response)
-                    raise ApiConnectionError(
-                        f"Unable to reset branch to remote.\n"
-                        f"Looker API error encountered: {error}\n"
-                        + "Message received from Looker's API: "
-                        f'"{details}"'
-                    )
+    def reset_to_remote(self, project: str, branch: str) -> None:
+        """Reset state of Git branch in Looker to match remote.
 
-            logger.info(f"Checked out branch {branch}")
+           Note that any uncommitted changes to lookml files made within Looker
+           will be lost when this is used.
+
+        Args:
+            project: Name of the Looker project to use.
+            branch: Name of the Git branch to check out.
+        """
+        if branch == "master":
+            logger.debug("git branch operations not applicable to master branch")
+            return
+
+        logger.debug(f"Resetting branch {branch} to remote.")
+        url = utils.compose_url(
+            self.api_url, path=["projects", project, "reset_to_remote"]
+        )
+        response = self.session.post(url=url, timeout=TIMEOUT_SEC)
+        try:
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as error:
+            details = utils.details_from_http_error(response)
+            raise ApiConnectionError(
+                f"Unable to reset branch to remote.\n"
+                f"Looker API error encountered: {error}\n"
+                + "Message received from Looker's API: "
+                f'"{details}"'
+            )
 
     def all_lookml_tests(self, project: str) -> List[JsonDict]:
         """Gets all LookML/data tests for a given project.
