@@ -197,8 +197,8 @@ def test_logging_failing_explore_sql(tmpdir):
     query_file = Path(query_directory / "explore_model__example_explore.sql")
     content = open(query_file).read()
 
-    assert os.path.exists(query_directory)
-    assert os.path.exists(query_file)
+    assert Path.exists(query_directory)
+    assert Path.exists(query_file)
     assert content == "select example_explore.example_dimension_1 from model"
 
 
@@ -223,6 +223,6 @@ def test_logging_failing_dimension_sql(tmpdir):
     )
     content = open(query_file).read()
 
-    assert os.path.exists(query_directory)
-    assert os.path.exists(query_file)
+    assert Path.exists(query_directory)
+    assert Path.exists(query_file)
     assert content == "select example_explore.example_dimension_1 from model"

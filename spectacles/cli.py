@@ -15,7 +15,6 @@ import spectacles.printer as printer
 
 LOG_FILENAME = "spectacles.log"
 LOG_FILEPATH = Path()
-LOG_DIRECTORY = Path("logs")
 
 
 class ConfigFileAction(argparse.Action):
@@ -157,11 +156,10 @@ def handle_exceptions(function: Callable) -> Callable:
 
 def set_file_handler(directory: str) -> None:
 
-    global LOG_FILEPATH
     global LOG_DIRECTORY
 
     LOG_DIRECTORY = Path(directory)
-    LOG_FILEPATH = Path(LOG_DIRECTORY / LOG_FILENAME)
+    LOG_FILEPATH = LOG_DIRECTORY / LOG_FILENAME
     LOG_DIRECTORY.mkdir(exist_ok=True)
 
     fh = logging.FileHandler(LOG_FILEPATH)
