@@ -305,7 +305,7 @@ class LookerClient:
         return response.json()["fields"]["dimensions"]
 
     @backoff.on_exception(backoff.expo, (Timeout,), max_tries=2)
-    def create_query(self, model: str, explore: str, dimensions: List[str]) -> int:
+    def create_query(self, model: str, explore: str, dimensions: List[str]) -> Dict:
         """Creates a Looker async query for one or more specified dimensions.
 
         The query created is a SELECT query, selecting all dimensions specified for a

@@ -201,17 +201,17 @@ def test_build_project_one_ambiguous_explore_excluded(
 @patch("spectacles.client.LookerClient.create_query")
 def test_create_explore_query(mock_create_query, project, validator):
     query_id = 123
-    query_url = "https://example.looker.com/x/12345"
-    mock_create_query.return_value = {"id": query_id, "share_url": query_url}
+    explore_url = "https://example.looker.com/x/12345"
+    mock_create_query.return_value = {"id": query_id, "share_url": explore_url}
     model = project.models[0]
     explore = model.explores[0]
     query = validator._create_explore_query(explore, model.name)
 
-    expected_result = Query(query_id, explore, query_url)
+    expected_result = Query(query_id, explore, explore_url)
 
     assert query.query_id == expected_result.query_id
     assert query.lookml_ref == expected_result.lookml_ref
-    assert query.query_url == expected_result.query_url
+    assert query.explore_url == expected_result.explore_url
 
 
 def test_get_running_query_tasks(validator):
@@ -220,13 +220,13 @@ def test_get_running_query_tasks(validator):
             query_id="12345",
             lookml_ref=None,
             query_task_id="abc",
-            query_url="https://example.looker.com/x/12345",
+            explore_url="https://example.looker.com/x/12345",
         ),
         Query(
             query_id="67890",
             lookml_ref=None,
             query_task_id="def",
-            query_url="https://example.looker.com/x/67890",
+            explore_url="https://example.looker.com/x/67890",
         ),
     ]
     validator._running_queries = queries
@@ -255,7 +255,7 @@ def test_create_and_run_keyboard_interrupt_cancels_queries(validator):
             query_id="12345",
             lookml_ref=None,
             query_task_id="abc",
-            query_url="https://example.looker.com/x/12345",
+            explore_url="https://example.looker.com/x/12345",
         )
     ]
     mock_create_queries = create_autospec(validator._create_queries)
@@ -285,19 +285,23 @@ def test_error_is_set_on_project(project, validator):
     error_details = {"message": message, "sql": sql}
     validator.project = project
     explore = project.models[0].explores[0]
-    query_url = "https://example.looker.com/x/12345"
+    explore_url = "https://example.looker.com/x/12345"
     query = Query(
         query_id="10319",
         lookml_ref=explore,
         query_task_id=query_task_id,
-        query_url=query_url,
+        explore_url=explore_url,
     )
     validator._running_queries.append(query)
     query_result = QueryResult(query_task_id, status="error", error=error_details)
     validator._query_by_task_id[query_task_id] = query
     returned_sql_error = validator._handle_query_result(query_result)
     expected_sql_error = SqlError(
-        path="test_explore_one", url=None, message=message, sql=sql, query_url=query_url
+        path="test_explore_one",
+        url=None,
+        message=message,
+        sql=sql,
+        explore_url=explore_url,
     )
     assert returned_sql_error == expected_sql_error
     assert returned_sql_error == explore.error
@@ -330,7 +334,7 @@ def test_handle_running_query(validator):
         query_id="19428",
         lookml_ref=Dimension("dimension_one", "string", "${TABLE}.dimension_one"),
         query_task_id=query_task_id,
-        query_url="https://example.looker.com/x/12345",
+        explore_url="https://example.looker.com/x/12345",
     )
     query_result = QueryResult(query_task_id=query_task_id, status="running")
     validator._running_queries = [query]
