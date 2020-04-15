@@ -15,6 +15,7 @@ import spectacles.printer as printer
 
 LOG_FILENAME = "spectacles.log"
 LOG_FILEPATH = Path()
+QUERY_DIRECTORY = Path()
 
 
 class ConfigFileAction(argparse.Action):
@@ -156,11 +157,15 @@ def handle_exceptions(function: Callable) -> Callable:
 
 def set_file_handler(directory: str) -> None:
 
-    global LOG_DIRECTORY
+    global LOG_FILEPATH
+    global QUERY_DIRECTORY
 
-    LOG_DIRECTORY = Path(directory)
-    LOG_FILEPATH = LOG_DIRECTORY / LOG_FILENAME
-    LOG_DIRECTORY.mkdir(exist_ok=True)
+    log_directory = Path(directory)
+    LOG_FILEPATH = log_directory / LOG_FILENAME
+    log_directory.mkdir(exist_ok=True)
+
+    QUERY_DIRECTORY = Path(log_directory / "queries")
+    QUERY_DIRECTORY.mkdir(exist_ok=True)
 
     fh = logging.FileHandler(LOG_FILEPATH)
     fh.setLevel(logging.DEBUG)
@@ -442,13 +447,11 @@ def _build_assert_subparser(
 
 def log_failing_sql(
     error: SqlError,
-    log_directory: Path,
+    query_directory: Path,
     model_name: str,
     explore_name: str,
     dimension_name: Optional[str] = None,
 ):
-    file_directory = Path(log_directory / "queries")
-    file_directory.mkdir(exist_ok=True)
 
     file_name = (
         model_name
@@ -457,7 +460,7 @@ def log_failing_sql(
         + ("__" + dimension_name if dimension_name else "")
         + ".sql"
     )
-    file_path = Path(file_directory / file_name)
+    file_path = Path(query_directory / file_name)
 
     logger.debug(f"Logging failing SQL query for '{error.path}' to '{file_path}'")
     logger.debug(f"Failing SQL for {error.path}: \n{error.sql}")
@@ -535,14 +538,14 @@ def run_sql(
                 if explore.error:
                     printer.print_sql_error(explore.error)
                     log_failing_sql(
-                        explore.error, LOG_DIRECTORY, model.name, explore.name
+                        explore.error, QUERY_DIRECTORY, model.name, explore.name
                     )
                 else:
                     for dimension in iter_errors(explore.dimensions):
                         printer.print_sql_error(dimension.error)
                         log_failing_sql(
                             dimension.error,
-                            LOG_DIRECTORY,
+                            QUERY_DIRECTORY,
                             model.name,
                             explore.name,
                             dimension.name,
