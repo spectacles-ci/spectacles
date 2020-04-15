@@ -189,10 +189,14 @@ def test_logging_failing_explore_sql(tmpdir):
         path="example_explore",
         message="example error message",
         sql="select example_explore.example_dimension_1 from model",
+        explore_url="https://example.looker.com/x/12345",
     )
 
+    query_directory = Path(tmpdir / "queries")
+    query_directory.mkdir(exist_ok=True)
+    query_file = Path(query_directory / "explore_model__example_explore.sql")
+
     log_failing_sql(error, tmpdir, "explore_model", "example_explore")
-    query_file = Path(tmpdir / "explore_model__example_explore.sql")
     content = open(query_file).read()
 
     assert Path.exists(query_file)
@@ -204,6 +208,14 @@ def test_logging_failing_dimension_sql(tmpdir):
         path="example_explore",
         message="example error message",
         sql="select example_explore.example_dimension_1 from model",
+        explore_url="https://example.looker.com/x/12345",
+    )
+
+    query_directory = Path(tmpdir / "queries")
+    query_directory.mkdir(exist_ok=True)
+    query_file = (
+        query_directory
+        / "explore_model__example_explore__example_explore.example_dimension_1.sql"
     )
 
     log_failing_sql(
@@ -213,11 +225,8 @@ def test_logging_failing_dimension_sql(tmpdir):
         "example_explore",
         "example_explore.example_dimension_1",
     )
-    query_file = Path(
-        tmpdir
-        / "explore_model__example_explore__example_explore.example_dimension_1.sql"
-    )
+
     content = open(query_file).read()
 
-    assert Path.exists(query_file)
     assert content == "select example_explore.example_dimension_1 from model"
+    assert Path.exists(query_file)

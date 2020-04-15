@@ -437,6 +437,7 @@ def log_failing_sql(
         + ".sql"
     )
     file_path = Path(log_dir) / "queries" / file_name
+    print(file_path)
 
     logger.debug(f"Logging failing SQL query for '{error.path}' to '{file_path}'")
     logger.debug(f"Failing SQL for {error.path}: \n{error.sql}")
