@@ -1,7 +1,8 @@
+from pathlib import Path
 import logging
 import colorama  # type: ignore
 
-
+LOG_FILENAME = "spectacles.log"
 COLORS = {
     "red": colorama.Fore.RED,
     "green": colorama.Fore.GREEN,
@@ -11,6 +12,33 @@ COLORS = {
     "dim": colorama.Style.DIM,
     "reset": colorama.Style.RESET_ALL,
 }
+
+logger = logging.getLogger("spectacles")
+logger.setLevel(logging.DEBUG)
+
+ch = logging.StreamHandler()
+ch.setLevel(logging.INFO)
+
+logger.addHandler(ch)
+
+GLOBAL_LOGGER = logger
+
+
+def set_file_handler(log_dir: str) -> None:
+    log_dir_path = Path(log_dir)
+    LOG_FILEPATH = log_dir_path / LOG_FILENAME
+    log_dir_path.mkdir(exist_ok=True)
+
+    # Create subfolder to save the SQL for failed queries
+    (log_dir_path / "queries").mkdir(exist_ok=True)
+
+    fh = logging.FileHandler(LOG_FILEPATH)
+    fh.setLevel(logging.DEBUG)
+
+    formatter = FileFormatter("%(asctime)s %(levelname)s | %(message)s")
+    fh.setFormatter(formatter)
+
+    logger.addHandler(fh)
 
 
 def delete_color_codes(text: str) -> str:
@@ -24,14 +52,3 @@ class FileFormatter(logging.Formatter):
         message = super().format(record=record)
         formatted = delete_color_codes(message)
         return formatted
-
-
-logger = logging.getLogger("spectacles")
-logger.setLevel(logging.DEBUG)
-
-ch = logging.StreamHandler()
-ch.setLevel(logging.INFO)
-
-logger.addHandler(ch)
-
-GLOBAL_LOGGER = logger
