@@ -1,6 +1,5 @@
 from unittest.mock import patch
 import pytest
-import os
 from constants import ENV_VARS
 from pathlib import Path
 from spectacles.cli import main, create_parser, handle_exceptions, log_failing_sql
