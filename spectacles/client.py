@@ -305,7 +305,7 @@ class LookerClient:
         return response.json()["fields"]["dimensions"]
 
     @backoff.on_exception(backoff.expo, (Timeout,), max_tries=2)
-    def create_query(self, model: str, explore: str, dimensions: List[str]) -> int:
+    def create_query(self, model: str, explore: str, dimensions: List[str]) -> Dict:
         """Creates a Looker async query for one or more specified dimensions.
 
         The query created is a SELECT query, selecting all dimensions specified for a
@@ -349,7 +349,7 @@ class LookerClient:
             "*" if len(dimensions) != 1 else dimensions[0],
             query_id,
         )
-        return query_id
+        return result
 
     @backoff.on_exception(backoff.expo, (Timeout,), max_tries=2)
     def create_query_task(self, query_id: int) -> str:

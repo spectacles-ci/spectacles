@@ -110,12 +110,15 @@ def test_get_looker_release_version(mock_get, client):
 
 @patch("spectacles.client.requests.Session.post")
 def test_create_query(mock_post, client):
-    QUERY_ID = 124950204921
-    mock_post.return_value.json.return_value = {"id": QUERY_ID}
-    query_id = client.create_query(
+    response = {
+        "id": 124950204921,
+        "share_url": "https://example.looker.com/x/1234567890",
+    }
+    mock_post.return_value.json.return_value = response
+    query = client.create_query(
         "test_model", "test_explore_one", ["dimension_one", "dimension_two"]
     )
-    assert query_id == QUERY_ID
+    assert query == response
     mock_post.assert_called_once_with(
         url="https://test.looker.com:19999/api/3.1/queries",
         timeout=300,
@@ -131,10 +134,13 @@ def test_create_query(mock_post, client):
 
 @patch("spectacles.client.requests.Session.post")
 def test_create_query_lacking_dimensions(mock_post, client):
-    QUERY_ID = 124950204921
-    mock_post.return_value.json.return_value = {"id": QUERY_ID}
-    query_id = client.create_query("test_model", "test_explore_one", [])
-    assert query_id == QUERY_ID
+    response = {
+        "id": 124950204921,
+        "share_url": "https://example.looker.com/x/1234567890",
+    }
+    mock_post.return_value.json.return_value = response
+    query = client.create_query("test_model", "test_explore_one", [])
+    assert query == response
     mock_post.assert_called_once_with(
         url="https://test.looker.com:19999/api/3.1/queries",
         json={
