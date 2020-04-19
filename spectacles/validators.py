@@ -187,6 +187,14 @@ class SqlValidator(Validator):
             model for model in all_models if model.project == self.project.name
         ]
 
+        if not project_models:
+            raise SpectaclesException(
+                f"Project '{self.project.name}' does not have any configured models. "
+                f"Go to {self.client.base_url}/projects and confirm "
+                "a) at least one model exists for the project and "
+                "b) it has an active configuration."
+            )
+
         # Expand wildcard operator to include all specified or discovered models
         selected_model_names = selection.keys()
         if "*" in selected_model_names:
