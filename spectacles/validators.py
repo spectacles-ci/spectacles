@@ -16,10 +16,12 @@ class Query:
         self,
         query_id: str,
         lookml_ref: Union[Dimension, Explore],
+        explore_url: str,
         query_task_id: Optional[str] = None,
     ):
         self.query_id = query_id
         self.lookml_ref = lookml_ref
+        self.explore_url = explore_url
         self.query_task_id = query_task_id
 
 
@@ -185,6 +187,14 @@ class SqlValidator(Validator):
             model for model in all_models if model.project == self.project.name
         ]
 
+        if not project_models:
+            raise SpectaclesException(
+                f"Project '{self.project.name}' does not have any configured models. "
+                f"Go to {self.client.base_url}/projects and confirm "
+                "a) at least one model exists for the project and "
+                "b) it has an active configuration."
+            )
+
         # Expand wildcard operator to include all specified or discovered models
         selected_model_names = selection.keys()
         if "*" in selected_model_names:
@@ -311,8 +321,8 @@ class SqlValidator(Validator):
     def _create_explore_query(self, explore: Explore, model_name: str) -> Query:
         """Creates a single query with all dimensions of an explore"""
         dimensions = [dimension.name for dimension in explore.dimensions]
-        query_id = self.client.create_query(model_name, explore.name, dimensions)
-        return Query(query_id, lookml_ref=explore)
+        query = self.client.create_query(model_name, explore.name, dimensions)
+        return Query(query["id"], lookml_ref=explore, explore_url=query["share_url"])
 
     def _create_dimension_queries(
         self, explore: Explore, model_name: str
@@ -320,10 +330,10 @@ class SqlValidator(Validator):
         """Creates individual queries for each dimension in an explore"""
         queries = []
         for dimension in explore.dimensions:
-            query_id = self.client.create_query(
-                model_name, explore.name, [dimension.name]
+            query = self.client.create_query(model_name, explore.name, [dimension.name])
+            query = Query(
+                query["id"], lookml_ref=explore, explore_url=query["share_url"]
             )
-            query = Query(query_id, lookml_ref=dimension)
             queries.append(query)
         return queries
 
@@ -423,6 +433,7 @@ class SqlValidator(Validator):
             if result.status == "error" and result.error:
                 sql_error = SqlError(
                     path=lookml_object.name,
+                    explore_url=query.explore_url,
                     url=getattr(lookml_object, "url", None),
                     **result.error,
                 )
