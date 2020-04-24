@@ -46,6 +46,7 @@ def client_kwargs():
         create_query_task={"query_id": 13041},
         get_query_task_multi_results={"query_task_ids": ["ajsdkgj", "askkwk"]},
         create_branch={"project": "project_name", "branch": "branch_name"},
+        update_branch={"project": "project_name", "branch": "branch_name"},
         delete_branch={"project": "project_name", "branch": "branch_name"},
         get_active_branch={"project": "project_name"},
         get_manifest={"project": "project_name"},
@@ -192,7 +193,37 @@ def test_create_branch(mock_post, client):
     mock_post.assert_called_once_with(
         url="https://test.looker.com:19999/api/3.1/projects/project_name/git_branch",
         timeout=300,
-        json={"name": "test_branch_name", "ref": "master"},
+        json={"name": "test_branch_name", "ref": "origin/master"},
+    )
+
+
+@patch("spectacles.client.requests.Session.post")
+def test_create_branch_with_ref(mock_post, client):
+    client.create_branch("project_name", "test_branch_name", "commit_hash")
+    mock_post.assert_called_once_with(
+        url="https://test.looker.com:19999/api/3.1/projects/project_name/git_branch",
+        timeout=300,
+        json={"name": "test_branch_name", "ref": "commit_hash"},
+    )
+
+
+@patch("spectacles.client.requests.Session.put")
+def test_update_branch(mock_put, client):
+    client.update_branch("project_name", "test_branch_name")
+    mock_put.assert_called_once_with(
+        url="https://test.looker.com:19999/api/3.1/projects/project_name/git_branch",
+        timeout=300,
+        json={"name": "test_branch_name", "ref": "origin/master"},
+    )
+
+
+@patch("spectacles.client.requests.Session.put")
+def test_update_branch_with_ref(mock_put, client):
+    client.update_branch("project_name", "test_branch_name", "commit_hash")
+    mock_put.assert_called_once_with(
+        url="https://test.looker.com:19999/api/3.1/projects/project_name/git_branch",
+        timeout=300,
+        json={"name": "test_branch_name", "ref": "commit_hash"},
     )
 
 
