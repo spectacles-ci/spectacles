@@ -22,6 +22,7 @@ def manage_dependent_branches(fn: Callable) -> Callable:
                 )
                 project["temp_branch"] = "tmp_spectacles_" + time_hash()
                 self.client.create_branch(project["name"], project["temp_branch"])
+                self.client.update_branch(project["name"], project["temp_branch"])
 
             response = fn(self, *args, **kwargs)
 

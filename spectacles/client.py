@@ -241,16 +241,17 @@ class LookerClient:
 
         return branch_name
 
-    def create_branch(self, project: str, branch: str):
+    def create_branch(self, project: str, branch: str, ref: str = "origin/master"):
         """Creates a branch in the given project.
 
         Args:
             project: Name of the Looker project to use.
             branch: Name of the branch to create.
+            ref: The ref to create the branch from.
         """
         logger.debug(f"Creating branch {branch} on project {project}")
 
-        body = {"name": branch, "ref": "master"}
+        body = {"name": branch, "ref": ref}
         url = utils.compose_url(self.api_url, path=["projects", project, "git_branch"])
         response = self.session.post(url=url, json=body, timeout=TIMEOUT_SEC)
 
@@ -259,6 +260,28 @@ class LookerClient:
         except requests.exceptions.HTTPError as error:
             raise ApiConnectionError(
                 f"Failed to create branch in project {project}\n"
+                f'Error raised: "{error}"'
+            )
+
+    def update_branch(self, project: str, branch: str, ref: str = "origin/master"):
+        """Updates a branch to the ref prodvided.
+
+        Args:
+            project: Name of the Looker project to use.
+            branch: Name of the branch to update.
+            ref: The ref to update the branch from.
+        """
+        logger.debug(f"Updating branch {branch} on project {project}")
+
+        body = {"name": branch, "ref": ref}
+        url = utils.compose_url(self.api_url, path=["projects", project, "git_branch"])
+        response = self.session.put(url=url, json=body, timeout=TIMEOUT_SEC)
+
+        try:
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as error:
+            raise ApiConnectionError(
+                f"Failed to update branch in project {project}\n"
                 f'Error raised: "{error}"'
             )
 
