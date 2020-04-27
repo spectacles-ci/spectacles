@@ -319,6 +319,13 @@ def _build_base_subparser() -> argparse.ArgumentParser:
         default="logs",
         help="The directory that Spectacles will write logs to.",
     )
+    base_subparser.add_argument(
+        "--do-no-track",
+        action=EnvVarAction,
+        env_var="SPECTACLES_LOG_DIR",
+        default="logs",
+        help="The directory that Spectacles will write logs to.",
+    )
 
     return base_subparser
 
