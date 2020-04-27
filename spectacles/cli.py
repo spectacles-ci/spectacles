@@ -401,7 +401,8 @@ def _build_sql_subparser(
     )
     subparser.add_argument(
         "--import-projects",
-        action="store_true",
+        action=EnvVarAction,
+        env_var="IMPORT_PROJECTS",
         help="When set to true, the SQL Validator will create temporary branches \
             that are clones of master for any project that is a local dependency of the \
             of the project being tested. These branches are deleted at the end of the run",
