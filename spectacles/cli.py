@@ -5,16 +5,13 @@ from yaml.parser import ParserError
 import argparse
 import logging
 import os
-from typing import Callable, Iterable, List
+from typing import Callable, Iterable, List, Optional
 from spectacles import __version__
 from spectacles.runner import Runner
 from spectacles.client import LookerClient
-from spectacles.exceptions import SpectaclesException, ValidationError
-from spectacles.logger import GLOBAL_LOGGER as logger, FileFormatter
+from spectacles.exceptions import SpectaclesException, ValidationError, SqlError
+from spectacles.logger import GLOBAL_LOGGER as logger, set_file_handler
 import spectacles.printer as printer
-
-LOG_FILENAME = "spectacles.log"
-LOG_FILEPATH = Path()
 
 
 class ConfigFileAction(argparse.Action):
@@ -142,7 +139,7 @@ def handle_exceptions(function: Callable) -> Callable:
             logger.debug(error, exc_info=True)
             logger.error(
                 f'Encountered unexpected {error.__class__.__name__}: "{error}"\n'
-                f"Full error traceback logged to {LOG_FILEPATH}\n\n"
+                f"Full error traceback logged to file.\n\n"
                 + printer.dim(
                     "For support, please create an issue at "
                     "https://github.com/spectacles-ci/spectacles/issues"
@@ -152,23 +149,6 @@ def handle_exceptions(function: Callable) -> Callable:
             sys.exit(1)
 
     return wrapper
-
-
-def set_file_handler(directory: str) -> None:
-
-    global LOG_FILEPATH
-
-    log_directory = Path(directory)
-    LOG_FILEPATH = Path(log_directory / LOG_FILENAME)
-    log_directory.mkdir(exist_ok=True)
-
-    fh = logging.FileHandler(LOG_FILEPATH)
-    fh.setLevel(logging.DEBUG)
-
-    formatter = FileFormatter("%(asctime)s %(levelname)s | %(message)s")
-    fh.setFormatter(formatter)
-
-    logger.addHandler(fh)
 
 
 @handle_exceptions
@@ -191,6 +171,7 @@ def main():
         )
     elif args.command == "sql":
         run_sql(
+            args.log_dir,
             args.project,
             args.branch,
             args.explores,
@@ -449,6 +430,31 @@ def _build_assert_subparser(
     )
 
 
+def log_failing_sql(
+    error: SqlError,
+    log_dir: str,
+    model_name: str,
+    explore_name: str,
+    dimension_name: Optional[str] = None,
+):
+
+    file_name = (
+        model_name
+        + "__"
+        + explore_name
+        + ("__" + dimension_name if dimension_name else "")
+        + ".sql"
+    )
+    file_path = Path(log_dir) / "queries" / file_name
+    print(file_path)
+
+    logger.debug(f"Logging failing SQL query for '{error.path}' to '{file_path}'")
+    logger.debug(f"Failing SQL for {error.path}: \n{error.sql}")
+
+    with open(file_path, "w") as file:
+        file.write(error.sql)
+
+
 def run_connect(
     base_url: str, client_id: str, client_secret: str, port: int, api_version: float
 ) -> None:
@@ -480,6 +486,7 @@ def run_assert(
 
 
 def run_sql(
+    log_dir,
     project,
     branch,
     explores,
@@ -519,9 +526,17 @@ def run_sql(
             for explore in iter_errors(model.explores):
                 if explore.error:
                     printer.print_sql_error(explore.error)
+                    log_failing_sql(explore.error, log_dir, model.name, explore.name)
                 else:
                     for dimension in iter_errors(explore.dimensions):
                         printer.print_sql_error(dimension.error)
+                        log_failing_sql(
+                            dimension.error,
+                            log_dir,
+                            model.name,
+                            explore.name,
+                            dimension.name,
+                        )
 
         logger.info("")
         raise ValidationError
