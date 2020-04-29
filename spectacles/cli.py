@@ -185,9 +185,10 @@ def main():
 
     set_file_handler(args.log_dir)
 
-    invocation_id = tracking.track_invocation_start(
-        args.base_url, args.command, args.project
-    )
+    if not args.do_not_track:
+        invocation_id = tracking.track_invocation_start(
+            args.base_url, args.command, args.project
+        )
 
     if args.command == "connect":
         run_connect(
@@ -227,9 +228,10 @@ def main():
             args.import_projects,
         )
 
-    tracking.track_invocation_end(
-        args.base_url, args.command, args.project, invocation_id
-    )
+    if not args.do_not_track:
+        tracking.track_invocation_end(
+            args.base_url, args.command, args.project, invocation_id
+        )
 
 
 def create_parser() -> argparse.ArgumentParser:
@@ -320,11 +322,10 @@ def _build_base_subparser() -> argparse.ArgumentParser:
         help="The directory that Spectacles will write logs to.",
     )
     base_subparser.add_argument(
-        "--do-no-track",
-        action=EnvVarAction,
-        env_var="SPECTACLES_LOG_DIR",
-        default="logs",
-        help="The directory that Spectacles will write logs to.",
+        "--do-not-track",
+        action=EnvVarStoreTrueAction,
+        env_var="SPECTACLES_DO_NOT_TRACK",
+        help="Disables anonymised event tracking.",
     )
 
     return base_subparser
