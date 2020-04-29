@@ -84,10 +84,8 @@ class EnvVarAction(argparse.Action):
 
     def __init__(self, env_var, required=False, default=None, **kwargs):
         self.env_var = env_var
-        self.in_env = False
         if env_var in os.environ:
             default = os.environ[env_var]
-            self.in_env = True
         if required and default:
             required = False
         super().__init__(default=default, required=required, **kwargs)
@@ -103,6 +101,24 @@ class EnvVarAction(argparse.Action):
 
         """
         setattr(namespace, self.dest, values)
+
+
+class EnvVarStoreTrueAction(argparse._StoreTrueAction):
+    def __init__(self, env_var, required=False, default=False, **kwargs):
+        self.env_var = env_var
+        if env_var in os.environ:
+            value = os.environ[env_var].lower()
+            if value not in ("true", "false"):
+                raise SpectaclesException(
+                    f"Allowed values for {env_var} are 'true' or 'false' (case-insensitive), received '{value}'"
+                )
+            default = True if value == "true" else False
+        if required and default:
+            required = False
+        super().__init__(default=default, required=required, **kwargs)
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        setattr(namespace, self.dest, True)
 
 
 def handle_exceptions(function: Callable) -> Callable:
@@ -382,11 +398,11 @@ def _build_sql_subparser(
     )
     subparser.add_argument(
         "--import-projects",
-        action=EnvVarAction,
-        env_var="IMPORT_PROJECTS",
+        action=EnvVarStoreTrueAction,
+        env_var="SPECTACLES_IMPORT_PROJECTS",
         help="When set to true, the SQL Validator will create temporary branches \
             that are clones of master for any project that is a local dependency of the \
-            of the project being tested. These branches are deleted at the end of the run",
+            of the project being tested. These branches are deleted at the end of the run.",
     )
     subparser.add_argument(
         "--concurrency",
