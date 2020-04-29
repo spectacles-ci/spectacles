@@ -24,7 +24,7 @@ jobs:
       - run:
           name: install spectacles
           command: |
-            apt-get install libyaml-dev
+            sudo apt-get install libyaml-dev
             python3 -m venv venv
             . venv/bin/activate
             pip install -r requirements-dev.txt
