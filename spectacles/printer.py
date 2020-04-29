@@ -38,20 +38,27 @@ def print_header(text: str, line_width: int = LINE_WIDTH) -> None:
 
 
 def print_data_test_error(error: DataTestError) -> None:
-    print_header(red(error.path), LINE_WIDTH + COLOR_CODE_LENGTH)
+    path = f"{error.model}/{error.explore}/{error.metadata['test_name']}"
+    print_header(red(path), LINE_WIDTH + COLOR_CODE_LENGTH)
     wrapped = textwrap.fill(error.message, LINE_WIDTH)
     logger.info(wrapped)
 
 
 def print_sql_error(error: SqlError) -> None:
-    print_header(red(error.path), LINE_WIDTH + COLOR_CODE_LENGTH)
+    path = error.model + "/"
+    if error.metadata["dimension"]:
+        path += error.metadata["dimension"]
+    else:
+        path += error.explore
+    print_header(red(path), LINE_WIDTH + COLOR_CODE_LENGTH)
     wrapped = textwrap.fill(error.message, LINE_WIDTH)
     logger.info(wrapped)
     # if error["line_number"]:
     #     sql_context = extract_sql_context(error["sql"], error["line_number"])
     #     logger.info("\n" + sql_context)
-    if error.url:
-        logger.info("\n" + f"LookML: {error.url}")
+    lookml_url = error.metadata["lookml_url"]
+    if lookml_url:
+        logger.info("\n" + f"LookML: {lookml_url}")
 
 
 def print_validation_result(type: str, source: str):

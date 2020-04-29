@@ -9,8 +9,18 @@ class LookMlObject:
 
 
 class Dimension(LookMlObject):
-    def __init__(self, name: str, type: str, sql: str, url: Optional[str] = None):
+    def __init__(
+        self,
+        name: str,
+        model_name: str,
+        explore_name: str,
+        type: str,
+        sql: str,
+        url: Optional[str] = None,
+    ):
         self.name = name
+        self.model_name = model_name
+        self.explore_name = explore_name
         self.type = type
         self.sql = sql
         self.url = url
@@ -34,6 +44,8 @@ class Dimension(LookMlObject):
 
         return (
             self.name == other.name
+            and self.model_name == other.model_name
+            and self.explore_name == other.explore_name
             and self.type == other.type
             and self.url == other.url
         )
@@ -51,17 +63,18 @@ class Dimension(LookMlObject):
         )
 
     @classmethod
-    def from_json(cls, json_dict):
+    def from_json(cls, json_dict, model_name, explore_name):
         name = json_dict["name"]
         type = json_dict["type"]
         sql = json_dict["sql"]
         url = json_dict["lookml_link"]
-        return cls(name, type, sql, url)
+        return cls(name, model_name, explore_name, type, sql, url)
 
 
 class Explore(LookMlObject):
-    def __init__(self, name: str, dimensions: List[Dimension] = None):
+    def __init__(self, name: str, model_name: str, dimensions: List[Dimension] = None):
         self.name = name
+        self.model_name = model_name
         self.dimensions = [] if dimensions is None else dimensions
         self.queried: bool = False
         self.error: Optional[SqlError] = None
@@ -70,7 +83,11 @@ class Explore(LookMlObject):
         if not isinstance(other, Explore):
             return NotImplemented
 
-        return self.name == other.name and self.dimensions == other.dimensions
+        return (
+            self.name == other.name
+            and self.model_name == other.model_name
+            and self.dimensions == other.dimensions
+        )
 
     @property
     def errored(self):
@@ -107,9 +124,9 @@ class Explore(LookMlObject):
                 yield dimension
 
     @classmethod
-    def from_json(cls, json_dict):
+    def from_json(cls, json_dict, model_name):
         name = json_dict["name"]
-        return cls(name)
+        return cls(name, model_name)
 
     def add_dimension(self, dimension: Dimension):
         self.dimensions.append(dimension)
@@ -169,7 +186,9 @@ class Model(LookMlObject):
     def from_json(cls, json_dict):
         name = json_dict["name"]
         project = json_dict["project_name"]
-        explores = [Explore.from_json(d) for d in json_dict["explores"]]
+        explores = [
+            Explore.from_json(d, model_name=name) for d in json_dict["explores"]
+        ]
         return cls(name, project, explores)
 
 
