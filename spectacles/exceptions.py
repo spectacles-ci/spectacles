@@ -16,7 +16,7 @@ class ValidationError(SpectaclesException):
         self,
         model: str,
         explore: str,
-        test: str,
+        test: Optional[str],
         message: str,
         metadata: Dict[str, Any],
     ):
@@ -41,6 +41,7 @@ class SqlError(ValidationError):
         self,
         model: str,
         explore: str,
+        dimension: Optional[str],
         sql: str,
         message: str,
         line_number: Optional[int] = None,
@@ -48,6 +49,7 @@ class SqlError(ValidationError):
         lookml_url: Optional[str] = None,
     ):
         metadata = {
+            "dimension": dimension,
             "line_number": line_number,
             "explore_url": explore_url,
             "lookml_url": lookml_url,
@@ -56,14 +58,6 @@ class SqlError(ValidationError):
 
 
 class DataTestError(ValidationError):
-    def __init__(
-        self,
-        model: str,
-        explore: str,
-        expression: str,
-        message: str,
-        test_name: str,
-        assert_name: str,
-    ):
-        metadata = {"test_name": test_name, "assert_name": assert_name}
-        super().__init__(model, explore, expression, message, metadata)
+    def __init__(self, model: str, explore: str, message: str, test_name: str):
+        metadata = {"test_name": test_name}
+        super().__init__(model, explore, None, message, metadata)

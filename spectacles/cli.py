@@ -486,10 +486,10 @@ def run_assert(
     )
     errors = runner.validate_data_tests()
     if errors:
-        for error in sorted(errors, key=lambda x: x.path):
+        for error in sorted(errors, key=lambda x: (x.model, x.explore)):
             printer.print_data_test_error(error)
         logger.info("")
-        raise ValidationError
+        raise error
     else:
         logger.info("")
 
@@ -534,24 +534,19 @@ def run_sql(
         for model in iter_errors(project.models):
             for explore in iter_errors(model.explores):
                 if explore.error and mode == "batch":
+                    error = explore.error
                     printer.print_sql_error(explore.error)
-                    file_path = log_sql_error(
-                        explore.error, log_dir, model.name, explore.name
-                    )
+                    file_path = log_sql_error(explore.error, log_dir)
+                    logger.info("\n" + f"Test SQL: {file_path}")
                 else:
                     for dimension in iter_errors(explore.dimensions):
-                        file_path = log_sql_error(
-                            dimension.error,
-                            log_dir,
-                            model.name,
-                            explore.name,
-                            dimension.name,
-                        )
+                        error = dimension.error
                         printer.print_sql_error(dimension.error)
-                logger.info("\n" + f"Test SQL: {file_path}")
+                        file_path = log_sql_error(dimension.error, log_dir)
+                        logger.info("\n" + f"Test SQL: {file_path}")
 
         logger.info("")
-        raise ValidationError
+        raise error
     else:
         logger.info("")
 

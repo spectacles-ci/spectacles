@@ -1,4 +1,3 @@
-from typing import Optional
 from pathlib import Path
 import logging
 import colorama  # type: ignore
@@ -56,27 +55,22 @@ class FileFormatter(logging.Formatter):
         return formatted
 
 
-def log_sql_error(
-    error: SqlError,
-    log_dir: str,
-    model_name: str,
-    explore_name: str,
-    dimension_name: Optional[str] = None,
-) -> Path:
-
+def log_sql_error(error: SqlError, log_dir: str) -> Path:
+    dimension = error.metadata["dimension"]
     file_name = (
-        model_name
+        error.model
         + "__"
-        + explore_name
-        + ("__" + dimension_name if dimension_name else "")
+        + error.explore
+        + ("__" + dimension.replace(".", "_") if dimension else "")
         + ".sql"
     )
     file_path = Path(log_dir) / "queries" / file_name
 
-    logger.debug(f"Logging failing SQL query for '{error.path}' to '{file_path}'")
-    logger.debug(f"Failing SQL for {error.path}: \n{error.sql}")
+    logger.debug(f"Logging failing SQL query to '{file_path}'")
+    logger.debug(f"Failing SQL: \n{error.test}")
 
-    with open(file_path, "w") as file:
-        file.write(error.sql)
+    if error.test:
+        with open(file_path, "w") as file:
+            file.write(error.test)
 
     return file_path

@@ -84,8 +84,10 @@ class DataTestValidator(Validator):
                     printer.print_validation_result("error", message)
                     errors.append(
                         DataTestError(
-                            path=f"{result['model_name']}/{result['test_name']}",
+                            model=error["model_id"],
+                            explore=error["explore"],
                             message=error["message"],
+                            test_name=result["test_name"],
                         )
                     )
         return errors
@@ -254,7 +256,9 @@ class SqlValidator(Validator):
                     model.name, explore.name
                 )
                 for dimension_json in dimensions_json:
-                    dimension = Dimension.from_json(dimension_json)
+                    dimension = Dimension.from_json(
+                        dimension_json, model.name, explore.name
+                    )
                     dimension.url = self.client.base_url + dimension.url
                     if not dimension.ignore:
                         explore.add_dimension(dimension)
@@ -409,10 +413,20 @@ class SqlValidator(Validator):
             lookml_object.queried = True
 
             if result.status == "error" and result.error:
+                model_name = lookml_object.model_name
+                dimension_name: Optional[str] = None
+                if isinstance(lookml_object, Dimension):
+                    explore_name = lookml_object.explore_name
+                    dimension_name = lookml_object.name
+                else:
+                    explore_name = lookml_object.name
+
                 sql_error = SqlError(
-                    path=lookml_object.name,
+                    model=model_name,
+                    explore=explore_name,
+                    dimension=dimension_name,
                     explore_url=query.explore_url,
-                    url=getattr(lookml_object, "url", None),
+                    lookml_url=getattr(lookml_object, "url", None),
                     **result.error,
                 )
                 lookml_object.error = sql_error
