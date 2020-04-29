@@ -1,9 +1,41 @@
-from typing import List
+from typing import List, Callable
+import functools
 from spectacles.client import LookerClient
 from spectacles.validators import SqlValidator, DataTestValidator
-from spectacles.utils import log_duration
 from spectacles.lookml import Project
 from spectacles.exceptions import DataTestError
+from spectacles.utils import log_duration, time_hash
+
+
+def manage_dependent_branches(fn: Callable) -> Callable:
+    functools.wraps(fn)
+
+    def wrapper(self, *args, **kwargs):
+        if self.import_projects:
+            manifest = self.client.get_manifest(self.project)
+
+            local_dependencies = [p for p in manifest["imports"] if not p["is_remote"]]
+
+            for project in local_dependencies:
+                project["active_branch"] = self.client.get_active_branch(
+                    project["name"]
+                )
+                project["temp_branch"] = "tmp_spectacles_" + time_hash()
+                self.client.create_branch(project["name"], project["temp_branch"])
+                self.client.update_branch(project["name"], project["temp_branch"])
+
+            response = fn(self, *args, **kwargs)
+
+            for project in local_dependencies:
+                self.client.update_session(project["name"], project["active_branch"])
+                self.client.delete_branch(project["name"], project["temp_branch"])
+
+        else:
+            response = fn(self, *args, **kwargs)
+
+        return response
+
+    return wrapper
 
 
 class Runner:
@@ -33,13 +65,16 @@ class Runner:
         port: int = 19999,
         api_version: float = 3.1,
         remote_reset: bool = False,
+        import_projects: bool = False,
     ):
         self.project = project
+        self.import_projects = import_projects
         self.client = LookerClient(
             base_url, client_id, client_secret, port, api_version
         )
         self.client.update_session(project, branch, remote_reset)
 
+    @manage_dependent_branches
     @log_duration
     def validate_sql(
         self,
@@ -53,6 +88,7 @@ class Runner:
         project = sql_validator.validate(mode)
         return project
 
+    @manage_dependent_branches
     @log_duration
     def validate_data_tests(self) -> List[DataTestError]:
         data_test_validator = DataTestValidator(self.client, self.project)

@@ -45,6 +45,11 @@ def client_kwargs():
         },
         create_query_task={"query_id": 13041},
         get_query_task_multi_results={"query_task_ids": ["ajsdkgj", "askkwk"]},
+        create_branch={"project": "project_name", "branch": "branch_name"},
+        update_branch={"project": "project_name", "branch": "branch_name"},
+        delete_branch={"project": "project_name", "branch": "branch_name"},
+        get_active_branch={"project": "project_name"},
+        get_manifest={"project": "project_name"},
     )
 
 
@@ -150,5 +155,88 @@ def test_create_query_lacking_dimensions(mock_post, client):
             "limit": 0,
             "filter_expression": "1=2",
         },
+        timeout=300,
+    )
+
+
+@patch("spectacles.client.requests.Session.get")
+def test_get_manifest(mock_get, client):
+    mock_get.return_value.json.return_value = {
+        "name": "project_name",
+        "imports": [
+            {"name": "local_one", "is_remote": False},
+            {"name": "remote_one", "is_remote": True},
+        ],
+    }
+    local_dependencies = client.get_manifest("project_name")
+    assert local_dependencies == {
+        "name": "project_name",
+        "imports": [
+            {"name": "local_one", "is_remote": False},
+            {"name": "remote_one", "is_remote": True},
+        ],
+    }
+    mock_get.assert_called_once_with(
+        url="https://test.looker.com:19999/api/3.1/projects/project_name/manifest",
+        timeout=300,
+    )
+
+
+@patch("spectacles.client.requests.Session.get")
+def test_get_active_branch(mock_get, client):
+    mock_get.return_value.json.return_value = {"name": "test_active_branch"}
+    active_branch = client.get_active_branch("project_name")
+    assert active_branch == "test_active_branch"
+    mock_get.assert_called_once_with(
+        url="https://test.looker.com:19999/api/3.1/projects/project_name/git_branch",
+        timeout=300,
+    )
+
+
+@patch("spectacles.client.requests.Session.post")
+def test_create_branch(mock_post, client):
+    client.create_branch("project_name", "test_branch_name")
+    mock_post.assert_called_once_with(
+        url="https://test.looker.com:19999/api/3.1/projects/project_name/git_branch",
+        timeout=300,
+        json={"name": "test_branch_name", "ref": "origin/master"},
+    )
+
+
+@patch("spectacles.client.requests.Session.post")
+def test_create_branch_with_ref(mock_post, client):
+    client.create_branch("project_name", "test_branch_name", "commit_hash")
+    mock_post.assert_called_once_with(
+        url="https://test.looker.com:19999/api/3.1/projects/project_name/git_branch",
+        timeout=300,
+        json={"name": "test_branch_name", "ref": "commit_hash"},
+    )
+
+
+@patch("spectacles.client.requests.Session.put")
+def test_update_branch(mock_put, client):
+    client.update_branch("project_name", "test_branch_name")
+    mock_put.assert_called_once_with(
+        url="https://test.looker.com:19999/api/3.1/projects/project_name/git_branch",
+        timeout=300,
+        json={"name": "test_branch_name", "ref": "origin/master"},
+    )
+
+
+@patch("spectacles.client.requests.Session.put")
+def test_update_branch_with_ref(mock_put, client):
+    client.update_branch("project_name", "test_branch_name", "commit_hash")
+    mock_put.assert_called_once_with(
+        url="https://test.looker.com:19999/api/3.1/projects/project_name/git_branch",
+        timeout=300,
+        json={"name": "test_branch_name", "ref": "commit_hash"},
+    )
+
+
+@patch("spectacles.client.requests.Session.delete")
+def test_delete_branch(mock_delete, client):
+    client.delete_branch("project_name", "test_branch_name")
+    mock_delete.assert_called_once_with(
+        url="https://test.looker.com:19999/api/3.1/projects/project_name/git_branch/test_branch_name",
         timeout=300,
     )

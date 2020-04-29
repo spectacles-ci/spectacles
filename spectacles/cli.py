@@ -84,10 +84,8 @@ class EnvVarAction(argparse.Action):
 
     def __init__(self, env_var, required=False, default=None, **kwargs):
         self.env_var = env_var
-        self.in_env = False
         if env_var in os.environ:
             default = os.environ[env_var]
-            self.in_env = True
         if required and default:
             required = False
         super().__init__(default=default, required=required, **kwargs)
@@ -103,6 +101,24 @@ class EnvVarAction(argparse.Action):
 
         """
         setattr(namespace, self.dest, values)
+
+
+class EnvVarStoreTrueAction(argparse._StoreTrueAction):
+    def __init__(self, env_var, required=False, default=False, **kwargs):
+        self.env_var = env_var
+        if env_var in os.environ:
+            value = os.environ[env_var].lower()
+            if value not in ("true", "false"):
+                raise SpectaclesException(
+                    f"Allowed values for {env_var} are 'true' or 'false' (case-insensitive), received '{value}'"
+                )
+            default = True if value == "true" else False
+        if required and default:
+            required = False
+        super().__init__(default=default, required=required, **kwargs)
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        setattr(namespace, self.dest, True)
 
 
 def handle_exceptions(function: Callable) -> Callable:
@@ -183,6 +199,7 @@ def main():
             args.api_version,
             args.mode,
             args.remote_reset,
+            args.import_projects,
             args.concurrency,
         )
     elif args.command == "assert":
@@ -195,6 +212,7 @@ def main():
             args.port,
             args.api_version,
             args.remote_reset,
+            args.import_projects,
         )
 
 
@@ -380,6 +398,14 @@ def _build_sql_subparser(
             WARNING: This will delete any uncommited changes in the user's workspace.",
     )
     subparser.add_argument(
+        "--import-projects",
+        action=EnvVarStoreTrueAction,
+        env_var="SPECTACLES_IMPORT_PROJECTS",
+        help="When set to true, the SQL Validator will create temporary branches \
+            that are clones of master for any project that is a local dependency of the \
+            of the project being tested. These branches are deleted at the end of the run.",
+    )
+    subparser.add_argument(
         "--concurrency",
         default=10,
         type=int,
@@ -419,6 +445,14 @@ def _build_assert_subparser(
             user's branch to the revision of the branch that is on the remote. \
             WARNING: This will delete any uncommited changes in the user's workspace.",
     )
+    subparser.add_argument(
+        "--import-projects",
+        action=EnvVarStoreTrueAction,
+        env_var="SPECTACLES_IMPORT_PROJECTS",
+        help="When set to true, the SQL Validator will create temporary branches \
+            that are clones of master for any project that is a local dependency of the \
+            of the project being tested. These branches are deleted at the end of the run.",
+    )
 
 
 def log_failing_sql(
@@ -454,7 +488,15 @@ def run_connect(
 
 
 def run_assert(
-    project, branch, base_url, client_id, client_secret, port, api_version, remote_reset
+    project,
+    branch,
+    base_url,
+    client_id,
+    client_secret,
+    port,
+    api_version,
+    remote_reset,
+    import_projects,
 ) -> None:
     runner = Runner(
         base_url,
@@ -465,6 +507,7 @@ def run_assert(
         port,
         api_version,
         remote_reset,
+        import_projects,
     )
     errors = runner.validate_data_tests()
     if errors:
@@ -489,6 +532,7 @@ def run_sql(
     api_version,
     mode,
     remote_reset,
+    import_projects,
     concurrency,
 ) -> None:
     """Runs and validates the SQL for each selected LookML dimension."""
@@ -501,6 +545,7 @@ def run_sql(
         port,
         api_version,
         remote_reset,
+        import_projects,
     )
 
     def iter_errors(lookml: List) -> Iterable:
