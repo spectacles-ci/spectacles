@@ -212,6 +212,7 @@ def main():
             args.port,
             args.api_version,
             args.remote_reset,
+            args.import_projects,
         )
 
 
@@ -444,6 +445,14 @@ def _build_assert_subparser(
             user's branch to the revision of the branch that is on the remote. \
             WARNING: This will delete any uncommited changes in the user's workspace.",
     )
+    subparser.add_argument(
+        "--import-projects",
+        action=EnvVarStoreTrueAction,
+        env_var="SPECTACLES_IMPORT_PROJECTS",
+        help="When set to true, the SQL Validator will create temporary branches \
+            that are clones of master for any project that is a local dependency of the \
+            of the project being tested. These branches are deleted at the end of the run.",
+    )
 
 
 def log_failing_sql(
@@ -479,7 +488,15 @@ def run_connect(
 
 
 def run_assert(
-    project, branch, base_url, client_id, client_secret, port, api_version, remote_reset
+    project,
+    branch,
+    base_url,
+    client_id,
+    client_secret,
+    port,
+    api_version,
+    remote_reset,
+    import_projects,
 ) -> None:
     runner = Runner(
         base_url,
@@ -490,6 +507,7 @@ def run_assert(
         port,
         api_version,
         remote_reset,
+        import_projects,
     )
     errors = runner.validate_data_tests()
     if errors:
