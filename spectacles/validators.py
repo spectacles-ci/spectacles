@@ -332,7 +332,7 @@ class SqlValidator(Validator):
         for dimension in explore.dimensions:
             query = self.client.create_query(model_name, explore.name, [dimension.name])
             query = Query(
-                query["id"], lookml_ref=explore, explore_url=query["share_url"]
+                query["id"], lookml_ref=dimension, explore_url=query["share_url"]
             )
             queries.append(query)
         return queries
