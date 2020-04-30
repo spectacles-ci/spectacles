@@ -4,7 +4,10 @@ from spectacles.validators import SqlValidator
 from spectacles.exceptions import SpectaclesException
 
 
-@pytest.fixture
+EXPECTED_COUNTS = {"models": 1, "explores": 1, "dimensions": 20}
+
+
+@pytest.fixture(scope="class")
 def validator(looker_client):
     return SqlValidator(looker_client, project="eye_exam")
 
@@ -16,30 +19,37 @@ class TestBuildProject:
         return "test_build_project"
 
     def test_model_explore_dimension_counts_should_match(self, validator):
-        validator.build_project(selectors=["eye_exam/*"], exclusions=[])
-        assert len(validator.project.models) == 1
-        assert len(validator.project.models[0].explores) == 1
+        validator.build_project(selectors=["eye_exam/users"])
+        assert len(validator.project.models) == EXPECTED_COUNTS["models"]
+        assert len(validator.project.models[0].explores) == EXPECTED_COUNTS["explores"]
         dimensions = validator.project.models[0].explores[0].dimensions
-        assert len(dimensions) == 20
+        assert len(dimensions) == EXPECTED_COUNTS["dimensions"]
         assert "users.state" in [dim.name for dim in dimensions]
         assert not validator.project.errored
         assert validator.project.queried is False
 
     def test_project_with_everything_excluded_should_not_have_models(self, validator):
-        validator.build_project(selectors=["*/*"], exclusions=["eye_exam/*"])
+        validator.build_project(exclusions=["eye_exam/*"])
         assert len(validator.project.models) == 0
 
     def test_duplicate_selectors_should_be_deduplicated(self, validator):
-        validator.build_project(selectors=["*/*", "eye_exam/*"], exclusions=[])
+        validator.build_project(selectors=["eye_exam/users", "eye_exam/users"])
         assert len(validator.project.models) == 1
 
     def test_invalid_model_selector_should_raise_error(self, validator):
         with pytest.raises(SpectaclesException):
-            validator.build_project(selectors=["dummy/*"], exclusions=[])
+            validator.build_project(selectors=["dummy/*"])
 
     def test_invalid_model_exclusion_should_raise_error(self, validator):
         with pytest.raises(SpectaclesException):
-            validator.build_project(selectors=["*/*"], exclusions=["dummy/*"])
+            validator.build_project(exclusions=["dummy/*"])
+
+
+@pytest.mark.vcr()
+class TestBuildUnconfiguredProject:
+    @pytest.fixture
+    def vcr_cassette_name(self):
+        return "test_build_unconfigured_project"
 
     def test_project_with_no_configured_models_should_raise_error(self, validator):
         validator.project.name = "eye_exam_unconfigured"
@@ -47,7 +57,49 @@ class TestBuildProject:
             project="eye_exam_unconfigured", branch="master", remote_reset=False
         )
         with pytest.raises(SpectaclesException):
-            validator.build_project(selectors=["*/*"], exclusions=[])
+            validator.build_project()
+
+
+@pytest.mark.vcr()
+class TestValidatePass:
+    @pytest.fixture
+    def vcr_cassette_name(self):
+        return "test_validate_pass"
+
+    @pytest.fixture(scope="class")
+    def validator_pass(self, validator) -> SqlValidator:
+        validator.build_project(selectors=["eye_exam/users"])
+        return validator
+
+    def test_validate_in_batch_mode_should_run_one_query(self, validator_pass):
+        validator_pass.validate(mode="batch")
+        assert len(validator_pass._query_by_task_id) == 1
+
+    def test_validate_in_single_mode_should_run_n_queries(self, validator_pass):
+        validator_pass.validate(mode="single")
+        assert len(validator_pass._query_by_task_id) == EXPECTED_COUNTS["dimensions"]
+
+    def test_validate_in_hybrid_mode_should_run_one_query(self, validator_pass):
+        validator_pass.validate(mode="hybrid")
+        assert len(validator_pass._query_by_task_id) == 1
+
+
+@pytest.mark.vcr()
+class TestValidateFail:
+    @pytest.fixture
+    def vcr_cassette_name(self):
+        return "test_validate_fail"
+
+    @pytest.fixture(scope="class")
+    def validator_fail(self, validator) -> SqlValidator:
+        validator.build_project(selectors=["eye_exam/users__fail"])
+        return validator
+
+    def test_validate_in_hybrid_mode_should_run_n_queries(self, validator_fail):
+        validator_fail.validate(mode="hybrid")
+        assert (
+            len(validator_fail._query_by_task_id) == 1 + EXPECTED_COUNTS["dimensions"]
+        )
 
 
 def test_parse_selectors_should_handle_duplicates():
