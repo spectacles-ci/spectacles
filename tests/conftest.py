@@ -5,8 +5,8 @@ import pytest
 from spectacles.client import LookerClient
 
 
-@pytest.fixture
-def looker_client(scope="session") -> LookerClient:
+@pytest.fixture(scope="class")
+def looker_client() -> LookerClient:
     with vcr.use_cassette(
         "tests/cassettes/init_client.yaml",
         filter_post_data_parameters=["client_id", "client_secret"],
