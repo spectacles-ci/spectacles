@@ -146,3 +146,81 @@ def test_explore_number_of_errors_single_with_no_errors(dimension, explore, sql_
     dimension.queried = True
     explore.dimensions = [dimension, dimension]
     assert explore.number_of_errors == 0
+
+
+def test_model_number_of_errors_batch_with_errors(dimension, explore, model, sql_error):
+    explore.dimensions = [dimension]
+    explore.queried = True
+    explore.error = sql_error
+    model.explores = [explore, explore]
+    assert model.number_of_errors == 2
+
+
+def test_model_number_of_errors_batch_with_no_errors(
+    dimension, explore, model, sql_error
+):
+    explore.dimensions = [dimension]
+    explore.queried = True
+    model.explores = [explore, explore]
+    assert model.number_of_errors == 0
+
+
+def test_model_number_of_errors_single_with_errors(
+    dimension, explore, model, sql_error
+):
+    dimension.error = sql_error
+    explore.dimensions = [dimension, dimension]
+    explore.queried = True
+    model.explores = [explore, explore]
+    assert model.number_of_errors == 4
+
+
+def test_model_number_of_errors_single_with_no_errors(
+    dimension, explore, model, sql_error
+):
+    explore.dimensions = [dimension, dimension]
+    explore.queried = True
+    model.explores = [explore, explore]
+    assert model.number_of_errors == 0
+
+
+def test_project_number_of_errors_batch_with_errors(
+    dimension, explore, model, project, sql_error
+):
+    explore.dimensions = [dimension]
+    explore.queried = True
+    explore.error = sql_error
+    model.explores = [explore, explore]
+    project.models = [model]
+    assert project.number_of_errors == 2
+
+
+def test_project_number_of_errors_batch_with_no_errors(
+    dimension, explore, model, project, sql_error
+):
+    explore.dimensions = [dimension]
+    explore.queried = True
+    model.explores = [explore, explore]
+    project.models = [model]
+    assert project.number_of_errors == 0
+
+
+def test_project_number_of_errors_single_with_errors(
+    dimension, explore, model, project, sql_error
+):
+    dimension.error = sql_error
+    explore.dimensions = [dimension, dimension]
+    explore.queried = True
+    model.explores = [explore, explore]
+    project.models = [model, model]
+    assert project.number_of_errors == 8
+
+
+def test_project_number_of_errors_single_with_no_errors(
+    dimension, explore, model, project, sql_error
+):
+    explore.dimensions = [dimension, dimension]
+    explore.queried = True
+    model.explores = [explore, explore]
+    project.models = [model, model]
+    assert project.number_of_errors == 0
