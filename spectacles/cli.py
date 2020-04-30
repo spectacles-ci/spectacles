@@ -328,6 +328,51 @@ def _build_connect_subparser(
     )
 
 
+def _build_validator_subparser(
+    subparser_action: argparse._SubParsersAction,
+    base_subparser: argparse.ArgumentParser,
+) -> argparse.ArgumentParser:
+    """Returns the base subparser with arguments required for every validator   .
+
+    Returns:
+        argparse.ArgumentParser: validator subparser with project, branch, remote reset and import projects arguments.
+
+    """
+
+    base_subparser.add_argument(
+        "--project",
+        action=EnvVarAction,
+        env_var="LOOKER_PROJECT",
+        required=True,
+        help="The LookML project you want to test.",
+    )
+    base_subparser.add_argument(
+        "--branch",
+        action=EnvVarAction,
+        env_var="LOOKER_GIT_BRANCH",
+        required=True,
+        help="The branch of your project that spectacles will use to run queries.",
+    )
+    base_subparser.add_argument(
+        "--remote-reset",
+        action=EnvVarStoreTrueAction,
+        env_var="SPECTACLES_REMOTE_RESET",
+        help="When set to true, the SQL validator will tell Looker to reset the \
+            user's branch to the revision of the branch that is on the remote. \
+            WARNING: This will delete any uncommited changes in the user's workspace.",
+    )
+    base_subparser.add_argument(
+        "--import-projects",
+        action=EnvVarStoreTrueAction,
+        env_var="SPECTACLES_IMPORT_PROJECTS",
+        help="When set to true, the SQL Validator will create temporary branches \
+            that are clones of master for any project that is a local dependency of the \
+            of the project being tested. These branches are deleted at the end of the run.",
+    )
+
+    return base_subparser
+
+
 def _build_sql_subparser(
     subparser_action: argparse._SubParsersAction,
     base_subparser: argparse.ArgumentParser,
@@ -348,20 +393,8 @@ def _build_sql_subparser(
         help="Build and run queries to test your Looker instance.",
     )
 
-    subparser.add_argument(
-        "--project",
-        action=EnvVarAction,
-        env_var="LOOKER_PROJECT",
-        required=True,
-        help="The LookML project you want to test.",
-    )
-    subparser.add_argument(
-        "--branch",
-        action=EnvVarAction,
-        env_var="LOOKER_GIT_BRANCH",
-        required=True,
-        help="The branch of your project that spectacles will use to run queries.",
-    )
+    _build_validator_subparser(subparser_action, subparser)
+
     subparser.add_argument(
         "--explores",
         nargs="+",
@@ -391,21 +424,6 @@ def _build_sql_subparser(
             batch mode and then run errored explores in single-dimension mode.",
     )
     subparser.add_argument(
-        "--remote-reset",
-        action="store_true",
-        help="When set to true, the SQL validator will tell Looker to reset the \
-            user's branch to the revision of the branch that is on the remote. \
-            WARNING: This will delete any uncommited changes in the user's workspace.",
-    )
-    subparser.add_argument(
-        "--import-projects",
-        action=EnvVarStoreTrueAction,
-        env_var="SPECTACLES_IMPORT_PROJECTS",
-        help="When set to true, the SQL Validator will create temporary branches \
-            that are clones of master for any project that is a local dependency of the \
-            of the project being tested. These branches are deleted at the end of the run.",
-    )
-    subparser.add_argument(
         "--concurrency",
         default=10,
         type=int,
@@ -432,27 +450,7 @@ def _build_assert_subparser(
         "assert", parents=[base_subparser], help="Run Looker data tests."
     )
 
-    subparser.add_argument(
-        "--project", action=EnvVarAction, env_var="LOOKER_PROJECT", required=True
-    )
-    subparser.add_argument(
-        "--branch", action=EnvVarAction, env_var="LOOKER_GIT_BRANCH", required=True
-    )
-    subparser.add_argument(
-        "--remote-reset",
-        action="store_true",
-        help="When set to true, the SQL validator will tell Looker to reset the \
-            user's branch to the revision of the branch that is on the remote. \
-            WARNING: This will delete any uncommited changes in the user's workspace.",
-    )
-    subparser.add_argument(
-        "--import-projects",
-        action=EnvVarStoreTrueAction,
-        env_var="SPECTACLES_IMPORT_PROJECTS",
-        help="When set to true, the SQL Validator will create temporary branches \
-            that are clones of master for any project that is a local dependency of the \
-            of the project being tested. These branches are deleted at the end of the run.",
-    )
+    _build_validator_subparser(subparser_action, subparser)
 
 
 def log_failing_sql(
