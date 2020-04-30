@@ -165,7 +165,9 @@ class SqlValidator(Validator):
             )
         return [each for each in select_from if each.name in unique_choices]
 
-    def build_project(self, selectors: List[str], exclusions: List[str]) -> None:
+    def build_project(
+        self, selectors: List[str] = None, exclusions: List[str] = None
+    ) -> None:
         """Creates an object representation of the project's LookML.
 
         Args:
@@ -174,6 +176,12 @@ class SqlValidator(Validator):
                 'model_name/*' would select all explores in the 'model_name' model.
 
         """
+        # Set default values for selecting and excluding
+        if not selectors:
+            selectors = ["*/*"]
+        if not exclusions:
+            exclusions = []
+
         selection = self.parse_selectors(selectors)
         exclusion = self.parse_selectors(exclusions)
         logger.info(
