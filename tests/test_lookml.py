@@ -113,3 +113,36 @@ def test_parent_queried_behavior_should_depend_on_its_child(
         assert parent.queried is True
         children.append(b)
         assert parent.queried is True
+
+
+def test_comparison_to_mismatched_type_object_fails(dimension, explore, model, project):
+    assert dimension != 1
+    assert explore != 1
+    assert model != 1
+    assert project != 1
+
+
+def test_explore_number_of_errors_batch_with_errors(dimension, explore, sql_error):
+    explore.dimensions = [dimension]
+    explore.queried = True
+    explore.error = sql_error
+    assert explore.number_of_errors == 1
+
+
+def test_explore_number_of_errors_batch_with_no_errors(dimension, explore, sql_error):
+    explore.dimensions = [dimension]
+    explore.queried = True
+    assert explore.number_of_errors == 0
+
+
+def test_explore_number_of_errors_single_with_errors(dimension, explore, sql_error):
+    dimension.error = sql_error
+    dimension.queried = True
+    explore.dimensions = [dimension, dimension]
+    assert explore.number_of_errors == 2
+
+
+def test_explore_number_of_errors_single_with_no_errors(dimension, explore, sql_error):
+    dimension.queried = True
+    explore.dimensions = [dimension, dimension]
+    assert explore.number_of_errors == 0
