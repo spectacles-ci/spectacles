@@ -562,9 +562,8 @@ def run_sql(
             )
         if mode == "batch":
             logger.info(
-                f"\nTo determine the exact dimensions responsible for {'this error' if project.number_of_errors == 1 else 'these errors'}, "
-                "you can re-run this explore \n"
-                "in single-dimension mode, with `--mode single`.\n\n"
+                f"\n\nTo determine the exact dimensions responsible for {'this error' if project.number_of_errors == 1 else 'these errors'}, "
+                f"you can re-run Spectacles in single-dimension mode, with `--mode single`.\n\n"
                 "You can also run this original validation with `--mode hybrid` to do this automatically."
             )
 
