@@ -96,8 +96,9 @@ class Explore(LookMlObject):
     def queried(self, value: bool):
         if not isinstance(value, bool):
             raise TypeError("Value for queried must be boolean.")
-        for dimensions in self.dimensions:
-            dimensions.queried = value
+        for dimension in self.dimensions:
+            if not dimension.ignore:
+                dimension.queried = value
 
     def get_errored_dimensions(self):
         for dimension in self.dimensions:
