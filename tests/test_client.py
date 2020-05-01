@@ -57,7 +57,7 @@ def test_get_looker_release_version_should_return_correct_version(looker_client)
     assert version == "7.6.17"
 
 
-@pytest.mark.vcr
+@pytest.mark.vcr(filter_post_data_parameters=["client_id", "client_secret"])
 def test_bad_authentication_request_should_raise_api_error():
     with pytest.raises(ApiConnectionError):
         LookerClient(
@@ -67,7 +67,7 @@ def test_bad_authentication_request_should_raise_api_error():
         )
 
 
-@pytest.mark.vcr
+@pytest.mark.vcr(filter_post_data_parameters=["client_id", "client_secret"])
 def test_unsupported_api_version_should_raise_error():
     with pytest.raises(SpectaclesException):
         LookerClient(
