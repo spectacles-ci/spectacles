@@ -15,6 +15,7 @@ def validator(looker_client, record_mode) -> Iterable[SqlValidator]:
     with vcr.use_cassette(
         f"tests/cassettes/test_sql_validator/fixture_validator_init.yaml",
         match_on=["uri", "method", "raw_body"],
+        filter_headers=["Authorization"],
         record_mode=record_mode,
     ):
         validator = SqlValidator(looker_client, project="eye_exam")
@@ -82,6 +83,7 @@ class TestValidatePass:
         with vcr.use_cassette(
             f"tests/cassettes/test_sql_validator/fixture_validator_pass[{mode}].yaml",
             match_on=["uri", "method", "raw_body"],
+            filter_headers=["Authorization"],
             record_mode=record_mode,
         ):
             validator.build_project(selectors=["eye_exam/users"])
@@ -146,6 +148,7 @@ class TestValidateFail:
         with vcr.use_cassette(
             f"tests/cassettes/test_sql_validator/fixture_validator_fail.yaml",
             match_on=["uri", "method", "raw_body"],
+            filter_headers=["Authorization"],
             record_mode=record_mode,
         ):
             validator.build_project(selectors=["eye_exam/users__fail"])

@@ -6,6 +6,11 @@ from spectacles.client import LookerClient
 
 
 @pytest.fixture(scope="session")
+def vcr_config():
+    return {"filter_headers": ["Authorization"]}
+
+
+@pytest.fixture(scope="session")
 def looker_client(record_mode) -> Iterable[LookerClient]:
     with vcr.use_cassette(
         "tests/cassettes/init_client.yaml",
