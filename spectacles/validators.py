@@ -267,6 +267,7 @@ class SqlValidator(Validator):
 
     def validate(self, mode: str = "batch") -> Project:
         """Queries selected explores and returns the project tree with errors."""
+        self._query_by_task_id = {}
         explore_count = self._count_explores()
         printer.print_header(
             f"Testing {explore_count} "
