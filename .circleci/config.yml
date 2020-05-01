@@ -57,7 +57,7 @@ jobs:
           name: pytest
           command: |
             . venv/bin/activate
-            python -m pytest --record-mode=none
+            python -m pytest -p no:randomly --record-mode=none
 
       - run:
           name: coverage
