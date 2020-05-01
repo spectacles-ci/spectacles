@@ -1,4 +1,5 @@
 from pathlib import Path
+from copy import deepcopy
 import json
 import pytest
 from spectacles.lookml import Project, Model, Explore, Dimension
@@ -21,7 +22,7 @@ def explore():
 
 @pytest.fixture
 def model():
-    return Model(name="model_name", project="string", explores=[])
+    return Model(name="model_name", project="project_name", explores=[])
 
 
 @pytest.fixture
@@ -79,8 +80,64 @@ def test_ignored_dimension_with_no_whitespace():
     assert dimension.ignore
 
 
-def test_comparison_to_mismatched_type_object_fails(dimension, explore, model, project):
-    assert dimension != 1
-    assert explore != 1
-    assert model != 1
-    assert project != 1
+@pytest.mark.parametrize("obj_name", ("dimension", "explore", "model", "project"))
+def test_comparison_to_mismatched_type_object_should_fail(request, obj_name):
+    lookml_obj = request.getfixturevalue(obj_name)
+
+    class SomethingElse:
+        ...
+
+    assert lookml_obj != 1
+    assert lookml_obj != "foo"
+    assert lookml_obj != SomethingElse()
+
+
+def test_dimensions_with_different_sql_can_be_equal():
+    a = Dimension(
+        name="a",
+        type="string",
+        sql="${TABLE}.some_column",
+        url="https://test.looker.com",
+    )
+    b = deepcopy(a)
+    b.sql = "${TABLE}.another_column"
+    assert a == b
+
+
+def test_dimension_should_not_be_errored_if_not_queried(dimension, sql_error):
+    assert dimension.errored is None
+    dimension.error = sql_error
+    assert dimension.errored is None
+    dimension.queried = True
+    assert dimension.errored is True
+
+
+def test_should_not_be_able_to_set_errored_on_dimension(dimension):
+    with pytest.raises(AttributeError):
+        dimension.errored = True
+
+
+def test_should_not_be_able_to_set_errored_on_explore(explore):
+    with pytest.raises(AttributeError):
+        explore.errored = True
+
+
+def test_parent_queried_behavior_should_depend_on_its_child(
+    explore, dimension, model, project
+):
+    for parent, child, attr in [
+        (explore, dimension, "dimensions"),
+        (model, explore, "explores"),
+        (project, model, "models"),
+    ]:
+        child.queried = False
+        parent.queried = False
+        a = child
+        b = deepcopy(child)
+        children = getattr(parent, attr)
+        children.append(a)
+        assert parent.queried is False
+        a.queried = True
+        assert parent.queried is True
+        children.append(b)
+        assert parent.queried is True
