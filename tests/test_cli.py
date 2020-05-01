@@ -1,9 +1,8 @@
 from unittest.mock import patch
 import pytest
 from tests.constants import ENV_VARS
-from pathlib import Path
-from spectacles.cli import main, create_parser, handle_exceptions, log_failing_sql
-from spectacles.exceptions import SpectaclesException, ValidationError, SqlError
+from spectacles.cli import main, create_parser, handle_exceptions
+from spectacles.exceptions import SpectaclesException, ValidationError
 
 
 @pytest.fixture
@@ -182,51 +181,3 @@ def test_bad_config_file_parameter(mock_parse_config, clean_env, parser):
 def test_parse_remote_reset_with_assert(env, parser):
     args = parser.parse_args(["assert", "--remote-reset"])
     assert args.remote_reset
-
-
-def test_logging_failing_explore_sql(tmpdir):
-    error = SqlError(
-        path="example_explore",
-        message="example error message",
-        sql="select example_explore.example_dimension_1 from model",
-        explore_url="https://example.looker.com/x/12345",
-    )
-
-    query_directory = Path(tmpdir / "queries")
-    query_directory.mkdir(exist_ok=True)
-    query_file = Path(query_directory / "explore_model__example_explore.sql")
-
-    log_failing_sql(error, tmpdir, "explore_model", "example_explore")
-    content = open(query_file).read()
-
-    assert Path.exists(query_file)
-    assert content == "select example_explore.example_dimension_1 from model"
-
-
-def test_logging_failing_dimension_sql(tmpdir):
-    error = SqlError(
-        path="example_explore",
-        message="example error message",
-        sql="select example_explore.example_dimension_1 from model",
-        explore_url="https://example.looker.com/x/12345",
-    )
-
-    query_directory = Path(tmpdir / "queries")
-    query_directory.mkdir(exist_ok=True)
-    query_file = (
-        query_directory
-        / "explore_model__example_explore__example_explore.example_dimension_1.sql"
-    )
-
-    log_failing_sql(
-        error,
-        tmpdir,
-        "explore_model",
-        "example_explore",
-        "example_explore.example_dimension_1",
-    )
-
-    content = open(query_file).read()
-
-    assert content == "select example_explore.example_dimension_1 from model"
-    assert Path.exists(query_file)

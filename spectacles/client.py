@@ -190,6 +190,123 @@ class LookerClient:
 
             logger.info(f"Checked out branch {branch}")
 
+    def get_manifest(self, project: str) -> JsonDict:
+        """Gets all the dependent LookML projects defined in the manifest file.
+
+        Args:
+            project: Name of the Looker project to use.
+
+        Returns:
+            List[JsonDict]: JSON response containing all dependent projects
+        """
+        logger.debug(f"Getting manifest details")
+        url = utils.compose_url(self.api_url, path=["projects", project, "manifest"])
+        response = self.session.get(url=url, timeout=TIMEOUT_SEC)
+
+        try:
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as error:
+            raise ApiConnectionError(
+                f"Failed to retrieve manifest for project {project}\n"
+                f"Make sure you have a 'manifest.lkml' file in your project"
+                f'Error raised: "{error}"'
+            )
+
+        manifest = response.json()
+
+        return manifest
+
+    def get_active_branch(self, project: str) -> str:
+        """Gets the active branch for the user in the given project.
+
+        Args:
+            project: Name of the Looker project to use.
+
+        Returns:
+            str: Name of the active branch
+        """
+        logger.debug(f"Getting active branch for project {project}")
+        url = utils.compose_url(self.api_url, path=["projects", project, "git_branch"])
+        response = self.session.get(url=url, timeout=TIMEOUT_SEC)
+
+        try:
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as error:
+            raise ApiConnectionError(
+                f"Unable to get active branch for project {project}\n"
+                f'Error raised: "{error}"'
+            )
+
+        branch_name = response.json()["name"]
+
+        return branch_name
+
+    def create_branch(self, project: str, branch: str, ref: str = "origin/master"):
+        """Creates a branch in the given project.
+
+        Args:
+            project: Name of the Looker project to use.
+            branch: Name of the branch to create.
+            ref: The ref to create the branch from.
+        """
+        logger.debug(f"Creating branch {branch} on project {project}")
+
+        body = {"name": branch, "ref": ref}
+        url = utils.compose_url(self.api_url, path=["projects", project, "git_branch"])
+        response = self.session.post(url=url, json=body, timeout=TIMEOUT_SEC)
+
+        try:
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as error:
+            raise ApiConnectionError(
+                f"Failed to create branch in project {project}\n"
+                f'Error raised: "{error}"'
+            )
+
+    def update_branch(self, project: str, branch: str, ref: str = "origin/master"):
+        """Updates a branch to the ref prodvided.
+
+        Args:
+            project: Name of the Looker project to use.
+            branch: Name of the branch to update.
+            ref: The ref to update the branch from.
+        """
+        logger.debug(f"Updating branch {branch} on project {project}")
+
+        body = {"name": branch, "ref": ref}
+        url = utils.compose_url(self.api_url, path=["projects", project, "git_branch"])
+        response = self.session.put(url=url, json=body, timeout=TIMEOUT_SEC)
+
+        try:
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as error:
+            raise ApiConnectionError(
+                f"Failed to update branch in project {project}\n"
+                f'Error raised: "{error}"'
+            )
+
+    def delete_branch(self, project: str, branch: str):
+        """Deletes a branch in the given project.
+
+        Args:
+            project: Name of the Looker project to use.
+            branch: Name of the branch to delete.
+        """
+        logger.debug(f"Deleting branch {branch} in project {project}")
+
+        url = utils.compose_url(
+            self.api_url, path=["projects", project, "git_branch", branch]
+        )
+        response = self.session.delete(url=url, timeout=TIMEOUT_SEC)
+
+        try:
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as error:
+            raise ApiConnectionError(
+                f"Failed to delete branch {branch} in project {project}\n"
+                f'Error raised: "{error}"'
+            )
+
     def all_lookml_tests(self, project: str) -> List[JsonDict]:
         """Gets all LookML/data tests for a given project.
 

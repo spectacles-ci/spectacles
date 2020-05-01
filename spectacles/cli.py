@@ -5,12 +5,12 @@ from yaml.parser import ParserError
 import argparse
 import logging
 import os
-from typing import Callable, Iterable, List, Optional
+from typing import Callable, Iterable, List
 from spectacles import __version__
 from spectacles.runner import Runner
 from spectacles.client import LookerClient
-from spectacles.exceptions import SpectaclesException, ValidationError, SqlError
-from spectacles.logger import GLOBAL_LOGGER as logger, set_file_handler
+from spectacles.exceptions import SpectaclesException, ValidationError
+from spectacles.logger import GLOBAL_LOGGER as logger, set_file_handler, log_sql_error
 import spectacles.printer as printer
 
 
@@ -84,10 +84,8 @@ class EnvVarAction(argparse.Action):
 
     def __init__(self, env_var, required=False, default=None, **kwargs):
         self.env_var = env_var
-        self.in_env = False
         if env_var in os.environ:
             default = os.environ[env_var]
-            self.in_env = True
         if required and default:
             required = False
         super().__init__(default=default, required=required, **kwargs)
@@ -103,6 +101,24 @@ class EnvVarAction(argparse.Action):
 
         """
         setattr(namespace, self.dest, values)
+
+
+class EnvVarStoreTrueAction(argparse._StoreTrueAction):
+    def __init__(self, env_var, required=False, default=False, **kwargs):
+        self.env_var = env_var
+        if env_var in os.environ:
+            value = os.environ[env_var].lower()
+            if value not in ("true", "false"):
+                raise SpectaclesException(
+                    f"Allowed values for {env_var} are 'true' or 'false' (case-insensitive), received '{value}'"
+                )
+            default = True if value == "true" else False
+        if required and default:
+            required = False
+        super().__init__(default=default, required=required, **kwargs)
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        setattr(namespace, self.dest, True)
 
 
 def handle_exceptions(function: Callable) -> Callable:
@@ -183,6 +199,7 @@ def main():
             args.api_version,
             args.mode,
             args.remote_reset,
+            args.import_projects,
             args.concurrency,
         )
     elif args.command == "assert":
@@ -195,6 +212,7 @@ def main():
             args.port,
             args.api_version,
             args.remote_reset,
+            args.import_projects,
         )
 
 
@@ -380,6 +398,14 @@ def _build_sql_subparser(
             WARNING: This will delete any uncommited changes in the user's workspace.",
     )
     subparser.add_argument(
+        "--import-projects",
+        action=EnvVarStoreTrueAction,
+        env_var="SPECTACLES_IMPORT_PROJECTS",
+        help="When set to true, the SQL Validator will create temporary branches \
+            that are clones of master for any project that is a local dependency of the \
+            of the project being tested. These branches are deleted at the end of the run.",
+    )
+    subparser.add_argument(
         "--concurrency",
         default=10,
         type=int,
@@ -419,31 +445,14 @@ def _build_assert_subparser(
             user's branch to the revision of the branch that is on the remote. \
             WARNING: This will delete any uncommited changes in the user's workspace.",
     )
-
-
-def log_failing_sql(
-    error: SqlError,
-    log_dir: str,
-    model_name: str,
-    explore_name: str,
-    dimension_name: Optional[str] = None,
-):
-
-    file_name = (
-        model_name
-        + "__"
-        + explore_name
-        + ("__" + dimension_name if dimension_name else "")
-        + ".sql"
+    subparser.add_argument(
+        "--import-projects",
+        action=EnvVarStoreTrueAction,
+        env_var="SPECTACLES_IMPORT_PROJECTS",
+        help="When set to true, the SQL Validator will create temporary branches \
+            that are clones of master for any project that is a local dependency of the \
+            of the project being tested. These branches are deleted at the end of the run.",
     )
-    file_path = Path(log_dir) / "queries" / file_name
-    print(file_path)
-
-    logger.debug(f"Logging failing SQL query for '{error.path}' to '{file_path}'")
-    logger.debug(f"Failing SQL for {error.path}: \n{error.sql}")
-
-    with open(file_path, "w") as file:
-        file.write(error.sql)
 
 
 def run_connect(
@@ -454,7 +463,15 @@ def run_connect(
 
 
 def run_assert(
-    project, branch, base_url, client_id, client_secret, port, api_version, remote_reset
+    project,
+    branch,
+    base_url,
+    client_id,
+    client_secret,
+    port,
+    api_version,
+    remote_reset,
+    import_projects,
 ) -> None:
     runner = Runner(
         base_url,
@@ -465,6 +482,7 @@ def run_assert(
         port,
         api_version,
         remote_reset,
+        import_projects,
     )
     errors = runner.validate_data_tests()
     if errors:
@@ -489,6 +507,7 @@ def run_sql(
     api_version,
     mode,
     remote_reset,
+    import_projects,
     concurrency,
 ) -> None:
     """Runs and validates the SQL for each selected LookML dimension."""
@@ -501,6 +520,7 @@ def run_sql(
         port,
         api_version,
         remote_reset,
+        import_projects,
     )
 
     def iter_errors(lookml: List) -> Iterable:
@@ -513,19 +533,22 @@ def run_sql(
     if project.errored:
         for model in iter_errors(project.models):
             for explore in iter_errors(model.explores):
-                if explore.error:
+                if explore.error and mode == "batch":
                     printer.print_sql_error(explore.error)
-                    log_failing_sql(explore.error, log_dir, model.name, explore.name)
+                    file_path = log_sql_error(
+                        explore.error, log_dir, model.name, explore.name
+                    )
                 else:
                     for dimension in iter_errors(explore.dimensions):
-                        printer.print_sql_error(dimension.error)
-                        log_failing_sql(
+                        file_path = log_sql_error(
                             dimension.error,
                             log_dir,
                             model.name,
                             explore.name,
                             dimension.name,
                         )
+                        printer.print_sql_error(dimension.error)
+                logger.info("\n" + f"Test SQL: {file_path}")
 
         logger.info("")
         raise ValidationError
