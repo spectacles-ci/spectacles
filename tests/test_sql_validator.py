@@ -19,9 +19,6 @@ def validator(looker_client, record_mode) -> Iterable[SqlValidator]:
         record_mode=record_mode,
     ):
         validator = SqlValidator(looker_client, project="eye_exam")
-        validator.client.update_session(
-            project="eye_exam", branch="master", remote_reset=False
-        )
         yield validator
 
 
