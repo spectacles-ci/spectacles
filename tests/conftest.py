@@ -4,6 +4,7 @@ import json
 import vcr
 import pytest
 from spectacles.client import LookerClient
+from spectacles.exceptions import SqlError
 
 
 def scrub_access_token(response):
@@ -33,3 +34,13 @@ def looker_client(record_mode) -> Iterable[LookerClient]:
             client_secret=os.environ.get("LOOKER_CLIENT_SECRET", ""),
         )
         yield client
+
+
+@pytest.fixture
+def sql_error():
+    return SqlError(
+        path="path/to/errored/field",
+        message="An error occurred.",
+        sql="SELECT * FROM orders",
+        explore_url="https://example.looker.com/x/12345",
+    )
