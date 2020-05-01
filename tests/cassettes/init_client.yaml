@@ -18,7 +18,7 @@ interactions:
     uri: https://spectacles.looker.com:19999/api/3.1/login
   response:
     body:
-      string: '{"access_token": "", "token_type": "Bearer", "expires_in": 3600}'
+      string: '{"access_token":"nM83M5TbgpyjXNWsFKKv3BtdsydMFjkQCPw3tZtc","token_type":"Bearer","expires_in":3600}'
     headers:
       Connection:
       - keep-alive
@@ -27,7 +27,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Fri, 01 May 2020 16:02:11 GMT
+      - Fri, 01 May 2020 23:06:39 GMT
       Server:
       - nginx
       Vary:
@@ -44,16 +44,7 @@ interactions:
     uri: https://spectacles.looker.com:19999/api/3.1/versions
   response:
     body:
-      string: '{"looker_release_version": "7.6.17", "current_version": {"version":
-        "3.1", "full_version": "3.1.0", "status": "current", "swagger_url": "https://spectacles.looker.com:19999/api/3.1/swagger.json"},
-        "supported_versions": [{"version": "2.99", "full_version": "2.99.0", "status":
-        "internal_test", "swagger_url": "https://spectacles.looker.com:19999/api/2.99/swagger.json"},
-        {"version": "3.0", "full_version": "3.0.0", "status": "legacy", "swagger_url":
-        "https://spectacles.looker.com:19999/api/3.0/swagger.json"}, {"version": "3.1",
-        "full_version": "3.1.0", "status": "current", "swagger_url": "https://spectacles.looker.com:19999/api/3.1/swagger.json"},
-        {"version": "4.0", "full_version": "4.0.7.6", "status": "experimental", "swagger_url":
-        "https://spectacles.looker.com:19999/api/4.0/swagger.json"}], "access_token":
-        ""}'
+      string: '{"looker_release_version":"7.6.17","current_version":{"version":"3.1","full_version":"3.1.0","status":"current","swagger_url":"https://spectacles.looker.com:19999/api/3.1/swagger.json"},"supported_versions":[{"version":"2.99","full_version":"2.99.0","status":"internal_test","swagger_url":"https://spectacles.looker.com:19999/api/2.99/swagger.json"},{"version":"3.0","full_version":"3.0.0","status":"legacy","swagger_url":"https://spectacles.looker.com:19999/api/3.0/swagger.json"},{"version":"3.1","full_version":"3.1.0","status":"current","swagger_url":"https://spectacles.looker.com:19999/api/3.1/swagger.json"},{"version":"4.0","full_version":"4.0.7.6","status":"experimental","swagger_url":"https://spectacles.looker.com:19999/api/4.0/swagger.json"}]}'
     headers:
       Connection:
       - keep-alive
@@ -62,9 +53,41 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Fri, 01 May 2020 16:02:11 GMT
+      - Fri, 01 May 2020 23:06:39 GMT
       Server:
       - nginx
+      Vary:
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"workspace_id": "production"}'
+    headers:
+      Content-Length:
+      - '30'
+      Content-Type:
+      - application/json
+    method: PATCH
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"production","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '83'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 01 May 2020 23:06:39 GMT
+      Server:
+      - nginx
+      Set-Cookie:
+      - looker.browser=683; expires=Mon, 01 May 2023 23:06:39 -0000; HttpOnly
       Vary:
       - Accept-Encoding
       X-Content-Type-Options:

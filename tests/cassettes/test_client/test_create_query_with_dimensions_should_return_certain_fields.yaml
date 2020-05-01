@@ -7,6 +7,8 @@ interactions:
       - '103'
       Content-Type:
       - application/json
+      Cookie:
+      - looker.browser=683
     method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/queries
   response:
@@ -20,11 +22,9 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Fri, 01 May 2020 16:02:13 GMT
+      - Fri, 01 May 2020 23:07:24 GMT
       Server:
       - nginx
-      Set-Cookie:
-      - looker.browser=654; expires=Mon, 01 May 2023 16:02:13 -0000; HttpOnly
       Vary:
       - Accept-Encoding
       - Accept-Encoding
