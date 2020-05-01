@@ -1,30 +1,37 @@
+from typing import Iterable
 from collections import defaultdict
+from unittest.mock import create_autospec, Mock
 import pytest
-from spectacles.validators import SqlValidator
+import vcr
+from spectacles.validators import SqlValidator, Query
 from spectacles.exceptions import SpectaclesException
 
-
-EXPECTED_COUNTS = {"models": 1, "explores": 1, "dimensions": 20}
-
-
-@pytest.fixture(scope="class")
-def validator(looker_client):
-    return SqlValidator(looker_client, project="eye_exam")
+EXPECTED_COUNTS = {"models": 1, "explores": 1, "dimensions": 6}
 
 
-@pytest.mark.vcr()
+@pytest.fixture
+def validator(looker_client, record_mode) -> Iterable[SqlValidator]:
+    with vcr.use_cassette(
+        f"tests/cassettes/test_sql_validator/fixture_validator_init.yaml",
+        match_on=["uri", "method", "raw_body"],
+        record_mode=record_mode,
+    ):
+        validator = SqlValidator(looker_client, project="eye_exam")
+        validator.client.update_session(
+            project="eye_exam", branch="master", remote_reset=False
+        )
+        yield validator
+
+
+@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
 class TestBuildProject:
-    @pytest.fixture
-    def vcr_cassette_name(self):
-        return "test_build_project"
-
     def test_model_explore_dimension_counts_should_match(self, validator):
         validator.build_project(selectors=["eye_exam/users"])
         assert len(validator.project.models) == EXPECTED_COUNTS["models"]
         assert len(validator.project.models[0].explores) == EXPECTED_COUNTS["explores"]
         dimensions = validator.project.models[0].explores[0].dimensions
         assert len(dimensions) == EXPECTED_COUNTS["dimensions"]
-        assert "users.state" in [dim.name for dim in dimensions]
+        assert "users.city" in [dim.name for dim in dimensions]
         assert not validator.project.errored
         assert validator.project.queried is False
 
@@ -40,17 +47,9 @@ class TestBuildProject:
         with pytest.raises(SpectaclesException):
             validator.build_project(selectors=["dummy/*"])
 
-    def test_invalid_model_exclusion_should_raise_error(self, validator):
-        with pytest.raises(SpectaclesException):
-            validator.build_project(exclusions=["dummy/*"])
 
-
-@pytest.mark.vcr()
+@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
 class TestBuildUnconfiguredProject:
-    @pytest.fixture
-    def vcr_cassette_name(self):
-        return "test_build_unconfigured_project"
-
     def test_project_with_no_configured_models_should_raise_error(self, validator):
         validator.project.name = "eye_exam_unconfigured"
         validator.client.update_session(
@@ -60,46 +59,119 @@ class TestBuildUnconfiguredProject:
             validator.build_project()
 
 
-@pytest.mark.vcr()
 class TestValidatePass:
     @pytest.fixture
-    def vcr_cassette_name(self):
-        return "test_validate_pass"
+    def validator_pass(self, request, record_mode, validator) -> Iterable[SqlValidator]:
+        mode = request.param
+        with vcr.use_cassette(
+            f"tests/cassettes/test_sql_validator/fixture_validator_pass[{mode}].yaml",
+            match_on=["uri", "method", "raw_body"],
+            record_mode=record_mode,
+        ):
+            validator.build_project(selectors=["eye_exam/users"])
+            validator.validate(mode)
+            yield validator
 
-    @pytest.fixture(scope="class")
-    def validator_pass(self, validator) -> SqlValidator:
-        validator.build_project(selectors=["eye_exam/users"])
-        return validator
+    @pytest.mark.parametrize(
+        "validator_pass", ["batch", "single", "hybrid"], indirect=True
+    )
+    def test_validate_should_set_errored_and_queried(self, validator_pass):
+        validator = validator_pass
+        assert validator.project.errored is False
+        assert validator.project.queried is True
 
+    @pytest.mark.parametrize("validator_pass", ["batch"], indirect=True)
     def test_validate_in_batch_mode_should_run_one_query(self, validator_pass):
-        validator_pass.validate(mode="batch")
-        assert len(validator_pass._query_by_task_id) == 1
+        validator = validator_pass
+        assert len(validator._query_by_task_id) == 1
 
+    @pytest.mark.parametrize("validator_pass", ["single"], indirect=True)
     def test_validate_in_single_mode_should_run_n_queries(self, validator_pass):
-        validator_pass.validate(mode="single")
-        assert len(validator_pass._query_by_task_id) == EXPECTED_COUNTS["dimensions"]
+        validator = validator_pass
+        assert len(validator._query_by_task_id) == EXPECTED_COUNTS["dimensions"]
 
+    @pytest.mark.parametrize("validator_pass", ["hybrid"], indirect=True)
     def test_validate_in_hybrid_mode_should_run_one_query(self, validator_pass):
-        validator_pass.validate(mode="hybrid")
-        assert len(validator_pass._query_by_task_id) == 1
+        validator = validator_pass
+        assert len(validator._query_by_task_id) == 1
 
 
-@pytest.mark.vcr()
-class TestValidateFail:
-    @pytest.fixture
-    def vcr_cassette_name(self):
-        return "test_validate_fail"
+# @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
+# class TestValidateFail:
+#     @pytest.fixture
+#     def validator_fail(self, record_mode, validator) -> SqlValidator:
+#         with vcr.use_cassette(
+#             f"tests/cassettes/test_sql_validator/fixture_validator_fail.yaml",
+#             match_on=["uri", "method", "raw_body"],
+#             record_mode=record_mode,
+#         ):
+#             validator.build_project(selectors=["eye_exam/users__fail"])
+#             validator.validate(mode="hybrid")
+#             yield validator
 
-    @pytest.fixture(scope="class")
-    def validator_fail(self, validator) -> SqlValidator:
-        validator.build_project(selectors=["eye_exam/users__fail"])
-        return validator
+#     def test_validate_in_hybrid_mode_should_run_n_queries(self, validator_fail):
+#         validator = validator_fail
+#         assert len(validator._query_by_task_id) == 1 + EXPECTED_COUNTS["dimensions"]
 
-    def test_validate_in_hybrid_mode_should_run_n_queries(self, validator_fail):
-        validator_fail.validate(mode="hybrid")
-        assert (
-            len(validator_fail._query_by_task_id) == 1 + EXPECTED_COUNTS["dimensions"]
+#     def test_validate_should_set_errored_and_queried(self, validator_fail):
+#         validator = validator_fail
+#         assert validator.project.errored is True
+#         assert validator.project.queried is True
+
+
+def test_validate_hybrid_mode_no_errors_does_not_repeat(validator):
+    mock_run: Mock = create_autospec(validator._create_and_run)
+    validator.project.errored = False
+    validator._create_and_run = mock_run
+    validator.validate(mode="hybrid")
+    validator._create_and_run.assert_called_once_with(mode="hybrid")
+
+
+def test_validate_hybrid_mode_with_errors_does_repeat(validator):
+    mock_run: Mock = create_autospec(validator._create_and_run)
+    validator.project.errored = True
+    validator._create_and_run = mock_run
+    validator.validate(mode="hybrid")
+    validator._create_and_run.call_count == 2
+
+
+def test_create_and_run_keyboard_interrupt_cancels_queries(validator):
+    validator._running_queries = [
+        Query(
+            query_id="12345",
+            lookml_ref=None,
+            query_task_id="abc",
+            explore_url="https://example.looker.com/x/12345",
         )
+    ]
+    mock_create_queries = create_autospec(validator._create_queries)
+    mock_create_queries.side_effect = KeyboardInterrupt()
+    validator._create_queries = mock_create_queries
+    mock_cancel_queries = create_autospec(validator._cancel_queries)
+    validator._cancel_queries = mock_cancel_queries
+    try:
+        validator._create_and_run(mode="batch")
+    except SpectaclesException:
+        mock_cancel_queries.assert_called_once_with(query_task_ids=["abc"])
+
+
+def test_get_running_query_tasks(validator):
+    queries = [
+        Query(
+            query_id="12345",
+            lookml_ref=None,
+            query_task_id="abc",
+            explore_url="https://example.looker.com/x/12345",
+        ),
+        Query(
+            query_id="67890",
+            lookml_ref=None,
+            query_task_id="def",
+            explore_url="https://example.looker.com/x/67890",
+        ),
+    ]
+    validator._running_queries = queries
+    assert validator.get_running_query_tasks() == ["abc", "def"]
 
 
 def test_parse_selectors_should_handle_duplicates():

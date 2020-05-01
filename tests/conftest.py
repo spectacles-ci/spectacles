@@ -1,31 +1,21 @@
-from typing import Dict, Any
+from typing import Iterable
 import os
 import vcr
 import pytest
 from spectacles.client import LookerClient
 
 
-@pytest.fixture(scope="class")
-def looker_client() -> LookerClient:
+@pytest.fixture(scope="session")
+def looker_client(record_mode) -> Iterable[LookerClient]:
     with vcr.use_cassette(
         "tests/cassettes/init_client.yaml",
         filter_post_data_parameters=["client_id", "client_secret"],
         filter_headers=["Authorization"],
+        record_mode=record_mode,
     ):
         client = LookerClient(
-            base_url=os.environ.get("LOOKER_BASE_URL", ""),
+            base_url="https://spectacles.looker.com",
             client_id=os.environ.get("LOOKER_CLIENT_ID", ""),
             client_secret=os.environ.get("LOOKER_CLIENT_SECRET", ""),
         )
-        client.update_session(
-            project="eye_exam", branch="feature/vcr", remote_reset=False
-        )
-        return client
-
-
-@pytest.fixture(scope="session")
-def vcr_config() -> Dict[str, Any]:
-    return {
-        # Replace the Authorization request header with "" in cassettes
-        "filter_headers": [("Authorization", "")]
-    }
+        yield client
