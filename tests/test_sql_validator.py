@@ -1,6 +1,6 @@
 from typing import Iterable
 from collections import defaultdict
-from unittest.mock import patch, create_autospec, Mock
+from unittest.mock import patch, create_autospec
 import pytest
 import vcr
 from spectacles.validators import SqlValidator, Query, QueryResult
@@ -169,22 +169,6 @@ class TestValidateFail:
     def test_running_queries_should_be_empty(self, validator_fail):
         validator = validator_fail
         assert len(validator._running_queries) == 0
-
-
-def test_validate_hybrid_mode_no_errors_does_not_repeat(validator):
-    mock_run: Mock = create_autospec(validator._create_and_run)
-    validator.project.errored = False
-    validator._create_and_run = mock_run
-    validator.validate(mode="hybrid")
-    validator._create_and_run.assert_called_once_with(mode="hybrid")
-
-
-def test_validate_hybrid_mode_with_errors_does_repeat(validator):
-    mock_run: Mock = create_autospec(validator._create_and_run)
-    validator.project.errored = True
-    validator._create_and_run = mock_run
-    validator.validate(mode="hybrid")
-    validator._create_and_run.call_count == 2
 
 
 def test_create_and_run_keyboard_interrupt_cancels_queries(validator):
