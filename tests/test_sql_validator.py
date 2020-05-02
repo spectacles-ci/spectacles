@@ -272,16 +272,38 @@ def test_extract_error_details_error_dict(validator):
         },
     }
     extracted = validator._extract_error_details(query_result)
-    assert extracted["message"] == f"{message} {message_details}"
-    assert extracted["sql"] == sql
+    assert extracted[0]["message"] == f"{message} {message_details}"
+    assert extracted[0]["sql"] == sql
+
+
+def test_extract_error_details_error_dict_multiple(validator):
+    message = "An error message."
+    message_details = "Shocking details."
+    sql = "SELECT * FROM orders"
+    query_result = {
+        "status": "error",
+        "data": {
+            "errors": [
+                {"message": message, "message_details": message_details},
+                {"message": message, "message_details": message_details},
+            ],
+            "sql": sql,
+        },
+    }
+    extracted = validator._extract_error_details(query_result)
+    assert len(extracted) == 2
+    assert extracted[0]["message"] == f"{message} {message_details}"
+    assert extracted[0]["sql"] == sql
+    assert extracted[1]["message"] == f"{message} {message_details}"
+    assert extracted[1]["sql"] == sql
 
 
 def test_extract_error_details_error_list(validator):
     message = "An error message."
     query_result = {"status": "error", "data": [message]}
     extracted = validator._extract_error_details(query_result)
-    assert extracted["message"] == message
-    assert extracted["sql"] is None
+    assert extracted[0]["message"] == message
+    assert extracted[0]["sql"] is None
 
 
 def test_extract_error_details_error_other(validator):
@@ -308,8 +330,8 @@ def test_extract_error_details_no_message_details(validator):
         "data": {"errors": [{"message": message, "message_details": None}]},
     }
     extracted = validator._extract_error_details(query_result)
-    assert extracted["message"] == message
-    assert extracted["sql"] is None
+    assert extracted[0]["message"] == message
+    assert extracted[0]["sql"] is None
 
 
 def test_extract_error_details_error_loc_wo_line(validator):
@@ -323,5 +345,5 @@ def test_extract_error_details_error_loc_wo_line(validator):
         },
     }
     extracted = validator._extract_error_details(query_result)
-    assert extracted["message"] == message
-    assert extracted["sql"] == sql
+    assert extracted[0]["message"] == message
+    assert extracted[0]["sql"] == sql
