@@ -1,5 +1,4 @@
 import pytest
-from spectacles.runner import Runner
 from spectacles.exceptions import ApiConnectionError
 
 
