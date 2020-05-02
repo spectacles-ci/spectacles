@@ -106,7 +106,7 @@ def test_dimensions_with_different_sql_can_be_equal():
 
 def test_dimension_should_not_be_errored_if_not_queried(dimension, sql_error):
     assert dimension.errored is None
-    dimension.error = sql_error
+    dimension.errors = [sql_error]
     assert dimension.errored is None
     dimension.queried = True
     assert dimension.errored is True
