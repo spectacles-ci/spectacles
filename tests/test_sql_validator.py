@@ -260,6 +260,62 @@ def test_handle_running_query(validator):
     assert not returned_sql_error
 
 
+def test_handle_error_query_with_warning(validator):
+    query_task_id = "sakgwj392jfkajgjcks"
+    query = Query(
+        query_id="19428",
+        lookml_ref=Dimension("dimension_one", "string", "${TABLE}.dimension_one"),
+        query_task_id=query_task_id,
+        explore_url="https://example.looker.com/x/12345",
+    )
+    query_result = QueryResult(
+        query_task_id=query_task_id,
+        status="error",
+        errors=[
+            {
+                "message": "Note: This query contains derived tables with conditional SQL for Development Mode. Query results in Production Mode might be different."
+            }
+        ],
+    )
+    validator._running_queries = [query]
+    validator._query_by_task_id[query_task_id] = query
+    returned_sql_error = validator._handle_query_result(query_result)
+
+    assert validator._running_queries == []
+    assert not returned_sql_error
+    assert not query.lookml_ref.errored
+
+
+def test_handle_error_query_with_warning_and_error(validator):
+    message = "An error message."
+    sql = "SELECT dimension_one FROM orders"
+    query_task_id = "sakgwj392jfkajgjcks"
+    query = Query(
+        query_id="19428",
+        lookml_ref=Dimension("dimension_one", "string", "${TABLE}.dimension_one"),
+        query_task_id=query_task_id,
+        explore_url="https://example.looker.com/x/12345",
+    )
+    query_result = QueryResult(
+        query_task_id=query_task_id,
+        status="error",
+        errors=[
+            {
+                "message": "Note: This query contains derived tables with conditional SQL for Development Mode. Query results in Production Mode might be different."
+            },
+            {"message": message, "sql": sql},
+        ],
+    )
+    validator._running_queries = [query]
+    validator._query_by_task_id[query_task_id] = query
+    returned_sql_error = validator._handle_query_result(query_result)
+
+    assert validator._running_queries == []
+    assert returned_sql_error
+    assert query.lookml_ref.errored
+    assert len(query.lookml_ref.errors) == 1
+
+
 def test_extract_error_details_error_dict(validator):
     message = "An error message."
     message_details = "Shocking details."
