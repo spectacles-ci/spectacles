@@ -194,7 +194,7 @@ class SqlValidator(Validator):
             Model.from_json(model) for model in self.client.get_lookml_models()
         ]
         project_models = [
-            model for model in all_models if model.project == self.project.name
+            model for model in all_models if model.project_name == self.project.name
         ]
 
         if not project_models:

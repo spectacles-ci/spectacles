@@ -133,9 +133,9 @@ class Explore(LookMlObject):
 
 
 class Model(LookMlObject):
-    def __init__(self, name: str, project: str, explores: List[Explore]):
+    def __init__(self, name: str, project_name: str, explores: List[Explore]):
         self.name = name
-        self.project = project
+        self.project_name = project_name
         self.explores = explores
 
     def __eq__(self, other):
@@ -144,7 +144,7 @@ class Model(LookMlObject):
 
         return (
             self.name == other.name
-            and self.project == other.project
+            and self.project_name == other.project_name
             and self.explores == other.explores
         )
 
