@@ -403,7 +403,7 @@ class SqlValidator(Validator):
             query_results.append(query_result)
         return query_results
 
-    def _handle_query_result(self, result: QueryResult) -> Optional[SqlError]:
+    def _handle_query_result(self, result: QueryResult) -> Optional[List[SqlError]]:
         query = self.get_query_by_task_id(result.query_task_id)
         if result.status in ("complete", "error"):
             self._running_queries.remove(query)
@@ -414,15 +414,18 @@ class SqlValidator(Validator):
             if result.status == "error" and result.errors:
                 errors = []
                 for error in result.errors:
-                    sql_error = SqlError(
-                        path=lookml_object.name,
-                        explore_url=query.explore_url,
-                        url=getattr(lookml_object, "url", None),
-                        **error,
-                    )
-                    errors.append(sql_error)
-                lookml_object.errors = errors
-                return sql_error
+                    if error["message"] not in (
+                        "Note: This query contains derived tables with conditional SQL for Development Mode. Query results in Production Mode might be different."
+                    ):
+                        sql_error = SqlError(
+                            path=lookml_object.name,
+                            explore_url=query.explore_url,
+                            url=getattr(lookml_object, "url", None),
+                            **error,
+                        )
+                        errors.append(sql_error)
+                lookml_object.errors = errors if errors else None
+                return errors
         return None
 
     @staticmethod
