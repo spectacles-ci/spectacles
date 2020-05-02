@@ -119,98 +119,84 @@ class LookerClient:
 
         return response.json()["looker_release_version"]
 
-    def update_session(
-        self, project: str, branch: str, remote_reset: bool = False
-    ) -> None:
-        """Switches to a development mode session and checks out the desired branch.
+    def update_workspace(self, project: str, workspace: str) -> None:
+        """Updates the session workspace.
+
+        Args:
+            project: Name of the Looker project to use.
+            workspace: The workspace to switch to, either 'production' or 'dev'
+        """
+        logger.debug("Updating session to use production workspace")
+        url = utils.compose_url(self.api_url, path=["session"])
+        body = {"workspace_id": workspace}
+        response = self.session.patch(url=url, json=body, timeout=TIMEOUT_SEC)
+        try:
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as error:
+            raise LookerApiError(
+                name="unable-to-update-workspace",
+                title="Couldn't update the session's workspace.",
+                status=response.status_code,
+                detail=(
+                    f"Unable to update workspace to '{workspace}'. "
+                    "If you have any unsaved work on the branch "
+                    "checked out by the user whose API credentials "
+                    "Spectacles is using, please save it and try again."
+                ),
+                response=response,
+            )
+
+    def checkout_branch(self, project: str, branch: str) -> None:
+        """Checks out a new git branch. Only works in dev workspace.
 
         Args:
             project: Name of the Looker project to use.
             branch: Name of the Git branch to check out.
+        """
+        logger.debug(f"Setting Git branch to {branch}")
+        url = utils.compose_url(self.api_url, path=["projects", project, "git_branch"])
+        body = {"name": branch}
+        response = self.session.put(url=url, json=body, timeout=TIMEOUT_SEC)
+        try:
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as error:
+            raise LookerApiError(
+                name="unable-to-checkout-branch",
+                title="Couldn't checkout Git branch.",
+                status=response.status_code,
+                detail=(
+                    f"Unable to checkout Git branch '{branch}'. "
+                    "If you have uncommitted changes on the current branch, "
+                    "please commit or revert them, then try again."
+                ),
+                response=response,
+            )
+
+    def reset_to_remote(self, project: str) -> None:
+        """Reset a project development branch to the revision of the project that is on the remote.
+
+        Args:
+            project: Name of the Looker project to use.
 
         """
-        if branch == "master":
-            logger.debug("Updating session to use production workspace")
-            url = utils.compose_url(self.api_url, path=["session"])
-            body = {"workspace_id": "production"}
-            response = self.session.patch(url=url, json=body, timeout=TIMEOUT_SEC)
-            try:
-                response.raise_for_status()
-            except requests.exceptions.HTTPError:
-                raise LookerApiError(
-                    name="unable-to-set-prod",
-                    title="Couldn't update session to production mode.",
-                    status=response.status_code,
-                    detail=(
-                        "If you have any unsaved work on the branch "
-                        "checked out by the user whose API credentials "
-                        "Spectacles is using, please save it and try again."
-                    ),
-                    response=response,
-                )
-
-        else:
-            logger.debug("Updating session to use development workspace")
-            url = utils.compose_url(self.api_url, path=["session"])
-            body = {"workspace_id": "dev"}
-            response = self.session.patch(url=url, json=body, timeout=TIMEOUT_SEC)
-            try:
-                response.raise_for_status()
-            except requests.exceptions.HTTPError:
-                raise LookerApiError(
-                    name="unable-to-set-dev",
-                    title="Couldn't update session to development mode.",
-                    status=response.status_code,
-                    detail=(
-                        "If you have any unsaved work on the branch "
-                        "checked out by the user whose API credentials "
-                        "Spectacles is using, please save it and try again."
-                    ),
-                    response=response,
-                )
-
-            logger.debug(f"Setting Git branch to {branch}")
-            url = utils.compose_url(
-                self.api_url, path=["projects", project, "git_branch"]
+        logger.debug(f"Resetting branch to remote.")
+        url = utils.compose_url(
+            self.api_url, path=["projects", project, "reset_to_remote"]
+        )
+        response = self.session.post(url=url, timeout=TIMEOUT_SEC)
+        try:
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as error:
+            raise LookerApiError(
+                name="unable-to-reset-remote",
+                title="Couldn't checkout Git branch.",
+                status=response.status_code,
+                detail=(
+                    f"Unable to reset local Git branch"
+                    "to match remote. Please try again."
+                ),
+                response=response,
             )
-            body = {"name": branch}
-            response = self.session.put(url=url, json=body, timeout=TIMEOUT_SEC)
-            try:
-                response.raise_for_status()
-            except requests.exceptions.HTTPError:
-                raise LookerApiError(
-                    name="unable-to-checkout-branch",
-                    title="Couldn't checkout Git branch.",
-                    status=response.status_code,
-                    detail=(
-                        f"Unable to checkout Git branch '{branch}'. "
-                        "If you have uncommitted changes on the current branch, "
-                        "please commit or revert them, then try again."
-                    ),
-                    response=response,
-                )
-
-            if remote_reset:
-                logger.debug(f"Resetting branch {branch} to remote.")
-                url = utils.compose_url(
-                    self.api_url, path=["projects", project, "reset_to_remote"]
-                )
-                response = self.session.post(url=url, timeout=TIMEOUT_SEC)
-                try:
-                    response.raise_for_status()
-                except requests.exceptions.HTTPError:
-                    raise LookerApiError(
-                        name="unable-to-reset-remote",
-                        title="Couldn't checkout Git branch.",
-                        status=response.status_code,
-                        detail=(
-                            f"Unable to reset local Git branch '{branch}' "
-                            "to match remote. Please try again."
-                        ),
-                        response=response,
-                    )
-
-            logger.info(f"Checked out branch {branch}")
 
     def get_manifest(self, project: str) -> JsonDict:
         """Gets all the dependent LookML projects defined in the manifest file.

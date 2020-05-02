@@ -25,7 +25,7 @@ def manage_dependent_branches(fn: Callable) -> Callable:
             response = fn(self, *args, **kwargs)
 
             for project in local_dependencies:
-                self.client.update_session(project["name"], project["active_branch"])
+                self.client.update_branch(project["name"], project["active_branch"])
                 self.client.delete_branch(project["name"], project["temp_branch"])
 
         else:
@@ -70,7 +70,13 @@ class Runner:
         self.client = LookerClient(
             base_url, client_id, client_secret, port, api_version
         )
-        self.client.update_session(project, branch, remote_reset)
+        if branch == "master":
+            self.client.update_workspace(project, "production")
+        else:
+            self.client.update_workspace(project, "dev")
+            self.client.checkout_branch(project, branch)
+            if remote_reset:
+                self.client.reset_to_remote(project)
 
     @manage_dependent_branches
     @log_duration
