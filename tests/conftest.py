@@ -4,6 +4,7 @@ import vcr
 import pytest
 from spectacles.client import LookerClient
 from spectacles.exceptions import SqlError
+from spectacles.lookml import Project, Model, Explore, Dimension
 
 
 @pytest.fixture(scope="session")
@@ -26,6 +27,33 @@ def looker_client(record_mode) -> Iterable[LookerClient]:
         )
         client.update_session(project="eye_exam", branch="master", remote_reset=False)
         yield client
+
+
+@pytest.fixture
+def dimension():
+    return Dimension(
+        name="age",
+        model_name="eye_exam",
+        explore_name="users",
+        type="number",
+        sql='${TABLE}."AGE"',
+        url="/projects/eye_exam/files/views%2Fusers.view.lkml?line=6",
+    )
+
+
+@pytest.fixture
+def explore():
+    return Explore(name="users", model_name="eye_exam")
+
+
+@pytest.fixture
+def model():
+    return Model(name="eye_exam", project_name="eye_exam", explores=[])
+
+
+@pytest.fixture
+def project():
+    return Project(name="eye_exam", models=[])
 
 
 @pytest.fixture

@@ -2,7 +2,7 @@ from unittest.mock import patch
 import pytest
 from tests.constants import ENV_VARS
 from spectacles.cli import main, create_parser, handle_exceptions
-from spectacles.exceptions import SpectaclesException, ValidationError
+from spectacles.exceptions import SpectaclesException
 
 
 @pytest.fixture
@@ -40,8 +40,7 @@ def test_help(parser,):
 
 
 @pytest.mark.parametrize(
-    "exception,exit_code",
-    [(ValueError, 1), (SpectaclesException, 100), (ValidationError, 102)],
+    "exception,exit_code", [(ValueError, 1), (SpectaclesException, 100)]
 )
 def test_handle_exceptions_unhandled_error(exception, exit_code):
     @handle_exceptions

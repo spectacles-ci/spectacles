@@ -5,7 +5,6 @@ import pytest
 import vcr
 from spectacles.validators import SqlValidator, Query, QueryResult
 from spectacles.exceptions import SpectaclesException
-from spectacles.lookml import Dimension
 
 EXPECTED_QUERY_COUNTS = {"models": 1, "explores": 1, "dimensions": 5}
 
@@ -243,13 +242,13 @@ def test_cancel_queries(mock_client_cancel, validator):
         mock_client_cancel.assert_any_call(task_id)
 
 
-def test_handle_running_query(validator):
+def test_handle_running_query(validator, dimension):
     query_task_id = "sakgwj392jfkajgjcks"
     query = Query(
         query_id="19428",
-        lookml_ref=Dimension("dimension_one", "string", "${TABLE}.dimension_one"),
+        lookml_ref=dimension,
         query_task_id=query_task_id,
-        explore_url="https://example.looker.com/x/12345",
+        explore_url="https://spectacles.looker.com/x/qCJsodAZ2Y22QZLbmD0Gvy",
     )
     query_result = QueryResult(query_task_id=query_task_id, status="running")
     validator._running_queries = [query]
