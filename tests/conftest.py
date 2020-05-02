@@ -31,8 +31,10 @@ def looker_client(record_mode) -> Iterable[LookerClient]:
 @pytest.fixture
 def sql_error():
     return SqlError(
-        path="path/to/errored/field",
+        dimension="users.age",
+        explore="users",
+        model="eye_exam",
+        sql="SELECT age FROM users WHERE 1=2 LIMIT 1",
         message="An error occurred.",
-        sql="SELECT * FROM orders",
-        explore_url="https://example.looker.com/x/12345",
+        explore_url="https://spectacles.looker.com/x/qCJsodAZ2Y22QZLbmD0Gvy",
     )

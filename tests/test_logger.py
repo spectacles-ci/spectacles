@@ -1,51 +1,29 @@
 from pathlib import Path
 from spectacles.logger import log_sql_error
-from spectacles.exceptions import SqlError
 
 
-def test_logging_failing_explore_sql(tmpdir):
-    error = SqlError(
-        path="example_explore",
-        message="example error message",
-        sql="select example_explore.example_dimension_1 from model",
-        explore_url="https://example.looker.com/x/12345",
-    )
+def test_logging_failing_explore_sql(tmpdir, sql_error):
+    sql_error.metadata["dimension"] = None
+    expected_directory = Path(tmpdir) / "queries"
+    expected_directory.mkdir(exist_ok=True)
 
-    query_directory = Path(tmpdir / "queries")
-    query_directory.mkdir(exist_ok=True)
-    query_file = Path(query_directory / "explore_model__example_explore.sql")
+    log_sql_error(sql_error, tmpdir)
+    expected_path = expected_directory / "eye_exam__users.sql"
 
-    log_sql_error(error, tmpdir, "explore_model", "example_explore")
-    content = open(query_file).read()
-
-    assert Path.exists(query_file)
-    assert content == "select example_explore.example_dimension_1 from model"
+    assert Path.exists(expected_path)
+    with expected_path.open("r") as file:
+        content = file.read()
+    assert content == "SELECT age FROM users WHERE 1=2 LIMIT 1"
 
 
-def test_logging_failing_dimension_sql(tmpdir):
-    error = SqlError(
-        path="example_explore",
-        message="example error message",
-        sql="select example_explore.example_dimension_1 from model",
-        explore_url="https://example.looker.com/x/12345",
-    )
+def test_logging_failing_dimension_sql(tmpdir, sql_error):
+    expected_directory = Path(tmpdir) / "queries"
+    expected_directory.mkdir(exist_ok=True)
 
-    query_directory = Path(tmpdir / "queries")
-    query_directory.mkdir(exist_ok=True)
-    query_file = (
-        query_directory
-        / "explore_model__example_explore__example_explore.example_dimension_1.sql"
-    )
+    log_sql_error(sql_error, tmpdir)
+    expected_path = expected_directory / "eye_exam__users__users_age.sql"
 
-    log_sql_error(
-        error,
-        tmpdir,
-        "explore_model",
-        "example_explore",
-        "example_explore.example_dimension_1",
-    )
-
-    content = open(query_file).read()
-
-    assert content == "select example_explore.example_dimension_1 from model"
-    assert Path.exists(query_file)
+    assert Path.exists(expected_path)
+    with expected_path.open("r") as file:
+        content = file.read()
+    assert content == "SELECT age FROM users WHERE 1=2 LIMIT 1"
