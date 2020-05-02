@@ -29,11 +29,14 @@ class QueryResult:
     """Stores ID, query status, and error details for a completed query task"""
 
     def __init__(
-        self, query_task_id: str, status: str, error: Optional[Dict[str, Any]] = None
+        self,
+        query_task_id: str,
+        status: str,
+        errors: Optional[List[Dict[str, Any]]] = None,
     ):
         self.query_task_id = query_task_id
         self.status = status
-        self.error = error
+        self.errors = errors
 
 
 class Validator(ABC):  # pragma: no cover
@@ -396,7 +399,7 @@ class SqlValidator(Validator):
                         f"The query result was: {result}"
                     ) from error
                 else:
-                    query_result.error = error_details
+                    query_result.errors = error_details
             query_results.append(query_result)
         return query_results
 
@@ -408,40 +411,48 @@ class SqlValidator(Validator):
             lookml_object = query.lookml_ref
             lookml_object.queried = True
 
-            if result.status == "error" and result.error:
-                sql_error = SqlError(
-                    path=lookml_object.name,
-                    explore_url=query.explore_url,
-                    url=getattr(lookml_object, "url", None),
-                    **result.error,
-                )
-                lookml_object.error = sql_error
+            if result.status == "error" and result.errors:
+                errors = []
+                for error in result.errors:
+                    sql_error = SqlError(
+                        path=lookml_object.name,
+                        explore_url=query.explore_url,
+                        url=getattr(lookml_object, "url", None),
+                        **error,
+                    )
+                    errors.append(sql_error)
+                lookml_object.errors = errors
                 return sql_error
         return None
 
     @staticmethod
-    def _extract_error_details(query_result: Dict) -> Dict:
-        """Extracts the relevant error fields from a Looker API response"""
+    def _extract_error_details(query_result: Dict) -> List[Dict]:
+        details = []
         data = query_result["data"]
         if isinstance(data, dict):
-            errors = data.get("errors") or [data.get("error")]
-            first_error = errors[0]
-            message = " ".join(
-                filter(
-                    None,
-                    [first_error.get("message"), first_error.get("message_details")],
-                )
-            )
             sql = data.get("sql")
-            error_loc = first_error.get("sql_error_loc")
-            if error_loc:
-                line_number = error_loc.get("line")
-            else:
-                line_number = None
+            errors = data.get("errors") or [data.get("error")]
+            for error in errors:
+                if isinstance(error, str):
+                    details.append({"message": error, "sql": sql, "line_number": None})
+                else:
+                    message = " ".join(
+                        filter(
+                            None, [error.get("message"), error.get("message_details")]
+                        )
+                    )
+                    line_number = None
+                    error_loc = error.get("sql_error_loc")
+                    if error_loc:
+                        line_number = error_loc.get("line")
+
+                    details.append(
+                        {"message": message, "sql": sql, "line_number": line_number}
+                    )
+
         elif isinstance(data, list):
-            message = data[0]
-            line_number = None
-            sql = None
+            for error in data:
+                details.append({"message": error, "sql": None, "line_number": None})
         else:
             raise TypeError(
                 "Unexpected error response type. "
@@ -449,7 +460,7 @@ class SqlValidator(Validator):
                 f"received type {type(data)}: {data}"
             )
 
-        return {"message": message, "sql": sql, "line_number": line_number}
+        return details
 
     def _cancel_queries(self, query_task_ids: List[str]) -> None:
         """Asks the Looker API to cancel specified queries"""

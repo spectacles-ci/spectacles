@@ -15,7 +15,7 @@ class Dimension(LookMlObject):
         self.sql = sql
         self.url = url
         self.queried: bool = False
-        self.error: Optional[SqlError] = None
+        self.errors: Optional[List[SqlError]] = None
         if re.search(r"spectacles\s*:\s*ignore", sql, re.IGNORECASE):
             self.ignore = True
         else:
@@ -40,7 +40,7 @@ class Dimension(LookMlObject):
 
     @property
     def errored(self):
-        return bool(self.error) if self.queried else None
+        return bool(self.errors) if self.queried else None
 
     @errored.setter
     def errored(self, value):
@@ -64,7 +64,7 @@ class Explore(LookMlObject):
         self.name = name
         self.dimensions = [] if dimensions is None else dimensions
         self.queried: bool = False
-        self.error: Optional[SqlError] = None
+        self.errors: Optional[List[SqlError]] = None
 
     def __eq__(self, other):
         if not isinstance(other, Explore):
@@ -75,7 +75,7 @@ class Explore(LookMlObject):
     @property
     def errored(self):
         if self.queried:
-            return bool(self.error) or any(
+            return bool(self.errors) or any(
                 dimension.errored for dimension in self.dimensions
             )
         else:
