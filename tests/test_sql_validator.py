@@ -390,6 +390,14 @@ def test_extract_error_details_no_message_details(validator):
     assert extracted[0]["sql"] is None
 
 
+def test_extract_error_details_string(validator):
+    message = "An error message."
+    query_result = {"status": "error", "data": {"error": message}}
+    extracted = validator._extract_error_details(query_result)
+    assert extracted[0]["message"] == message
+    assert extracted[0]["sql"] is None
+
+
 def test_extract_error_details_error_loc_wo_line(validator):
     message = "An error message."
     sql = "SELECT x FROM orders"
