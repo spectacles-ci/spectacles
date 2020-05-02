@@ -25,7 +25,7 @@ def manage_dependent_branches(fn: Callable) -> Callable:
             response = fn(self, *args, **kwargs)
 
             for project in local_dependencies:
-                self.client.update_branch(project["name"], project["active_branch"])
+                self.client.checkout_branch(project["name"], project["active_branch"])
                 self.client.delete_branch(project["name"], project["temp_branch"])
 
         else:
