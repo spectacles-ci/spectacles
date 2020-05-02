@@ -15,7 +15,7 @@ def test_logging_failing_explore_sql(tmpdir):
     query_directory.mkdir(exist_ok=True)
     query_file = Path(query_directory / "explore_model__example_explore.sql")
 
-    log_sql_error(error, tmpdir, "explore_model", "example_explore")
+    log_sql_error([error], tmpdir, "explore_model", "example_explore")
     content = open(query_file).read()
 
     assert Path.exists(query_file)
@@ -38,7 +38,7 @@ def test_logging_failing_dimension_sql(tmpdir):
     )
 
     log_sql_error(
-        error,
+        [error],
         tmpdir,
         "explore_model",
         "example_explore",
