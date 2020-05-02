@@ -534,17 +534,21 @@ def run_sql(
         for model in iter_errors(project.models):
             for explore in iter_errors(model.explores):
                 if explore.errors and mode == "batch":
+                    file_path = log_sql_error(
+                        explore.errors, log_dir, model.name, explore.name
+                    )
                     for error in explore.errors:
                         printer.print_sql_error(error)
-                        file_path = log_sql_error(
-                            error, log_dir, model.name, explore.name
-                        )
                 else:
                     for dimension in iter_errors(explore.dimensions):
+                        file_path = log_sql_error(
+                            dimension.errors,
+                            log_dir,
+                            model.name,
+                            explore.name,
+                            dimension.name,
+                        )
                         for error in dimension.errors:
-                            file_path = log_sql_error(
-                                error, log_dir, model.name, explore.name, dimension.name
-                            )
                             printer.print_sql_error(error)
                 logger.info("\n" + f"Test SQL: {file_path}")
 

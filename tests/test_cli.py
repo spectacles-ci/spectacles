@@ -181,3 +181,37 @@ def test_bad_config_file_parameter(mock_parse_config, clean_env, parser):
 def test_parse_remote_reset_with_assert(env, parser):
     args = parser.parse_args(["assert", "--remote-reset"])
     assert args.remote_reset
+
+
+@patch("spectacles.cli.run_sql")
+def test_main_with_sql_command(run_sql, env, monkeypatch):
+    monkeypatch.setattr(
+        "sys.argv",
+        ["spectacles", "sql", "--project", "project_name", "--branch", "branch_name"],
+    )
+    main()
+    run_sql.assert_called_once()
+
+
+@patch("spectacles.cli.run_assert")
+def test_main_with_assert_command(run_assert, env, monkeypatch):
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "spectacles",
+            "assert",
+            "--project",
+            "project_name",
+            "--branch",
+            "branch_name",
+        ],
+    )
+    main()
+    run_assert.assert_called_once()
+
+
+@patch("spectacles.cli.run_connect")
+def test_main_with_connect_command(run_connect, env, monkeypatch):
+    monkeypatch.setattr("sys.argv", ["spectacles", "connect"])
+    main()
+    run_connect.assert_called_once()

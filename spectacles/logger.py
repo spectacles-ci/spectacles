@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 from pathlib import Path
 import logging
 import colorama  # type: ignore
@@ -57,7 +57,7 @@ class FileFormatter(logging.Formatter):
 
 
 def log_sql_error(
-    error: SqlError,
+    errors: List[SqlError],
     log_dir: str,
     model_name: str,
     explore_name: str,
@@ -72,6 +72,8 @@ def log_sql_error(
         + ".sql"
     )
     file_path = Path(log_dir) / "queries" / file_name
+
+    error = errors[0]
 
     logger.debug(f"Logging failing SQL query for '{error.path}' to '{file_path}'")
     logger.debug(f"Failing SQL for {error.path}: \n{error.sql}")
