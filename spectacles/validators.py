@@ -69,6 +69,9 @@ class DataTestValidator(Validator):
 
     def validate(self) -> Dict[str, Any]:
         tests = self.client.all_lookml_tests(self.project)
+
+        # The error objects don't contain the name of the explore
+        # We create this mapping to help look up the explore from the test name (unique)
         test_to_explore = {test["name"]: test["explore_name"] for test in tests}
 
         test_count = len(tests)
@@ -103,6 +106,7 @@ class DataTestValidator(Validator):
             """Aggregate individual test results to get pass/fail by explore"""
             agg = OrderedDict()
             for result in results:
+                # Keys by model and explore, adds additional values for `passed` to a set
                 agg.setdefault((result["model"], result["explore"]), set()).add(
                     result["passed"]
                 )
