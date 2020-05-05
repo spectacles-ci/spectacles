@@ -7,7 +7,13 @@ def test_logging_failing_explore_sql(tmpdir, sql_error):
     expected_directory = Path(tmpdir) / "queries"
     expected_directory.mkdir(exist_ok=True)
 
-    log_sql_error(sql_error, tmpdir)
+    log_sql_error(
+        sql_error.model,
+        sql_error.explore,
+        sql_error.test,
+        tmpdir,
+        sql_error.metadata["dimension"],
+    )
     expected_path = expected_directory / "eye_exam__users.sql"
 
     assert Path.exists(expected_path)
@@ -20,7 +26,13 @@ def test_logging_failing_dimension_sql(tmpdir, sql_error):
     expected_directory = Path(tmpdir) / "queries"
     expected_directory.mkdir(exist_ok=True)
 
-    log_sql_error(sql_error, tmpdir)
+    log_sql_error(
+        sql_error.model,
+        sql_error.explore,
+        sql_error.test,
+        tmpdir,
+        sql_error.metadata["dimension"],
+    )
     expected_path = expected_directory / "eye_exam__users__users_age.sql"
 
     assert Path.exists(expected_path)
