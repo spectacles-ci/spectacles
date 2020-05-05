@@ -1,19 +1,11 @@
-from pathlib import Path
 from copy import deepcopy
-import json
 import pytest
 from spectacles.lookml import Model, Explore, Dimension
-
-
-def load(filename):
-    """Helper method to load a JSON file from tests/resources and parse it."""
-    path = Path(__file__).parent / "resources" / filename
-    with path.open() as file:
-        return json.load(file)
+from tests.utils import load_resource
 
 
 def test_model_from_json():
-    json_dict = load("response_models.json")
+    json_dict = load_resource("response_models.json")
     model = Model.from_json(json_dict[0])
     assert model.name == "test_model_one"
     assert model.project_name == "test_project"
@@ -22,7 +14,7 @@ def test_model_from_json():
 
 def test_explore_from_json():
     model_name = "eye_exam"
-    json_dict = load("response_models.json")
+    json_dict = load_resource("response_models.json")
     explore = Explore.from_json(json_dict[0]["explores"][0], model_name)
     assert explore.name == "test_explore_one"
     assert explore.model_name == model_name
@@ -32,7 +24,7 @@ def test_explore_from_json():
 def test_dimension_from_json():
     model_name = "eye_exam"
     explore_name = "users"
-    json_dict = load("response_dimensions.json")
+    json_dict = load_resource("response_dimensions.json")
     dimension = Dimension.from_json(json_dict[0], model_name, explore_name)
     assert dimension.name == "test_view.dimension_one"
     assert dimension.model_name == model_name
