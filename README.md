@@ -1,4 +1,5 @@
-# Spectacles
+<img src="https://github.com/spectacles-ci/spectacles/raw/master/docs/img/logo.png" width="600">
+
 [![CircleCI](https://circleci.com/gh/spectacles-ci/spectacles.svg?style=svg)](https://circleci.com/gh/spectacles-ci/spectacles)
 [![codecov](https://codecov.io/gh/spectacles-ci/spectacles/branch/master/graph/badge.svg)](https://codecov.io/gh/spectacles-ci/spectacles)
 
