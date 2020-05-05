@@ -1,5 +1,5 @@
 import re
-from typing import Dict, List, Sequence, Optional
+from typing import Dict, List, Sequence, Optional, Any
 from spectacles.exceptions import SqlError
 
 
@@ -240,7 +240,7 @@ class Project(LookMlObject):
             if model.errored:
                 yield model
 
-    def get_results(self) -> Dict[str, List]:
+    def get_results(self) -> Dict[str, Any]:
         errors = []
         tested = []
 
@@ -258,7 +258,12 @@ class Project(LookMlObject):
                 if explore.errored:
                     passed = False
                     parse_explore_errors(explore)
-                test = {"model": model.name, "explore": explore.name, "passed": passed}
+                test: Dict[str, Any] = {
+                    "model": model.name,
+                    "explore": explore.name,
+                    "passed": passed,
+                }
                 tested.append(test)
 
-        return {"tested": tested, "errors": errors}
+        passed = max(test["passed"] for test in tested)
+        return {"passed": passed, "tested": tested, "errors": errors}
