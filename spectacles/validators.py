@@ -124,7 +124,7 @@ class DataTestValidator(Validator):
 
         passed = min(test["passed"] for test in tested)
         return {
-            "validator": "sql",
+            "validator": "data_test",
             "passed": passed,
             "tested": tested,
             "errors": errors,
