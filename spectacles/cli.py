@@ -9,8 +9,8 @@ from typing import Callable, Iterable, List
 from spectacles import __version__
 from spectacles.runner import Runner
 from spectacles.client import LookerClient
-from spectacles.exceptions import SpectaclesException, ValidationError
-from spectacles.logger import GLOBAL_LOGGER as logger, set_file_handler, log_sql_error
+from spectacles.exceptions import SpectaclesException, GenericValidationError
+from spectacles.logger import GLOBAL_LOGGER as logger, set_file_handler
 import spectacles.printer as printer
 
 
@@ -135,7 +135,7 @@ def handle_exceptions(function: Callable) -> Callable:
     def wrapper(*args, **kwargs):
         try:
             return function(*args, **kwargs)
-        except ValidationError as error:
+        except GenericValidationError as error:
             sys.exit(error.exit_code)
         except SpectaclesException as error:
             logger.error(
@@ -484,12 +484,22 @@ def run_assert(
         remote_reset,
         import_projects,
     )
-    errors = runner.validate_data_tests()
+    results = runner.validate_data_tests()
+
+    errors = sorted(
+        results["errors"],
+        key=lambda x: (x["model"], x["explore"], x["metadata"]["test_name"]),
+    )
     if errors:
-        for error in sorted(errors, key=lambda x: (x.model, x.explore)):
-            printer.print_data_test_error(error)
+        for error in errors:
+            printer.print_data_test_error(
+                error["model"],
+                error["explore"],
+                error["metadata"]["test_name"],
+                error["message"],
+            )
         logger.info("")
-        raise error
+        raise GenericValidationError
     else:
         logger.info("")
 
@@ -528,25 +538,25 @@ def run_sql(
             if item.errored:
                 yield item
 
-    project = runner.validate_sql(explores, exclude, mode, concurrency)
+    results = runner.validate_sql(explores, exclude, mode, concurrency)
+    errors = sorted(
+        results["errors"],
+        key=lambda x: (x["model"], x["explore"], x["metadata"].get("dimension")),
+    )
 
-    if project.errored:
-        for model in iter_errors(project.models):
-            for explore in iter_errors(model.explores):
-                if explore.error and mode == "batch":
-                    error = explore.error
-                    printer.print_sql_error(explore.error)
-                    file_path = log_sql_error(explore.error, log_dir)
-                    logger.info("\n" + f"Test SQL: {file_path}")
-                else:
-                    for dimension in iter_errors(explore.dimensions):
-                        error = dimension.error
-                        printer.print_sql_error(dimension.error)
-                        file_path = log_sql_error(dimension.error, log_dir)
-                        logger.info("\n" + f"Test SQL: {file_path}")
-
+    if errors:
+        for error in errors:
+            printer.print_sql_error(
+                model=error["model"],
+                explore=error["explore"],
+                message=error["message"],
+                sql=error["test"],
+                log_dir=log_dir,
+                dimension=error["metadata"].get("dimension"),
+                lookml_url=error["metadata"].get("lookml_url"),
+            )
         logger.info("")
-        raise error
+        raise GenericValidationError
     else:
         logger.info("")
 
