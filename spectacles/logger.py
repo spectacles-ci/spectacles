@@ -59,12 +59,9 @@ def log_sql_error(
     model: str, explore: str, sql: str, log_dir: str, dimension: Optional[str] = None
 ) -> Path:
     file_name = (
-        model
-        + "__"
-        + explore
-        + ("__" + dimension.replace(".", "_") if dimension else "")
-        + ".sql"
-    )
+        model + "__" + explore + ("__" + dimension if dimension else "")
+    ).replace(".", "_")
+    file_name += ".sql"
     file_path = Path(log_dir) / "queries" / file_name
 
     logger.debug(f"Logging failing SQL query to '{file_path}'")
