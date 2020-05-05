@@ -59,7 +59,7 @@ def client_kwargs():
 @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
 def test_branch_management_should_work(looker_client):
     project = "eye_exam"
-    tmp_branch = f"tmp-pytest"
+    tmp_branch = "tmp-pytest"
     looker_client.update_session(
         project="eye_exam", branch="pytest", remote_reset=False
     )
@@ -146,75 +146,3 @@ def test_authenticate_should_set_session_headers(mock_post, monkeypatch):
     mock_post.return_value = mock_post_response
     client = LookerClient("base_url", "client_id", "client_secret")
     assert client.session.headers == {"Authorization": f"token test_access_token"}
-
-
-# @pytest.mark.vcr
-# def test_get_manifest(mock_get, looker_client):
-#     mock_get.return_value.json.return_value = {
-#         "name": "project_name",
-#         "imports": [
-#             {"name": "local_one", "is_remote": False},
-#             {"name": "remote_one", "is_remote": True},
-#         ],
-#     }
-#     local_dependencies = looker_client.get_manifest("project_name")
-#     assert local_dependencies == {
-#         "name": "project_name",
-#         "imports": [
-#             {"name": "local_one", "is_remote": False},
-#             {"name": "remote_one", "is_remote": True},
-#         ],
-#     }
-#     mock_get.assert_called_once_with(
-#         url="https://test.looker.com:19999/api/3.1/projects/project_name/manifest",
-#         timeout=300,
-#     )
-
-
-# @patch("spectacles.client.requests.Session.post")
-# def test_create_branch(mock_post, client):
-#     client.create_branch("project_name", "test_branch_name")
-#     mock_post.assert_called_once_with(
-#         url="https://test.looker.com:19999/api/3.1/projects/project_name/git_branch",
-#         timeout=300,
-#         json={"name": "test_branch_name", "ref": "origin/master"},
-#     )
-
-
-# @patch("spectacles.client.requests.Session.post")
-# def test_create_branch_with_ref(mock_post, client):
-#     client.create_branch("project_name", "test_branch_name", "commit_hash")
-#     mock_post.assert_called_once_with(
-#         url="https://test.looker.com:19999/api/3.1/projects/project_name/git_branch",
-#         timeout=300,
-#         json={"name": "test_branch_name", "ref": "commit_hash"},
-#     )
-
-
-# @patch("spectacles.client.requests.Session.put")
-# def test_update_branch(mock_put, client):
-#     client.update_branch("project_name", "test_branch_name")
-#     mock_put.assert_called_once_with(
-#         url="https://test.looker.com:19999/api/3.1/projects/project_name/git_branch",
-#         timeout=300,
-#         json={"name": "test_branch_name", "ref": "origin/master"},
-#     )
-
-
-# @patch("spectacles.client.requests.Session.put")
-# def test_update_branch_with_ref(mock_put, client):
-#     client.update_branch("project_name", "test_branch_name", "commit_hash")
-#     mock_put.assert_called_once_with(
-#         url="https://test.looker.com:19999/api/3.1/projects/project_name/git_branch",
-#         timeout=300,
-#         json={"name": "test_branch_name", "ref": "commit_hash"},
-#     )
-
-
-# @patch("spectacles.client.requests.Session.delete")
-# def test_delete_branch(mock_delete, client):
-#     client.delete_branch("project_name", "test_branch_name")
-#     mock_delete.assert_called_once_with(
-#         url="https://test.looker.com:19999/api/3.1/projects/project_name/git_branch/test_branch_name",
-#         timeout=300,
-#     )
