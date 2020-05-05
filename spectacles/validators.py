@@ -122,7 +122,8 @@ class DataTestValidator(Validator):
                 passed=test["passed"], source=f"{test['model']}.{test['explore']}"
             )
 
-        return {"tested": tested, "errors": errors}
+        passed = max(test["passed"] for test in tested)
+        return {"passed": passed, "tested": tested, "errors": errors}
 
 
 class SqlValidator(Validator):
