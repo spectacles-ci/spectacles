@@ -47,7 +47,7 @@ class Dimension(LookMlObject):
         raise AttributeError(
             "Cannot assign to 'errored' property of a Dimension instance. "
             "For a dimension to be considered errored, it must have a SqlError "
-            "in its 'error' property."
+            "in its 'error' attribute."
         )
 
     @classmethod
@@ -82,11 +82,12 @@ class Explore(LookMlObject):
             return None
 
     @errored.setter
-    def errored(self, value: bool):
-        if not isinstance(value, bool):
-            raise TypeError("Value for errored must be boolean.")
-        for dimensions in self.dimensions:
-            dimensions.errored = value
+    def errored(self, value):
+        raise AttributeError(
+            "Cannot assign to 'errored' property of an Explore instance. "
+            "For an explore to be considered errored, it must have a SqlError "
+            "in its 'error' attribute or contain dimensions in an errored state."
+        )
 
     @property
     def queried(self):
@@ -96,8 +97,9 @@ class Explore(LookMlObject):
     def queried(self, value: bool):
         if not isinstance(value, bool):
             raise TypeError("Value for queried must be boolean.")
-        for dimensions in self.dimensions:
-            dimensions.queried = value
+        for dimension in self.dimensions:
+            if not dimension.ignore:
+                dimension.queried = value
 
     def get_errored_dimensions(self):
         for dimension in self.dimensions:
@@ -140,6 +142,10 @@ class Model(LookMlObject):
     def errored(self, value: bool):
         if not isinstance(value, bool):
             raise TypeError("Value for errored must be boolean.")
+        if not self.explores:
+            raise AttributeError(
+                "Cannot assign to 'errored' property because this model does not have any explores."
+            )
         for explore in self.explores:
             explore.errored = value
 
@@ -189,6 +195,10 @@ class Project(LookMlObject):
     def errored(self, value: bool):
         if not isinstance(value, bool):
             raise TypeError("Value for errored must be boolean.")
+        if not self.models:
+            raise AttributeError(
+                "Cannot assign to 'errored' property because this project does not have any models."
+            )
         for model in self.models:
             model.errored = value
 

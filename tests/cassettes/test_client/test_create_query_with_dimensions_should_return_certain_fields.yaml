@@ -1,0 +1,36 @@
+interactions:
+- request:
+    body: '{"model": "eye_exam", "view": "users", "fields": ["id", "age"], "limit":
+      0, "filter_expression": "1=2"}'
+    headers:
+      Content-Length:
+      - '103'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=683
+    method: POST
+    uri: https://spectacles.looker.com:19999/api/3.1/queries
+  response:
+    body:
+      string: '{"id":1887,"view":"users","fields":["id","age"],"pivots":null,"fill_fields":null,"filters":null,"filter_expression":"1=2","sorts":null,"limit":"0","column_limit":null,"total":null,"row_total":null,"subtotals":null,"vis_config":null,"filter_config":null,"visible_ui_sections":null,"slug":"TTHKxrS","dynamic_fields":null,"client_id":"J6reUEcBRdnTlgsWG84cVB","share_url":"https://spectacles.looker.com/x/J6reUEcBRdnTlgsWG84cVB","expanded_share_url":"https://spectacles.looker.com/explore/eye_exam/users?fields=id,age\u0026filter_expression=1%3D2\u0026limit=0\u0026origin=share-expanded","url":"/explore/eye_exam/users?fields=id,age\u0026filter_expression=1%3D2\u0026limit=0","query_timezone":null,"runtime":null,"has_table_calculations":false,"model":"eye_exam","can":{"run":true,"see_results":true,"explore":true,"create":true,"show":true,"cost_estimate":true,"index":true,"see_lookml":true,"see_aggregate_table_lookml":false,"see_derived_table_lookml":true,"see_sql":true,"generate_drill_links":true,"download":true,"download_unlimited":true,"schedule":true,"render":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '1072'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 01 May 2020 23:07:24 GMT
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+version: 1

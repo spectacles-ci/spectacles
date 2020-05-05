@@ -165,7 +165,9 @@ class SqlValidator(Validator):
             )
         return [each for each in select_from if each.name in unique_choices]
 
-    def build_project(self, selectors: List[str], exclusions: List[str]) -> None:
+    def build_project(
+        self, selectors: List[str] = None, exclusions: List[str] = None
+    ) -> None:
         """Creates an object representation of the project's LookML.
 
         Args:
@@ -174,6 +176,12 @@ class SqlValidator(Validator):
                 'model_name/*' would select all explores in the 'model_name' model.
 
         """
+        # Set default values for selecting and excluding
+        if not selectors:
+            selectors = ["*/*"]
+        if not exclusions:
+            exclusions = []
+
         selection = self.parse_selectors(selectors)
         exclusion = self.parse_selectors(exclusions)
         logger.info(
@@ -259,6 +267,7 @@ class SqlValidator(Validator):
 
     def validate(self, mode: str = "batch") -> Project:
         """Queries selected explores and returns the project tree with errors."""
+        self._query_by_task_id = {}
         explore_count = self._count_explores()
         printer.print_header(
             f"Testing {explore_count} "
@@ -363,37 +372,6 @@ class SqlValidator(Validator):
             query.query_task_id = query_task_id
             self._query_by_task_id[query_task_id] = query
             self._running_queries.append(query)
-
-    def _get_completed_query_tasks(
-        self, query_task_ids: List[str]
-    ) -> List[QueryResult]:
-        """Returns ID, status, and error message for completed and errored tasks"""
-        query_results = []
-        results = self.client.get_query_task_multi_results(query_task_ids)
-        for query_task_id, result in results.items():
-            status = result["status"]
-            logger.debug(f"Query task {query_task_id} status is: {status}")
-            if status in ("complete", "error"):
-                self.query_slots += 1
-                query_result = QueryResult(query_task_id, status)
-                if status == "error":
-                    try:
-                        query_result.error = self._extract_error_details(result)
-                    except (KeyError, TypeError, IndexError) as error:
-                        raise SpectaclesException(
-                            "Encountered an unexpected API query result format, "
-                            "unable to extract error details. "
-                            f"The query result was: {result}"
-                        ) from error
-                query_results.append(query_result)
-            elif status in ("running", "added", "expired"):
-                continue
-            else:
-                raise SpectaclesException(
-                    f'Unexpected query result status "{status}" '
-                    "returned by the Looker API"
-                )
-        return query_results
 
     def _get_query_results(self, query_task_ids: List[str]) -> List[QueryResult]:
         """Returns ID, status, and error message for all query tasks"""

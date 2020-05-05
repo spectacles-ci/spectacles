@@ -24,6 +24,7 @@ jobs:
       - run:
           name: install spectacles
           command: |
+            sudo apt-get install libyaml-dev
             python3 -m venv venv
             . venv/bin/activate
             pip install -r requirements-dev.txt
@@ -56,7 +57,7 @@ jobs:
           name: pytest
           command: |
             . venv/bin/activate
-            python -m pytest
+            python -m pytest -p no:randomly --record-mode=none
 
       - run:
           name: coverage
