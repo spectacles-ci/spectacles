@@ -6,7 +6,6 @@ import jsonschema
 import vcr
 from spectacles.validators import SqlValidator, Query, QueryResult
 from spectacles.exceptions import SpectaclesException
-from tests.utils import load_resource
 
 EXPECTED_QUERY_COUNTS = {"models": 1, "explores": 1, "dimensions": 5}
 
@@ -21,11 +20,6 @@ def validator(looker_client, record_mode) -> Iterable[SqlValidator]:
     ):
         validator = SqlValidator(looker_client, project="eye_exam")
         yield validator
-
-
-@pytest.fixture
-def schema():
-    return load_resource("validation_schema.json")
 
 
 @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])

@@ -5,6 +5,7 @@ import pytest
 from spectacles.client import LookerClient
 from spectacles.exceptions import SqlError
 from spectacles.lookml import Project, Model, Explore, Dimension
+from tests.utils import load_resource
 
 
 @pytest.fixture(scope="session")
@@ -66,3 +67,8 @@ def sql_error():
         message="An error occurred.",
         explore_url="https://spectacles.looker.com/x/qCJsodAZ2Y22QZLbmD0Gvy",
     )
+
+
+@pytest.fixture
+def schema():
+    return load_resource("validation_schema.json")
