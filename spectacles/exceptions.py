@@ -9,9 +9,11 @@ class ApiConnectionError(SpectaclesException):
     exit_code = 101
 
 
-class ValidationError(SpectaclesException):
+class GenericValidationError(SpectaclesException):
     exit_code = 102
 
+
+class ValidationError(GenericValidationError):
     def __init__(
         self,
         model: str,

@@ -1,7 +1,7 @@
+from typing import Optional
 from pathlib import Path
 import logging
 import colorama  # type: ignore
-from spectacles.exceptions import SqlError
 
 LOG_FILENAME = "spectacles.log"
 COLORS = {
@@ -55,22 +55,22 @@ class FileFormatter(logging.Formatter):
         return formatted
 
 
-def log_sql_error(error: SqlError, log_dir: str) -> Path:
-    dimension = error.metadata["dimension"]
+def log_sql_error(
+    model: str, explore: str, sql: str, log_dir: str, dimension: Optional[str] = None
+) -> Path:
     file_name = (
-        error.model
+        model
         + "__"
-        + error.explore
+        + explore
         + ("__" + dimension.replace(".", "_") if dimension else "")
         + ".sql"
     )
     file_path = Path(log_dir) / "queries" / file_name
 
     logger.debug(f"Logging failing SQL query to '{file_path}'")
-    logger.debug(f"Failing SQL: \n{error.test}")
+    logger.debug(f"Failing SQL: \n{sql}")
 
-    if error.test:
-        with open(file_path, "w") as file:
-            file.write(error.test)
+    with open(file_path, "w") as file:
+        file.write(sql)
 
     return file_path
