@@ -76,7 +76,10 @@
                         "type": "string"
                     },
                     "test": {
-                        "type": "string"
+                        "type": [
+                            "string",
+                            "null"
+                        ]
                     },
                     "message": {
                         "type": "string"
