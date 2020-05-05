@@ -1,7 +1,7 @@
 import time
 from typing import Any, List, Dict, Sequence, DefaultDict, Union, Optional
 from abc import ABC, abstractmethod
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 from spectacles.client import LookerClient
 from spectacles.lookml import Project, Model, Explore, Dimension
 from spectacles.logger import GLOBAL_LOGGER as logger
@@ -67,28 +67,68 @@ class DataTestValidator(Validator):
         super().__init__(client)
         self.project = project
 
-    def validate(self) -> List[DataTestError]:
+    def validate(self) -> Dict[str, Any]:
         tests = self.client.all_lookml_tests(self.project)
+
+        # The error objects don't contain the name of the explore
+        # We create this mapping to help look up the explore from the test name (unique)
+        test_to_explore = {test["name"]: test["explore_name"] for test in tests}
+
         test_count = len(tests)
         printer.print_header(
             f"Running {test_count} {'test' if test_count == 1 else 'tests'}"
         )
+
+        tested = []
         errors = []
         test_results = self.client.run_lookml_test(self.project)
+
         for result in test_results:
-            message = f"{result['model_name']}.{result['test_name']}"
-            if result["success"]:
-                printer.print_validation_result("success", message)
-            else:
+            explore = test_to_explore[result["test_name"]]
+            test = {
+                "model": result["model_name"],
+                "explore": explore,
+                "passed": result["success"],
+            }
+            tested.append(test)
+            if not result["success"]:
                 for error in result["errors"]:
-                    printer.print_validation_result("error", message)
                     errors.append(
                         DataTestError(
-                            path=f"{result['model_name']}/{result['test_name']}",
+                            model=error["model_id"],
+                            explore=error["explore"],
                             message=error["message"],
-                        )
+                            test_name=result["test_name"],
+                        ).__dict__
                     )
-        return errors
+
+        def reduce_result(results):
+            """Aggregate individual test results to get pass/fail by explore"""
+            agg = OrderedDict()
+            for result in results:
+                # Keys by model and explore, adds additional values for `passed` to a set
+                agg.setdefault((result["model"], result["explore"]), set()).add(
+                    result["passed"]
+                )
+            reduced = [
+                {"model": k[0], "explore": k[1], "passed": min(v)}
+                for k, v in agg.items()
+            ]
+            return reduced
+
+        tested = reduce_result(tested)
+        for test in tested:
+            printer.print_validation_result(
+                passed=test["passed"], source=f"{test['model']}.{test['explore']}"
+            )
+
+        passed = min(test["passed"] for test in tested)
+        return {
+            "validator": "data_test",
+            "passed": passed,
+            "tested": tested,
+            "errors": errors,
+        }
 
 
 class SqlValidator(Validator):
@@ -192,7 +232,7 @@ class SqlValidator(Validator):
             Model.from_json(model) for model in self.client.get_lookml_models()
         ]
         project_models = [
-            model for model in all_models if model.project == self.project.name
+            model for model in all_models if model.project_name == self.project.name
         ]
 
         if not project_models:
@@ -254,7 +294,9 @@ class SqlValidator(Validator):
                     model.name, explore.name
                 )
                 for dimension_json in dimensions_json:
-                    dimension = Dimension.from_json(dimension_json)
+                    dimension = Dimension.from_json(
+                        dimension_json, model.name, explore.name
+                    )
                     dimension.url = self.client.base_url + dimension.url
                     if not dimension.ignore:
                         explore.add_dimension(dimension)
@@ -265,7 +307,7 @@ class SqlValidator(Validator):
             model for model in selected_models if len(model.explores) > 0
         ]
 
-    def validate(self, mode: str = "batch") -> Project:
+    def validate(self, mode: str = "batch") -> Dict[str, Any]:
         """Queries selected explores and returns the project tree with errors."""
         self._query_by_task_id = {}
         explore_count = self._count_explores()
@@ -283,12 +325,11 @@ class SqlValidator(Validator):
         for model in sorted(self.project.models, key=lambda x: x.name):
             for explore in sorted(model.explores, key=lambda x: x.name):
                 message = f"{model.name}.{explore.name}"
-                if explore.errored:
-                    printer.print_validation_result("error", message)
-                else:
-                    printer.print_validation_result("success", message)
+                printer.print_validation_result(
+                    passed=not explore.errored, source=message
+                )
 
-        return self.project
+        return self.project.get_results()
 
     def _create_and_run(self, mode: str = "batch") -> None:
         """Runs a single validation using a specified mode"""
@@ -409,10 +450,20 @@ class SqlValidator(Validator):
             lookml_object.queried = True
 
             if result.status == "error" and result.error:
+                model_name = lookml_object.model_name
+                dimension_name: Optional[str] = None
+                if isinstance(lookml_object, Dimension):
+                    explore_name = lookml_object.explore_name
+                    dimension_name = lookml_object.name
+                else:
+                    explore_name = lookml_object.name
+
                 sql_error = SqlError(
-                    path=lookml_object.name,
+                    model=model_name,
+                    explore=explore_name,
+                    dimension=dimension_name,
                     explore_url=query.explore_url,
-                    url=getattr(lookml_object, "url", None),
+                    lookml_url=getattr(lookml_object, "url", None),
                     **result.error,
                 )
                 lookml_object.error = sql_error

@@ -1,11 +1,11 @@
-from typing import Iterable
+from typing import Iterable, Tuple, Dict
 from collections import defaultdict
 from unittest.mock import patch, create_autospec
 import pytest
+import jsonschema
 import vcr
 from spectacles.validators import SqlValidator, Query, QueryResult
 from spectacles.exceptions import SpectaclesException
-from spectacles.lookml import Dimension
 
 EXPECTED_QUERY_COUNTS = {"models": 1, "explores": 1, "dimensions": 5}
 
@@ -75,7 +75,9 @@ class TestValidatePass:
     """
 
     @pytest.fixture(scope="class")
-    def validator_pass(self, request, record_mode, validator) -> Iterable[SqlValidator]:
+    def validator_pass(
+        self, request, record_mode, validator
+    ) -> Iterable[Tuple[SqlValidator, Dict]]:
         mode = request.param
         with vcr.use_cassette(
             f"tests/cassettes/test_sql_validator/fixture_validator_pass[{mode}].yaml",
@@ -84,64 +86,71 @@ class TestValidatePass:
             record_mode=record_mode,
         ):
             validator.build_project(selectors=["eye_exam/users"])
-            validator.validate(mode)
-            yield validator
+            results = validator.validate(mode)
+            yield validator, results
 
     @pytest.mark.parametrize(
         "validator_pass", ["batch", "single", "hybrid"], indirect=True
     )
     def test_should_set_errored_and_queried(self, validator_pass):
-        validator = validator_pass
+        validator = validator_pass[0]
         assert validator.project.errored is False
         assert validator.project.queried is True
 
     @pytest.mark.parametrize("validator_pass", ["batch"], indirect=True)
     def test_in_batch_mode_should_run_one_query(self, validator_pass):
-        validator = validator_pass
+        validator = validator_pass[0]
         assert len(validator._query_by_task_id) == 1
 
     @pytest.mark.parametrize("validator_pass", ["single"], indirect=True)
     def test_in_single_mode_should_run_n_queries(self, validator_pass):
-        validator = validator_pass
+        validator = validator_pass[0]
         assert len(validator._query_by_task_id) == EXPECTED_QUERY_COUNTS["dimensions"]
 
     @pytest.mark.parametrize("validator_pass", ["hybrid"], indirect=True)
     def test_in_hybrid_mode_should_run_one_query(self, validator_pass):
-        validator = validator_pass
+        validator = validator_pass[0]
         assert len(validator._query_by_task_id) == 1
 
     @pytest.mark.parametrize(
         "validator_pass", ["batch", "single", "hybrid"], indirect=True
     )
     def test_running_queries_should_be_empty(self, validator_pass):
-        validator = validator_pass
+        validator = validator_pass[0]
         assert len(validator._running_queries) == 0
 
     @pytest.mark.parametrize("validator_pass", ["hybrid", "single"], indirect=True)
     def test_in_hybrid_or_single_mode_dimensions_should_be_queried(
         self, validator_pass
     ):
-        validator = validator_pass
+        validator = validator_pass[0]
         explore = validator.project.models[0].explores[0]
         assert all(dim.queried for dim in explore.dimensions if dim.ignore is False)
         assert explore.queried is True
 
     @pytest.mark.parametrize("validator_pass", ["batch", "single"], indirect=True)
     def test_ignored_dimensions_are_not_queried(self, validator_pass):
-        validator = validator_pass
+        validator = validator_pass[0]
         explore = validator.project.models[0].explores[0]
         assert not any(dim.queried for dim in explore.dimensions if dim.ignore is True)
 
     @pytest.mark.parametrize("validator_pass", ["batch"], indirect=True)
     def test_count_explores(self, validator_pass):
-        validator = validator_pass
+        validator = validator_pass[0]
         assert validator._count_explores() == 1
+
+    @pytest.mark.parametrize("validator_pass", ["batch", "single"], indirect=True)
+    def test_results_should_conform_to_schema(self, schema, validator_pass):
+        results = validator_pass[1]
+        jsonschema.validate(results, schema)
 
 
 @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
 class TestValidateFail:
     @pytest.fixture(scope="class")
-    def validator_fail(self, record_mode, validator) -> Iterable[SqlValidator]:
+    def validator_fail(
+        self, record_mode, validator
+    ) -> Iterable[Tuple[SqlValidator, Dict]]:
         with vcr.use_cassette(
             f"tests/cassettes/test_sql_validator/fixture_validator_fail.yaml",
             match_on=["uri", "method", "raw_body"],
@@ -149,23 +158,27 @@ class TestValidateFail:
             record_mode=record_mode,
         ):
             validator.build_project(selectors=["eye_exam/users__fail"])
-            validator.validate(mode="hybrid")
-            yield validator
+            results = validator.validate(mode="hybrid")
+            yield validator, results
 
     def test_in_hybrid_mode_should_run_n_queries(self, validator_fail):
-        validator = validator_fail
+        validator = validator_fail[0]
         assert (
             len(validator._query_by_task_id) == 1 + EXPECTED_QUERY_COUNTS["dimensions"]
         )
 
     def test_should_set_errored_and_queried(self, validator_fail):
-        validator = validator_fail
+        validator = validator_fail[0]
         assert validator.project.errored is True
         assert validator.project.queried is True
 
     def test_running_queries_should_be_empty(self, validator_fail):
-        validator = validator_fail
+        validator = validator_fail[0]
         assert len(validator._running_queries) == 0
+
+    def test_results_should_conform_to_schema(self, schema, validator_fail):
+        results = validator_fail[1]
+        jsonschema.validate(results, schema)
 
 
 def test_create_and_run_keyboard_interrupt_cancels_queries(validator):
@@ -243,13 +256,13 @@ def test_cancel_queries(mock_client_cancel, validator):
         mock_client_cancel.assert_any_call(task_id)
 
 
-def test_handle_running_query(validator):
+def test_handle_running_query(validator, dimension):
     query_task_id = "sakgwj392jfkajgjcks"
     query = Query(
         query_id="19428",
-        lookml_ref=Dimension("dimension_one", "string", "${TABLE}.dimension_one"),
+        lookml_ref=dimension,
         query_task_id=query_task_id,
-        explore_url="https://example.looker.com/x/12345",
+        explore_url="https://spectacles.looker.com/x/qCJsodAZ2Y22QZLbmD0Gvy",
     )
     query_result = QueryResult(query_task_id=query_task_id, status="running")
     validator._running_queries = [query]

@@ -1,61 +1,34 @@
-from pathlib import Path
 from copy import deepcopy
-import json
 import pytest
-from spectacles.lookml import Project, Model, Explore, Dimension
-
-
-@pytest.fixture
-def dimension():
-    return Dimension(
-        name="dimension_name",
-        type="string",
-        sql="${TABLE}.dimension_name",
-        url="https://test.looker.com",
-    )
-
-
-@pytest.fixture
-def explore():
-    return Explore(name="explore_name")
-
-
-@pytest.fixture
-def model():
-    return Model(name="model_name", project="project_name", explores=[])
-
-
-@pytest.fixture
-def project():
-    return Project(name="project_name", models=[])
-
-
-def load(filename):
-    """Helper method to load a JSON file from tests/resources and parse it."""
-    path = Path(__file__).parent / "resources" / filename
-    with path.open() as file:
-        return json.load(file)
+from spectacles.lookml import Model, Explore, Dimension
+from tests.utils import load_resource
 
 
 def test_model_from_json():
-    json_dict = load("response_models.json")
+    json_dict = load_resource("response_models.json")
     model = Model.from_json(json_dict[0])
     assert model.name == "test_model_one"
-    assert model.project == "test_project"
+    assert model.project_name == "test_project"
     assert [e.name for e in model.explores] == ["test_explore_one"]
 
 
 def test_explore_from_json():
-    json_dict = load("response_models.json")
-    explore = Explore.from_json(json_dict[0]["explores"][0])
+    model_name = "eye_exam"
+    json_dict = load_resource("response_models.json")
+    explore = Explore.from_json(json_dict[0]["explores"][0], model_name)
     assert explore.name == "test_explore_one"
+    assert explore.model_name == model_name
     assert explore.dimensions == []
 
 
 def test_dimension_from_json():
-    json_dict = load("response_dimensions.json")
-    dimension = Dimension.from_json(json_dict[0])
+    model_name = "eye_exam"
+    explore_name = "users"
+    json_dict = load_resource("response_dimensions.json")
+    dimension = Dimension.from_json(json_dict[0], model_name, explore_name)
     assert dimension.name == "test_view.dimension_one"
+    assert dimension.model_name == model_name
+    assert dimension.explore_name == explore_name
     assert dimension.type == "number"
     assert dimension.url == "/projects/spectacles/files/test_view.view.lkml?line=340"
     assert dimension.sql == "${TABLE}.dimension_one "
@@ -64,19 +37,23 @@ def test_dimension_from_json():
 
 def test_ignored_dimension_with_whitespace():
     name = "test_view.dimension_one"
+    model_name = "eye_exam"
+    explore_name = "users"
     dimension_type = "number"
     url = "/projects/spectacles/files/test_view.view.lkml?line=340"
     sql = " -- spectacles: ignore\n${TABLE}.dimension_one "
-    dimension = Dimension(name, dimension_type, sql, url)
+    dimension = Dimension(name, model_name, explore_name, dimension_type, sql, url)
     assert dimension.ignore
 
 
 def test_ignored_dimension_with_no_whitespace():
     name = "test_view.dimension_one"
+    model_name = "eye_exam"
+    explore_name = "users"
     dimension_type = "number"
     url = "/projects/spectacles/files/test_view.view.lkml?line=340"
     sql = "--spectacles:ignore\n${TABLE}.dimension_one "
-    dimension = Dimension(name, dimension_type, sql, url)
+    dimension = Dimension(name, model_name, explore_name, dimension_type, sql, url)
     assert dimension.ignore
 
 
@@ -92,13 +69,8 @@ def test_comparison_to_mismatched_type_object_should_fail(request, obj_name):
     assert lookml_obj != SomethingElse()
 
 
-def test_dimensions_with_different_sql_can_be_equal():
-    a = Dimension(
-        name="a",
-        type="string",
-        sql="${TABLE}.some_column",
-        url="https://test.looker.com",
-    )
+def test_dimensions_with_different_sql_can_be_equal(dimension):
+    a = dimension
     b = deepcopy(a)
     b.sql = "${TABLE}.another_column"
     assert a == b
