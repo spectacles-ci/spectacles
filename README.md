@@ -14,15 +14,17 @@ You can run the following validators as subcommands (e.g. `spectacles sql`):
 - **Content** validation _(coming soon)_
 - **Linting** _(coming soon)_
 
-## Installation and documentation
+## Documentation
+
+You can find detailed documentation on our website: [spectacles.dev](https://spectacles.dev/docs/).
+
+## Installation
 
 Spectacles is distributed on PyPi and is easy to install with pip:
 
 ```shell
 pip install spectacles
 ```
-
-You can find detailed documentation on our website [spectacles.dev](https://spectacles.dev/docs/).
 
 ## Why we built this
 
