@@ -1,5 +1,5 @@
 import re
-from typing import List, Sequence, Optional
+from typing import Dict, List, Sequence, Optional
 from spectacles.exceptions import SqlError
 
 
@@ -138,6 +138,9 @@ class Model(LookMlObject):
         self.project_name = project_name
         self.explores = explores
 
+    def __repr__(self):
+        return f"{self.__class__.__name__}(name={self.name}, models={self.models})"
+
     def __eq__(self, other):
         if not isinstance(other, Model):
             return NotImplemented
@@ -237,5 +240,25 @@ class Project(LookMlObject):
             if model.errored:
                 yield model
 
-    def __repr__(self):
-        return f"{self.__class__.__name__}(name={self.name}, models={self.models})"
+    def get_results(self) -> Dict[str, List]:
+        errors = []
+        tested = []
+
+        def parse_explore_errors(explore):
+            if explore.error:
+                errors.append(explore.error.__dict__)
+            else:
+                for dimension in explore.dimensions:
+                    if dimension.errored:
+                        errors.append(dimension.error.__dict__)
+
+        for model in self.models:
+            for explore in model.explores:
+                passed = True
+                if explore.errored:
+                    passed = False
+                    parse_explore_errors(explore)
+                test = {"model": model.name, "explore": explore.name, "passed": passed}
+                tested.append(test)
+
+        return {"tested": tested, "errors": errors}

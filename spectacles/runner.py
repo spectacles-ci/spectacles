@@ -1,9 +1,7 @@
-from typing import List, Callable
+from typing import List, Dict, Any, Callable
 import functools
 from spectacles.client import LookerClient
 from spectacles.validators import SqlValidator, DataTestValidator
-from spectacles.lookml import Project
-from spectacles.exceptions import DataTestError
 from spectacles.utils import log_duration, time_hash
 
 
@@ -82,15 +80,15 @@ class Runner:
         exclusions: List[str],
         mode: str = "batch",
         concurrency: int = 10,
-    ) -> Project:
+    ) -> Dict[str, Any]:
         sql_validator = SqlValidator(self.client, self.project, concurrency)
         sql_validator.build_project(selectors, exclusions)
-        project = sql_validator.validate(mode)
-        return project
+        results = sql_validator.validate(mode)
+        return results
 
     @manage_dependent_branches
     @log_duration
-    def validate_data_tests(self) -> List[DataTestError]:
+    def validate_data_tests(self) -> Dict[str, Any]:
         data_test_validator = DataTestValidator(self.client, self.project)
-        errors = data_test_validator.validate()
-        return errors
+        results = data_test_validator.validate()
+        return results
