@@ -37,9 +37,13 @@ class LookerClient:
         supported_api_versions = [3.1]
         if api_version not in supported_api_versions:
             raise SpectaclesException(
-                f"API version {api_version} is not supported. "
-                "Please use one of these supported versions instead: "
-                f"{', '.join(str(ver) for ver in sorted(supported_api_versions))}"
+                name="unsupported-api-version",
+                title="Specified API version is not supported.",
+                detail=(
+                    f"Version '{api_version}' is not supported. "
+                    "Please use one of these supported versions instead: "
+                    f"{', '.join(str(ver) for ver in sorted(supported_api_versions))}"
+                ),
             )
 
         self.base_url: str = base_url.rstrip("/")
@@ -67,7 +71,6 @@ class LookerClient:
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError:
-            message = utils.details_from_http_error(response)
             raise LookerApiError(
                 name="unable-to-authenticate",
                 title="Couldn't authenticate to the Looker API.",
@@ -76,7 +79,7 @@ class LookerClient:
                     f"Unable to authenticate with client ID '{client_id}'. "
                     "Check that your credentials are correct and try again."
                 ),
-                looker_message=message if message else None,
+                response=response,
             )
 
         access_token = response.json()["access_token"]
@@ -103,7 +106,6 @@ class LookerClient:
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError:
-            message = utils.details_from_http_error(response)
             raise LookerApiError(
                 name="unable-to-get-version",
                 title="Couldn't get Looker's release version.",
@@ -112,7 +114,7 @@ class LookerClient:
                     f"Unable to get the release version of your Looker instance. "
                     "Please try again."
                 ),
-                looker_message=message if message else None,
+                response=response,
             )
 
         return response.json()["looker_release_version"]
@@ -135,7 +137,6 @@ class LookerClient:
             try:
                 response.raise_for_status()
             except requests.exceptions.HTTPError:
-                message = utils.details_from_http_error(response)
                 raise LookerApiError(
                     name="unable-to-set-prod",
                     title="Couldn't update session to production mode.",
@@ -145,7 +146,7 @@ class LookerClient:
                         "checked out by the user whose API credentials "
                         "Spectacles is using, please save it and try again."
                     ),
-                    looker_message=message if message else None,
+                    response=response,
                 )
 
         else:
@@ -156,7 +157,6 @@ class LookerClient:
             try:
                 response.raise_for_status()
             except requests.exceptions.HTTPError:
-                message = utils.details_from_http_error(response)
                 raise LookerApiError(
                     name="unable-to-set-dev",
                     title="Couldn't update session to development mode.",
@@ -166,7 +166,7 @@ class LookerClient:
                         "checked out by the user whose API credentials "
                         "Spectacles is using, please save it and try again."
                     ),
-                    looker_message=message if message else None,
+                    response=response,
                 )
 
             logger.debug(f"Setting Git branch to {branch}")
@@ -178,7 +178,6 @@ class LookerClient:
             try:
                 response.raise_for_status()
             except requests.exceptions.HTTPError:
-                message = utils.details_from_http_error(response)
                 raise LookerApiError(
                     name="unable-to-checkout-branch",
                     title="Couldn't checkout Git branch.",
@@ -188,7 +187,7 @@ class LookerClient:
                         "If you have uncommitted changes on the current branch, "
                         "please commit or revert them, then try again."
                     ),
-                    looker_message=message if message else None,
+                    response=response,
                 )
 
             if remote_reset:
@@ -200,7 +199,6 @@ class LookerClient:
                 try:
                     response.raise_for_status()
                 except requests.exceptions.HTTPError:
-                    message = utils.details_from_http_error(response)
                     raise LookerApiError(
                         name="unable-to-reset-remote",
                         title="Couldn't checkout Git branch.",
@@ -209,7 +207,7 @@ class LookerClient:
                             f"Unable to reset local Git branch '{branch}' "
                             "to match remote. Please try again."
                         ),
-                        looker_message=message if message else None,
+                        response=response,
                     )
 
             logger.info(f"Checked out branch {branch}")
@@ -230,7 +228,6 @@ class LookerClient:
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError:
-            message = utils.details_from_http_error(response)
             raise LookerApiError(
                 name="unable-to-get-manifest",
                 title="Couldn't retrieve project manifest.",
@@ -240,7 +237,7 @@ class LookerClient:
                     "Make sure you have a 'manifest.lkml' file in your project, "
                     "then try again."
                 ),
-                looker_message=message if message else None,
+                response=response,
             )
 
         manifest = response.json()
@@ -263,7 +260,6 @@ class LookerClient:
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError:
-            message = utils.details_from_http_error(response)
             raise LookerApiError(
                 name="unable-to-get-active-branch",
                 title="Couldn't determine active Git branch.",
@@ -272,7 +268,7 @@ class LookerClient:
                     f"Unable to get active branch for project '{project}'. "
                     "Please try again."
                 ),
-                looker_message=message if message else None,
+                response=response,
             )
 
         branch_name = response.json()["name"]
@@ -296,7 +292,6 @@ class LookerClient:
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError:
-            message = utils.details_from_http_error(response)
             raise LookerApiError(
                 name="unable-to-create-branch",
                 title="Couldn't create new Git branch.",
@@ -306,7 +301,7 @@ class LookerClient:
                     f"in project '{project}' using ref '{ref}'. "
                     "Please try again."
                 ),
-                looker_message=message if message else None,
+                response=response,
             )
 
     def update_branch(self, project: str, branch: str, ref: str = "origin/master"):
@@ -326,7 +321,6 @@ class LookerClient:
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError:
-            message = utils.details_from_http_error(response)
             raise LookerApiError(
                 name="unable-to-update-branch",
                 title="Couldn't update Git branch.",
@@ -336,7 +330,7 @@ class LookerClient:
                     f"in project '{project}' using ref '{ref}'. "
                     "Please try again."
                 ),
-                looker_message=message if message else None,
+                response=response,
             )
 
     def delete_branch(self, project: str, branch: str):
@@ -356,7 +350,6 @@ class LookerClient:
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError:
-            message = utils.details_from_http_error(response)
             raise LookerApiError(
                 name="unable-to-delete-branch",
                 title="Couldn't delete Git branch.",
@@ -365,7 +358,7 @@ class LookerClient:
                     f"Unable to delete branch '{branch}' "
                     f"in project '{project}'. Please try again."
                 ),
-                looker_message=message if message else None,
+                response=response,
             )
 
     def all_lookml_tests(self, project: str) -> List[JsonDict]:
@@ -387,7 +380,6 @@ class LookerClient:
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError:
-            message = utils.details_from_http_error(response)
             raise LookerApiError(
                 name="unable-to-get-data-tests",
                 title="Couldn't retrieve all data tests.",
@@ -396,7 +388,7 @@ class LookerClient:
                     f"Unable to retrieve all data tests for "
                     f"project '{project}'. Please try again."
                 ),
-                looker_message=message if message else None,
+                response=response,
             )
 
         return response.json()
@@ -429,7 +421,6 @@ class LookerClient:
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError:
-            message = utils.details_from_http_error(response)
             raise LookerApiError(
                 name="unable-to-run-data-test",
                 title="Couldn't run data test.",
@@ -438,7 +429,7 @@ class LookerClient:
                     f"Unable to run one or more data tests for "
                     f"project '{project}'. Please try again."
                 ),
-                looker_message=message if message else None,
+                response=response,
             )
 
         return response.json()
@@ -456,13 +447,12 @@ class LookerClient:
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError:
-            message = utils.details_from_http_error(response)
             raise LookerApiError(
                 name="unable-to-get-lookml",
                 title="Couldn't retrieve models and explores.",
                 status=response.status_code,
                 detail="Unable to retrieve LookML details. Please try again.",
-                looker_message=message if message else None,
+                response=response,
             )
 
         return response.json()
@@ -487,7 +477,6 @@ class LookerClient:
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError:
-            message = utils.details_from_http_error(response)
             raise LookerApiError(
                 name="unable-to-get-dimension-lookml",
                 title="Couldn't retrieve dimensions.",
@@ -496,7 +485,7 @@ class LookerClient:
                     "Unable to retrieve dimension LookML details "
                     f"for explore '{model}/{explore}'. Please try again."
                 ),
-                looker_message=message if message else None,
+                response=response,
             )
 
         return response.json()["fields"]["dimensions"]
@@ -531,7 +520,6 @@ class LookerClient:
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError:
-            message = utils.details_from_http_error(response)
             raise LookerApiError(
                 name="unable-to-create-query",
                 title="Couldn't create query.",
@@ -541,7 +529,7 @@ class LookerClient:
                     f'{"*" if len(dimensions) > 1 else dimensions[0]}. '
                     "Please try again."
                 ),
-                looker_message=message if message else None,
+                response=response,
             )
 
         result = response.json()
@@ -582,7 +570,6 @@ class LookerClient:
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError:
-            message = utils.details_from_http_error(response)
             raise LookerApiError(
                 name="unable-to-launch-query",
                 title="Couldn't launch query.",
@@ -591,7 +578,7 @@ class LookerClient:
                     "Failed to create query task for "
                     f"query '{query_id}'. Please try again."
                 ),
-                looker_message=message if message else None,
+                response=response,
             )
 
         result = response.json()
@@ -625,7 +612,6 @@ class LookerClient:
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError:
-            message = utils.details_from_http_error(response)
             raise LookerApiError(
                 name="unable-to-get-query-results",
                 title="Couldn't get results for the specified query tasks.",
@@ -635,7 +621,7 @@ class LookerClient:
                     f"{len(query_task_ids)} query tasks. "
                     "Please try again."
                 ),
-                looker_message=message if message else None,
+                response=response,
             )
 
         result = response.json()

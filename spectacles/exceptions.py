@@ -1,8 +1,21 @@
 from typing import Dict, Any, Optional
+import requests
+from spectacles.utils import details_from_http_error
 
 
 class SpectaclesException(Exception):
     exit_code = 100
+
+    def __init__(self, name: str, title: str, detail: str):
+        self.type: str = "/errors/" + name
+        self.title = title
+        self.detail = detail
+
+    def __repr__(self) -> str:
+        return self.title
+
+    def __str__(self) -> str:
+        return self.title + " " + self.detail
 
 
 class LookerApiError(SpectaclesException):
@@ -14,7 +27,7 @@ class LookerApiError(SpectaclesException):
         status: The HTTP status code returned by the Looker API.
         detail: A human-readable explanation with any helpful tips for
             solving the issue.
-        looker_message: Any useful message returned from the Looker API.
+        response: The response object returned by the Looker API.
     """
 
     exit_code = 101
@@ -25,19 +38,15 @@ class LookerApiError(SpectaclesException):
         title: str,
         status: int,
         detail: str,
-        looker_message: Optional[str],
+        response: requests.Response,
     ):
-        self.name = name
-        self.title = title
+        request: requests.PreparedRequest = response.request
+        super().__init__("looker-api-errors/" + name, title, detail)
         self.status = status
-        self.detail = detail
-        self.looker_message = looker_message
-
-    def __repr__(self):
-        return self.title
-
-    def __str__(self):
-        return self.title + " " + self.detail
+        self.looker_api_response: Optional[Dict[str, Any]] = details_from_http_error(
+            response
+        )
+        self.request = {"url": request.url, "method": request.method}
 
 
 class GenericValidationError(SpectaclesException):
