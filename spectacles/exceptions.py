@@ -5,8 +5,39 @@ class SpectaclesException(Exception):
     exit_code = 100
 
 
-class ApiConnectionError(SpectaclesException):
+class LookerApiError(SpectaclesException):
+    """Exception raised when an error is returned by the Looker API.
+
+    Args:
+        name: A lowercase, hyphenated, unique ID for the error type.
+        title: A short, human-readable summary of the problem.
+        status: The HTTP status code returned by the Looker API.
+        detail: A human-readable explanation with any helpful tips for
+            solving the issue.
+        looker_message: Any useful message returned from the Looker API.
+    """
+
     exit_code = 101
+
+    def __init__(
+        self,
+        name: str,
+        title: str,
+        status: int,
+        detail: str,
+        looker_message: Optional[str],
+    ):
+        self.name = name
+        self.title = title
+        self.status = status
+        self.detail = detail
+        self.looker_message = looker_message
+
+    def __repr__(self):
+        return self.title
+
+    def __str__(self):
+        return self.title + " " + self.detail
 
 
 class GenericValidationError(SpectaclesException):

@@ -139,7 +139,7 @@ def handle_exceptions(function: Callable) -> Callable:
             sys.exit(error.exit_code)
         except SpectaclesException as error:
             logger.error(
-                f"{error}\n\n"
+                f"\n{error}\n\n"
                 + printer.dim(
                     "For support, please create an issue at "
                     "https://github.com/spectacles-ci/spectacles/issues"
@@ -154,7 +154,7 @@ def handle_exceptions(function: Callable) -> Callable:
         except Exception as error:
             logger.debug(error, exc_info=True)
             logger.error(
-                f'Encountered unexpected {error.__class__.__name__}: "{error}"\n'
+                f'\nEncountered unexpected {error.__class__.__name__}: "{error}"\n'
                 f"Full error traceback logged to file.\n\n"
                 + printer.dim(
                     "For support, please create an issue at "
