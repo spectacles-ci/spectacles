@@ -447,7 +447,7 @@ class SqlValidator(Validator):
             if status not in ("complete", "error", "running", "added", "expired"):
                 raise SpectaclesException(
                     name="unexpected-query-result-status",
-                    title="Encountered an unexpected query result status",
+                    title="Encountered an unexpected query result status.",
                     detail=(
                         f"Query result status '{status}' was returned "
                         "by the Looker API."
@@ -459,12 +459,13 @@ class SqlValidator(Validator):
                 try:
                     error_details = self._extract_error_details(result)
                 except (KeyError, TypeError, IndexError) as error:
+                    logger.debug(
+                        f"Exiting because of unexpected query result format: {result}"
+                    )
                     raise SpectaclesException(
                         name="unexpected-query-result-format",
-                        title="Encountered an unexpected query result format",
-                        detail=(
-                            f"Unable to extract error details from query result: {result}"
-                        ),
+                        title="Encountered an unexpected query result format.",
+                        detail=f"Unable to extract error details. The unexpected result has been logged.",
                     ) from error
                 else:
                     query_result.error = error_details
