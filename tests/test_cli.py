@@ -46,7 +46,14 @@ def test_help(parser,):
 def test_handle_exceptions_unhandled_error(exception, exit_code):
     @handle_exceptions
     def raise_exception():
-        raise exception(f"This is a {exception.__class__.__name__}.")
+        if issubclass(exception, SpectaclesException):
+            raise exception(
+                name="exception-name",
+                title="An exception occurred.",
+                detail="Couldn't handle the truth. Please try again.",
+            )
+        else:
+            raise exception(f"This is a {exception.__class__.__name__}.")
 
     with pytest.raises(SystemExit) as pytest_error:
         raise_exception()
@@ -173,7 +180,7 @@ def test_bad_config_file_parameter(mock_parse_config, clean_env, parser):
         "port": 8080,
     }
     with pytest.raises(
-        SpectaclesException, match="not a valid configuration parameter"
+        SpectaclesException, match="Invalid configuration file parameter"
     ):
         parser.parse_args(["connect", "--config-file", "config.yml"])
 

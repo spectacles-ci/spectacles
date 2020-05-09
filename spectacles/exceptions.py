@@ -18,6 +18,10 @@ class SpectaclesException(Exception):
         return self.title + " " + self.detail
 
 
+class LookMlNotFound(SpectaclesException):
+    ...
+
+
 class LookerApiError(SpectaclesException):
     """Exception raised when an error is returned by the Looker API.
 
@@ -52,6 +56,13 @@ class LookerApiError(SpectaclesException):
 class GenericValidationError(SpectaclesException):
     exit_code = 102
 
+    def __init__(self):
+        super().__init__(
+            name="validation-error",
+            title="A validation error occurred.",
+            detail="Spectacles encountered an error while running validation tests.",
+        )
+
 
 class ValidationError(GenericValidationError):
     def __init__(
@@ -67,6 +78,7 @@ class ValidationError(GenericValidationError):
         self.test = test
         self.message = message
         self.metadata = metadata
+        super().__init__()
 
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
@@ -96,10 +108,14 @@ class SqlError(ValidationError):
             "explore_url": explore_url,
             "lookml_url": lookml_url,
         }
-        super().__init__(model, explore, sql, message, metadata)
+        super().__init__(
+            model=model, explore=explore, test=sql, message=message, metadata=metadata
+        )
 
 
 class DataTestError(ValidationError):
     def __init__(self, model: str, explore: str, message: str, test_name: str):
         metadata = {"test_name": test_name}
-        super().__init__(model, explore, None, message, metadata)
+        super().__init__(
+            model=model, explore=explore, test=None, message=message, metadata=metadata
+        )

@@ -42,7 +42,9 @@ class ConfigFileAction(argparse.Action):
                     break
             else:
                 raise SpectaclesException(
-                    f"'{dest}' in {values} is not a valid configuration parameter."
+                    name="invalid-config-file-param",
+                    title="Invalid configuration file parameter.",
+                    detail=f"Parameter '{dest}' in {values} is not valid.",
                 )
         parser.set_defaults(**config)
 
@@ -110,7 +112,12 @@ class EnvVarStoreTrueAction(argparse._StoreTrueAction):
             value = os.environ[env_var].lower()
             if value not in ("true", "false"):
                 raise SpectaclesException(
-                    f"Allowed values for {env_var} are 'true' or 'false' (case-insensitive), received '{value}'"
+                    name="invalid-env-var-value",
+                    title="Invalid value for environment variable.",
+                    detail=(
+                        f"Allowed values for {env_var} are 'true' or 'false' "
+                        f"(case-insensitive), received '{value}'"
+                    ),
                 )
             default = True if value == "true" else False
         if required and default:

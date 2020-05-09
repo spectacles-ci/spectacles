@@ -23,12 +23,16 @@ def get_client_method_names() -> List[str]:
 
 @pytest.fixture
 def mock_404_response():
-    mock = Mock(spec=requests.Response)
-    mock.status_code = 404
-    mock.raise_for_status.side_effect = requests.exceptions.HTTPError(
+    mock_request = Mock(spec=requests.PreparedRequest)
+    mock_request.method = "POST"
+    mock_request.url = "https://spectacles.looker.com"
+    mock_response = Mock(spec=requests.Response)
+    mock_response.status_code = 404
+    mock_response.raise_for_status.side_effect = requests.exceptions.HTTPError(
         "An HTTP error occurred."
     )
-    return mock
+    mock_response.request = mock_request
+    return mock_response
 
 
 @pytest.fixture
