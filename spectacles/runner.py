@@ -36,6 +36,19 @@ def manage_dependent_branches(fn: Callable) -> Callable:
     return wrapper
 
 
+def cleanup_temp_branches(fn: Callable) -> Callable:
+    functools.wraps(fn)
+
+    def wrapper(self, *args, **kwargs):
+        response = fn(self, *args, **kwargs)
+        if self.temp_branch:
+            self.client.checkout_branch(self.project, self.original_branch)
+            self.client.delete_branch(self.project, self.temp_branch)
+        return response
+
+    return wrapper
+
+
 class Runner:
     """Runs validations and returns JSON-style dictionaries with validation results.
 
@@ -64,20 +77,29 @@ class Runner:
         api_version: float = 3.1,
         remote_reset: bool = False,
         import_projects: bool = False,
+        commit_ref: str = None,
     ):
         self.project = project
         self.import_projects = import_projects
+        self.temp_branch: str = None
         self.client = LookerClient(
             base_url, client_id, client_secret, port, api_version
         )
         if branch == "master":
             self.client.update_workspace(project, "production")
+        elif commit_ref:
+            self.client.update_workspace(project, "dev")
+            self.temp_branch = "tmp_spectacles_" + time_hash()
+            self.original_branch = self.client.get_active_branch(project)
+            self.client.create_branch(project, self.temp_branch)
+            self.client.update_branch(project, self.temp_branch, commit_ref)
         else:
             self.client.update_workspace(project, "dev")
             self.client.checkout_branch(project, branch)
             if remote_reset:
                 self.client.reset_to_remote(project)
 
+    @cleanup_temp_branches
     @manage_dependent_branches
     @log_duration
     def validate_sql(
@@ -92,6 +114,7 @@ class Runner:
         results = sql_validator.validate(mode)
         return results
 
+    @cleanup_temp_branches
     @manage_dependent_branches
     @log_duration
     def validate_data_tests(self) -> Dict[str, Any]:
