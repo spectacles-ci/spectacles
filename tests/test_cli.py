@@ -190,3 +190,23 @@ def test_bad_config_file_parameter(mock_parse_config, clean_env, parser):
 def test_parse_remote_reset_with_assert(env, parser):
     args = parser.parse_args(["assert", "--remote-reset"])
     assert args.remote_reset
+
+
+def test_parse_args_with_mutually_exclusive_args_remote_reset(env, parser, capsys):
+    with pytest.raises(SystemExit):
+        parser.parse_args(["sql", "--commit-ref", "abc123", "--remote-reset"])
+    captured = capsys.readouterr()
+    assert (
+        "argument --remote-reset: not allowed with argument --commit-ref"
+        in captured.err
+    )
+
+
+def test_parse_args_with_mutually_exclusive_args_commit_ref(env, parser, capsys):
+    with pytest.raises(SystemExit):
+        parser.parse_args(["sql", "--remote-reset", "--commit-ref", "abc123"])
+    captured = capsys.readouterr()
+    assert (
+        "argument --commit-ref: not allowed with argument --remote-reset"
+        in captured.err
+    )
