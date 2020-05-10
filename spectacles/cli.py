@@ -214,6 +214,7 @@ def main():
             args.remote_reset,
             args.import_projects,
             args.concurrency,
+            args.commit_ref,
         )
     elif args.command == "assert":
         run_assert(
@@ -226,6 +227,7 @@ def main():
             args.api_version,
             args.remote_reset,
             args.import_projects,
+            args.commit_ref,
         )
 
     if not args.do_not_track:
@@ -393,6 +395,9 @@ def _build_validator_subparser(
             that are clones of master for any project that is a local dependency of the \
             of the project being tested. These branches are deleted at the end of the run.",
     )
+    base_subparser.add_argument(
+        "--commit-ref", action=EnvVarAction, env_var="LOOKER_COMMIT_REF", help=""
+    )
 
     return base_subparser
 
@@ -494,6 +499,7 @@ def run_assert(
     api_version,
     remote_reset,
     import_projects,
+    commit_ref,
 ) -> None:
     runner = Runner(
         base_url,
@@ -505,6 +511,7 @@ def run_assert(
         api_version,
         remote_reset,
         import_projects,
+        commit_ref,
     )
     results = runner.validate_data_tests()
 
@@ -541,6 +548,7 @@ def run_sql(
     remote_reset,
     import_projects,
     concurrency,
+    commit_ref,
 ) -> None:
     """Runs and validates the SQL for each selected LookML dimension."""
     runner = Runner(
@@ -553,6 +561,7 @@ def run_sql(
         api_version,
         remote_reset,
         import_projects,
+        commit_ref,
     )
 
     def iter_errors(lookml: List) -> Iterable:
