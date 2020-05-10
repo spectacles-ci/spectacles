@@ -377,15 +377,7 @@ def _build_validator_subparser(
         action=EnvVarAction,
         env_var="LOOKER_GIT_BRANCH",
         required=True,
-        help="The branch of your project that spectacles will use to run queries.",
-    )
-    base_subparser.add_argument(
-        "--remote-reset",
-        action=EnvVarStoreTrueAction,
-        env_var="SPECTACLES_REMOTE_RESET",
-        help="When set to true, the SQL validator will tell Looker to reset the \
-            user's branch to the revision of the branch that is on the remote. \
-            WARNING: This will delete any uncommited changes in the user's workspace.",
+        help="The branch of your project that Spectacles will use to run queries.",
     )
     base_subparser.add_argument(
         "--import-projects",
@@ -395,8 +387,22 @@ def _build_validator_subparser(
             that are clones of master for any project that is a local dependency of the \
             of the project being tested. These branches are deleted at the end of the run.",
     )
-    base_subparser.add_argument(
-        "--commit-ref", action=EnvVarAction, env_var="LOOKER_COMMIT_REF", help=""
+    group = base_subparser.add_mutually_exclusive_group()
+    group.add_argument(
+        "--remote-reset",
+        action=EnvVarStoreTrueAction,
+        env_var="SPECTACLES_REMOTE_RESET",
+        help="When set to true, the SQL validator will tell Looker to reset the \
+            user's branch to the revision of the branch that is on the remote. \
+            WARNING: This will delete any uncommited changes in the user's workspace.",
+    )
+    group.add_argument(
+        "--commit-ref",
+        action=EnvVarAction,
+        env_var="LOOKER_COMMIT_REF",
+        help="The commit of your project that Spectacles will test against. \
+            In order to test a specific commit, Spectacles will create a new branch \
+            for the tests and then delete the branch when it is finished.",
     )
 
     return base_subparser
