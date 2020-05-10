@@ -40,12 +40,19 @@ def cleanup_temp_branches(fn: Callable) -> Callable:
     functools.wraps(fn)
 
     def wrapper(self, *args, **kwargs):
+<<<<<<< HEAD
         try:
             response = fn(self, *args, **kwargs)
         finally:
             if self.temp_branch:
                 self.client.checkout_branch(self.project, self.original_branch)
                 self.client.delete_branch(self.project, self.temp_branch)
+=======
+        response = fn(self, *args, **kwargs)
+        if self.temp_branch:
+            self.client.checkout_branch(self.project, self.original_branch)
+            self.client.delete_branch(self.project, self.temp_branch)
+>>>>>>> 8622a67... commit ref functionality and cleanup temp branches functionality
         return response
 
     return wrapper

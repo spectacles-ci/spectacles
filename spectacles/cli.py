@@ -404,6 +404,9 @@ def _build_validator_subparser(
             In order to test a specific commit, Spectacles will create a new branch \
             for the tests and then delete the branch when it is finished.",
     )
+    base_subparser.add_argument(
+        "--commit-ref", action=EnvVarAction, env_var="LOOKER_COMMIT_REF", help=""
+    )
 
     return base_subparser
 
