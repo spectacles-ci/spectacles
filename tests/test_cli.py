@@ -46,12 +46,14 @@ def test_help(parser,):
 def test_handle_exceptions_unhandled_error(exception, exit_code):
     @handle_exceptions
     def raise_exception():
-        if issubclass(exception, SpectaclesException):
+        if exception == SpectaclesException:
             raise exception(
                 name="exception-name",
                 title="An exception occurred.",
                 detail="Couldn't handle the truth. Please try again.",
             )
+        elif exception == GenericValidationError:
+            raise GenericValidationError
         else:
             raise exception(f"This is a {exception.__class__.__name__}.")
 
