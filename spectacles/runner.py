@@ -1,4 +1,4 @@
-from typing import List, Dict, Any, Callable
+from typing import List, Dict, Any, Callable, Optional
 import functools
 from spectacles.client import LookerClient
 from spectacles.validators import SqlValidator, DataTestValidator
@@ -81,7 +81,7 @@ class Runner:
     ):
         self.project = project
         self.import_projects = import_projects
-        self.temp_branch: str = None
+        self.temp_branch: Optional[str] = None
         self.client = LookerClient(
             base_url, client_id, client_secret, port, api_version
         )
