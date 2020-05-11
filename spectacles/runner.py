@@ -40,10 +40,12 @@ def cleanup_temp_branches(fn: Callable) -> Callable:
     functools.wraps(fn)
 
     def wrapper(self, *args, **kwargs):
-        response = fn(self, *args, **kwargs)
-        if self.temp_branch:
-            self.client.checkout_branch(self.project, self.original_branch)
-            self.client.delete_branch(self.project, self.temp_branch)
+        try:
+            response = fn(self, *args, **kwargs)
+        finally:
+            if self.temp_branch:
+                self.client.checkout_branch(self.project, self.original_branch)
+                self.client.delete_branch(self.project, self.temp_branch)
         return response
 
     return wrapper
