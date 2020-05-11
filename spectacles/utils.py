@@ -1,4 +1,4 @@
-from typing import List, Callable
+from typing import List, Callable, Optional, Dict, Any
 from spectacles.logger import GLOBAL_LOGGER as logger
 import functools
 import requests
@@ -15,15 +15,12 @@ def compose_url(base_url: str, path: List) -> str:
     return url
 
 
-def details_from_http_error(response: requests.Response) -> str:
+def details_from_http_error(response: requests.Response) -> Optional[Dict[str, Any]]:
     try:
-        response_json = response.json()
+        details = response.json()
     # Requests raises a ValueError if the response is invalid JSON
     except ValueError:
-        details = ""
-    else:
-        details = response_json.get("message")
-    details = details.strip() if details else ""
+        details = None
     return details
 
 

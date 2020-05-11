@@ -42,7 +42,9 @@ class ConfigFileAction(argparse.Action):
                     break
             else:
                 raise SpectaclesException(
-                    f"'{dest}' in {values} is not a valid configuration parameter."
+                    name="invalid-config-file-param",
+                    title="Invalid configuration file parameter.",
+                    detail=f"Parameter '{dest}' in {values} is not valid.",
                 )
         parser.set_defaults(**config)
 
@@ -110,7 +112,12 @@ class EnvVarStoreTrueAction(argparse._StoreTrueAction):
             value = os.environ[env_var].lower()
             if value not in ("true", "false"):
                 raise SpectaclesException(
-                    f"Allowed values for {env_var} are 'true' or 'false' (case-insensitive), received '{value}'"
+                    name="invalid-env-var-value",
+                    title="Invalid value for environment variable.",
+                    detail=(
+                        f"Allowed values for {env_var} are 'true' or 'false' "
+                        f"(case-insensitive), received '{value}'"
+                    ),
                 )
             default = True if value == "true" else False
         if required and default:
@@ -139,7 +146,7 @@ def handle_exceptions(function: Callable) -> Callable:
             sys.exit(error.exit_code)
         except SpectaclesException as error:
             logger.error(
-                f"{error}\n\n"
+                f"\n{error}\n\n"
                 + printer.dim(
                     "For support, please create an issue at "
                     "https://github.com/spectacles-ci/spectacles/issues"
@@ -154,7 +161,7 @@ def handle_exceptions(function: Callable) -> Callable:
         except Exception as error:
             logger.debug(error, exc_info=True)
             logger.error(
-                f'Encountered unexpected {error.__class__.__name__}: "{error}"\n'
+                f'\nEncountered unexpected {error.__class__.__name__}: "{error}"\n'
                 f"Full error traceback logged to file.\n\n"
                 + printer.dim(
                     "For support, please create an issue at "

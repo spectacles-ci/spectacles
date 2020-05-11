@@ -5,7 +5,7 @@ import pytest
 from unittest.mock import patch, Mock
 import requests
 from spectacles.client import LookerClient
-from spectacles.exceptions import SpectaclesException, ApiConnectionError
+from spectacles.exceptions import SpectaclesException, LookerApiError
 
 
 def get_client_method_names() -> List[str]:
@@ -23,12 +23,16 @@ def get_client_method_names() -> List[str]:
 
 @pytest.fixture
 def mock_404_response():
-    mock = Mock(spec=requests.Response)
-    mock.status_code = 404
-    mock.raise_for_status.side_effect = requests.exceptions.HTTPError(
+    mock_request = Mock(spec=requests.PreparedRequest)
+    mock_request.method = "POST"
+    mock_request.url = "https://spectacles.looker.com"
+    mock_response = Mock(spec=requests.Response)
+    mock_response.status_code = 404
+    mock_response.raise_for_status.side_effect = requests.exceptions.HTTPError(
         "An HTTP error occurred."
     )
-    return mock
+    mock_response.request = mock_request
+    return mock_response
 
 
 @pytest.fixture
@@ -82,8 +86,8 @@ def test_get_looker_release_version_should_return_correct_version(looker_client)
 
 
 @pytest.mark.vcr(filter_post_data_parameters=["client_id", "client_secret"])
-def test_bad_authentication_request_should_raise_api_error():
-    with pytest.raises(ApiConnectionError):
+def test_bad_authentication_request_should_raise_looker_api_error():
+    with pytest.raises(LookerApiError):
         LookerClient(
             base_url="https://spectacles.looker.com",
             client_id=os.environ.get("LOOKER_CLIENT_ID"),
@@ -125,13 +129,13 @@ def test_create_query_without_dimensions_should_return_certain_fields(looker_cli
 
 @patch("spectacles.client.requests.Session.request")
 @pytest.mark.parametrize("method_name", get_client_method_names())
-def test_bad_requests_should_raise_connection_errors(
+def test_bad_requests_should_raise_looker_api_errors(
     mock_request, method_name, looker_client, client_kwargs, mock_404_response
 ):
     """Tests each method of LookerClient for how it handles a 404 response"""
     mock_request.return_value = mock_404_response
     client_method = getattr(looker_client, method_name)
-    with pytest.raises((ApiConnectionError, requests.exceptions.HTTPError)):
+    with pytest.raises(LookerApiError):
         client_method(**client_kwargs[method_name])
 
 
