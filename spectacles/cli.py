@@ -12,6 +12,7 @@ from spectacles.client import LookerClient
 from spectacles.exceptions import SpectaclesException, GenericValidationError
 from spectacles.logger import GLOBAL_LOGGER as logger, set_file_handler
 import spectacles.printer as printer
+import spectacles.tracking as tracking
 
 
 class ConfigFileAction(argparse.Action):
@@ -184,6 +185,11 @@ def main():
 
     set_file_handler(args.log_dir)
 
+    if not args.do_not_track:
+        invocation_id = tracking.track_invocation_start(
+            args.base_url, args.command, args.project
+        )
+
     if args.command == "connect":
         run_connect(
             args.base_url,
@@ -220,6 +226,11 @@ def main():
             args.api_version,
             args.remote_reset,
             args.import_projects,
+        )
+
+    if not args.do_not_track:
+        tracking.track_invocation_end(
+            args.base_url, args.command, args.project, invocation_id
         )
 
 
@@ -309,6 +320,12 @@ def _build_base_subparser() -> argparse.ArgumentParser:
         env_var="SPECTACLES_LOG_DIR",
         default="logs",
         help="The directory that Spectacles will write logs to.",
+    )
+    base_subparser.add_argument(
+        "--do-not-track",
+        action=EnvVarStoreTrueAction,
+        env_var="SPECTACLES_DO_NOT_TRACK",
+        help="Disables anonymised event tracking.",
     )
 
     return base_subparser
