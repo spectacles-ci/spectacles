@@ -131,6 +131,19 @@ class Explore(LookMlObject):
     def add_dimension(self, dimension: Dimension):
         self.dimensions.append(dimension)
 
+    @property
+    def number_of_errors(self):
+        if self.errored:
+            if self.error:
+                errors = 1
+            else:
+                errors = len(
+                    [dimension for dimension in self.dimensions if dimension.errored]
+                )
+            return errors
+        else:
+            return 0
+
 
 class Model(LookMlObject):
     def __init__(self, name: str, project_name: str, explores: List[Explore]):
@@ -193,6 +206,12 @@ class Model(LookMlObject):
             Explore.from_json(d, model_name=name) for d in json_dict["explores"]
         ]
         return cls(name, project, explores)
+
+    @property
+    def number_of_errors(self):
+        return sum(
+            [explore.number_of_errors for explore in self.explores if explore.errored]
+        )
 
 
 class Project(LookMlObject):
@@ -272,3 +291,10 @@ class Project(LookMlObject):
             "tested": tested,
             "errors": errors,
         }
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}(name={self.name}, models={self.models})"
+
+    @property
+    def number_of_errors(self):
+        return sum([model.number_of_errors for model in self.models if model.errored])
