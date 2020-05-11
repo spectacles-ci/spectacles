@@ -1,0 +1,108 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Validation",
+    "description": "The response from a Spectacles validator.",
+    "type": "object",
+    "definitions": {
+        "sql_metadata": {
+            "type": "object",
+            "properties": {
+                "dimension": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "line_number": {
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
+                "explore_url": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "lookml_url": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            }
+        },
+        "data_test_metadata": {
+            "type": "object",
+            "properties": {
+                "test_name": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            }
+        }
+    },
+    "properties": {
+        "validator": {
+            "type": "string"
+        },
+        "passed": {
+            "type": "boolean"
+        },
+        "tested": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "model": {
+                        "type": "string"
+                    },
+                    "explore": {
+                        "type": "string"
+                    },
+                    "passed": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "uniqueItems": true
+        },
+        "errors": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "model": {
+                        "type": "string"
+                    },
+                    "explore": {
+                        "type": "string"
+                    },
+                    "test": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "message": {
+                        "type": "string"
+                    },
+                    "metadata": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/definitions/sql_metadata"
+                            },
+                            {
+                                "$ref": "#/definitions/data_test_metadata"
+                            }
+                        ]
+                    }
+                }
+            },
+            "uniqueItems": true
+        }
+    }
+}

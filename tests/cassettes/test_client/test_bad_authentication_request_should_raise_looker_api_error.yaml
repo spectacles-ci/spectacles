@@ -1,0 +1,40 @@
+interactions:
+- request:
+    body: ''
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '59'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      User-Agent:
+      - python-requests/2.22.0
+    method: POST
+    uri: https://spectacles.looker.com:19999/api/3.1/login
+  response:
+    body:
+      string: '{"message":"Not found","documentation_url":"http://docs.looker.com/"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '69'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 01 May 2020 23:07:24 GMT
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 404
+      message: Not Found
+version: 1

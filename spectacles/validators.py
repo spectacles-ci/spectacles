@@ -1,11 +1,16 @@
 import time
 from typing import Any, List, Dict, Sequence, DefaultDict, Union, Optional
 from abc import ABC, abstractmethod
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 from spectacles.client import LookerClient
 from spectacles.lookml import Project, Model, Explore, Dimension
 from spectacles.logger import GLOBAL_LOGGER as logger
-from spectacles.exceptions import SqlError, DataTestError, SpectaclesException
+from spectacles.exceptions import (
+    SqlError,
+    DataTestError,
+    SpectaclesException,
+    LookMlNotFound,
+)
 import spectacles.printer as printer
 
 
@@ -67,28 +72,68 @@ class DataTestValidator(Validator):
         super().__init__(client)
         self.project = project
 
-    def validate(self) -> List[DataTestError]:
+    def validate(self) -> Dict[str, Any]:
         tests = self.client.all_lookml_tests(self.project)
+
+        # The error objects don't contain the name of the explore
+        # We create this mapping to help look up the explore from the test name (unique)
+        test_to_explore = {test["name"]: test["explore_name"] for test in tests}
+
         test_count = len(tests)
         printer.print_header(
             f"Running {test_count} {'test' if test_count == 1 else 'tests'}"
         )
+
+        tested = []
         errors = []
         test_results = self.client.run_lookml_test(self.project)
+
         for result in test_results:
-            message = f"{result['model_name']}.{result['test_name']}"
-            if result["success"]:
-                printer.print_validation_result("success", message)
-            else:
+            explore = test_to_explore[result["test_name"]]
+            test = {
+                "model": result["model_name"],
+                "explore": explore,
+                "passed": result["success"],
+            }
+            tested.append(test)
+            if not result["success"]:
                 for error in result["errors"]:
-                    printer.print_validation_result("error", message)
                     errors.append(
                         DataTestError(
-                            path=f"{result['model_name']}/{result['test_name']}",
+                            model=error["model_id"],
+                            explore=error["explore"],
                             message=error["message"],
-                        )
+                            test_name=result["test_name"],
+                        ).__dict__
                     )
-        return errors
+
+        def reduce_result(results):
+            """Aggregate individual test results to get pass/fail by explore"""
+            agg = OrderedDict()
+            for result in results:
+                # Keys by model and explore, adds additional values for `passed` to a set
+                agg.setdefault((result["model"], result["explore"]), set()).add(
+                    result["passed"]
+                )
+            reduced = [
+                {"model": k[0], "explore": k[1], "passed": min(v)}
+                for k, v in agg.items()
+            ]
+            return reduced
+
+        tested = reduce_result(tested)
+        for test in tested:
+            printer.print_validation_result(
+                passed=test["passed"], source=f"{test['model']}.{test['explore']}"
+            )
+
+        passed = min(test["passed"] for test in tested)
+        return {
+            "validator": "data_test",
+            "passed": passed,
+            "tested": tested,
+            "errors": errors,
+        }
 
 
 class SqlValidator(Validator):
@@ -143,9 +188,13 @@ class SqlValidator(Validator):
                 model, explore = selector.split("/")
             except ValueError:
                 raise SpectaclesException(
-                    f"Explore selector '{selector}' is not valid.\n"
-                    "Instead, use the format 'model_name/explore_name'. "
-                    f"Use 'model_name/*' to select all explores in a model."
+                    name="invalid-selector-format",
+                    title="Specified explore selector is invalid.",
+                    detail=(
+                        f"'{selector}' is not a valid format. "
+                        "Instead, use the format 'model_name/explore_name'. "
+                        f"Use 'model_name/*' to select all explores in a model."
+                    ),
                 )
             else:
                 selection[model].add(explore)
@@ -157,15 +206,24 @@ class SqlValidator(Validator):
         select_from_names = set(each.name for each in select_from)
         difference = unique_choices.difference(select_from_names)
         if difference:
-            raise SpectaclesException(
-                f"{select_from[0].__class__.__name__}"
-                f'{"" if len(difference) == 1 else "s"} '
-                + ", ".join(difference)
-                + f" not found in LookML under project '{self.project.name}'"
+            lookml_type = select_from[0].__class__.__name__
+            lookml_type += "" if len(difference) == 1 else "s"
+            raise LookMlNotFound(
+                name="selector-not-found",
+                title="Selected LookML models or explores were not found.",
+                detail=(
+                    f"{lookml_type} "
+                    + ", ".join(f"'{diff}'" for diff in difference)
+                    + f" not found in LookML for project '{self.project.name}'. "
+                    "Check that the models and explores specified exist, the project "
+                    "name is correct, and try again."
+                ),
             )
         return [each for each in select_from if each.name in unique_choices]
 
-    def build_project(self, selectors: List[str], exclusions: List[str]) -> None:
+    def build_project(
+        self, selectors: List[str] = None, exclusions: List[str] = None
+    ) -> None:
         """Creates an object representation of the project's LookML.
 
         Args:
@@ -174,6 +232,12 @@ class SqlValidator(Validator):
                 'model_name/*' would select all explores in the 'model_name' model.
 
         """
+        # Set default values for selecting and excluding
+        if not selectors:
+            selectors = ["*/*"]
+        if not exclusions:
+            exclusions = []
+
         selection = self.parse_selectors(selectors)
         exclusion = self.parse_selectors(exclusions)
         logger.info(
@@ -184,15 +248,18 @@ class SqlValidator(Validator):
             Model.from_json(model) for model in self.client.get_lookml_models()
         ]
         project_models = [
-            model for model in all_models if model.project == self.project.name
+            model for model in all_models if model.project_name == self.project.name
         ]
 
         if not project_models:
-            raise SpectaclesException(
-                f"Project '{self.project.name}' does not have any configured models. "
-                f"Go to {self.client.base_url}/projects and confirm "
-                "a) at least one model exists for the project and "
-                "b) it has an active configuration."
+            raise LookMlNotFound(
+                name="project-models-not-found",
+                title="No matching models found for the specified project and selectors.",
+                detail=(
+                    f"Go to {self.client.base_url}/projects and confirm "
+                    "a) at least one model exists for the project and "
+                    "b) it has an active configuration."
+                ),
             )
 
         # Expand wildcard operator to include all specified or discovered models
@@ -246,7 +313,9 @@ class SqlValidator(Validator):
                     model.name, explore.name
                 )
                 for dimension_json in dimensions_json:
-                    dimension = Dimension.from_json(dimension_json)
+                    dimension = Dimension.from_json(
+                        dimension_json, model.name, explore.name
+                    )
                     dimension.url = self.client.base_url + dimension.url
                     if not dimension.ignore:
                         explore.add_dimension(dimension)
@@ -257,8 +326,9 @@ class SqlValidator(Validator):
             model for model in selected_models if len(model.explores) > 0
         ]
 
-    def validate(self, mode: str = "batch") -> Project:
+    def validate(self, mode: str = "batch") -> Dict[str, Any]:
         """Queries selected explores and returns the project tree with errors."""
+        self._query_by_task_id = {}
         explore_count = self._count_explores()
         printer.print_header(
             f"Testing {explore_count} "
@@ -274,12 +344,11 @@ class SqlValidator(Validator):
         for model in sorted(self.project.models, key=lambda x: x.name):
             for explore in sorted(model.explores, key=lambda x: x.name):
                 message = f"{model.name}.{explore.name}"
-                if explore.errored:
-                    printer.print_validation_result("error", message)
-                else:
-                    printer.print_validation_result("success", message)
+                printer.print_validation_result(
+                    passed=not explore.errored, source=message
+                )
 
-        return self.project
+        return self.project.get_results()
 
     def _create_and_run(self, mode: str = "batch") -> None:
         """Runs a single validation using a specified mode"""
@@ -289,19 +358,24 @@ class SqlValidator(Validator):
             self._run_queries(queries)
         except KeyboardInterrupt:
             logger.info(
-                "\n\n" + "Please wait, asking Looker to cancel any running queries"
+                "\n\n" + "Please wait, asking Looker to cancel any running queries..."
             )
             query_tasks = self.get_running_query_tasks()
             self._cancel_queries(query_tasks)
-            message = "SQL validation was interrupted. "
             if query_tasks:
-                message += (
+                message = (
                     f"Attempted to cancel {len(query_tasks)} running "
                     f"{'query' if len(query_tasks) == 1 else 'queries'}."
                 )
             else:
-                message += "No queries were running at the time."
-            raise SpectaclesException(message)
+                message = (
+                    "No queries were running at the time so nothing was cancelled."
+                )
+            raise SpectaclesException(
+                name="validation-keyboard-interrupt",
+                title="SQL validation was manually interrupted.",
+                detail=message,
+            )
 
     def _create_queries(self, mode: str) -> List[Query]:
         """Creates a list of queries to be executed for validation"""
@@ -364,37 +438,6 @@ class SqlValidator(Validator):
             self._query_by_task_id[query_task_id] = query
             self._running_queries.append(query)
 
-    def _get_completed_query_tasks(
-        self, query_task_ids: List[str]
-    ) -> List[QueryResult]:
-        """Returns ID, status, and error message for completed and errored tasks"""
-        query_results = []
-        results = self.client.get_query_task_multi_results(query_task_ids)
-        for query_task_id, result in results.items():
-            status = result["status"]
-            logger.debug(f"Query task {query_task_id} status is: {status}")
-            if status in ("complete", "error"):
-                self.query_slots += 1
-                query_result = QueryResult(query_task_id, status)
-                if status == "error":
-                    try:
-                        query_result.error = self._extract_error_details(result)
-                    except (KeyError, TypeError, IndexError) as error:
-                        raise SpectaclesException(
-                            "Encountered an unexpected API query result format, "
-                            "unable to extract error details. "
-                            f"The query result was: {result}"
-                        ) from error
-                query_results.append(query_result)
-            elif status in ("running", "added", "expired"):
-                continue
-            else:
-                raise SpectaclesException(
-                    f'Unexpected query result status "{status}" '
-                    "returned by the Looker API"
-                )
-        return query_results
-
     def _get_query_results(self, query_task_ids: List[str]) -> List[QueryResult]:
         """Returns ID, status, and error message for all query tasks"""
         query_results = []
@@ -403,8 +446,12 @@ class SqlValidator(Validator):
             status = result["status"]
             if status not in ("complete", "error", "running", "added", "expired"):
                 raise SpectaclesException(
-                    f'Unexpected query result status "{status}" '
-                    "returned by the Looker API"
+                    name="unexpected-query-result-status",
+                    title="Encountered an unexpected query result status.",
+                    detail=(
+                        f"Query result status '{status}' was returned "
+                        "by the Looker API."
+                    ),
                 )
             logger.debug(f"Query task {query_task_id} status is: {status}")
             query_result = QueryResult(query_task_id, status)
@@ -412,10 +459,13 @@ class SqlValidator(Validator):
                 try:
                     error_details = self._extract_error_details(result)
                 except (KeyError, TypeError, IndexError) as error:
+                    logger.debug(
+                        f"Exiting because of unexpected query result format: {result}"
+                    )
                     raise SpectaclesException(
-                        "Encountered an unexpected API query result format, "
-                        "unable to extract error details. "
-                        f"The query result was: {result}"
+                        name="unexpected-query-result-format",
+                        title="Encountered an unexpected query result format.",
+                        detail=f"Unable to extract error details. The unexpected result has been logged.",
                     ) from error
                 else:
                     query_result.error = error_details
@@ -431,10 +481,20 @@ class SqlValidator(Validator):
             lookml_object.queried = True
 
             if result.status == "error" and result.error:
+                model_name = lookml_object.model_name
+                dimension_name: Optional[str] = None
+                if isinstance(lookml_object, Dimension):
+                    explore_name = lookml_object.explore_name
+                    dimension_name = lookml_object.name
+                else:
+                    explore_name = lookml_object.name
+
                 sql_error = SqlError(
-                    path=lookml_object.name,
+                    model=model_name,
+                    explore=explore_name,
+                    dimension=dimension_name,
                     explore_url=query.explore_url,
-                    url=getattr(lookml_object, "url", None),
+                    lookml_url=getattr(lookml_object, "url", None),
                     **result.error,
                 )
                 lookml_object.error = sql_error

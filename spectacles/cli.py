@@ -9,8 +9,8 @@ from typing import Callable, Iterable, List
 from spectacles import __version__
 from spectacles.runner import Runner
 from spectacles.client import LookerClient
-from spectacles.exceptions import SpectaclesException, ValidationError
-from spectacles.logger import GLOBAL_LOGGER as logger, set_file_handler, log_sql_error
+from spectacles.exceptions import SpectaclesException, GenericValidationError
+from spectacles.logger import GLOBAL_LOGGER as logger, set_file_handler
 import spectacles.printer as printer
 
 
@@ -42,7 +42,9 @@ class ConfigFileAction(argparse.Action):
                     break
             else:
                 raise SpectaclesException(
-                    f"'{dest}' in {values} is not a valid configuration parameter."
+                    name="invalid-config-file-param",
+                    title="Invalid configuration file parameter.",
+                    detail=f"Parameter '{dest}' in {values} is not valid.",
                 )
         parser.set_defaults(**config)
 
@@ -110,7 +112,12 @@ class EnvVarStoreTrueAction(argparse._StoreTrueAction):
             value = os.environ[env_var].lower()
             if value not in ("true", "false"):
                 raise SpectaclesException(
-                    f"Allowed values for {env_var} are 'true' or 'false' (case-insensitive), received '{value}'"
+                    name="invalid-env-var-value",
+                    title="Invalid value for environment variable.",
+                    detail=(
+                        f"Allowed values for {env_var} are 'true' or 'false' "
+                        f"(case-insensitive), received '{value}'"
+                    ),
                 )
             default = True if value == "true" else False
         if required and default:
@@ -135,11 +142,11 @@ def handle_exceptions(function: Callable) -> Callable:
     def wrapper(*args, **kwargs):
         try:
             return function(*args, **kwargs)
-        except ValidationError as error:
+        except GenericValidationError as error:
             sys.exit(error.exit_code)
         except SpectaclesException as error:
             logger.error(
-                f"{error}\n\n"
+                f"\n{error}\n\n"
                 + printer.dim(
                     "For support, please create an issue at "
                     "https://github.com/spectacles-ci/spectacles/issues"
@@ -154,7 +161,7 @@ def handle_exceptions(function: Callable) -> Callable:
         except Exception as error:
             logger.debug(error, exc_info=True)
             logger.error(
-                f'Encountered unexpected {error.__class__.__name__}: "{error}"\n'
+                f'\nEncountered unexpected {error.__class__.__name__}: "{error}"\n'
                 f"Full error traceback logged to file.\n\n"
                 + printer.dim(
                     "For support, please create an issue at "
@@ -482,12 +489,22 @@ def run_assert(
         remote_reset,
         import_projects,
     )
-    errors = runner.validate_data_tests()
+    results = runner.validate_data_tests()
+
+    errors = sorted(
+        results["errors"],
+        key=lambda x: (x["model"], x["explore"], x["metadata"]["test_name"]),
+    )
     if errors:
-        for error in sorted(errors, key=lambda x: x.path):
-            printer.print_data_test_error(error)
+        for error in errors:
+            printer.print_data_test_error(
+                error["model"],
+                error["explore"],
+                error["metadata"]["test_name"],
+                error["message"],
+            )
         logger.info("")
-        raise ValidationError
+        raise GenericValidationError
     else:
         logger.info("")
 
@@ -526,30 +543,25 @@ def run_sql(
             if item.errored:
                 yield item
 
-    project = runner.validate_sql(explores, exclude, mode, concurrency)
+    results = runner.validate_sql(explores, exclude, mode, concurrency)
+    errors = sorted(
+        results["errors"],
+        key=lambda x: (x["model"], x["explore"], x["metadata"].get("dimension")),
+    )
 
-    if project.errored:
-        for model in iter_errors(project.models):
-            for explore in iter_errors(model.explores):
-                if explore.error and mode == "batch":
-                    printer.print_sql_error(explore.error)
-                    file_path = log_sql_error(
-                        explore.error, log_dir, model.name, explore.name
-                    )
-                else:
-                    for dimension in iter_errors(explore.dimensions):
-                        file_path = log_sql_error(
-                            dimension.error,
-                            log_dir,
-                            model.name,
-                            explore.name,
-                            dimension.name,
-                        )
-                        printer.print_sql_error(dimension.error)
-                logger.info("\n" + f"Test SQL: {file_path}")
-
+    if errors:
+        for error in errors:
+            printer.print_sql_error(
+                model=error["model"],
+                explore=error["explore"],
+                message=error["message"],
+                sql=error["test"],
+                log_dir=log_dir,
+                dimension=error["metadata"].get("dimension"),
+                lookml_url=error["metadata"].get("lookml_url"),
+            )
         logger.info("")
-        raise ValidationError
+        raise GenericValidationError
     else:
         logger.info("")
 
