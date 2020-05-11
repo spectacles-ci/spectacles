@@ -577,6 +577,13 @@ def run_sql(
                 dimension=error["metadata"].get("dimension"),
                 lookml_url=error["metadata"].get("lookml_url"),
             )
+        if mode == "batch":
+            logger.info(
+                f"\n\nTo determine the exact dimensions responsible for {'this error' if project.number_of_errors == 1 else 'these errors'}, "
+                f"you can re-run \nSpectacles in single-dimension mode, with `--mode single`.\n\n"
+                "You can also run this original validation with `--mode hybrid` to do this automatically."
+            )
+
         logger.info("")
         raise GenericValidationError
     else:
