@@ -1,7 +1,6 @@
 import pytest
 from spectacles.exceptions import LookerApiError
 from typing import Iterable
-from spectacles.runner import Runner
 from unittest.mock import patch
 import vcr
 import os
