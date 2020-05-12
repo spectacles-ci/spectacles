@@ -34,3 +34,17 @@ class TestImportProjects:
         runner.import_projects = True
         with pytest.raises(LookerApiError):
             runner.validate_data_tests()
+
+
+def test_runner_with_commit_ref():
+    runner = Runner(
+        project="eye_exam",
+        branch="pytest",
+        base_url="https://spectacles.looker.com",
+        client_id=os.environ.get("LOOKER_CLIENT_ID", ""),
+        client_secret=os.environ.get("LOOKER_CLIENT_SECRET", ""),
+        commit_ref="cb18ea",
+    )
+    assert runner.temp_branch is not None
+    assert runner.original_branch is not None
+    assert "tmp_spectacles_" in runner.temp_branch
