@@ -36,6 +36,7 @@ class TestImportProjects:
             runner.validate_data_tests()
 
 
+@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
 def test_runner_with_commit_ref():
     runner = Runner(
         project="eye_exam",
