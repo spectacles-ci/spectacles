@@ -6,7 +6,6 @@ from spectacles.client import LookerClient
 from spectacles.exceptions import SqlError
 from spectacles.lookml import Project, Model, Explore, Dimension
 from tests.utils import load_resource
-from spectacles.runner import Runner
 
 
 @pytest.fixture(scope="session")
