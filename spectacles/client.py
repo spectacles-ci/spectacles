@@ -132,7 +132,7 @@ class LookerClient:
         response = self.session.patch(url=url, json=body, timeout=TIMEOUT_SEC)
         try:
             response.raise_for_status()
-        except requests.exceptions.HTTPError as error:
+        except requests.exceptions.HTTPError:
             raise LookerApiError(
                 name="unable-to-update-workspace",
                 title="Couldn't update the session's workspace.",
@@ -159,7 +159,7 @@ class LookerClient:
         response = self.session.put(url=url, json=body, timeout=TIMEOUT_SEC)
         try:
             response.raise_for_status()
-        except requests.exceptions.HTTPError as error:
+        except requests.exceptions.HTTPError:
             raise LookerApiError(
                 name="unable-to-checkout-branch",
                 title="Couldn't checkout Git branch.",
@@ -186,7 +186,7 @@ class LookerClient:
         response = self.session.post(url=url, timeout=TIMEOUT_SEC)
         try:
             response.raise_for_status()
-        except requests.exceptions.HTTPError as error:
+        except requests.exceptions.HTTPError:
             raise LookerApiError(
                 name="unable-to-reset-remote",
                 title="Couldn't checkout Git branch.",
