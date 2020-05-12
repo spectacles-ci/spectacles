@@ -379,6 +379,14 @@ def _build_validator_subparser(
         required=True,
         help="The branch of your project that Spectacles will use to run queries.",
     )
+    base_subparser.add_argument(
+        "--import-projects",
+        action=EnvVarStoreTrueAction,
+        env_var="SPECTACLES_IMPORT_PROJECTS",
+        help="When set to true, the SQL Validator will create temporary branches \
+            that are clones of master for any project that is a local dependency of the \
+            of the project being tested. These branches are deleted at the end of the run.",
+    )
     group = base_subparser.add_mutually_exclusive_group()
     group.add_argument(
         "--remote-reset",
@@ -586,7 +594,7 @@ def run_sql(
             )
         if mode == "batch":
             logger.info(
-                f"\n\nTo determine the exact dimensions responsible for {'this error' if project.number_of_errors == 1 else 'these errors'}, "
+                f"\n\nTo determine the exact dimensions responsible for {'this error' if len(errors) == 1 else 'these errors'}, "
                 f"you can re-run \nSpectacles in single-dimension mode, with `--mode single`.\n\n"
                 "You can also run this original validation with `--mode hybrid` to do this automatically."
             )
