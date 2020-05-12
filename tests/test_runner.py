@@ -38,7 +38,7 @@ class TestImportProjects:
 
 
 @patch("spectacles.runner.time_hash", return_value="abc123")
-@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
+@pytest.mark.vcr
 def test_runner_with_commit_ref(mock_time_hash):
     runner = Runner(
         project="eye_exam",
