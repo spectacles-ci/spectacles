@@ -40,7 +40,9 @@ def client_kwargs():
     return dict(
         authenticate={"client_id": "", "client_secret": "", "api_version": 3.1},
         get_looker_release_version={},
-        update_session={"project": "project_name", "branch": "branch_name"},
+        update_workspace={"project": "project_name", "workspace": "dev"},
+        checkout_branch={"project": "project_name", "branch": "branch_name"},
+        reset_to_remote={"project": "project_name"},
         all_lookml_tests={"project": "project_name"},
         run_lookml_test={"project": "project_name"},
         get_lookml_models={},
@@ -63,10 +65,9 @@ def client_kwargs():
 @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
 def test_branch_management_should_work(looker_client):
     project = "eye_exam"
-    tmp_branch = "tmp-pytest"
-    looker_client.update_session(
-        project="eye_exam", branch="pytest", remote_reset=False
-    )
+    tmp_branch = f"tmp-pytest"
+    looker_client.update_workspace(project=project, workspace="dev")
+    looker_client.checkout_branch(project=project, branch="pytest")
     looker_client.create_branch("eye_exam", tmp_branch)
     try:
         looker_client.update_branch(project, tmp_branch, "master")
@@ -76,7 +77,7 @@ def test_branch_management_should_work(looker_client):
         # Return to the master branch and delete the temp branch
         looker_client.update_branch(project, "master")
         looker_client.delete_branch(project, tmp_branch)
-    looker_client.update_session(project=project, branch="master", remote_reset=False)
+    looker_client.update_workspace(project=project, workspace="production")
 
 
 @pytest.mark.vcr

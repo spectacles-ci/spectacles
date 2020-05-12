@@ -6,6 +6,7 @@ from spectacles.client import LookerClient
 from spectacles.exceptions import SqlError
 from spectacles.lookml import Project, Model, Explore, Dimension
 from tests.utils import load_resource
+from spectacles.runner import Runner
 
 
 @pytest.fixture(scope="session")
@@ -26,8 +27,26 @@ def looker_client(record_mode) -> Iterable[LookerClient]:
             client_id=os.environ.get("LOOKER_CLIENT_ID", ""),
             client_secret=os.environ.get("LOOKER_CLIENT_SECRET", ""),
         )
-        client.update_session(project="eye_exam", branch="master", remote_reset=False)
+        client.update_workspace(project="eye_exam", workspace="production")
         yield client
+
+
+@pytest.fixture(scope="session")
+def runner(record_mode) -> Iterable[Runner]:
+    with vcr.use_cassette(
+        "tests/cassettes/init_runner.yaml",
+        filter_post_data_parameters=["client_id", "client_secret"],
+        filter_headers=["Authorization"],
+        record_mode=record_mode,
+    ):
+        runner = Runner(
+            project="eye_exam",
+            branch="pytest",
+            base_url="https://spectacles.looker.com",
+            client_id=os.environ.get("LOOKER_CLIENT_ID", ""),
+            client_secret=os.environ.get("LOOKER_CLIENT_SECRET", ""),
+        )
+        yield runner
 
 
 @pytest.fixture
