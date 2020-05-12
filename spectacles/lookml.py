@@ -287,7 +287,7 @@ class Project(LookMlObject):
         passed = min(test["passed"] for test in tested)
         return {
             "validator": "sql",
-            "passed": passed,
+            "status": "passed" if passed else "failed",
             "tested": tested,
             "errors": errors,
         }
