@@ -2,7 +2,6 @@ import pytest
 from spectacles.exceptions import LookerApiError
 from spectacles.runner import Runner
 from typing import Iterable
-from unittest.mock import patch
 import vcr
 import os
 
@@ -35,18 +34,3 @@ class TestImportProjects:
         runner.import_projects = True
         with pytest.raises(LookerApiError):
             runner.validate_data_tests()
-
-
-@patch("spectacles.runner.time_hash", return_value="abc123")
-@pytest.mark.vcr
-def test_runner_with_commit_ref(mock_time_hash):
-    runner = Runner(
-        project="eye_exam",
-        branch="pytest",
-        base_url="https://spectacles.looker.com",
-        client_id=os.environ.get("LOOKER_CLIENT_ID", ""),
-        client_secret=os.environ.get("LOOKER_CLIENT_SECRET", ""),
-        commit_ref="cb18ea",
-    )
-    assert runner.temp_branch == "tmp_spectacles_abc123"
-    assert runner.original_branch is not None
