@@ -112,7 +112,7 @@ def test_manage_other_branch_with_ref(mock_time_hash, looker_client):
 def test_manage_current_branch_with_import_projects(mock_time_hash, looker_client):
     """User is on branch A, checkout branch A and test.
 
-    Though we are pasing with import projects set to True, it should not 
+    Though we are pasing with import projects set to True, it should not
     temp branches because we are staying in production mode.
 
     The manager should not perform any branch checkouts, just test.
@@ -143,7 +143,7 @@ def test_manage_other_branch_with_import_projects(mock_time_hash, looker_client)
     The manager should create a new temp branch based on branch B, checkout the temp
     branch, test, checkout branch A, and delete the temp branch.
 
-    We are setting import projects to True. The manager should create a temp branch 
+    We are setting import projects to True. The manager should create a temp branch
     in the dependent project, and clean it up at the end.
 
     """
