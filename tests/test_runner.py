@@ -26,11 +26,11 @@ def runner(record_mode) -> Iterable[Runner]:
 
 class TestImportProjects:
     def test_validate_sql_with_import_projects_error(self, runner):
-        runner.import_projects = True
+        runner.branch_manager.import_projects = True
         with pytest.raises(LookerApiError):
             runner.validate_sql(["*/*"], [])
 
     def test_validate_assert_with_import_projects_error(self, runner):
-        runner.import_projects = True
+        runner.branch_manager.import_projects = True
         with pytest.raises(LookerApiError):
             runner.validate_data_tests()
