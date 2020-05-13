@@ -57,7 +57,7 @@ jobs:
           name: pytest and coverage
           command: |
             . venv/bin/activate
-            coverage run --source spectacles -m pytest -p no:randomly --record-mode=none
+            coverage run --source spectacles -m pytest -p --record-mode=none
             coverage report
             coverage html
             coverage xml
