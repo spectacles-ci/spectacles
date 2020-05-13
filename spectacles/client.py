@@ -315,7 +315,7 @@ class LookerClient:
                 detail=(
                     f"Unable to create branch '{branch}' "
                     f"in project '{project}' using ref '{ref}'. "
-                    "Please try again."
+                    "Confirm the branch doesn't already exist and try again."
                 ),
                 response=response,
             )
