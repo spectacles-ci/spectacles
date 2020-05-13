@@ -146,6 +146,33 @@ class LookerClient:
                 response=response,
             )
 
+    def get_all_branches(self, project: str) -> List[str]:
+        """Returns a list of git branches in the project repository.
+
+        Args:
+            project: Name of the Looker project to use.
+        """
+        logger.debug(f"Getting all Git branches in project '{project}'")
+        url = utils.compose_url(
+            self.api_url, path=["projects", project, "git_branches"]
+        )
+        response = self.session.get(url=url, timeout=TIMEOUT_SEC)
+        try:
+            response.raise_for_status()
+        except requests.exceptions.HTTPError:
+            raise LookerApiError(
+                name="unable-to-get-branches",
+                title="Couldn't get all Git branches.",
+                status=response.status_code,
+                detail=(
+                    f"Unable to get all Git branches in project '{project}'. "
+                    "Please try again."
+                ),
+                response=response,
+            )
+
+        return [branch["name"] for branch in response.json()]
+
     def checkout_branch(self, project: str, branch: str) -> None:
         """Checks out a new git branch. Only works in dev workspace.
 
