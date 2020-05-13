@@ -1,54 +1,103 @@
-from typing import List, Dict, Any, Callable, Optional
-import functools
+from typing import List, Dict, Any, Optional, NamedTuple
 from spectacles.client import LookerClient
 from spectacles.validators import SqlValidator, DataTestValidator
 from spectacles.utils import log_duration, time_hash
+from spectacles.logger import GLOBAL_LOGGER as logger
 
 
-def manage_dependent_branches(fn: Callable) -> Callable:
-    functools.wraps(fn)
+class BranchState(NamedTuple):
+    """The original state of a project before checking out a temporary branch."""
 
-    def wrapper(self, *args, **kwargs):
+    project: str
+    original_branch: str
+    temp_branch: Optional[str]
+
+
+class LookerBranchManager:
+    def __init__(
+        self,
+        client: LookerClient,
+        project: str,
+        name: Optional[str] = None,
+        import_projects: bool = False,
+        commit_ref: Optional[str] = None,
+    ):
+        """Context manager for Git branch checkout, creation, and deletion."""
+        self.client = client
+        self.project = project
+        self.name = name
+        self.import_projects = import_projects
+        self.commit_ref = commit_ref
+
+        # Get the current branch so we can return to it afterwards
+        self.original_branch = self.client.get_active_branch(self.project)
+        # If the desired branch is master and no ref is passed, we can stay in prod
+        self.workspace = "production" if name == "master" and not commit_ref else "dev"
+        self.temp_branches: List[BranchState] = []
+
+    def __enter__(self):
+        self.client.update_workspace(self.project, self.workspace)
         if self.import_projects:
-            manifest = self.client.get_manifest(self.project)
+            self.branch_imported_projects()
+        if self.commit_ref:
+            """Can't delete branches from the production workspace so we need to save
+            the starting dev branch to return to and to use as a base to delete
+            temporary branches from."""
+            starting_branch = self.client.get_active_branch(self.project)
+            temp_branch = self.setup_temp_branch(
+                self.project, original_branch=starting_branch
+            )
+            self.client.create_branch(self.project, temp_branch)
+            self.client.update_branch(self.project, temp_branch, self.commit_ref)
+        # If we didn't start on the desired branch, check it out
+        elif self.original_branch != self.name:
+            self.client.checkout_branch(self.project, self.name)
 
-            local_dependencies = [p for p in manifest["imports"] if not p["is_remote"]]
+    def __exit__(self, *args):
+        if self.temp_branches:
+            # Tear down any temporary branches
+            for project, original_branch, temp_branch in self.temp_branches:
+                self.restore_branch(project, original_branch, temp_branch)
 
-            for project in local_dependencies:
-                project["active_branch"] = self.client.get_active_branch(
-                    project["name"]
-                )
-                project["temp_branch"] = "tmp_spectacles_" + time_hash()
-                self.client.create_branch(project["name"], project["temp_branch"])
-                self.client.update_branch(project["name"], project["temp_branch"])
+        # Return to the starting branch
+        self.restore_branch(self.project, self.original_branch)
 
-            response = fn(self, *args, **kwargs)
+    def reset_to_remote(self):
+        self.client.reset_to_remote(self.project)
 
-            for project in local_dependencies:
-                self.client.checkout_branch(project["name"], project["active_branch"])
-                self.client.delete_branch(project["name"], project["temp_branch"])
+    def setup_temp_branch(self, project: str, original_branch: str) -> str:
+        name = "tmp_spectacles_" + time_hash()
+        logger.debug(
+            f"Branch '{name}' will be restored to branch '{original_branch}' in "
+            f"project '{project}'"
+        )
+        self.temp_branches.append(BranchState(project, original_branch, name))
+        return name
 
+    def restore_branch(
+        self, project: str, original_branch: str, temp_branch: Optional[str] = None
+    ):
+        message = f"Restoring project '{project}' to branch '{original_branch}'"
+        if temp_branch:
+            message += f" and deleting temporary branch '{temp_branch}'"
+        logger.debug(message)
+        if original_branch == "master":
+            self.client.update_workspace(project, "production")
         else:
-            response = fn(self, *args, **kwargs)
+            self.client.checkout_branch(project, original_branch)
+        if temp_branch:
+            self.client.delete_branch(project, temp_branch)
 
-        return response
+    def branch_imported_projects(self):
+        logger.debug("Creating temporary branches in imported projects")
+        manifest = self.client.get_manifest(self.project)
+        local_dependencies = [p for p in manifest["imports"] if not p["is_remote"]]
 
-    return wrapper
-
-
-def cleanup_temp_branches(fn: Callable) -> Callable:
-    functools.wraps(fn)
-
-    def wrapper(self, *args, **kwargs):
-        try:
-            response = fn(self, *args, **kwargs)
-        finally:
-            if self.temp_branch:
-                self.client.checkout_branch(self.project, self.original_branch)
-                self.client.delete_branch(self.project, self.temp_branch)
-        return response
-
-    return wrapper
+        for project in local_dependencies:
+            original_branch = self.client.get_active_branch(project["name"])
+            temp_branch = self.setup_temp_branch(project["name"], original_branch)
+            self.client.create_branch(project["name"], temp_branch)
+            self.client.update_branch(project["name"], temp_branch)
 
 
 class Runner:
@@ -83,26 +132,13 @@ class Runner:
     ):
         self.project = project
         self.import_projects = import_projects
-        self.temp_branch: Optional[str] = None
         self.client = LookerClient(
             base_url, client_id, client_secret, port, api_version
         )
-        if branch == "master":
-            self.client.update_workspace(project, "production")
-        elif commit_ref:
-            self.client.update_workspace(project, "dev")
-            self.temp_branch = "tmp_spectacles_" + time_hash()
-            self.original_branch = self.client.get_active_branch(project)
-            self.client.create_branch(project, self.temp_branch)
-            self.client.update_branch(project, self.temp_branch, commit_ref)
-        else:
-            self.client.update_workspace(project, "dev")
-            self.client.checkout_branch(project, branch)
-            if remote_reset:
-                self.client.reset_to_remote(project)
+        self.branch_manager = LookerBranchManager(
+            self.client, project, branch, import_projects, commit_ref
+        )
 
-    @cleanup_temp_branches
-    @manage_dependent_branches
     @log_duration
     def validate_sql(
         self,
@@ -111,15 +147,15 @@ class Runner:
         mode: str = "batch",
         concurrency: int = 10,
     ) -> Dict[str, Any]:
-        sql_validator = SqlValidator(self.client, self.project, concurrency)
-        sql_validator.build_project(selectors, exclusions)
-        results = sql_validator.validate(mode)
+        with self.branch_manager:
+            sql_validator = SqlValidator(self.client, self.project, concurrency)
+            sql_validator.build_project(selectors, exclusions)
+            results = sql_validator.validate(mode)
         return results
 
-    @cleanup_temp_branches
-    @manage_dependent_branches
     @log_duration
     def validate_data_tests(self) -> Dict[str, Any]:
-        data_test_validator = DataTestValidator(self.client, self.project)
-        results = data_test_validator.validate()
+        with self.branch_manager:
+            data_test_validator = DataTestValidator(self.client, self.project)
+            results = data_test_validator.validate()
         return results
