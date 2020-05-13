@@ -2,8 +2,6 @@ from unittest.mock import patch
 import pytest
 from spectacles.runner import LookerBranchManager
 
-STARTING_BRANCHES = ["master", "pytest"]
-
 
 @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
 def test_manage_current_branch(looker_client):
