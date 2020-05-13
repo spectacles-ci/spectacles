@@ -126,7 +126,7 @@ class LookerClient:
             project: Name of the Looker project to use.
             workspace: The workspace to switch to, either 'production' or 'dev'
         """
-        logger.debug("Updating session to use production workspace")
+        logger.debug(f"Updating session to use the {workspace} workspace")
         url = utils.compose_url(self.api_url, path=["session"])
         body = {"workspace_id": workspace}
         response = self.session.patch(url=url, json=body, timeout=TIMEOUT_SEC)
@@ -153,7 +153,7 @@ class LookerClient:
             project: Name of the Looker project to use.
             branch: Name of the Git branch to check out.
         """
-        logger.debug(f"Setting Git branch to {branch}")
+        logger.debug(f"Setting Git branch to '{branch}'")
         url = utils.compose_url(self.api_url, path=["projects", project, "git_branch"])
         body = {"name": branch}
         response = self.session.put(url=url, json=body, timeout=TIMEOUT_SEC)
@@ -239,7 +239,7 @@ class LookerClient:
         Returns:
             str: Name of the active branch
         """
-        logger.debug(f"Getting active branch for project {project}")
+        logger.debug(f"Getting active branch for project '{project}'")
         url = utils.compose_url(self.api_url, path=["projects", project, "git_branch"])
         response = self.session.get(url=url, timeout=TIMEOUT_SEC)
 
@@ -258,6 +258,7 @@ class LookerClient:
             )
 
         branch_name = response.json()["name"]
+        logger.debug(f"The active branch is '{branch_name}'")
 
         return branch_name
 
@@ -269,7 +270,9 @@ class LookerClient:
             branch: Name of the branch to create.
             ref: The ref to create the branch from.
         """
-        logger.debug(f"Creating branch {branch} on project {project}")
+        logger.debug(
+            f"Creating branch '{branch}' on project '{project}' with ref '{ref}'"
+        )
 
         body = {"name": branch, "ref": ref}
         url = utils.compose_url(self.api_url, path=["projects", project, "git_branch"])
@@ -298,7 +301,9 @@ class LookerClient:
             branch: Name of the branch to update.
             ref: The ref to update the branch from.
         """
-        logger.debug(f"Updating branch {branch} on project {project}")
+        logger.debug(
+            f"Updating branch '{branch}' on project '{project}' to ref '{ref}'"
+        )
 
         body = {"name": branch, "ref": ref}
         url = utils.compose_url(self.api_url, path=["projects", project, "git_branch"])
