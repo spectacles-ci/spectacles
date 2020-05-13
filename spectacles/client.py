@@ -257,7 +257,7 @@ class LookerClient:
 
         return manifest
 
-    def get_active_branch(self, project: str) -> str:
+    def get_active_branch(self, project: str) -> JsonDict:
         """Gets the active branch for the user in the given project.
 
         Args:
@@ -287,7 +287,12 @@ class LookerClient:
         branch_name = response.json()["name"]
         logger.debug(f"The active branch is '{branch_name}'")
 
-        return branch_name
+        return response.json()
+
+    def get_active_branch_name(self, project: str) -> str:
+        """Helper method to return only the branch name."""
+        full_response = self.get_active_branch(project)
+        return full_response["name"]
 
     def create_branch(self, project: str, branch: str, ref: str = "origin/master"):
         """Creates a branch in the given project.

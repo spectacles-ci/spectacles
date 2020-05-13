@@ -32,7 +32,7 @@ class LookerBranchManager:
         self.commit_ref = commit_ref
 
         # Get the current branch so we can return to it afterwards
-        self.original_branch = self.client.get_active_branch(self.project)
+        self.original_branch = self.client.get_active_branch_name(self.project)
         # If the desired branch is master and no ref is passed, we can stay in prod
         self.workspace = "production" if name == "master" and not commit_ref else "dev"
         self.temp_branches: List[BranchState] = []
@@ -45,7 +45,7 @@ class LookerBranchManager:
             """Can't delete branches from the production workspace so we need to save
             the starting dev branch to return to and to use as a base to delete
             temporary branches from."""
-            starting_branch = self.client.get_active_branch(self.project)
+            starting_branch = self.client.get_active_branch_name(self.project)
             temp_branch = self.setup_temp_branch(
                 self.project, original_branch=starting_branch
             )
@@ -95,7 +95,7 @@ class LookerBranchManager:
         local_dependencies = [p for p in manifest["imports"] if not p["is_remote"]]
 
         for project in local_dependencies:
-            original_branch = self.client.get_active_branch(project["name"])
+            original_branch = self.client.get_active_branch_name(project["name"])
             temp_branch = self.setup_temp_branch(project["name"], original_branch)
             self.client.create_branch(project["name"], temp_branch)
             self.client.update_branch(project["name"], temp_branch)
