@@ -59,6 +59,7 @@ def client_kwargs():
         delete_branch={"project": "project_name", "branch": "branch_name"},
         get_active_branch={"project": "project_name"},
         get_manifest={"project": "project_name"},
+        get_all_branches={"project": "project_name"},
     )
 
 
