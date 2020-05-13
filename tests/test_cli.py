@@ -26,14 +26,8 @@ def limited_env(monkeypatch):
             monkeypatch.setenv(variable, value)
 
 
-@pytest.fixture()
-def parser():
-    parser = create_parser()
-    return parser
-
-
 @patch("sys.argv", new=["spectacles", "--help"])
-def test_help(parser,):
+def test_help():
     with pytest.raises(SystemExit) as cm:
         main()
         assert cm.value.code == 0
@@ -63,7 +57,8 @@ def test_handle_exceptions_unhandled_error(exception, exit_code):
     assert pytest_error.value.code == exit_code
 
 
-def test_parse_args_with_no_arguments_supplied(clean_env, parser, capsys):
+def test_parse_args_with_no_arguments_supplied(clean_env, capsys):
+    parser = create_parser()
     with pytest.raises(SystemExit):
         parser.parse_args(["connect"])
     captured = capsys.readouterr()
@@ -73,7 +68,8 @@ def test_parse_args_with_no_arguments_supplied(clean_env, parser, capsys):
     )
 
 
-def test_parse_args_with_one_argument_supplied(clean_env, parser, capsys):
+def test_parse_args_with_one_argument_supplied(clean_env, capsys):
+    parser = create_parser()
     with pytest.raises(SystemExit):
         parser.parse_args(["connect", "--base-url", "BASE_URL_CLI"])
     captured = capsys.readouterr()
@@ -83,7 +79,8 @@ def test_parse_args_with_one_argument_supplied(clean_env, parser, capsys):
     )
 
 
-def test_parse_args_with_only_cli(clean_env, parser):
+def test_parse_args_with_only_cli(clean_env):
+    parser = create_parser()
     args = parser.parse_args(
         [
             "connect",
@@ -101,7 +98,8 @@ def test_parse_args_with_only_cli(clean_env, parser):
 
 
 @patch("spectacles.cli.YamlConfigAction.parse_config")
-def test_parse_args_with_only_config_file(mock_parse_config, parser, clean_env):
+def test_parse_args_with_only_config_file(mock_parse_config, clean_env):
+    parser = create_parser()
     mock_parse_config.return_value = {
         "base_url": "BASE_URL_CONFIG",
         "client_id": "CLIENT_ID_CONFIG",
@@ -114,9 +112,8 @@ def test_parse_args_with_only_config_file(mock_parse_config, parser, clean_env):
 
 
 @patch("spectacles.cli.YamlConfigAction.parse_config")
-def test_parse_args_with_incomplete_config_file(
-    mock_parse_config, parser, clean_env, capsys
-):
+def test_parse_args_with_incomplete_config_file(mock_parse_config, clean_env, capsys):
+    parser = create_parser()
     mock_parse_config.return_value = {
         "base_url": "BASE_URL_CONFIG",
         "client_id": "CLIENT_ID_CONFIG",
@@ -127,14 +124,16 @@ def test_parse_args_with_incomplete_config_file(
     assert "the following arguments are required: --client-secret" in captured.err
 
 
-def test_parse_args_with_only_env_vars(env, parser):
+def test_parse_args_with_only_env_vars(env):
+    parser = create_parser()
     args = parser.parse_args(["connect"])
     assert args.base_url == "BASE_URL_ENV_VAR"
     assert args.client_id == "CLIENT_ID_ENV_VAR"
     assert args.client_secret == "CLIENT_SECRET_ENV_VAR"
 
 
-def test_parse_args_with_incomplete_env_vars(limited_env, parser, capsys):
+def test_parse_args_with_incomplete_env_vars(limited_env, capsys):
+    parser = create_parser()
     with pytest.raises(SystemExit):
         parser.parse_args(["connect"])
     captured = capsys.readouterr()
@@ -142,7 +141,8 @@ def test_parse_args_with_incomplete_env_vars(limited_env, parser, capsys):
 
 
 @patch("spectacles.cli.YamlConfigAction.parse_config")
-def test_arg_precedence(mock_parse_config, limited_env, parser):
+def test_arg_precedence(mock_parse_config, limited_env):
+    parser = create_parser()
     # Precedence: command line > environment variables > config files
     mock_parse_config.return_value = {
         "base_url": "BASE_URL_CONFIG",
@@ -157,13 +157,15 @@ def test_arg_precedence(mock_parse_config, limited_env, parser):
     assert args.client_secret == "CLIENT_SECRET_CONFIG"
 
 
-def test_env_var_override_argparse_default(env, parser):
+def test_env_var_override_argparse_default(env):
+    parser = create_parser()
     args = parser.parse_args(["connect"])
     assert args.port == 8080
 
 
 @patch("spectacles.cli.YamlConfigAction.parse_config")
-def test_config_override_argparse_default(mock_parse_config, clean_env, parser):
+def test_config_override_argparse_default(mock_parse_config, clean_env):
+    parser = create_parser()
     mock_parse_config.return_value = {
         "base_url": "BASE_URL_CONFIG",
         "client_id": "CLIENT_ID_CONFIG",
@@ -175,7 +177,8 @@ def test_config_override_argparse_default(mock_parse_config, clean_env, parser):
 
 
 @patch("spectacles.cli.YamlConfigAction.parse_config")
-def test_bad_config_file_parameter(mock_parse_config, clean_env, parser):
+def test_bad_config_file_parameter(mock_parse_config, clean_env):
+    parser = create_parser()
     mock_parse_config.return_value = {
         "base_url": "BASE_URL_CONFIG",
         "api_key": "CLIENT_ID_CONFIG",
@@ -187,12 +190,14 @@ def test_bad_config_file_parameter(mock_parse_config, clean_env, parser):
         parser.parse_args(["connect", "--config-file", "config.yml"])
 
 
-def test_parse_remote_reset_with_assert(env, parser):
+def test_parse_remote_reset_with_assert(env):
+    parser = create_parser()
     args = parser.parse_args(["assert", "--remote-reset"])
     assert args.remote_reset
 
 
-def test_parse_args_with_mutually_exclusive_args_remote_reset(env, parser, capsys):
+def test_parse_args_with_mutually_exclusive_args_remote_reset(env, capsys):
+    parser = create_parser()
     with pytest.raises(SystemExit):
         parser.parse_args(["sql", "--commit-ref", "abc123", "--remote-reset"])
     captured = capsys.readouterr()
@@ -202,7 +207,8 @@ def test_parse_args_with_mutually_exclusive_args_remote_reset(env, parser, capsy
     )
 
 
-def test_parse_args_with_mutually_exclusive_args_commit_ref(env, parser, capsys):
+def test_parse_args_with_mutually_exclusive_args_commit_ref(env, capsys):
+    parser = create_parser()
     with pytest.raises(SystemExit):
         parser.parse_args(["sql", "--remote-reset", "--commit-ref", "abc123"])
     captured = capsys.readouterr()
