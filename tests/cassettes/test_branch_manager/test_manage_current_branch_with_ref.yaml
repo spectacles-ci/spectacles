@@ -1,0 +1,391 @@
+interactions:
+- request:
+    body: '{"workspace_id": "production"}'
+    headers:
+      Content-Length:
+      - '30'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=4526
+    method: PATCH
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"production","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '83'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 13 May 2020 03:21:59 GMT
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=4526
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
+  response:
+    body:
+      string: '{"name":"master","remote":"origin","remote_name":"master","error":null,"message":null,"owner_name":null,"readonly":true,"personal":false,"is_local":true,"is_remote":true,"is_production":true,"ahead_count":0,"behind_count":0,"commit_at":1589222232,"ref":"c4d5d604b4b9caea00cd565097d9fc5387f329a3","remote_ref":"c4d5d604b4b9caea00cd565097d9fc5387f329a3","can":{}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '361'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 13 May 2020 03:21:59 GMT
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"workspace_id": "dev"}'
+    headers:
+      Content-Length:
+      - '23'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=4526
+    method: PATCH
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"dev","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '76'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 13 May 2020 03:21:59 GMT
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=4526
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
+  response:
+    body:
+      string: '{"name":"pytest","remote":"origin","remote_name":"pytest","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1588640002,"ref":"e2d21d3ad978765991ae0a4d57b8d3111c1a8430","remote_ref":"e2d21d3ad978765991ae0a4d57b8d3111c1a8430","can":{}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '363'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 13 May 2020 03:21:59 GMT
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"name": "tmp_spectacles_abc123", "ref": "origin/master"}'
+    headers:
+      Content-Length:
+      - '57'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=4526
+    method: POST
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
+  response:
+    body:
+      string: '{"name":"tmp_spectacles_abc123","remote":"origin","remote_name":"tmp_spectacles_abc123","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":false,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1589222232,"ref":"c4d5d604b4b9caea00cd565097d9fc5387f329a3","remote_ref":null,"can":{}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '362'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 13 May 2020 03:21:59 GMT
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"name": "tmp_spectacles_abc123", "ref": "e2d21d"}'
+    headers:
+      Content-Length:
+      - '50'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=4526
+    method: PUT
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
+  response:
+    body:
+      string: '{"name":"tmp_spectacles_abc123","remote":"origin","remote_name":"tmp_spectacles_abc123","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":false,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1589222232,"ref":"c4d5d604b4b9caea00cd565097d9fc5387f329a3","remote_ref":null,"can":{}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '362'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 13 May 2020 03:22:03 GMT
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=4526
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
+  response:
+    body:
+      string: '{"name":"tmp_spectacles_abc123","remote":"origin","remote_name":"tmp_spectacles_abc123","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1588640002,"ref":"e2d21d3ad978765991ae0a4d57b8d3111c1a8430","remote_ref":"e2d21d3ad978765991ae0a4d57b8d3111c1a8430","can":{}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '393'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 13 May 2020 03:22:03 GMT
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"name": "pytest"}'
+    headers:
+      Content-Length:
+      - '18'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=4526
+    method: PUT
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
+  response:
+    body:
+      string: '{"name":"pytest","remote":"origin","remote_name":"pytest","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1588640002,"ref":"e2d21d3ad978765991ae0a4d57b8d3111c1a8430","remote_ref":"e2d21d3ad978765991ae0a4d57b8d3111c1a8430","can":{}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '363'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 13 May 2020 03:22:03 GMT
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Content-Length:
+      - '0'
+      Cookie:
+      - looker.browser=4526
+    method: DELETE
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch/tmp_spectacles_abc123
+  response:
+    body:
+      string: ''
+    headers:
+      Connection:
+      - keep-alive
+      Date:
+      - Wed, 13 May 2020 03:22:06 GMT
+      Server:
+      - nginx
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 204
+      message: No Content
+- request:
+    body: '{"workspace_id": "production"}'
+    headers:
+      Content-Length:
+      - '30'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=4526
+    method: PATCH
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"production","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '83'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 13 May 2020 03:22:06 GMT
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=4526
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
+  response:
+    body:
+      string: '{"name":"master","remote":"origin","remote_name":"master","error":null,"message":null,"owner_name":null,"readonly":true,"personal":false,"is_local":true,"is_remote":true,"is_production":true,"ahead_count":0,"behind_count":0,"commit_at":1589222232,"ref":"c4d5d604b4b9caea00cd565097d9fc5387f329a3","remote_ref":"c4d5d604b4b9caea00cd565097d9fc5387f329a3","can":{}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '361'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 13 May 2020 03:22:06 GMT
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"workspace_id": "dev"}'
+    headers:
+      Content-Length:
+      - '23'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=4526
+    method: PATCH
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"dev","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '76'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 13 May 2020 03:22:07 GMT
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=4526
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branches
+  response:
+    body:
+      string: '[{"name":"dev-josh-temple-8m75","remote":"origin","remote_name":"dev-josh-temple-8m75","error":null,"message":null,"owner_name":null,"readonly":false,"personal":true,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1589222232,"ref":"c4d5d604b4b9caea00cd565097d9fc5387f329a3","remote_ref":"c4d5d604b4b9caea00cd565097d9fc5387f329a3","can":{}},{"name":"feature/vcr","remote":"origin","remote_name":"feature/vcr","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1588340597,"ref":"176721285e47e0adac1b3ff55a26ca0346d5bfc7","remote_ref":"176721285e47e0adac1b3ff55a26ca0346d5bfc7","can":{}},{"name":"master","remote":"origin","remote_name":"master","error":null,"message":null,"owner_name":null,"readonly":true,"personal":false,"is_local":true,"is_remote":true,"is_production":true,"ahead_count":0,"behind_count":33,"commit_at":1589222232,"ref":"0c2356e8a4f51bc1175c65fcbed1bad51ba8a864","remote_ref":"c4d5d604b4b9caea00cd565097d9fc5387f329a3","can":{}},{"name":"pytest","remote":"origin","remote_name":"pytest","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1588640002,"ref":"e2d21d3ad978765991ae0a4d57b8d3111c1a8430","remote_ref":"e2d21d3ad978765991ae0a4d57b8d3111c1a8430","can":{}},{"name":"tmp-pytest-1588373697","remote":"origin","remote_name":"tmp-pytest-1588373697","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":false,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1588340597,"ref":"176721285e47e0adac1b3ff55a26ca0346d5bfc7","remote_ref":null,"can":{}},{"name":"tmp_spectacles_56ea66b371","remote":"origin","remote_name":"tmp_spectacles_56ea66b371","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1588640002,"ref":"e2d21d3ad978765991ae0a4d57b8d3111c1a8430","remote_ref":"e2d21d3ad978765991ae0a4d57b8d3111c1a8430","can":{}},{"name":"DylanBaker-patch-1","remote":"origin","remote_name":"DylanBaker-patch-1","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":false,"is_remote":true,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1587679931,"ref":null,"remote_ref":"8455b34222cbca9f73cf4f2c919d18e2cfcfee97","can":{}},{"name":"dev-dylan-baker-kpjr","remote":"origin","remote_name":"dev-dylan-baker-kpjr","error":null,"message":null,"owner_name":null,"readonly":true,"personal":true,"is_local":false,"is_remote":true,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1587506570,"ref":null,"remote_ref":"741a80dcede95434a39ec9cb380ceba084ddac3c","can":{}},{"name":"dev-spectacles-bot-7kqt","remote":"origin","remote_name":"dev-spectacles-bot-7kqt","error":null,"message":null,"owner_name":null,"readonly":true,"personal":true,"is_local":false,"is_remote":true,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1577817599,"ref":null,"remote_ref":"3c43bb7e612169f95ab05de73f8474127d01122e","can":{}},{"name":"dev-spectacles-cloud-bot-2vyr","remote":"origin","remote_name":"dev-spectacles-cloud-bot-2vyr","error":null,"message":null,"owner_name":null,"readonly":true,"personal":true,"is_local":false,"is_remote":true,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1588640002,"ref":null,"remote_ref":"e2d21d3ad978765991ae0a4d57b8d3111c1a8430","can":{}},{"name":"testing-new-branch","remote":"origin","remote_name":"testing-new-branch","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":false,"is_remote":true,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1589222280,"ref":null,"remote_ref":"c3ac158afe6ab41ab4d202eefedd777526ee382d","can":{}},{"name":"testing-pr","remote":"origin","remote_name":"testing-pr","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":false,"is_remote":true,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1589210678,"ref":null,"remote_ref":"f1c654b80068fccc57d35a7d33d362708082e1f9","can":{}},{"name":"tmp_spectacles_0b0efbd26f","remote":"origin","remote_name":"tmp_spectacles_0b0efbd26f","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":false,"is_remote":true,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1588301750,"ref":null,"remote_ref":"cb18ea195d82ce2a06e6dd520ceb6dfeb2ad38c5","can":{}},{"name":"tmp_spectacles_2f0ec50cfd","remote":"origin","remote_name":"tmp_spectacles_2f0ec50cfd","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":false,"is_remote":true,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1589222280,"ref":null,"remote_ref":"c3ac158afe6ab41ab4d202eefedd777526ee382d","can":{}},{"name":"tmp_spectacles_3cf9c742fa","remote":"origin","remote_name":"tmp_spectacles_3cf9c742fa","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":false,"is_remote":true,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1588340597,"ref":null,"remote_ref":"176721285e47e0adac1b3ff55a26ca0346d5bfc7","can":{}},{"name":"tmp_spectacles_65567157db","remote":"origin","remote_name":"tmp_spectacles_65567157db","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":false,"is_remote":true,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1588301750,"ref":null,"remote_ref":"cb18ea195d82ce2a06e6dd520ceb6dfeb2ad38c5","can":{}},{"name":"tmp_spectacles_65f64c0018","remote":"origin","remote_name":"tmp_spectacles_65f64c0018","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":false,"is_remote":true,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1588301750,"ref":null,"remote_ref":"cb18ea195d82ce2a06e6dd520ceb6dfeb2ad38c5","can":{}},{"name":"tmp_spectacles_dfa47e82c4","remote":"origin","remote_name":"tmp_spectacles_dfa47e82c4","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":false,"is_remote":true,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1588301750,"ref":null,"remote_ref":"cb18ea195d82ce2a06e6dd520ceb6dfeb2ad38c5","can":{}},{"name":"tmp_spectacles_e7a51d5e45","remote":"origin","remote_name":"tmp_spectacles_e7a51d5e45","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":false,"is_remote":true,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1588301750,"ref":null,"remote_ref":"cb18ea195d82ce2a06e6dd520ceb6dfeb2ad38c5","can":{}}]'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '7011'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 13 May 2020 03:22:07 GMT
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+version: 1
