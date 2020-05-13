@@ -358,7 +358,7 @@ class LookerClient:
             project: Name of the Looker project to use.
             branch: Name of the branch to delete.
         """
-        logger.debug(f"Deleting branch {branch} in project {project}")
+        logger.debug(f"Deleting branch '{branch}' in project '{project}'")
 
         url = utils.compose_url(
             self.api_url, path=["projects", project, "git_branch", branch]
