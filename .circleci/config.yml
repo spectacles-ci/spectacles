@@ -54,16 +54,10 @@ jobs:
             black --check spectacles tests
 
       - run:
-          name: pytest
+          name: pytest and coverage
           command: |
             . venv/bin/activate
-            python -m pytest -p no:randomly --record-mode=none
-
-      - run:
-          name: coverage
-          command: |
-            . venv/bin/activate
-            coverage run --source spectacles -m pytest
+            coverage run --source spectacles -m pytest --record-mode=none
             coverage report
             coverage html
             coverage xml
