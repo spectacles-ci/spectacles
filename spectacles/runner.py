@@ -39,7 +39,7 @@ class LookerBranchManager:
 
     def __enter__(self):
         self.client.update_workspace(self.project, self.workspace)
-        if self.import_projects:
+        if self.import_projects and self.name != "master":
             self.branch_imported_projects()
         if self.commit_ref:
             """Can't delete branches from the production workspace so we need to save
