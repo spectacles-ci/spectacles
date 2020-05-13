@@ -19,6 +19,7 @@ class LookerBranchManager:
         client: LookerClient,
         project: str,
         name: Optional[str] = None,
+        remote_reset: bool = False,
         import_projects: bool = False,
         commit_ref: Optional[str] = None,
     ):
@@ -26,6 +27,7 @@ class LookerBranchManager:
         self.client = client
         self.project = project
         self.name = name
+        self.remote_reset = remote_reset
         self.import_projects = import_projects
         self.commit_ref = commit_ref
 
@@ -52,6 +54,8 @@ class LookerBranchManager:
         # If we didn't start on the desired branch, check it out
         elif self.original_branch != self.name:
             self.client.checkout_branch(self.project, self.name)
+            if self.remote_reset:
+                self.client.reset_to_remote(self.project)
 
     def __exit__(self, *args):
         if self.temp_branches:
@@ -61,9 +65,6 @@ class LookerBranchManager:
 
         # Return to the starting branch
         self.restore_branch(self.project, self.original_branch)
-
-    def reset_to_remote(self):
-        self.client.reset_to_remote(self.project)
 
     def setup_temp_branch(self, project: str, original_branch: str) -> str:
         name = "tmp_spectacles_" + time_hash()
@@ -136,7 +137,12 @@ class Runner:
             base_url, client_id, client_secret, port, api_version
         )
         self.branch_manager = LookerBranchManager(
-            self.client, project, branch, import_projects, commit_ref
+            self.client,
+            project,
+            branch,
+            remote_reset=remote_reset,
+            import_projects=import_projects,
+            commit_ref=commit_ref,
         )
 
     @log_duration
