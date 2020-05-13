@@ -7,7 +7,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=4540
+      - looker.browser=4560
     method: PATCH
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -21,7 +21,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 13 May 2020 04:07:09 GMT
+      - Wed, 13 May 2020 23:41:51 GMT
       Server:
       - nginx
       Vary:
@@ -39,12 +39,12 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=4540
+      - looker.browser=4560
     method: PUT
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
   response:
     body:
-      string: '{"name":"pytest","remote":"origin","remote_name":"pytest","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1588640002,"ref":"e2d21d3ad978765991ae0a4d57b8d3111c1a8430","remote_ref":"e2d21d3ad978765991ae0a4d57b8d3111c1a8430","can":{}}'
+      string: '{"name":"pytest","remote":"origin","remote_name":"pytest","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1589399922,"ref":"015bc6abc47b475ee55a30b3f0fc5993099293ab","remote_ref":"015bc6abc47b475ee55a30b3f0fc5993099293ab","can":{}}'
     headers:
       Connection:
       - keep-alive
@@ -53,7 +53,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 13 May 2020 04:07:10 GMT
+      - Wed, 13 May 2020 23:41:51 GMT
       Server:
       - nginx
       Vary:
@@ -71,12 +71,12 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=4540
+      - looker.browser=4560
     method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
   response:
     body:
-      string: '{"name":"tmp-pytest","remote":"origin","remote_name":"tmp-pytest","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":false,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1589222232,"ref":"c4d5d604b4b9caea00cd565097d9fc5387f329a3","remote_ref":null,"can":{}}'
+      string: '{"name":"tmp-pytest","remote":"origin","remote_name":"tmp-pytest","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":false,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1589399922,"ref":"015bc6abc47b475ee55a30b3f0fc5993099293ab","remote_ref":null,"can":{}}'
     headers:
       Connection:
       - keep-alive
@@ -85,7 +85,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 13 May 2020 04:07:10 GMT
+      - Wed, 13 May 2020 23:41:51 GMT
       Server:
       - nginx
       Vary:
@@ -103,12 +103,12 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=4540
+      - looker.browser=4560
     method: PUT
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
   response:
     body:
-      string: '{"name":"tmp-pytest","remote":"origin","remote_name":"tmp-pytest","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":false,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1589222232,"ref":"c4d5d604b4b9caea00cd565097d9fc5387f329a3","remote_ref":null,"can":{}}'
+      string: '{"name":"tmp-pytest","remote":"origin","remote_name":"tmp-pytest","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":false,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1589399922,"ref":"015bc6abc47b475ee55a30b3f0fc5993099293ab","remote_ref":null,"can":{}}'
     headers:
       Connection:
       - keep-alive
@@ -117,7 +117,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 13 May 2020 04:07:13 GMT
+      - Wed, 13 May 2020 23:41:55 GMT
       Server:
       - nginx
       Vary:
@@ -135,7 +135,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=4540
+      - looker.browser=4560
     method: PUT
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
   response:
@@ -149,7 +149,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 13 May 2020 04:07:17 GMT
+      - Wed, 13 May 2020 23:41:59 GMT
       Server:
       - nginx
       Vary:
@@ -163,12 +163,12 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=4540
+      - looker.browser=4560
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
   response:
     body:
-      string: '{"name":"tmp-pytest","remote":"origin","remote_name":"tmp-pytest","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1589222232,"ref":"c4d5d604b4b9caea00cd565097d9fc5387f329a3","remote_ref":"c4d5d604b4b9caea00cd565097d9fc5387f329a3","can":{}}'
+      string: '{"name":"tmp-pytest","remote":"origin","remote_name":"tmp-pytest","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1589399922,"ref":"015bc6abc47b475ee55a30b3f0fc5993099293ab","remote_ref":"015bc6abc47b475ee55a30b3f0fc5993099293ab","can":{}}'
     headers:
       Connection:
       - keep-alive
@@ -177,7 +177,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 13 May 2020 04:07:17 GMT
+      - Wed, 13 May 2020 23:41:59 GMT
       Server:
       - nginx
       Vary:
@@ -195,13 +195,13 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=4540
+      - looker.browser=4560
     method: PUT
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
   response:
     body:
       string: '{"name":"dev-josh-temple-8m75","remote":"origin","remote_name":"dev-josh-temple-8m75","error":null,"message":null,"owner_name":"Josh
-        Temple","readonly":false,"personal":true,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1589222232,"ref":"c4d5d604b4b9caea00cd565097d9fc5387f329a3","remote_ref":"c4d5d604b4b9caea00cd565097d9fc5387f329a3","can":{}}'
+        Temple","readonly":false,"personal":true,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1589399922,"ref":"015bc6abc47b475ee55a30b3f0fc5993099293ab","remote_ref":"015bc6abc47b475ee55a30b3f0fc5993099293ab","can":{}}'
     headers:
       Connection:
       - keep-alive
@@ -210,7 +210,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 13 May 2020 04:07:17 GMT
+      - Wed, 13 May 2020 23:41:59 GMT
       Server:
       - nginx
       Vary:
@@ -226,7 +226,7 @@ interactions:
       Content-Length:
       - '0'
       Cookie:
-      - looker.browser=4540
+      - looker.browser=4560
     method: DELETE
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch/tmp-pytest
   response:
@@ -236,7 +236,7 @@ interactions:
       Connection:
       - keep-alive
       Date:
-      - Wed, 13 May 2020 04:07:20 GMT
+      - Wed, 13 May 2020 23:42:03 GMT
       Server:
       - nginx
       X-Content-Type-Options:
@@ -252,7 +252,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=4540
+      - looker.browser=4560
     method: PATCH
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -266,7 +266,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 13 May 2020 04:07:21 GMT
+      - Wed, 13 May 2020 23:42:03 GMT
       Server:
       - nginx
       Vary:

@@ -3,7 +3,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=4540
+      - looker.browser=4560
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/lookml_models
   response:
@@ -27,7 +27,9 @@ interactions:
         eCommerce with Event Data","name":"thelook","project_name":"welcome_to_looker","unlimited_db_connections":false,"allowed_db_connection_names":["snowlooker"],"can":{"index":true,"show":true,"create":true,"update":true,"destroy":true}},{"explores":[{"description":null,"label":"Orders","hidden":false,"group_label":"Jaffle
         Shop","name":"fct_orders","can":{}}],"has_content":true,"label":"Jaffle Shop","name":"jaffle_shop","project_name":"jaffle_shop","unlimited_db_connections":false,"allowed_db_connection_names":["bigquery"],"can":{"index":true,"show":true,"create":true,"update":true,"destroy":true}},{"explores":[],"has_content":false,"label":"Admin","name":"admin","project_name":"jaffle_shop","unlimited_db_connections":false,"allowed_db_connection_names":["bigquery"],"can":{"index":true,"show":true,"create":true,"update":true,"destroy":true}},{"explores":[{"description":null,"label":"Users","hidden":false,"group_label":"Eye
         Exam","name":"users","can":{}},{"description":null,"label":"Users Fail","hidden":false,"group_label":"Eye
-        Exam","name":"users__fail","can":{}}],"has_content":true,"label":"Eye Exam","name":"eye_exam","project_name":"eye_exam","unlimited_db_connections":false,"allowed_db_connection_names":["snowlooker"],"can":{"index":true,"show":true,"create":true,"update":true,"destroy":true}},{"explores":[{"description":null,"label":"Content
+        Exam","name":"users__fail","can":{}},{"description":null,"label":"Users Fail
+        and Warn","hidden":false,"group_label":"Eye Exam","name":"users__fail_and_warn","can":{}}],"has_content":true,"label":"Eye
+        Exam","name":"eye_exam","project_name":"eye_exam","unlimited_db_connections":false,"allowed_db_connection_names":["snowlooker"],"can":{"index":true,"show":true,"create":true,"update":true,"destroy":true}},{"explores":[{"description":null,"label":"Content
         Usage","hidden":false,"group_label":"System Activity","name":"content_usage","can":{}},{"description":null,"label":"Dashboard","hidden":false,"group_label":"System
         Activity","name":"dashboard","can":{}},{"description":null,"label":"Dashboard
         Performance","hidden":false,"group_label":"System Activity","name":"dashboard_performance","can":{}},{"description":null,"label":"DB
@@ -51,11 +53,11 @@ interactions:
       Connection:
       - keep-alive
       Content-Length:
-      - '5498'
+      - '5628'
       Content-Type:
       - application/json
       Date:
-      - Wed, 13 May 2020 04:07:24 GMT
+      - Wed, 13 May 2020 23:41:37 GMT
       Server:
       - nginx
       Vary:

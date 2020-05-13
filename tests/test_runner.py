@@ -24,6 +24,7 @@ def runner(record_mode) -> Iterable[Runner]:
         yield runner
 
 
+@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
 class TestImportProjects:
     def test_validate_sql_with_import_projects_error(self, runner):
         runner.branch_manager.import_projects = True

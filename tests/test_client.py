@@ -58,6 +58,7 @@ def client_kwargs():
         update_branch={"project": "project_name", "branch": "branch_name"},
         delete_branch={"project": "project_name", "branch": "branch_name"},
         get_active_branch={"project": "project_name"},
+        get_active_branch_name={"project": "project_name"},
         get_manifest={"project": "project_name"},
         get_all_branches={"project": "project_name"},
     )
@@ -73,7 +74,7 @@ def test_branch_management_should_work(looker_client):
     try:
         looker_client.update_branch(project, tmp_branch, "master")
         looker_client.update_branch(project, tmp_branch, "origin/master")
-        assert looker_client.get_active_branch(project) == tmp_branch
+        assert looker_client.get_active_branch_name(project) == tmp_branch
     finally:
         # Return to the master branch and delete the temp branch
         looker_client.update_branch(project, "master")

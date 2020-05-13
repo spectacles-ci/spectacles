@@ -18,7 +18,7 @@ interactions:
     uri: https://spectacles.looker.com:19999/api/3.1/login
   response:
     body:
-      string: '{"access_token":"6QKvbgDCJZdv5QbV6rMqDMgzHSX6RB34k7QBFGzs","token_type":"Bearer","expires_in":3600}'
+      string: '{"access_token":"73BfRBBDGhqTqnnWn8jDYGf4zbhQfbSPPPJjD8Mn","token_type":"Bearer","expires_in":3600}'
     headers:
       Connection:
       - keep-alive
@@ -27,7 +27,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 13 May 2020 04:07:06 GMT
+      - Wed, 13 May 2020 23:41:43 GMT
       Server:
       - nginx
       Vary:
@@ -53,7 +53,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 13 May 2020 04:07:06 GMT
+      - Wed, 13 May 2020 23:41:43 GMT
       Server:
       - nginx
       Vary:
@@ -70,7 +70,7 @@ interactions:
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
   response:
     body:
-      string: '{"name":"master","remote":"origin","remote_name":"master","error":null,"message":null,"owner_name":null,"readonly":true,"personal":false,"is_local":true,"is_remote":true,"is_production":true,"ahead_count":0,"behind_count":0,"commit_at":1589222232,"ref":"c4d5d604b4b9caea00cd565097d9fc5387f329a3","remote_ref":"c4d5d604b4b9caea00cd565097d9fc5387f329a3","can":{}}'
+      string: '{"name":"master","remote":"origin","remote_name":"master","error":null,"message":null,"owner_name":null,"readonly":true,"personal":false,"is_local":true,"is_remote":true,"is_production":true,"ahead_count":0,"behind_count":0,"commit_at":1589399922,"ref":"015bc6abc47b475ee55a30b3f0fc5993099293ab","remote_ref":"015bc6abc47b475ee55a30b3f0fc5993099293ab","can":{}}'
     headers:
       Connection:
       - keep-alive
@@ -79,7 +79,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 13 May 2020 04:07:07 GMT
+      - Wed, 13 May 2020 23:41:43 GMT
       Server:
       - nginx
       Vary:
@@ -89,124 +89,4 @@ interactions:
     status:
       code: 200
       message: OK
-- request:
-    body: '{"workspace_id": "dev"}'
-    headers:
-      Content-Length:
-      - '23'
-      Content-Type:
-      - application/json
-    method: PATCH
-    uri: https://spectacles.looker.com:19999/api/3.1/session
-  response:
-    body:
-      string: '{"workspace_id":"dev","sudo_user_id":null,"can":{"view":true,"update":true}}'
-    headers:
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '76'
-      Content-Type:
-      - application/json
-      Date:
-      - Wed, 13 May 2020 04:07:07 GMT
-      Server:
-      - nginx
-      Set-Cookie:
-      - looker.browser=4539; expires=Sat, 13 May 2023 04:07:07 -0000; HttpOnly
-      Vary:
-      - Accept-Encoding
-      X-Content-Type-Options:
-      - nosniff
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Cookie:
-      - looker.browser=4539
-    method: GET
-    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/manifest
-  response:
-    body:
-      string: '{"message":"An error has occurred.","documentation_url":"http://docs.looker.com/"}'
-    headers:
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '82'
-      Content-Type:
-      - application/json
-      Date:
-      - Wed, 13 May 2020 04:07:07 GMT
-      Server:
-      - nginx
-      Vary:
-      - Accept-Encoding
-      X-Content-Type-Options:
-      - nosniff
-    status:
-      code: 500
-      message: Internal Server Error
-- request:
-    body: '{"workspace_id": "dev"}'
-    headers:
-      Content-Length:
-      - '23'
-      Content-Type:
-      - application/json
-      Cookie:
-      - looker.browser=4539
-    method: PATCH
-    uri: https://spectacles.looker.com:19999/api/3.1/session
-  response:
-    body:
-      string: '{"workspace_id":"dev","sudo_user_id":null,"can":{"view":true,"update":true}}'
-    headers:
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '76'
-      Content-Type:
-      - application/json
-      Date:
-      - Wed, 13 May 2020 04:07:07 GMT
-      Server:
-      - nginx
-      Vary:
-      - Accept-Encoding
-      X-Content-Type-Options:
-      - nosniff
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Cookie:
-      - looker.browser=4539
-    method: GET
-    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/manifest
-  response:
-    body:
-      string: '{"message":"An error has occurred.","documentation_url":"http://docs.looker.com/"}'
-    headers:
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '82'
-      Content-Type:
-      - application/json
-      Date:
-      - Wed, 13 May 2020 04:07:07 GMT
-      Server:
-      - nginx
-      Vary:
-      - Accept-Encoding
-      X-Content-Type-Options:
-      - nosniff
-    status:
-      code: 500
-      message: Internal Server Error
 version: 1
