@@ -216,3 +216,88 @@ def test_parse_args_with_mutually_exclusive_args_commit_ref(env, capsys):
         "argument --commit-ref: not allowed with argument --remote-reset"
         in captured.err
     )
+
+
+@patch("sys.argv", new=["spectacles", "sql"])
+@patch("spectacles.cli.run_sql")
+@patch("spectacles.cli.tracking")
+def test_main_with_sql_validator(mock_tracking, mock_run_sql, env):
+    main()
+    mock_tracking.track_invocation_start.assert_called_once_with(
+        "BASE_URL_ENV_VAR", "sql", project="PROJECT_ENV_VAR"
+    )
+    mock_tracking.track_invocation_end.assert_called_once()
+    mock_run_sql.assert_called_once_with(
+        "logs",  # log_dir
+        "PROJECT_ENV_VAR",  # project
+        "BRANCH_ENV_VAR",  # branch
+        ["*/*"],  # explores
+        [],  # exclude
+        "BASE_URL_ENV_VAR",  # base_url
+        "CLIENT_ID_ENV_VAR",  # client_id
+        "CLIENT_SECRET_ENV_VAR",  # client_secret
+        8080,  # port
+        3.1,  # api_version
+        "batch",  # mode
+        False,  # remote_reset
+        False,  # import_projects
+        10,  # concurrency
+        None,
+    )
+
+
+@patch("sys.argv", new=["spectacles", "assert"])
+@patch("spectacles.cli.run_assert")
+@patch("spectacles.cli.tracking")
+def test_main_with_assert_validator(mock_tracking, mock_run_assert, env):
+    main()
+    mock_tracking.track_invocation_start.assert_called_once_with(
+        "BASE_URL_ENV_VAR", "assert", project="PROJECT_ENV_VAR"
+    )
+    mock_tracking.track_invocation_end.assert_called_once()
+    mock_run_assert.assert_called_once_with(
+        "PROJECT_ENV_VAR",  # project
+        "BRANCH_ENV_VAR",  # branch
+        "BASE_URL_ENV_VAR",  # base_url
+        "CLIENT_ID_ENV_VAR",  # client_id
+        "CLIENT_SECRET_ENV_VAR",  # client_secret
+        8080,  # port
+        3.1,  # api_version
+        False,  # remote_reset
+        False,  # import_projects
+        None,
+    )
+
+
+@patch("sys.argv", new=["spectacles", "connect"])
+@patch("spectacles.cli.run_connect")
+@patch("spectacles.cli.tracking")
+def test_main_with_connect(mock_tracking, mock_run_connect, env):
+    main()
+    mock_tracking.track_invocation_start.assert_called_once_with(
+        "BASE_URL_ENV_VAR", "connect", project=None
+    )
+    mock_tracking.track_invocation_end.assert_called_once()
+    mock_run_connect.assert_called_once_with(
+        "BASE_URL_ENV_VAR",  # base_url
+        "CLIENT_ID_ENV_VAR",  # client_id
+        "CLIENT_SECRET_ENV_VAR",  # client_secret
+        8080,  # port
+        3.1,  # api_version
+    )
+
+
+@patch("sys.argv", new=["spectacles", "connect", "--do-not-track"])
+@patch("spectacles.cli.run_connect")
+@patch("spectacles.cli.tracking")
+def test_main_with_do_not_track(mock_tracking, mock_run_connect, env):
+    main()
+    mock_tracking.track_invocation_start.assert_not_called()
+    mock_tracking.track_invocation_end.assert_not_called()
+    mock_run_connect.assert_called_once_with(
+        "BASE_URL_ENV_VAR",  # base_url
+        "CLIENT_ID_ENV_VAR",  # client_id
+        "CLIENT_SECRET_ENV_VAR",  # client_secret
+        8080,  # port
+        3.1,  # api_version
+    )
