@@ -216,7 +216,8 @@ class SqlValidator(Validator):
                     + ", ".join(f"'{diff}'" for diff in difference)
                     + f" not found in LookML for project '{self.project.name}'. "
                     "Check that the models and explores specified exist, the project "
-                    "name is correct, and try again."
+                    "name is correct, and try again. For models, make sure they have "
+                    f"been configured at {self.client.base_url}/projects"
                 ),
             )
         return [each for each in select_from if each.name in unique_choices]
