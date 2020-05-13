@@ -187,7 +187,9 @@ def main():
 
     if not args.do_not_track:
         invocation_id = tracking.track_invocation_start(
-            args.base_url, args.command, args.project
+            args.base_url,
+            args.command,
+            project=args.project if args.command != "connect" else None,
         )
 
     if args.command == "connect":
@@ -232,7 +234,10 @@ def main():
 
     if not args.do_not_track:
         tracking.track_invocation_end(
-            args.base_url, args.command, args.project, invocation_id
+            args.base_url,
+            args.command,
+            invocation_id,
+            args.project if args.command != "connect" else None,
         )
 
 

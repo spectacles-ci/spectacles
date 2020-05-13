@@ -1,6 +1,7 @@
 import analytics  # type: ignore
 import hashlib
 import uuid
+from typing import Optional
 
 analytics.write_key = "QnqzXWlqkmgDSm7X2qFDrxx3LGCW7Rba"
 
@@ -11,10 +12,13 @@ def anonymise(trait: str) -> str:
 
 
 def track_invocation_start(
-    base_url: str, command: str, project: str, invocation_id: str = str(uuid.uuid4())
+    base_url: str,
+    command: str,
+    invocation_id: str = str(uuid.uuid4()),
+    project: Optional[str] = None,
 ) -> str:
     url_hash = anonymise(base_url.rstrip("/"))
-    project_hash = anonymise(project)
+    project_hash = anonymise(project) if project else None
     analytics.track(
         user_id=url_hash,
         event="invocation",
@@ -28,9 +32,11 @@ def track_invocation_start(
     return invocation_id
 
 
-def track_invocation_end(base_url: str, command: str, project: str, invocation_id: str):
+def track_invocation_end(
+    base_url: str, command: str, invocation_id: str, project: Optional[str] = None
+):
     url_hash = anonymise(base_url.rstrip("/"))
-    project_hash = anonymise(project)
+    project_hash = anonymise(project) if project else None
     analytics.track(
         user_id=url_hash,
         event="invocation",
