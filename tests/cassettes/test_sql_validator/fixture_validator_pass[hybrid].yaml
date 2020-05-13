@@ -3,7 +3,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=683
+      - looker.browser=4540
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/lookml_models
   response:
@@ -55,7 +55,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Fri, 01 May 2020 23:06:46 GMT
+      - Wed, 13 May 2020 04:07:44 GMT
       Server:
       - nginx
       Vary:
@@ -70,7 +70,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=683
+      - looker.browser=4540
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/lookml_models/eye_exam/explores/users
   response:
@@ -101,7 +101,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Fri, 01 May 2020 23:06:46 GMT
+      - Wed, 13 May 2020 04:07:44 GMT
       Server:
       - nginx
       Vary:
@@ -122,7 +122,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=683
+      - looker.browser=4540
     method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/queries
   response:
@@ -136,7 +136,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Fri, 01 May 2020 23:06:46 GMT
+      - Wed, 13 May 2020 04:07:44 GMT
       Server:
       - nginx
       Vary:
@@ -155,12 +155,12 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=683
+      - looker.browser=4540
     method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/query_tasks?cache=false
   response:
     body:
-      string: '{"query_id":1943,"query":{"id":1943,"view":"users","fields":["users.city","users.email","users.first_name","users.id","users.last_name"],"pivots":null,"fill_fields":null,"filters":null,"filter_expression":"1=2","sorts":null,"limit":"0","column_limit":null,"total":null,"row_total":null,"subtotals":null,"vis_config":null,"filter_config":null,"visible_ui_sections":null,"slug":"KsKM8HB","dynamic_fields":null,"client_id":"o48ListDdGN0o2gIRASTQN","share_url":"https://spectacles.looker.com/x/o48ListDdGN0o2gIRASTQN","expanded_share_url":"https://spectacles.looker.com/explore/eye_exam/users?fields=users.city,users.email,users.first_name,users.id,users.last_name\u0026filter_expression=1%3D2\u0026limit=0\u0026origin=share-expanded","url":"/explore/eye_exam/users?fields=users.city,users.email,users.first_name,users.id,users.last_name\u0026filter_expression=1%3D2\u0026limit=0","query_timezone":null,"runtime":null,"has_table_calculations":false,"model":"eye_exam","can":{"run":true,"see_results":true,"explore":true,"create":true,"show":true,"cost_estimate":true,"index":true,"see_lookml":true,"see_aggregate_table_lookml":false,"see_derived_table_lookml":true,"see_sql":true,"generate_drill_links":true,"download":true,"download_unlimited":true,"schedule":true,"render":true}},"generate_links":true,"force_production":false,"path_prefix":"/explore","cache":false,"server_table_calcs":true,"cache_only":false,"cache_key":null,"status":"added","source":"api","runtime":null,"rebuild_pdts":false,"result_source":null,"look_id":null,"dashboard_id":null,"result_format":"json_detail","id":"97efe12ba0fa7255ed93381b5c95e4d9","can":{"index":true,"show":true,"kill":true,"see_results":true}}'
+      string: '{"query_id":1943,"query":{"id":1943,"view":"users","fields":["users.city","users.email","users.first_name","users.id","users.last_name"],"pivots":null,"fill_fields":null,"filters":null,"filter_expression":"1=2","sorts":null,"limit":"0","column_limit":null,"total":null,"row_total":null,"subtotals":null,"vis_config":null,"filter_config":null,"visible_ui_sections":null,"slug":"KsKM8HB","dynamic_fields":null,"client_id":"o48ListDdGN0o2gIRASTQN","share_url":"https://spectacles.looker.com/x/o48ListDdGN0o2gIRASTQN","expanded_share_url":"https://spectacles.looker.com/explore/eye_exam/users?fields=users.city,users.email,users.first_name,users.id,users.last_name\u0026filter_expression=1%3D2\u0026limit=0\u0026origin=share-expanded","url":"/explore/eye_exam/users?fields=users.city,users.email,users.first_name,users.id,users.last_name\u0026filter_expression=1%3D2\u0026limit=0","query_timezone":null,"runtime":null,"has_table_calculations":false,"model":"eye_exam","can":{"run":true,"see_results":true,"explore":true,"create":true,"show":true,"cost_estimate":true,"index":true,"see_lookml":true,"see_aggregate_table_lookml":false,"see_derived_table_lookml":true,"see_sql":true,"generate_drill_links":true,"download":true,"download_unlimited":true,"schedule":true,"render":true}},"generate_links":true,"force_production":false,"path_prefix":"/explore","cache":false,"server_table_calcs":true,"cache_only":false,"cache_key":null,"status":"added","source":"api","runtime":null,"rebuild_pdts":false,"result_source":null,"look_id":null,"dashboard_id":null,"result_format":"json_detail","id":"51db9902197ee1283ba50df7eba0a9d0","can":{"index":true,"show":true,"kill":true,"see_results":true}}'
     headers:
       Connection:
       - keep-alive
@@ -169,7 +169,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Fri, 01 May 2020 23:06:46 GMT
+      - Wed, 13 May 2020 04:07:44 GMT
       Server:
       - nginx
       Vary:
@@ -184,12 +184,12 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=683
+      - looker.browser=4540
     method: GET
-    uri: https://spectacles.looker.com:19999/api/3.1/query_tasks/multi_results?query_task_ids=97efe12ba0fa7255ed93381b5c95e4d9
+    uri: https://spectacles.looker.com:19999/api/3.1/query_tasks/multi_results?query_task_ids=51db9902197ee1283ba50df7eba0a9d0
   response:
     body:
-      string: '{"97efe12ba0fa7255ed93381b5c95e4d9":{"status":"added"}}'
+      string: '{"51db9902197ee1283ba50df7eba0a9d0":{"status":"added"}}'
     headers:
       Connection:
       - keep-alive
@@ -198,7 +198,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Fri, 01 May 2020 23:06:46 GMT
+      - Wed, 13 May 2020 04:07:44 GMT
       Server:
       - nginx
       Vary:
@@ -212,12 +212,12 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=683
+      - looker.browser=4540
     method: GET
-    uri: https://spectacles.looker.com:19999/api/3.1/query_tasks/multi_results?query_task_ids=97efe12ba0fa7255ed93381b5c95e4d9
+    uri: https://spectacles.looker.com:19999/api/3.1/query_tasks/multi_results?query_task_ids=51db9902197ee1283ba50df7eba0a9d0
   response:
     body:
-      string: '{"97efe12ba0fa7255ed93381b5c95e4d9":{"status":"running"}}'
+      string: '{"51db9902197ee1283ba50df7eba0a9d0":{"status":"running"}}'
     headers:
       Connection:
       - keep-alive
@@ -226,7 +226,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Fri, 01 May 2020 23:06:47 GMT
+      - Wed, 13 May 2020 04:07:45 GMT
       Server:
       - nginx
       Vary:
@@ -240,12 +240,12 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=683
+      - looker.browser=4540
     method: GET
-    uri: https://spectacles.looker.com:19999/api/3.1/query_tasks/multi_results?query_task_ids=97efe12ba0fa7255ed93381b5c95e4d9
+    uri: https://spectacles.looker.com:19999/api/3.1/query_tasks/multi_results?query_task_ids=51db9902197ee1283ba50df7eba0a9d0
   response:
     body:
-      string: '{"97efe12ba0fa7255ed93381b5c95e4d9":{"status":"complete","result_source":"query","data":{"from_cache":true,"id":"97efe12ba0fa7255ed93381b5c95e4d9","truncated":true,"supports_pivot_in_db":true,"null_sort_treatment":"high","expired":false,"ran_at":"2020-05-01T23:06:47+00:00","runtime":"0.828","added_params":{"sorts":["users.city"]},"sql":"SELECT\n\tusers.\"CITY\"  AS
+      string: '{"51db9902197ee1283ba50df7eba0a9d0":{"status":"complete","result_source":"query","data":{"from_cache":true,"id":"51db9902197ee1283ba50df7eba0a9d0","truncated":true,"supports_pivot_in_db":true,"null_sort_treatment":"high","expired":false,"ran_at":"2020-05-13T04:07:45+00:00","runtime":"0.615","added_params":{"sorts":["users.city"]},"sql":"SELECT\n\tusers.\"CITY\"  AS
         \"users.city\",\n\tusers.\"EMAIL\"  AS \"users.email\",\n\tusers.\"FIRST_NAME\"  AS
         \"users.first_name\",\n\tusers.\"ID\"  AS \"users.id\",\n\tusers.\"LAST_NAME\"  AS
         \"users.last_name\"\nFROM \"PUBLIC\".\"USERS\"\n     AS users\n\nWHERE 1 =
@@ -260,16 +260,16 @@ interactions:
         Name","measure":false,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users","source_file":"views/users.view.lkml","source_file_path":"eye_exam/views/users.view.lkml","suggest_dimension":"users.first_name","suggest_explore":"users","suggestable":true,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"sql":null,"sql_case":null},{"align":"right","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":true,"label":"Users
         ID","label_from_parameter":null,"label_short":"ID","lookml_link":"/projects/eye_exam/files/views%2Fusers.view.lkml?line=6","map_layer":null,"name":"users.id","strict_value_format":false,"permanent":null,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"number","user_attribute_filter_types":["number","advanced_filter_number"],"value_format":null,"view":"users","view_label":"Users","dynamic":false,"week_start_day":"monday","error":null,"field_group_variant":"ID","measure":false,"parameter":false,"primary_key":true,"project_name":"eye_exam","scope":"users","source_file":"views/users.view.lkml","source_file_path":"eye_exam/views/users.view.lkml","suggest_dimension":"users.id","suggest_explore":"users","suggestable":false,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"sql":null,"sql_case":null},{"align":"left","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":false,"label":"Users
         Last Name","label_from_parameter":null,"label_short":"Last Name","lookml_link":"/projects/eye_exam/files/views%2Fusers.view.lkml?line=33","map_layer":null,"name":"users.last_name","strict_value_format":false,"permanent":null,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"string","user_attribute_filter_types":["string","advanced_filter_string"],"value_format":null,"view":"users","view_label":"Users","dynamic":false,"week_start_day":"monday","error":null,"field_group_variant":"Last
-        Name","measure":false,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users","source_file":"views/users.view.lkml","source_file_path":"eye_exam/views/users.view.lkml","suggest_dimension":"users.last_name","suggest_explore":"users","suggestable":true,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"sql":null,"sql_case":null}],"table_calculations":[],"pivots":[]},"fill_fields":[],"has_totals":false,"has_row_totals":false,"applied_filters":{},"applied_filter_expression":"1=2","number_format":"1,234.56","explore":{"name":"users","label":"Users","description":null},"timezone":"America/Los_Angeles","data":[],"drill_menu_build_time":0.040496000000000004,"has_subtotals":false}}}'
+        Name","measure":false,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users","source_file":"views/users.view.lkml","source_file_path":"eye_exam/views/users.view.lkml","suggest_dimension":"users.last_name","suggest_explore":"users","suggestable":true,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"sql":null,"sql_case":null}],"table_calculations":[],"pivots":[]},"fill_fields":[],"has_totals":false,"has_row_totals":false,"applied_filters":{},"applied_filter_expression":"1=2","number_format":"1,234.56","explore":{"name":"users","label":"Users","description":null},"timezone":"America/Los_Angeles","data":[],"drill_menu_build_time":0.049844,"has_subtotals":false}}}'
     headers:
       Connection:
       - keep-alive
       Content-Length:
-      - '7288'
+      - '7276'
       Content-Type:
       - application/json
       Date:
-      - Fri, 01 May 2020 23:06:47 GMT
+      - Wed, 13 May 2020 04:07:45 GMT
       Server:
       - nginx
       Vary:
