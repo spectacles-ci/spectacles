@@ -126,7 +126,7 @@ class LookerClient:
             project: Name of the Looker project to use.
             workspace: The workspace to switch to, either 'production' or 'dev'
         """
-        logger.debug("Updating session to use production workspace")
+        logger.debug(f"Updating session to use the {workspace} workspace")
         url = utils.compose_url(self.api_url, path=["session"])
         body = {"workspace_id": workspace}
         response = self.session.patch(url=url, json=body, timeout=TIMEOUT_SEC)
@@ -146,6 +146,33 @@ class LookerClient:
                 response=response,
             )
 
+    def get_all_branches(self, project: str) -> List[str]:
+        """Returns a list of git branches in the project repository.
+
+        Args:
+            project: Name of the Looker project to use.
+        """
+        logger.debug(f"Getting all Git branches in project '{project}'")
+        url = utils.compose_url(
+            self.api_url, path=["projects", project, "git_branches"]
+        )
+        response = self.session.get(url=url, timeout=TIMEOUT_SEC)
+        try:
+            response.raise_for_status()
+        except requests.exceptions.HTTPError:
+            raise LookerApiError(
+                name="unable-to-get-branches",
+                title="Couldn't get all Git branches.",
+                status=response.status_code,
+                detail=(
+                    f"Unable to get all Git branches in project '{project}'. "
+                    "Please try again."
+                ),
+                response=response,
+            )
+
+        return [branch["name"] for branch in response.json()]
+
     def checkout_branch(self, project: str, branch: str) -> None:
         """Checks out a new git branch. Only works in dev workspace.
 
@@ -153,7 +180,7 @@ class LookerClient:
             project: Name of the Looker project to use.
             branch: Name of the Git branch to check out.
         """
-        logger.debug(f"Setting Git branch to {branch}")
+        logger.debug(f"Setting Git branch to '{branch}'")
         url = utils.compose_url(self.api_url, path=["projects", project, "git_branch"])
         body = {"name": branch}
         response = self.session.put(url=url, json=body, timeout=TIMEOUT_SEC)
@@ -230,7 +257,7 @@ class LookerClient:
 
         return manifest
 
-    def get_active_branch(self, project: str) -> str:
+    def get_active_branch(self, project: str) -> JsonDict:
         """Gets the active branch for the user in the given project.
 
         Args:
@@ -239,7 +266,7 @@ class LookerClient:
         Returns:
             str: Name of the active branch
         """
-        logger.debug(f"Getting active branch for project {project}")
+        logger.debug(f"Getting active branch for project '{project}'")
         url = utils.compose_url(self.api_url, path=["projects", project, "git_branch"])
         response = self.session.get(url=url, timeout=TIMEOUT_SEC)
 
@@ -258,8 +285,14 @@ class LookerClient:
             )
 
         branch_name = response.json()["name"]
+        logger.debug(f"The active branch is '{branch_name}'")
 
-        return branch_name
+        return response.json()
+
+    def get_active_branch_name(self, project: str) -> str:
+        """Helper method to return only the branch name."""
+        full_response = self.get_active_branch(project)
+        return full_response["name"]
 
     def create_branch(self, project: str, branch: str, ref: str = "origin/master"):
         """Creates a branch in the given project.
@@ -269,7 +302,9 @@ class LookerClient:
             branch: Name of the branch to create.
             ref: The ref to create the branch from.
         """
-        logger.debug(f"Creating branch {branch} on project {project}")
+        logger.debug(
+            f"Creating branch '{branch}' on project '{project}' with ref '{ref}'"
+        )
 
         body = {"name": branch, "ref": ref}
         url = utils.compose_url(self.api_url, path=["projects", project, "git_branch"])
@@ -285,7 +320,7 @@ class LookerClient:
                 detail=(
                     f"Unable to create branch '{branch}' "
                     f"in project '{project}' using ref '{ref}'. "
-                    "Please try again."
+                    "Confirm the branch doesn't already exist and try again."
                 ),
                 response=response,
             )
@@ -298,7 +333,9 @@ class LookerClient:
             branch: Name of the branch to update.
             ref: The ref to update the branch from.
         """
-        logger.debug(f"Updating branch {branch} on project {project}")
+        logger.debug(
+            f"Updating branch '{branch}' on project '{project}' to ref '{ref}'"
+        )
 
         body = {"name": branch, "ref": ref}
         url = utils.compose_url(self.api_url, path=["projects", project, "git_branch"])
@@ -326,7 +363,7 @@ class LookerClient:
             project: Name of the Looker project to use.
             branch: Name of the branch to delete.
         """
-        logger.debug(f"Deleting branch {branch} in project {project}")
+        logger.debug(f"Deleting branch '{branch}' in project '{project}'")
 
         url = utils.compose_url(
             self.api_url, path=["projects", project, "git_branch", branch]

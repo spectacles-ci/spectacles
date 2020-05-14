@@ -214,6 +214,7 @@ def main():
             args.remote_reset,
             args.import_projects,
             args.concurrency,
+            args.commit_ref,
         )
     elif args.command == "assert":
         run_assert(
@@ -226,6 +227,7 @@ def main():
             args.api_version,
             args.remote_reset,
             args.import_projects,
+            args.commit_ref,
         )
 
     if not args.do_not_track:
@@ -375,15 +377,7 @@ def _build_validator_subparser(
         action=EnvVarAction,
         env_var="LOOKER_GIT_BRANCH",
         required=True,
-        help="The branch of your project that spectacles will use to run queries.",
-    )
-    base_subparser.add_argument(
-        "--remote-reset",
-        action=EnvVarStoreTrueAction,
-        env_var="SPECTACLES_REMOTE_RESET",
-        help="When set to true, the SQL validator will tell Looker to reset the \
-            user's branch to the revision of the branch that is on the remote. \
-            WARNING: This will delete any uncommited changes in the user's workspace.",
+        help="The branch of your project that Spectacles will use to run queries.",
     )
     base_subparser.add_argument(
         "--import-projects",
@@ -392,6 +386,23 @@ def _build_validator_subparser(
         help="When set to true, the SQL Validator will create temporary branches \
             that are clones of master for any project that is a local dependency of the \
             of the project being tested. These branches are deleted at the end of the run.",
+    )
+    group = base_subparser.add_mutually_exclusive_group()
+    group.add_argument(
+        "--remote-reset",
+        action=EnvVarStoreTrueAction,
+        env_var="SPECTACLES_REMOTE_RESET",
+        help="When set to true, the SQL validator will tell Looker to reset the \
+            user's branch to the revision of the branch that is on the remote. \
+            WARNING: This will delete any uncommited changes in the user's workspace.",
+    )
+    group.add_argument(
+        "--commit-ref",
+        action=EnvVarAction,
+        env_var="LOOKER_COMMIT_REF",
+        help="The commit of your project that Spectacles will test against. \
+            In order to test a specific commit, Spectacles will create a new branch \
+            for the tests and then delete the branch when it is finished.",
     )
 
     return base_subparser
@@ -494,6 +505,7 @@ def run_assert(
     api_version,
     remote_reset,
     import_projects,
+    commit_ref,
 ) -> None:
     runner = Runner(
         base_url,
@@ -505,6 +517,7 @@ def run_assert(
         api_version,
         remote_reset,
         import_projects,
+        commit_ref,
     )
     results = runner.validate_data_tests()
 
@@ -541,6 +554,7 @@ def run_sql(
     remote_reset,
     import_projects,
     concurrency,
+    commit_ref,
 ) -> None:
     """Runs and validates the SQL for each selected LookML dimension."""
     runner = Runner(
@@ -553,6 +567,7 @@ def run_sql(
         api_version,
         remote_reset,
         import_projects,
+        commit_ref,
     )
 
     def iter_errors(lookml: List) -> Iterable:
@@ -579,7 +594,7 @@ def run_sql(
             )
         if mode == "batch":
             logger.info(
-                f"\n\nTo determine the exact dimensions responsible for {'this error' if project.number_of_errors == 1 else 'these errors'}, "
+                f"\n\nTo determine the exact dimensions responsible for {'this error' if len(errors) == 1 else 'these errors'}, "
                 f"you can re-run \nSpectacles in single-dimension mode, with `--mode single`.\n\n"
                 "You can also run this original validation with `--mode hybrid` to do this automatically."
             )
