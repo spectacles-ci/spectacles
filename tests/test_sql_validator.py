@@ -239,7 +239,7 @@ class TestValidatePassWithWarning:
         validator = validator_warn[0]
         assert len(validator._query_by_task_id) == 1
 
-    def test_should_set_errored_and_not_queried(self, validator_warn):
+    def test_should_set_queried_and_not_errored(self, validator_warn):
         validator = validator_warn[0]
         assert validator.project.errored is False
         assert validator.project.queried is True
