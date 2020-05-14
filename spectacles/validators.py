@@ -503,12 +503,21 @@ class SqlValidator(Validator):
         return None
 
     @staticmethod
-    def _extract_error_details(query_result: Dict) -> Dict:
+    def _extract_error_details(query_result: Dict) -> Optional[Dict]:
         """Extracts the relevant error fields from a Looker API response"""
         data = query_result["data"]
         if isinstance(data, dict):
             errors = data.get("errors") or [data.get("error")]
-            first_error = errors[0]
+            try:
+                first_error = next(
+                    error
+                    for error in errors
+                    if error.get("message")
+                    != "Note: This query contains derived tables with conditional SQL for Development Mode. "
+                    "Query results in Production Mode might be different."
+                )
+            except StopIteration:
+                return None
             message = " ".join(
                 filter(
                     None,
