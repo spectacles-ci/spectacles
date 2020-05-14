@@ -338,3 +338,39 @@ def test_extract_error_details_error_loc_wo_line(validator):
     extracted = validator._extract_error_details(query_result)
     assert extracted["message"] == message
     assert extracted["sql"] == sql
+
+
+def test_extract_error_details_error_and_warning(validator):
+    error_message = "An error message."
+    warning_message = (
+        "Note: This query contains derived tables with conditional SQL for Development Mode. "
+        "Query results in Production Mode might be different."
+    )
+    sql = "SELECT x FROM orders"
+    query_result = {
+        "status": "error",
+        "data": {
+            "errors": [
+                {"message": warning_message},
+                {"message": error_message, "sql_error_loc": {"character": 8}},
+            ],
+            "sql": sql,
+        },
+    }
+    extracted = validator._extract_error_details(query_result)
+    assert extracted["message"] == error_message
+    assert extracted["sql"] == sql
+
+
+def test_extract_error_details_warning(validator):
+    warning_message = (
+        "Note: This query contains derived tables with conditional SQL for Development Mode. "
+        "Query results in Production Mode might be different."
+    )
+    sql = "SELECT x FROM orders"
+    query_result = {
+        "status": "error",
+        "data": {"errors": [{"message": warning_message}], "sql": sql},
+    }
+    extracted = validator._extract_error_details(query_result)
+    assert extracted is None
