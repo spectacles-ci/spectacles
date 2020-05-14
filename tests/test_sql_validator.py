@@ -193,6 +193,10 @@ class TestValidateFailWithWarning:
             filter_headers=["Authorization"],
             record_mode=record_mode,
         ):
+            # Move to dev mode to test conditional logic warning
+            validator.client.update_workspace("eye_exam", "dev")
+            validator.client.checkout_branch("eye_exam", "pytest")
+
             validator.build_project(selectors=["eye_exam/users__fail_and_warn"])
             results = validator.validate(mode="hybrid")
             yield validator, results
@@ -231,6 +235,10 @@ class TestValidatePassWithWarning:
             filter_headers=["Authorization"],
             record_mode=record_mode,
         ):
+            # Move to dev mode to test conditional logic warning
+            validator.client.update_workspace("eye_exam", "dev")
+            validator.client.checkout_branch("eye_exam", "pytest")
+
             validator.build_project(selectors=["eye_exam/users__warn"])
             results = validator.validate(mode="hybrid")
             yield validator, results

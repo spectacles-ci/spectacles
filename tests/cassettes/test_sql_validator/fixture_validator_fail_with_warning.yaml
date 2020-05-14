@@ -1,9 +1,73 @@
 interactions:
 - request:
+    body: '{"workspace_id": "dev"}'
+    headers:
+      Content-Length:
+      - '23'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=10763
+    method: PATCH
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"dev","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '76'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 14 May 2020 19:51:32 GMT
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"name": "pytest"}'
+    headers:
+      Content-Length:
+      - '18'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=10763
+    method: PUT
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
+  response:
+    body:
+      string: '{"name":"pytest","remote":"origin","remote_name":"pytest","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1589480855,"ref":"09493e3834e5c0bf65fc0916182d9ed9850ed554","remote_ref":"09493e3834e5c0bf65fc0916182d9ed9850ed554","can":{}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '363'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 14 May 2020 19:51:32 GMT
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
     body: null
     headers:
       Cookie:
-      - looker.browser=10757
+      - looker.browser=10763
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/lookml_models
   response:
@@ -24,8 +88,9 @@ interactions:
         Historical Stock Snapshot Analysis","hidden":false,"group_label":"1) eCommerce
         with Event Data","name":"inventory_snapshot","can":{}},{"description":null,"label":"Order
         Items (Kittens)","hidden":true,"group_label":"1) eCommerce with Event Data","name":"kitten_order_items","can":{}}],"has_content":true,"label":"1)
-        eCommerce with Event Data","name":"thelook","project_name":"welcome_to_looker","unlimited_db_connections":false,"allowed_db_connection_names":["snowlooker"],"can":{"index":true,"show":true,"create":true,"update":true,"destroy":true}},{"explores":[{"description":null,"label":"Orders","hidden":false,"group_label":"Jaffle
-        Shop","name":"fct_orders","can":{}}],"has_content":true,"label":"Jaffle Shop","name":"jaffle_shop","project_name":"jaffle_shop","unlimited_db_connections":false,"allowed_db_connection_names":["bigquery"],"can":{"index":true,"show":true,"create":true,"update":true,"destroy":true}},{"explores":[],"has_content":false,"label":"Admin","name":"admin","project_name":"jaffle_shop","unlimited_db_connections":false,"allowed_db_connection_names":["bigquery"],"can":{"index":true,"show":true,"create":true,"update":true,"destroy":true}},{"explores":[{"description":null,"label":"Users","hidden":false,"group_label":"Eye
+        eCommerce with Event Data","name":"thelook","project_name":"welcome_to_looker","unlimited_db_connections":false,"allowed_db_connection_names":["snowlooker"],"can":{"index":true,"show":true,"create":true,"update":true,"destroy":true}},{"explores":[{"description":null,"label":"Fct
+        Orders","hidden":false,"group_label":"Jaffle Shop","name":"fct_orders","can":{}}],"has_content":true,"label":"Jaffle
+        Shop","name":"jaffle_shop","project_name":"jaffle_shop","unlimited_db_connections":false,"allowed_db_connection_names":["bigquery"],"can":{"index":true,"show":true,"create":true,"update":true,"destroy":true}},{"explores":[],"has_content":false,"label":"Admin","name":"admin","project_name":"jaffle_shop","unlimited_db_connections":false,"allowed_db_connection_names":["bigquery"],"can":{"index":true,"show":true,"create":true,"update":true,"destroy":true}},{"explores":[{"description":null,"label":"Users","hidden":false,"group_label":"Eye
         Exam","name":"users","can":{}},{"description":null,"label":"Users Fail","hidden":false,"group_label":"Eye
         Exam","name":"users__fail","can":{}},{"description":null,"label":"Users Fail
         and Warn","hidden":false,"group_label":"Eye Exam","name":"users__fail_and_warn","can":{}},{"description":null,"label":"Users
@@ -54,11 +119,11 @@ interactions:
       Connection:
       - keep-alive
       Content-Length:
-      - '5740'
+      - '5744'
       Content-Type:
       - application/json
       Date:
-      - Thu, 14 May 2020 18:50:20 GMT
+      - Thu, 14 May 2020 19:51:32 GMT
       Server:
       - nginx
       Vary:
@@ -73,7 +138,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=10757
+      - looker.browser=10763
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/lookml_models/eye_exam/explores/users__fail_and_warn
   response:
@@ -112,7 +177,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 14 May 2020 18:50:20 GMT
+      - Thu, 14 May 2020 19:51:32 GMT
       Server:
       - nginx
       Vary:
@@ -133,7 +198,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=10757
+      - looker.browser=10763
     method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/queries
   response:
@@ -147,7 +212,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 14 May 2020 18:50:20 GMT
+      - Thu, 14 May 2020 19:51:32 GMT
       Server:
       - nginx
       Vary:
@@ -166,12 +231,12 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=10757
+      - looker.browser=10763
     method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/query_tasks?cache=false
   response:
     body:
-      string: '{"query_id":2036,"query":{"id":2036,"view":"users__fail_and_warn","fields":["users__fail_and_warn.city","users__fail_and_warn.email","users__fail_and_warn.first_name","users__fail_and_warn.id","users__fail_and_warn.last_name"],"pivots":null,"fill_fields":null,"filters":null,"filter_expression":"1=2","sorts":null,"limit":"0","column_limit":null,"total":null,"row_total":null,"subtotals":null,"vis_config":null,"filter_config":null,"visible_ui_sections":null,"slug":"CFgWZkr","dynamic_fields":null,"client_id":"J7QOMPcSPdJmcM2NiuCton","share_url":"https://spectacles.looker.com/x/J7QOMPcSPdJmcM2NiuCton","expanded_share_url":"https://spectacles.looker.com/explore/eye_exam/users__fail_and_warn?fields=users__fail_and_warn.city,users__fail_and_warn.email,users__fail_and_warn.first_name,users__fail_and_warn.id,users__fail_and_warn.last_name\u0026filter_expression=1%3D2\u0026limit=0\u0026origin=share-expanded","url":"/explore/eye_exam/users__fail_and_warn?fields=users__fail_and_warn.city,users__fail_and_warn.email,users__fail_and_warn.first_name,users__fail_and_warn.id,users__fail_and_warn.last_name\u0026filter_expression=1%3D2\u0026limit=0","query_timezone":null,"runtime":null,"has_table_calculations":false,"model":"eye_exam","can":{"run":true,"see_results":true,"explore":true,"create":true,"show":true,"cost_estimate":true,"index":true,"see_lookml":true,"see_aggregate_table_lookml":false,"see_derived_table_lookml":true,"see_sql":true,"generate_drill_links":true,"download":true,"download_unlimited":true,"schedule":true,"render":true}},"generate_links":true,"force_production":false,"path_prefix":"/explore","cache":false,"server_table_calcs":true,"cache_only":false,"cache_key":null,"status":"added","source":"api","runtime":null,"rebuild_pdts":false,"result_source":null,"look_id":null,"dashboard_id":null,"result_format":"json_detail","id":"3675dce3898a5e52c8d545c23dd6795a","can":{"index":true,"show":true,"kill":true,"see_results":true}}'
+      string: '{"query_id":2036,"query":{"id":2036,"view":"users__fail_and_warn","fields":["users__fail_and_warn.city","users__fail_and_warn.email","users__fail_and_warn.first_name","users__fail_and_warn.id","users__fail_and_warn.last_name"],"pivots":null,"fill_fields":null,"filters":null,"filter_expression":"1=2","sorts":null,"limit":"0","column_limit":null,"total":null,"row_total":null,"subtotals":null,"vis_config":null,"filter_config":null,"visible_ui_sections":null,"slug":"CFgWZkr","dynamic_fields":null,"client_id":"J7QOMPcSPdJmcM2NiuCton","share_url":"https://spectacles.looker.com/x/J7QOMPcSPdJmcM2NiuCton","expanded_share_url":"https://spectacles.looker.com/explore/eye_exam/users__fail_and_warn?fields=users__fail_and_warn.city,users__fail_and_warn.email,users__fail_and_warn.first_name,users__fail_and_warn.id,users__fail_and_warn.last_name\u0026filter_expression=1%3D2\u0026limit=0\u0026origin=share-expanded","url":"/explore/eye_exam/users__fail_and_warn?fields=users__fail_and_warn.city,users__fail_and_warn.email,users__fail_and_warn.first_name,users__fail_and_warn.id,users__fail_and_warn.last_name\u0026filter_expression=1%3D2\u0026limit=0","query_timezone":null,"runtime":null,"has_table_calculations":false,"model":"eye_exam","can":{"run":true,"see_results":true,"explore":true,"create":true,"show":true,"cost_estimate":true,"index":true,"see_lookml":true,"see_aggregate_table_lookml":false,"see_derived_table_lookml":true,"see_sql":true,"generate_drill_links":true,"download":true,"download_unlimited":true,"schedule":true,"render":true}},"generate_links":true,"force_production":false,"path_prefix":"/explore","cache":false,"server_table_calcs":true,"cache_only":false,"cache_key":null,"status":"added","source":"api","runtime":null,"rebuild_pdts":false,"result_source":null,"look_id":null,"dashboard_id":null,"result_format":"json_detail","id":"6ebdbbda17bb4012f8393e654d43d280","can":{"index":true,"show":true,"kill":true,"see_results":true}}'
     headers:
       Connection:
       - keep-alive
@@ -180,7 +245,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 14 May 2020 18:50:21 GMT
+      - Thu, 14 May 2020 19:51:32 GMT
       Server:
       - nginx
       Vary:
@@ -195,12 +260,12 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=10757
+      - looker.browser=10763
     method: GET
-    uri: https://spectacles.looker.com:19999/api/3.1/query_tasks/multi_results?query_task_ids=3675dce3898a5e52c8d545c23dd6795a
+    uri: https://spectacles.looker.com:19999/api/3.1/query_tasks/multi_results?query_task_ids=6ebdbbda17bb4012f8393e654d43d280
   response:
     body:
-      string: '{"3675dce3898a5e52c8d545c23dd6795a":{"status":"added"}}'
+      string: '{"6ebdbbda17bb4012f8393e654d43d280":{"status":"added"}}'
     headers:
       Connection:
       - keep-alive
@@ -209,7 +274,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 14 May 2020 18:50:21 GMT
+      - Thu, 14 May 2020 19:51:32 GMT
       Server:
       - nginx
       Vary:
@@ -223,12 +288,12 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=10757
+      - looker.browser=10763
     method: GET
-    uri: https://spectacles.looker.com:19999/api/3.1/query_tasks/multi_results?query_task_ids=3675dce3898a5e52c8d545c23dd6795a
+    uri: https://spectacles.looker.com:19999/api/3.1/query_tasks/multi_results?query_task_ids=6ebdbbda17bb4012f8393e654d43d280
   response:
     body:
-      string: '{"3675dce3898a5e52c8d545c23dd6795a":{"status":"running"}}'
+      string: '{"6ebdbbda17bb4012f8393e654d43d280":{"status":"running"}}'
     headers:
       Connection:
       - keep-alive
@@ -237,7 +302,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 14 May 2020 18:50:21 GMT
+      - Thu, 14 May 2020 19:51:33 GMT
       Server:
       - nginx
       Vary:
@@ -251,19 +316,20 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=10757
+      - looker.browser=10763
     method: GET
-    uri: https://spectacles.looker.com:19999/api/3.1/query_tasks/multi_results?query_task_ids=3675dce3898a5e52c8d545c23dd6795a
+    uri: https://spectacles.looker.com:19999/api/3.1/query_tasks/multi_results?query_task_ids=6ebdbbda17bb4012f8393e654d43d280
   response:
     body:
-      string: '{"3675dce3898a5e52c8d545c23dd6795a":{"status":"error","result_source":"query","data":{"from_cache":true,"id":"3675dce3898a5e52c8d545c23dd6795a","supports_pivot_in_db":true,"null_sort_treatment":"high","expired":false,"ran_at":"2020-05-14T18:50:21+00:00","runtime":"0.783","added_params":{"sorts":["users__fail_and_warn.city"]},"sql":"WITH
-        users__fail_and_warn AS (select * from\n        -- if dev -- \"PUBLIC\".\"USERS\"\n         \"PUBLIC\".\"USERS\"\n        )\nSELECT\n\tusers__fail_and_warn.\"CITY\"  AS
+      string: '{"6ebdbbda17bb4012f8393e654d43d280":{"status":"error","result_source":"query","data":{"from_cache":true,"id":"6ebdbbda17bb4012f8393e654d43d280","supports_pivot_in_db":true,"null_sort_treatment":"high","expired":false,"ran_at":"2020-05-14T19:51:33+00:00","runtime":"0.656","added_params":{"sorts":["users__fail_and_warn.city"]},"sql":"WITH
+        users__fail_and_warn AS (select * from\n         \"PUBLIC\".\"USERS\"\n        --
+        if prod -- \"PUBLIC\".\"USERS\"\n        )\nSELECT\n\tusers__fail_and_warn.\"CITY\"  AS
         \"users__fail_and_warn.city\",\n\tusers__fail_and_warn.\"EMAIL_ADDRESS\"  AS
         \"users__fail_and_warn.email\",\n\tusers__fail_and_warn.\"FIRST_NAME\"  AS
         \"users__fail_and_warn.first_name\",\n\tusers__fail_and_warn.\"ID\"  AS \"users__fail_and_warn.id\",\n\tusers__fail_and_warn.\"LAST_NAME\"  AS
         \"users__fail_and_warn.last_name\"\nFROM users__fail_and_warn\n\nWHERE 1 =
         2\nORDER BY 1\nLIMIT 0","sql_explain":"EXPLAIN WITH users__fail_and_warn AS
-        (select * from\n        -- if dev -- \"PUBLIC\".\"USERS\"\n         \"PUBLIC\".\"USERS\"\n        )\nSELECT
+        (select * from\n         \"PUBLIC\".\"USERS\"\n        -- if prod -- \"PUBLIC\".\"USERS\"\n        )\nSELECT
         \n\tusers__fail_and_warn.\"CITY\"  AS \"users__fail_and_warn.city\",\n\tusers__fail_and_warn.\"EMAIL_ADDRESS\"  AS
         \"users__fail_and_warn.email\",\n\tusers__fail_and_warn.\"FIRST_NAME\"  AS
         \"users__fail_and_warn.first_name\",\n\tusers__fail_and_warn.\"ID\"  AS \"users__fail_and_warn.id\",\n\tusers__fail_and_warn.\"LAST_NAME\"  AS
@@ -282,25 +348,27 @@ interactions:
         Fail and Warn Last Name","label_from_parameter":null,"label_short":"Last Name","lookml_link":"/projects/eye_exam/files/views%2Fusers.view.lkml?line=33","map_layer":null,"name":"users__fail_and_warn.last_name","strict_value_format":false,"permanent":null,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"string","user_attribute_filter_types":["string","advanced_filter_string"],"value_format":null,"view":"users__fail_and_warn","view_label":"Users
         Fail and Warn","dynamic":false,"week_start_day":"monday","error":null,"field_group_variant":"Last
         Name","measure":false,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users__fail_and_warn","source_file":"views/users__fail_and_warn.view.lkml","source_file_path":"eye_exam/views/users__fail_and_warn.view.lkml","suggest_dimension":"users__fail_and_warn.last_name","suggest_explore":"users__fail_and_warn","suggestable":true,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"sql":null,"sql_case":null}],"table_calculations":[],"pivots":[]},"fill_fields":[],"has_totals":false,"has_row_totals":false,"applied_filters":{},"applied_filter_expression":"1=2","number_format":"1,234.56","explore":{"name":"users__fail_and_warn","label":"Users
-        Fail and Warn","description":null},"timezone":"America/Los_Angeles","data":[],"errors":[{"message":"The
+        Fail and Warn","description":null},"timezone":"America/Los_Angeles","data":[],"errors":[{"message":"Note:
+        This query contains derived tables with conditional SQL for Development Mode.
+        Query results in Production Mode might be different.","message_details":null,"params":null,"edit_url":null,"error_pos":null,"fatal":false,"level":"error","login_required_oauth_application_id":null},{"message":"The
         Snowflake database encountered an error while running this query.","message_details":"SQL
         Syntax Error: SQL compilation error: error line 7 at position 1\ninvalid identifier
         ''USERS__FAIL_AND_WARN.EMAIL_ADDRESS''","params":"WITH users__fail_and_warn
-        AS (select * from\n        -- if dev -- \"PUBLIC\".\"USERS\"\n         \"PUBLIC\".\"USERS\"\n        )\nSELECT\n\tusers__fail_and_warn.\"CITY\"  AS
+        AS (select * from\n         \"PUBLIC\".\"USERS\"\n        -- if prod -- \"PUBLIC\".\"USERS\"\n        )\nSELECT\n\tusers__fail_and_warn.\"CITY\"  AS
         \"users__fail_and_warn.city\",\n\tusers__fail_and_warn.\"EMAIL_ADDRESS\"  AS
         \"users__fail_and_warn.email\",\n\tusers__fail_and_warn.\"FIRST_NAME\"  AS
         \"users__fail_and_warn.first_name\",\n\tusers__fail_and_warn.\"ID\"  AS \"users__fail_and_warn.id\",\n\tusers__fail_and_warn.\"LAST_NAME\"  AS
         \"users__fail_and_warn.last_name\"\nFROM users__fail_and_warn\n\nWHERE 1 =
-        2\nORDER BY 1\nLIMIT 0","edit_url":null,"error_pos":null,"level":"error","sql_error_loc":{"line":7,"column":1}}],"drill_menu_build_time":0.026777,"has_subtotals":false}}}'
+        2\nORDER BY 1\nLIMIT 0","edit_url":null,"error_pos":null,"level":"error","sql_error_loc":{"line":7,"column":1}}],"drill_menu_build_time":0.03313,"has_subtotals":false}}}'
     headers:
       Connection:
       - keep-alive
       Content-Length:
-      - '9421'
+      - '9717'
       Content-Type:
       - application/json
       Date:
-      - Thu, 14 May 2020 18:50:22 GMT
+      - Thu, 14 May 2020 19:51:33 GMT
       Server:
       - nginx
       Vary:
@@ -320,7 +388,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=10757
+      - looker.browser=10763
     method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/queries
   response:
@@ -334,7 +402,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 14 May 2020 18:50:22 GMT
+      - Thu, 14 May 2020 19:51:34 GMT
       Server:
       - nginx
       Vary:
@@ -354,7 +422,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=10757
+      - looker.browser=10763
     method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/queries
   response:
@@ -368,7 +436,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 14 May 2020 18:50:22 GMT
+      - Thu, 14 May 2020 19:51:34 GMT
       Server:
       - nginx
       Vary:
@@ -388,7 +456,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=10757
+      - looker.browser=10763
     method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/queries
   response:
@@ -402,7 +470,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 14 May 2020 18:50:23 GMT
+      - Thu, 14 May 2020 19:51:34 GMT
       Server:
       - nginx
       Vary:
@@ -422,7 +490,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=10757
+      - looker.browser=10763
     method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/queries
   response:
@@ -436,7 +504,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 14 May 2020 18:50:23 GMT
+      - Thu, 14 May 2020 19:51:34 GMT
       Server:
       - nginx
       Vary:
@@ -456,7 +524,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=10757
+      - looker.browser=10763
     method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/queries
   response:
@@ -470,7 +538,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 14 May 2020 18:50:23 GMT
+      - Thu, 14 May 2020 19:51:34 GMT
       Server:
       - nginx
       Vary:
@@ -489,12 +557,12 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=10757
+      - looker.browser=10763
     method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/query_tasks?cache=false
   response:
     body:
-      string: '{"query_id":2047,"query":{"id":2047,"view":"users__fail_and_warn","fields":["users__fail_and_warn.city"],"pivots":null,"fill_fields":null,"filters":null,"filter_expression":"1=2","sorts":null,"limit":"0","column_limit":null,"total":null,"row_total":null,"subtotals":null,"vis_config":null,"filter_config":null,"visible_ui_sections":null,"slug":"5Tx3dX2","dynamic_fields":null,"client_id":"U54sjv1c3m16lQKyWmY0rh","share_url":"https://spectacles.looker.com/x/U54sjv1c3m16lQKyWmY0rh","expanded_share_url":"https://spectacles.looker.com/explore/eye_exam/users__fail_and_warn?fields=users__fail_and_warn.city\u0026filter_expression=1%3D2\u0026limit=0\u0026origin=share-expanded","url":"/explore/eye_exam/users__fail_and_warn?fields=users__fail_and_warn.city\u0026filter_expression=1%3D2\u0026limit=0","query_timezone":null,"runtime":null,"has_table_calculations":false,"model":"eye_exam","can":{"run":true,"see_results":true,"explore":true,"create":true,"show":true,"cost_estimate":true,"index":true,"see_lookml":true,"see_aggregate_table_lookml":false,"see_derived_table_lookml":true,"see_sql":true,"generate_drill_links":true,"download":true,"download_unlimited":true,"schedule":true,"render":true}},"generate_links":true,"force_production":false,"path_prefix":"/explore","cache":false,"server_table_calcs":true,"cache_only":false,"cache_key":null,"status":"added","source":"api","runtime":null,"rebuild_pdts":false,"result_source":null,"look_id":null,"dashboard_id":null,"result_format":"json_detail","id":"6599a70677e7c8a5a3eec08696978251","can":{"index":true,"show":true,"kill":true,"see_results":true}}'
+      string: '{"query_id":2047,"query":{"id":2047,"view":"users__fail_and_warn","fields":["users__fail_and_warn.city"],"pivots":null,"fill_fields":null,"filters":null,"filter_expression":"1=2","sorts":null,"limit":"0","column_limit":null,"total":null,"row_total":null,"subtotals":null,"vis_config":null,"filter_config":null,"visible_ui_sections":null,"slug":"5Tx3dX2","dynamic_fields":null,"client_id":"U54sjv1c3m16lQKyWmY0rh","share_url":"https://spectacles.looker.com/x/U54sjv1c3m16lQKyWmY0rh","expanded_share_url":"https://spectacles.looker.com/explore/eye_exam/users__fail_and_warn?fields=users__fail_and_warn.city\u0026filter_expression=1%3D2\u0026limit=0\u0026origin=share-expanded","url":"/explore/eye_exam/users__fail_and_warn?fields=users__fail_and_warn.city\u0026filter_expression=1%3D2\u0026limit=0","query_timezone":null,"runtime":null,"has_table_calculations":false,"model":"eye_exam","can":{"run":true,"see_results":true,"explore":true,"create":true,"show":true,"cost_estimate":true,"index":true,"see_lookml":true,"see_aggregate_table_lookml":false,"see_derived_table_lookml":true,"see_sql":true,"generate_drill_links":true,"download":true,"download_unlimited":true,"schedule":true,"render":true}},"generate_links":true,"force_production":false,"path_prefix":"/explore","cache":false,"server_table_calcs":true,"cache_only":false,"cache_key":null,"status":"added","source":"api","runtime":null,"rebuild_pdts":false,"result_source":null,"look_id":null,"dashboard_id":null,"result_format":"json_detail","id":"a2cc36135e77d5fa60a92e387c643f10","can":{"index":true,"show":true,"kill":true,"see_results":true}}'
     headers:
       Connection:
       - keep-alive
@@ -503,7 +571,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 14 May 2020 18:50:23 GMT
+      - Thu, 14 May 2020 19:51:34 GMT
       Server:
       - nginx
       Vary:
@@ -522,12 +590,12 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=10757
+      - looker.browser=10763
     method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/query_tasks?cache=false
   response:
     body:
-      string: '{"query_id":2048,"query":{"id":2048,"view":"users__fail_and_warn","fields":["users__fail_and_warn.email"],"pivots":null,"fill_fields":null,"filters":null,"filter_expression":"1=2","sorts":null,"limit":"0","column_limit":null,"total":null,"row_total":null,"subtotals":null,"vis_config":null,"filter_config":null,"visible_ui_sections":null,"slug":"tzzQwFM","dynamic_fields":null,"client_id":"zZAUbNv9DIEBW2SDDMSrcJ","share_url":"https://spectacles.looker.com/x/zZAUbNv9DIEBW2SDDMSrcJ","expanded_share_url":"https://spectacles.looker.com/explore/eye_exam/users__fail_and_warn?fields=users__fail_and_warn.email\u0026filter_expression=1%3D2\u0026limit=0\u0026origin=share-expanded","url":"/explore/eye_exam/users__fail_and_warn?fields=users__fail_and_warn.email\u0026filter_expression=1%3D2\u0026limit=0","query_timezone":null,"runtime":null,"has_table_calculations":false,"model":"eye_exam","can":{"run":true,"see_results":true,"explore":true,"create":true,"show":true,"cost_estimate":true,"index":true,"see_lookml":true,"see_aggregate_table_lookml":false,"see_derived_table_lookml":true,"see_sql":true,"generate_drill_links":true,"download":true,"download_unlimited":true,"schedule":true,"render":true}},"generate_links":true,"force_production":false,"path_prefix":"/explore","cache":false,"server_table_calcs":true,"cache_only":false,"cache_key":null,"status":"added","source":"api","runtime":null,"rebuild_pdts":false,"result_source":null,"look_id":null,"dashboard_id":null,"result_format":"json_detail","id":"124a8f21cda82461f66786fd0f3d8a18","can":{"index":true,"show":true,"kill":true,"see_results":true}}'
+      string: '{"query_id":2048,"query":{"id":2048,"view":"users__fail_and_warn","fields":["users__fail_and_warn.email"],"pivots":null,"fill_fields":null,"filters":null,"filter_expression":"1=2","sorts":null,"limit":"0","column_limit":null,"total":null,"row_total":null,"subtotals":null,"vis_config":null,"filter_config":null,"visible_ui_sections":null,"slug":"tzzQwFM","dynamic_fields":null,"client_id":"zZAUbNv9DIEBW2SDDMSrcJ","share_url":"https://spectacles.looker.com/x/zZAUbNv9DIEBW2SDDMSrcJ","expanded_share_url":"https://spectacles.looker.com/explore/eye_exam/users__fail_and_warn?fields=users__fail_and_warn.email\u0026filter_expression=1%3D2\u0026limit=0\u0026origin=share-expanded","url":"/explore/eye_exam/users__fail_and_warn?fields=users__fail_and_warn.email\u0026filter_expression=1%3D2\u0026limit=0","query_timezone":null,"runtime":null,"has_table_calculations":false,"model":"eye_exam","can":{"run":true,"see_results":true,"explore":true,"create":true,"show":true,"cost_estimate":true,"index":true,"see_lookml":true,"see_aggregate_table_lookml":false,"see_derived_table_lookml":true,"see_sql":true,"generate_drill_links":true,"download":true,"download_unlimited":true,"schedule":true,"render":true}},"generate_links":true,"force_production":false,"path_prefix":"/explore","cache":false,"server_table_calcs":true,"cache_only":false,"cache_key":null,"status":"added","source":"api","runtime":null,"rebuild_pdts":false,"result_source":null,"look_id":null,"dashboard_id":null,"result_format":"json_detail","id":"29b837682f5dbdc569cbaa00b58b17b5","can":{"index":true,"show":true,"kill":true,"see_results":true}}'
     headers:
       Connection:
       - keep-alive
@@ -536,7 +604,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 14 May 2020 18:50:23 GMT
+      - Thu, 14 May 2020 19:51:35 GMT
       Server:
       - nginx
       Vary:
@@ -555,12 +623,12 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=10757
+      - looker.browser=10763
     method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/query_tasks?cache=false
   response:
     body:
-      string: '{"query_id":2049,"query":{"id":2049,"view":"users__fail_and_warn","fields":["users__fail_and_warn.first_name"],"pivots":null,"fill_fields":null,"filters":null,"filter_expression":"1=2","sorts":null,"limit":"0","column_limit":null,"total":null,"row_total":null,"subtotals":null,"vis_config":null,"filter_config":null,"visible_ui_sections":null,"slug":"s8hzzxs","dynamic_fields":null,"client_id":"WeKO39rALYCeBKqa5rAi6V","share_url":"https://spectacles.looker.com/x/WeKO39rALYCeBKqa5rAi6V","expanded_share_url":"https://spectacles.looker.com/explore/eye_exam/users__fail_and_warn?fields=users__fail_and_warn.first_name\u0026filter_expression=1%3D2\u0026limit=0\u0026origin=share-expanded","url":"/explore/eye_exam/users__fail_and_warn?fields=users__fail_and_warn.first_name\u0026filter_expression=1%3D2\u0026limit=0","query_timezone":null,"runtime":null,"has_table_calculations":false,"model":"eye_exam","can":{"run":true,"see_results":true,"explore":true,"create":true,"show":true,"cost_estimate":true,"index":true,"see_lookml":true,"see_aggregate_table_lookml":false,"see_derived_table_lookml":true,"see_sql":true,"generate_drill_links":true,"download":true,"download_unlimited":true,"schedule":true,"render":true}},"generate_links":true,"force_production":false,"path_prefix":"/explore","cache":false,"server_table_calcs":true,"cache_only":false,"cache_key":null,"status":"added","source":"api","runtime":null,"rebuild_pdts":false,"result_source":null,"look_id":null,"dashboard_id":null,"result_format":"json_detail","id":"84d9a41f0017549d16a29b4133a5f14e","can":{"index":true,"show":true,"kill":true,"see_results":true}}'
+      string: '{"query_id":2049,"query":{"id":2049,"view":"users__fail_and_warn","fields":["users__fail_and_warn.first_name"],"pivots":null,"fill_fields":null,"filters":null,"filter_expression":"1=2","sorts":null,"limit":"0","column_limit":null,"total":null,"row_total":null,"subtotals":null,"vis_config":null,"filter_config":null,"visible_ui_sections":null,"slug":"s8hzzxs","dynamic_fields":null,"client_id":"WeKO39rALYCeBKqa5rAi6V","share_url":"https://spectacles.looker.com/x/WeKO39rALYCeBKqa5rAi6V","expanded_share_url":"https://spectacles.looker.com/explore/eye_exam/users__fail_and_warn?fields=users__fail_and_warn.first_name\u0026filter_expression=1%3D2\u0026limit=0\u0026origin=share-expanded","url":"/explore/eye_exam/users__fail_and_warn?fields=users__fail_and_warn.first_name\u0026filter_expression=1%3D2\u0026limit=0","query_timezone":null,"runtime":null,"has_table_calculations":false,"model":"eye_exam","can":{"run":true,"see_results":true,"explore":true,"create":true,"show":true,"cost_estimate":true,"index":true,"see_lookml":true,"see_aggregate_table_lookml":false,"see_derived_table_lookml":true,"see_sql":true,"generate_drill_links":true,"download":true,"download_unlimited":true,"schedule":true,"render":true}},"generate_links":true,"force_production":false,"path_prefix":"/explore","cache":false,"server_table_calcs":true,"cache_only":false,"cache_key":null,"status":"added","source":"api","runtime":null,"rebuild_pdts":false,"result_source":null,"look_id":null,"dashboard_id":null,"result_format":"json_detail","id":"01a94cef57c30cd017a9156ebbb56d47","can":{"index":true,"show":true,"kill":true,"see_results":true}}'
     headers:
       Connection:
       - keep-alive
@@ -569,7 +637,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 14 May 2020 18:50:23 GMT
+      - Thu, 14 May 2020 19:51:35 GMT
       Server:
       - nginx
       Vary:
@@ -588,12 +656,12 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=10757
+      - looker.browser=10763
     method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/query_tasks?cache=false
   response:
     body:
-      string: '{"query_id":2050,"query":{"id":2050,"view":"users__fail_and_warn","fields":["users__fail_and_warn.id"],"pivots":null,"fill_fields":null,"filters":null,"filter_expression":"1=2","sorts":null,"limit":"0","column_limit":null,"total":null,"row_total":null,"subtotals":null,"vis_config":null,"filter_config":null,"visible_ui_sections":null,"slug":"t8QtPTN","dynamic_fields":null,"client_id":"CJhDYMRRKcoqK8Bn9zJZM5","share_url":"https://spectacles.looker.com/x/CJhDYMRRKcoqK8Bn9zJZM5","expanded_share_url":"https://spectacles.looker.com/explore/eye_exam/users__fail_and_warn?fields=users__fail_and_warn.id\u0026filter_expression=1%3D2\u0026limit=0\u0026origin=share-expanded","url":"/explore/eye_exam/users__fail_and_warn?fields=users__fail_and_warn.id\u0026filter_expression=1%3D2\u0026limit=0","query_timezone":null,"runtime":null,"has_table_calculations":false,"model":"eye_exam","can":{"run":true,"see_results":true,"explore":true,"create":true,"show":true,"cost_estimate":true,"index":true,"see_lookml":true,"see_aggregate_table_lookml":false,"see_derived_table_lookml":true,"see_sql":true,"generate_drill_links":true,"download":true,"download_unlimited":true,"schedule":true,"render":true}},"generate_links":true,"force_production":false,"path_prefix":"/explore","cache":false,"server_table_calcs":true,"cache_only":false,"cache_key":null,"status":"added","source":"api","runtime":null,"rebuild_pdts":false,"result_source":null,"look_id":null,"dashboard_id":null,"result_format":"json_detail","id":"06c3e22475fa123dacb20ff1e27c9a89","can":{"index":true,"show":true,"kill":true,"see_results":true}}'
+      string: '{"query_id":2050,"query":{"id":2050,"view":"users__fail_and_warn","fields":["users__fail_and_warn.id"],"pivots":null,"fill_fields":null,"filters":null,"filter_expression":"1=2","sorts":null,"limit":"0","column_limit":null,"total":null,"row_total":null,"subtotals":null,"vis_config":null,"filter_config":null,"visible_ui_sections":null,"slug":"t8QtPTN","dynamic_fields":null,"client_id":"CJhDYMRRKcoqK8Bn9zJZM5","share_url":"https://spectacles.looker.com/x/CJhDYMRRKcoqK8Bn9zJZM5","expanded_share_url":"https://spectacles.looker.com/explore/eye_exam/users__fail_and_warn?fields=users__fail_and_warn.id\u0026filter_expression=1%3D2\u0026limit=0\u0026origin=share-expanded","url":"/explore/eye_exam/users__fail_and_warn?fields=users__fail_and_warn.id\u0026filter_expression=1%3D2\u0026limit=0","query_timezone":null,"runtime":null,"has_table_calculations":false,"model":"eye_exam","can":{"run":true,"see_results":true,"explore":true,"create":true,"show":true,"cost_estimate":true,"index":true,"see_lookml":true,"see_aggregate_table_lookml":false,"see_derived_table_lookml":true,"see_sql":true,"generate_drill_links":true,"download":true,"download_unlimited":true,"schedule":true,"render":true}},"generate_links":true,"force_production":false,"path_prefix":"/explore","cache":false,"server_table_calcs":true,"cache_only":false,"cache_key":null,"status":"added","source":"api","runtime":null,"rebuild_pdts":false,"result_source":null,"look_id":null,"dashboard_id":null,"result_format":"json_detail","id":"a8613f463e6ba1efce83fa9e75e1f565","can":{"index":true,"show":true,"kill":true,"see_results":true}}'
     headers:
       Connection:
       - keep-alive
@@ -602,7 +670,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 14 May 2020 18:50:23 GMT
+      - Thu, 14 May 2020 19:51:35 GMT
       Server:
       - nginx
       Vary:
@@ -621,12 +689,12 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=10757
+      - looker.browser=10763
     method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/query_tasks?cache=false
   response:
     body:
-      string: '{"query_id":2051,"query":{"id":2051,"view":"users__fail_and_warn","fields":["users__fail_and_warn.last_name"],"pivots":null,"fill_fields":null,"filters":null,"filter_expression":"1=2","sorts":null,"limit":"0","column_limit":null,"total":null,"row_total":null,"subtotals":null,"vis_config":null,"filter_config":null,"visible_ui_sections":null,"slug":"nvdWBY9","dynamic_fields":null,"client_id":"dkivsNQn9p3ChFM2Od45ty","share_url":"https://spectacles.looker.com/x/dkivsNQn9p3ChFM2Od45ty","expanded_share_url":"https://spectacles.looker.com/explore/eye_exam/users__fail_and_warn?fields=users__fail_and_warn.last_name\u0026filter_expression=1%3D2\u0026limit=0\u0026origin=share-expanded","url":"/explore/eye_exam/users__fail_and_warn?fields=users__fail_and_warn.last_name\u0026filter_expression=1%3D2\u0026limit=0","query_timezone":null,"runtime":null,"has_table_calculations":false,"model":"eye_exam","can":{"run":true,"see_results":true,"explore":true,"create":true,"show":true,"cost_estimate":true,"index":true,"see_lookml":true,"see_aggregate_table_lookml":false,"see_derived_table_lookml":true,"see_sql":true,"generate_drill_links":true,"download":true,"download_unlimited":true,"schedule":true,"render":true}},"generate_links":true,"force_production":false,"path_prefix":"/explore","cache":false,"server_table_calcs":true,"cache_only":false,"cache_key":null,"status":"added","source":"api","runtime":null,"rebuild_pdts":false,"result_source":null,"look_id":null,"dashboard_id":null,"result_format":"json_detail","id":"1c76b12dd379d976b385468d01519ed8","can":{"index":true,"show":true,"kill":true,"see_results":true}}'
+      string: '{"query_id":2051,"query":{"id":2051,"view":"users__fail_and_warn","fields":["users__fail_and_warn.last_name"],"pivots":null,"fill_fields":null,"filters":null,"filter_expression":"1=2","sorts":null,"limit":"0","column_limit":null,"total":null,"row_total":null,"subtotals":null,"vis_config":null,"filter_config":null,"visible_ui_sections":null,"slug":"nvdWBY9","dynamic_fields":null,"client_id":"dkivsNQn9p3ChFM2Od45ty","share_url":"https://spectacles.looker.com/x/dkivsNQn9p3ChFM2Od45ty","expanded_share_url":"https://spectacles.looker.com/explore/eye_exam/users__fail_and_warn?fields=users__fail_and_warn.last_name\u0026filter_expression=1%3D2\u0026limit=0\u0026origin=share-expanded","url":"/explore/eye_exam/users__fail_and_warn?fields=users__fail_and_warn.last_name\u0026filter_expression=1%3D2\u0026limit=0","query_timezone":null,"runtime":null,"has_table_calculations":false,"model":"eye_exam","can":{"run":true,"see_results":true,"explore":true,"create":true,"show":true,"cost_estimate":true,"index":true,"see_lookml":true,"see_aggregate_table_lookml":false,"see_derived_table_lookml":true,"see_sql":true,"generate_drill_links":true,"download":true,"download_unlimited":true,"schedule":true,"render":true}},"generate_links":true,"force_production":false,"path_prefix":"/explore","cache":false,"server_table_calcs":true,"cache_only":false,"cache_key":null,"status":"added","source":"api","runtime":null,"rebuild_pdts":false,"result_source":null,"look_id":null,"dashboard_id":null,"result_format":"json_detail","id":"fc54cfb2c536c84c3726d4169b6e407f","can":{"index":true,"show":true,"kill":true,"see_results":true}}'
     headers:
       Connection:
       - keep-alive
@@ -635,7 +703,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 14 May 2020 18:50:23 GMT
+      - Thu, 14 May 2020 19:51:35 GMT
       Server:
       - nginx
       Vary:
@@ -650,21 +718,21 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=10757
+      - looker.browser=10763
     method: GET
-    uri: https://spectacles.looker.com:19999/api/3.1/query_tasks/multi_results?query_task_ids=6599a70677e7c8a5a3eec08696978251%2C124a8f21cda82461f66786fd0f3d8a18%2C84d9a41f0017549d16a29b4133a5f14e%2C06c3e22475fa123dacb20ff1e27c9a89%2C1c76b12dd379d976b385468d01519ed8
+    uri: https://spectacles.looker.com:19999/api/3.1/query_tasks/multi_results?query_task_ids=a2cc36135e77d5fa60a92e387c643f10%2C29b837682f5dbdc569cbaa00b58b17b5%2C01a94cef57c30cd017a9156ebbb56d47%2Ca8613f463e6ba1efce83fa9e75e1f565%2Cfc54cfb2c536c84c3726d4169b6e407f
   response:
     body:
-      string: '{"06c3e22475fa123dacb20ff1e27c9a89":{"status":"added"},"124a8f21cda82461f66786fd0f3d8a18":{"status":"added"},"1c76b12dd379d976b385468d01519ed8":{"status":"added"},"6599a70677e7c8a5a3eec08696978251":{"status":"added"},"84d9a41f0017549d16a29b4133a5f14e":{"status":"added"}}'
+      string: '{"01a94cef57c30cd017a9156ebbb56d47":{"status":"added"},"29b837682f5dbdc569cbaa00b58b17b5":{"status":"running"},"a2cc36135e77d5fa60a92e387c643f10":{"status":"running"},"a8613f463e6ba1efce83fa9e75e1f565":{"status":"added"},"fc54cfb2c536c84c3726d4169b6e407f":{"status":"added"}}'
     headers:
       Connection:
       - keep-alive
       Content-Length:
-      - '271'
+      - '275'
       Content-Type:
       - application/json
       Date:
-      - Thu, 14 May 2020 18:50:23 GMT
+      - Thu, 14 May 2020 19:51:35 GMT
       Server:
       - nginx
       Vary:
@@ -678,103 +746,120 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=10757
+      - looker.browser=10763
     method: GET
-    uri: https://spectacles.looker.com:19999/api/3.1/query_tasks/multi_results?query_task_ids=6599a70677e7c8a5a3eec08696978251%2C124a8f21cda82461f66786fd0f3d8a18%2C84d9a41f0017549d16a29b4133a5f14e%2C06c3e22475fa123dacb20ff1e27c9a89%2C1c76b12dd379d976b385468d01519ed8
+    uri: https://spectacles.looker.com:19999/api/3.1/query_tasks/multi_results?query_task_ids=a2cc36135e77d5fa60a92e387c643f10%2C29b837682f5dbdc569cbaa00b58b17b5%2C01a94cef57c30cd017a9156ebbb56d47%2Ca8613f463e6ba1efce83fa9e75e1f565%2Cfc54cfb2c536c84c3726d4169b6e407f
   response:
     body:
-      string: '{"06c3e22475fa123dacb20ff1e27c9a89":{"status":"running"},"124a8f21cda82461f66786fd0f3d8a18":{"status":"running"},"1c76b12dd379d976b385468d01519ed8":{"status":"running"},"6599a70677e7c8a5a3eec08696978251":{"status":"running"},"84d9a41f0017549d16a29b4133a5f14e":{"status":"running"}}'
-    headers:
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '281'
-      Content-Type:
-      - application/json
-      Date:
-      - Thu, 14 May 2020 18:50:24 GMT
-      Server:
-      - nginx
-      Vary:
-      - Accept-Encoding
-      X-Content-Type-Options:
-      - nosniff
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Cookie:
-      - looker.browser=10757
-    method: GET
-    uri: https://spectacles.looker.com:19999/api/3.1/query_tasks/multi_results?query_task_ids=6599a70677e7c8a5a3eec08696978251%2C124a8f21cda82461f66786fd0f3d8a18%2C84d9a41f0017549d16a29b4133a5f14e%2C06c3e22475fa123dacb20ff1e27c9a89%2C1c76b12dd379d976b385468d01519ed8
-  response:
-    body:
-      string: '{"06c3e22475fa123dacb20ff1e27c9a89":{"status":"complete","result_source":"query","data":{"from_cache":true,"id":"06c3e22475fa123dacb20ff1e27c9a89","truncated":true,"supports_pivot_in_db":true,"null_sort_treatment":"high","expired":false,"ran_at":"2020-05-14T18:50:24+00:00","runtime":"1.188","sql":"WITH
-        users__fail_and_warn AS (select * from\n        -- if dev -- \"PUBLIC\".\"USERS\"\n         \"PUBLIC\".\"USERS\"\n        )\nSELECT\n\tusers__fail_and_warn.\"ID\"  AS
-        \"users__fail_and_warn.id\"\nFROM users__fail_and_warn\n\nWHERE 1 = 2\nLIMIT
-        0","sql_explain":"EXPLAIN WITH users__fail_and_warn AS (select * from\n        --
-        if dev -- \"PUBLIC\".\"USERS\"\n         \"PUBLIC\".\"USERS\"\n        )\nSELECT
-        \n\tusers__fail_and_warn.\"ID\"  AS \"users__fail_and_warn.id\"\nFROM users__fail_and_warn\n\nWHERE
-        1 = 2\nLIMIT 0","fields":{"measures":[],"dimensions":[{"align":"right","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":true,"label":"Users
-        Fail and Warn ID","label_from_parameter":null,"label_short":"ID","lookml_link":"/projects/eye_exam/files/views%2Fusers.view.lkml?line=6","map_layer":null,"name":"users__fail_and_warn.id","strict_value_format":false,"permanent":null,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"number","user_attribute_filter_types":["number","advanced_filter_number"],"value_format":null,"view":"users__fail_and_warn","view_label":"Users
-        Fail and Warn","dynamic":false,"week_start_day":"monday","error":null,"field_group_variant":"ID","measure":false,"parameter":false,"primary_key":true,"project_name":"eye_exam","scope":"users__fail_and_warn","source_file":"views/users__fail_and_warn.view.lkml","source_file_path":"eye_exam/views/users__fail_and_warn.view.lkml","suggest_dimension":"users__fail_and_warn.id","suggest_explore":"users__fail_and_warn","suggestable":false,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"sql":null,"sql_case":null}],"table_calculations":[],"pivots":[]},"fill_fields":[],"has_totals":false,"has_row_totals":false,"applied_filters":{},"applied_filter_expression":"1=2","number_format":"1,234.56","explore":{"name":"users__fail_and_warn","label":"Users
-        Fail and Warn","description":null},"timezone":"America/Los_Angeles","data":[],"drill_menu_build_time":0.080441,"has_subtotals":false}},"124a8f21cda82461f66786fd0f3d8a18":{"status":"error","result_source":"query","data":{"from_cache":true,"id":"124a8f21cda82461f66786fd0f3d8a18","supports_pivot_in_db":true,"null_sort_treatment":"high","expired":false,"ran_at":"2020-05-14T18:50:24+00:00","runtime":"1.216","added_params":{"sorts":["users__fail_and_warn.email"]},"sql":"WITH
-        users__fail_and_warn AS (select * from\n        -- if dev -- \"PUBLIC\".\"USERS\"\n         \"PUBLIC\".\"USERS\"\n        )\nSELECT\n\tusers__fail_and_warn.\"EMAIL_ADDRESS\"  AS
-        \"users__fail_and_warn.email\"\nFROM users__fail_and_warn\n\nWHERE 1 = 2\nGROUP
-        BY 1\nORDER BY 1\nLIMIT 0","sql_explain":"EXPLAIN WITH users__fail_and_warn
-        AS (select * from\n        -- if dev -- \"PUBLIC\".\"USERS\"\n         \"PUBLIC\".\"USERS\"\n        )\nSELECT
-        \n\tusers__fail_and_warn.\"EMAIL_ADDRESS\"  AS \"users__fail_and_warn.email\"\nFROM
-        users__fail_and_warn\n\nWHERE 1 = 2\nGROUP BY 1\nORDER BY 1 \nLIMIT 0","fields":{"measures":[],"dimensions":[{"align":"left","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":false,"label":"Users
-        Fail and Warn Email","label_from_parameter":null,"label_short":"Email","lookml_link":"/projects/eye_exam/files/views%2Fusers__fail.view.lkml?line=6","map_layer":null,"name":"users__fail_and_warn.email","strict_value_format":false,"permanent":null,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"string","user_attribute_filter_types":["string","advanced_filter_string"],"value_format":null,"view":"users__fail_and_warn","view_label":"Users
-        Fail and Warn","dynamic":false,"week_start_day":"monday","error":null,"field_group_variant":"Email","measure":false,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users__fail_and_warn","source_file":"views/users__fail_and_warn.view.lkml","source_file_path":"eye_exam/views/users__fail_and_warn.view.lkml","suggest_dimension":"users__fail_and_warn.email","suggest_explore":"users__fail_and_warn","suggestable":true,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"sql":null,"sql_case":null,"sorted":{"sort_index":0,"desc":false}}],"table_calculations":[],"pivots":[]},"fill_fields":[],"has_totals":false,"has_row_totals":false,"applied_filters":{},"applied_filter_expression":"1=2","number_format":"1,234.56","explore":{"name":"users__fail_and_warn","label":"Users
-        Fail and Warn","description":null},"timezone":"America/Los_Angeles","data":[],"errors":[{"message":"The
-        Snowflake database encountered an error while running this query.","message_details":"SQL
-        Syntax Error: SQL compilation error: error line 6 at position 1\ninvalid identifier
-        ''USERS__FAIL_AND_WARN.EMAIL_ADDRESS''","params":"WITH users__fail_and_warn
-        AS (select * from\n        -- if dev -- \"PUBLIC\".\"USERS\"\n         \"PUBLIC\".\"USERS\"\n        )\nSELECT\n\tusers__fail_and_warn.\"EMAIL_ADDRESS\"  AS
-        \"users__fail_and_warn.email\"\nFROM users__fail_and_warn\n\nWHERE 1 = 2\nGROUP
-        BY 1\nORDER BY 1\nLIMIT 0","edit_url":null,"error_pos":null,"level":"error","sql_error_loc":{"line":6,"column":1}}],"drill_menu_build_time":0.037194,"has_subtotals":false}},"1c76b12dd379d976b385468d01519ed8":{"status":"complete","result_source":"query","data":{"from_cache":true,"id":"1c76b12dd379d976b385468d01519ed8","truncated":true,"supports_pivot_in_db":true,"null_sort_treatment":"high","expired":false,"ran_at":"2020-05-14T18:50:24+00:00","runtime":"1.066","added_params":{"sorts":["users__fail_and_warn.last_name"]},"sql":"WITH
-        users__fail_and_warn AS (select * from\n        -- if dev -- \"PUBLIC\".\"USERS\"\n         \"PUBLIC\".\"USERS\"\n        )\nSELECT\n\tusers__fail_and_warn.\"LAST_NAME\"  AS
-        \"users__fail_and_warn.last_name\"\nFROM users__fail_and_warn\n\nWHERE 1 =
-        2\nGROUP BY 1\nORDER BY 1\nLIMIT 0","sql_explain":"EXPLAIN WITH users__fail_and_warn
-        AS (select * from\n        -- if dev -- \"PUBLIC\".\"USERS\"\n         \"PUBLIC\".\"USERS\"\n        )\nSELECT
-        \n\tusers__fail_and_warn.\"LAST_NAME\"  AS \"users__fail_and_warn.last_name\"\nFROM
-        users__fail_and_warn\n\nWHERE 1 = 2\nGROUP BY 1\nORDER BY 1 \nLIMIT 0","fields":{"measures":[],"dimensions":[{"align":"left","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":false,"label":"Users
-        Fail and Warn Last Name","label_from_parameter":null,"label_short":"Last Name","lookml_link":"/projects/eye_exam/files/views%2Fusers.view.lkml?line=33","map_layer":null,"name":"users__fail_and_warn.last_name","strict_value_format":false,"permanent":null,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"string","user_attribute_filter_types":["string","advanced_filter_string"],"value_format":null,"view":"users__fail_and_warn","view_label":"Users
-        Fail and Warn","dynamic":false,"week_start_day":"monday","error":null,"field_group_variant":"Last
-        Name","measure":false,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users__fail_and_warn","source_file":"views/users__fail_and_warn.view.lkml","source_file_path":"eye_exam/views/users__fail_and_warn.view.lkml","suggest_dimension":"users__fail_and_warn.last_name","suggest_explore":"users__fail_and_warn","suggestable":true,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"sql":null,"sql_case":null,"sorted":{"sort_index":0,"desc":false}}],"table_calculations":[],"pivots":[]},"fill_fields":[],"has_totals":false,"has_row_totals":false,"applied_filters":{},"applied_filter_expression":"1=2","number_format":"1,234.56","explore":{"name":"users__fail_and_warn","label":"Users
-        Fail and Warn","description":null},"timezone":"America/Los_Angeles","data":[],"drill_menu_build_time":0.086472,"has_subtotals":false}},"6599a70677e7c8a5a3eec08696978251":{"status":"complete","result_source":"query","data":{"from_cache":true,"id":"6599a70677e7c8a5a3eec08696978251","truncated":true,"supports_pivot_in_db":true,"null_sort_treatment":"high","expired":false,"ran_at":"2020-05-14T18:50:24+00:00","runtime":"1.515","added_params":{"sorts":["users__fail_and_warn.city"]},"sql":"WITH
-        users__fail_and_warn AS (select * from\n        -- if dev -- \"PUBLIC\".\"USERS\"\n         \"PUBLIC\".\"USERS\"\n        )\nSELECT\n\tusers__fail_and_warn.\"CITY\"  AS
+      string: '{"01a94cef57c30cd017a9156ebbb56d47":{"status":"running"},"29b837682f5dbdc569cbaa00b58b17b5":{"status":"expired","data":{"error":"Results
+        have expired. Run the query again."}},"a2cc36135e77d5fa60a92e387c643f10":{"status":"error","result_source":"query","data":{"from_cache":true,"id":"a2cc36135e77d5fa60a92e387c643f10","truncated":true,"supports_pivot_in_db":true,"null_sort_treatment":"high","expired":false,"ran_at":"2020-05-14T19:51:35+00:00","runtime":"0.754","added_params":{"sorts":["users__fail_and_warn.city"]},"sql":"WITH
+        users__fail_and_warn AS (select * from\n         \"PUBLIC\".\"USERS\"\n        --
+        if prod -- \"PUBLIC\".\"USERS\"\n        )\nSELECT\n\tusers__fail_and_warn.\"CITY\"  AS
         \"users__fail_and_warn.city\"\nFROM users__fail_and_warn\n\nWHERE 1 = 2\nGROUP
         BY 1\nORDER BY 1\nLIMIT 0","sql_explain":"EXPLAIN WITH users__fail_and_warn
-        AS (select * from\n        -- if dev -- \"PUBLIC\".\"USERS\"\n         \"PUBLIC\".\"USERS\"\n        )\nSELECT
+        AS (select * from\n         \"PUBLIC\".\"USERS\"\n        -- if prod -- \"PUBLIC\".\"USERS\"\n        )\nSELECT
         \n\tusers__fail_and_warn.\"CITY\"  AS \"users__fail_and_warn.city\"\nFROM
         users__fail_and_warn\n\nWHERE 1 = 2\nGROUP BY 1\nORDER BY 1 \nLIMIT 0","fields":{"measures":[],"dimensions":[{"align":"left","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":false,"label":"Users
         Fail and Warn City","label_from_parameter":null,"label_short":"City","lookml_link":"/projects/eye_exam/files/views%2Fusers.view.lkml?line=18","map_layer":null,"name":"users__fail_and_warn.city","strict_value_format":false,"permanent":null,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"string","user_attribute_filter_types":["string","advanced_filter_string"],"value_format":null,"view":"users__fail_and_warn","view_label":"Users
         Fail and Warn","dynamic":false,"week_start_day":"monday","error":null,"field_group_variant":"City","measure":false,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users__fail_and_warn","source_file":"views/users__fail_and_warn.view.lkml","source_file_path":"eye_exam/views/users__fail_and_warn.view.lkml","suggest_dimension":"users__fail_and_warn.city","suggest_explore":"users__fail_and_warn","suggestable":true,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"sql":null,"sql_case":null,"sorted":{"sort_index":0,"desc":false}}],"table_calculations":[],"pivots":[]},"fill_fields":[],"has_totals":false,"has_row_totals":false,"applied_filters":{},"applied_filter_expression":"1=2","number_format":"1,234.56","explore":{"name":"users__fail_and_warn","label":"Users
-        Fail and Warn","description":null},"timezone":"America/Los_Angeles","data":[],"drill_menu_build_time":0.083271,"has_subtotals":false}},"84d9a41f0017549d16a29b4133a5f14e":{"status":"complete","result_source":"query","data":{"from_cache":true,"id":"84d9a41f0017549d16a29b4133a5f14e","truncated":true,"supports_pivot_in_db":true,"null_sort_treatment":"high","expired":false,"ran_at":"2020-05-14T18:50:24+00:00","runtime":"1.279","added_params":{"sorts":["users__fail_and_warn.first_name"]},"sql":"WITH
-        users__fail_and_warn AS (select * from\n        -- if dev -- \"PUBLIC\".\"USERS\"\n         \"PUBLIC\".\"USERS\"\n        )\nSELECT\n\tusers__fail_and_warn.\"FIRST_NAME\"  AS
+        Fail and Warn","description":null},"timezone":"America/Los_Angeles","data":[],"errors":[{"message":"Note:
+        This query contains derived tables with conditional SQL for Development Mode.
+        Query results in Production Mode might be different.","message_details":null,"params":null,"edit_url":null,"error_pos":null,"fatal":false,"level":"error","login_required_oauth_application_id":null}],"drill_menu_build_time":0.024165,"has_subtotals":false}},"a8613f463e6ba1efce83fa9e75e1f565":{"status":"running"},"fc54cfb2c536c84c3726d4169b6e407f":{"status":"running"}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '3280'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 14 May 2020 19:51:36 GMT
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=10763
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/query_tasks/multi_results?query_task_ids=29b837682f5dbdc569cbaa00b58b17b5%2C01a94cef57c30cd017a9156ebbb56d47%2Ca8613f463e6ba1efce83fa9e75e1f565%2Cfc54cfb2c536c84c3726d4169b6e407f
+  response:
+    body:
+      string: '{"01a94cef57c30cd017a9156ebbb56d47":{"status":"error","result_source":"query","data":{"from_cache":true,"id":"01a94cef57c30cd017a9156ebbb56d47","truncated":true,"supports_pivot_in_db":true,"null_sort_treatment":"high","expired":false,"ran_at":"2020-05-14T19:51:36+00:00","runtime":"0.904","added_params":{"sorts":["users__fail_and_warn.first_name"]},"sql":"WITH
+        users__fail_and_warn AS (select * from\n         \"PUBLIC\".\"USERS\"\n        --
+        if prod -- \"PUBLIC\".\"USERS\"\n        )\nSELECT\n\tusers__fail_and_warn.\"FIRST_NAME\"  AS
         \"users__fail_and_warn.first_name\"\nFROM users__fail_and_warn\n\nWHERE 1
         = 2\nGROUP BY 1\nORDER BY 1\nLIMIT 0","sql_explain":"EXPLAIN WITH users__fail_and_warn
-        AS (select * from\n        -- if dev -- \"PUBLIC\".\"USERS\"\n         \"PUBLIC\".\"USERS\"\n        )\nSELECT
+        AS (select * from\n         \"PUBLIC\".\"USERS\"\n        -- if prod -- \"PUBLIC\".\"USERS\"\n        )\nSELECT
         \n\tusers__fail_and_warn.\"FIRST_NAME\"  AS \"users__fail_and_warn.first_name\"\nFROM
         users__fail_and_warn\n\nWHERE 1 = 2\nGROUP BY 1\nORDER BY 1 \nLIMIT 0","fields":{"measures":[],"dimensions":[{"align":"left","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":false,"label":"Users
         Fail and Warn First Name","label_from_parameter":null,"label_short":"First
         Name","lookml_link":"/projects/eye_exam/files/views%2Fusers.view.lkml?line=28","map_layer":null,"name":"users__fail_and_warn.first_name","strict_value_format":false,"permanent":null,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"string","user_attribute_filter_types":["string","advanced_filter_string"],"value_format":null,"view":"users__fail_and_warn","view_label":"Users
         Fail and Warn","dynamic":false,"week_start_day":"monday","error":null,"field_group_variant":"First
         Name","measure":false,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users__fail_and_warn","source_file":"views/users__fail_and_warn.view.lkml","source_file_path":"eye_exam/views/users__fail_and_warn.view.lkml","suggest_dimension":"users__fail_and_warn.first_name","suggest_explore":"users__fail_and_warn","suggestable":true,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"sql":null,"sql_case":null,"sorted":{"sort_index":0,"desc":false}}],"table_calculations":[],"pivots":[]},"fill_fields":[],"has_totals":false,"has_row_totals":false,"applied_filters":{},"applied_filter_expression":"1=2","number_format":"1,234.56","explore":{"name":"users__fail_and_warn","label":"Users
-        Fail and Warn","description":null},"timezone":"America/Los_Angeles","data":[],"drill_menu_build_time":0.08400200000000001,"has_subtotals":false}}}'
+        Fail and Warn","description":null},"timezone":"America/Los_Angeles","data":[],"errors":[{"message":"Note:
+        This query contains derived tables with conditional SQL for Development Mode.
+        Query results in Production Mode might be different.","message_details":null,"params":null,"edit_url":null,"error_pos":null,"fatal":false,"level":"error","login_required_oauth_application_id":null}],"drill_menu_build_time":0.025124,"has_subtotals":false}},"29b837682f5dbdc569cbaa00b58b17b5":{"status":"error","result_source":"query","data":{"from_cache":true,"id":"29b837682f5dbdc569cbaa00b58b17b5","supports_pivot_in_db":true,"null_sort_treatment":"high","expired":false,"ran_at":"2020-05-14T19:51:36+00:00","runtime":"0.916","added_params":{"sorts":["users__fail_and_warn.email"]},"sql":"WITH
+        users__fail_and_warn AS (select * from\n         \"PUBLIC\".\"USERS\"\n        --
+        if prod -- \"PUBLIC\".\"USERS\"\n        )\nSELECT\n\tusers__fail_and_warn.\"EMAIL_ADDRESS\"  AS
+        \"users__fail_and_warn.email\"\nFROM users__fail_and_warn\n\nWHERE 1 = 2\nGROUP
+        BY 1\nORDER BY 1\nLIMIT 0","sql_explain":"EXPLAIN WITH users__fail_and_warn
+        AS (select * from\n         \"PUBLIC\".\"USERS\"\n        -- if prod -- \"PUBLIC\".\"USERS\"\n        )\nSELECT
+        \n\tusers__fail_and_warn.\"EMAIL_ADDRESS\"  AS \"users__fail_and_warn.email\"\nFROM
+        users__fail_and_warn\n\nWHERE 1 = 2\nGROUP BY 1\nORDER BY 1 \nLIMIT 0","fields":{"measures":[],"dimensions":[{"align":"left","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":false,"label":"Users
+        Fail and Warn Email","label_from_parameter":null,"label_short":"Email","lookml_link":"/projects/eye_exam/files/views%2Fusers__fail.view.lkml?line=6","map_layer":null,"name":"users__fail_and_warn.email","strict_value_format":false,"permanent":null,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"string","user_attribute_filter_types":["string","advanced_filter_string"],"value_format":null,"view":"users__fail_and_warn","view_label":"Users
+        Fail and Warn","dynamic":false,"week_start_day":"monday","error":null,"field_group_variant":"Email","measure":false,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users__fail_and_warn","source_file":"views/users__fail_and_warn.view.lkml","source_file_path":"eye_exam/views/users__fail_and_warn.view.lkml","suggest_dimension":"users__fail_and_warn.email","suggest_explore":"users__fail_and_warn","suggestable":true,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"sql":null,"sql_case":null,"sorted":{"sort_index":0,"desc":false}}],"table_calculations":[],"pivots":[]},"fill_fields":[],"has_totals":false,"has_row_totals":false,"applied_filters":{},"applied_filter_expression":"1=2","number_format":"1,234.56","explore":{"name":"users__fail_and_warn","label":"Users
+        Fail and Warn","description":null},"timezone":"America/Los_Angeles","data":[],"errors":[{"message":"Note:
+        This query contains derived tables with conditional SQL for Development Mode.
+        Query results in Production Mode might be different.","message_details":null,"params":null,"edit_url":null,"error_pos":null,"fatal":false,"level":"error","login_required_oauth_application_id":null},{"message":"The
+        Snowflake database encountered an error while running this query.","message_details":"SQL
+        Syntax Error: SQL compilation error: error line 6 at position 1\ninvalid identifier
+        ''USERS__FAIL_AND_WARN.EMAIL_ADDRESS''","params":"WITH users__fail_and_warn
+        AS (select * from\n         \"PUBLIC\".\"USERS\"\n        -- if prod -- \"PUBLIC\".\"USERS\"\n        )\nSELECT\n\tusers__fail_and_warn.\"EMAIL_ADDRESS\"  AS
+        \"users__fail_and_warn.email\"\nFROM users__fail_and_warn\n\nWHERE 1 = 2\nGROUP
+        BY 1\nORDER BY 1\nLIMIT 0","edit_url":null,"error_pos":null,"level":"error","sql_error_loc":{"line":6,"column":1}}],"drill_menu_build_time":0.034987000000000004,"has_subtotals":false}},"a8613f463e6ba1efce83fa9e75e1f565":{"status":"error","result_source":"query","data":{"from_cache":true,"id":"a8613f463e6ba1efce83fa9e75e1f565","truncated":true,"supports_pivot_in_db":true,"null_sort_treatment":"high","expired":false,"ran_at":"2020-05-14T19:51:36+00:00","runtime":"0.887","sql":"WITH
+        users__fail_and_warn AS (select * from\n         \"PUBLIC\".\"USERS\"\n        --
+        if prod -- \"PUBLIC\".\"USERS\"\n        )\nSELECT\n\tusers__fail_and_warn.\"ID\"  AS
+        \"users__fail_and_warn.id\"\nFROM users__fail_and_warn\n\nWHERE 1 = 2\nLIMIT
+        0","sql_explain":"EXPLAIN WITH users__fail_and_warn AS (select * from\n         \"PUBLIC\".\"USERS\"\n        --
+        if prod -- \"PUBLIC\".\"USERS\"\n        )\nSELECT \n\tusers__fail_and_warn.\"ID\"  AS
+        \"users__fail_and_warn.id\"\nFROM users__fail_and_warn\n\nWHERE 1 = 2\nLIMIT
+        0","fields":{"measures":[],"dimensions":[{"align":"right","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":true,"label":"Users
+        Fail and Warn ID","label_from_parameter":null,"label_short":"ID","lookml_link":"/projects/eye_exam/files/views%2Fusers.view.lkml?line=6","map_layer":null,"name":"users__fail_and_warn.id","strict_value_format":false,"permanent":null,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"number","user_attribute_filter_types":["number","advanced_filter_number"],"value_format":null,"view":"users__fail_and_warn","view_label":"Users
+        Fail and Warn","dynamic":false,"week_start_day":"monday","error":null,"field_group_variant":"ID","measure":false,"parameter":false,"primary_key":true,"project_name":"eye_exam","scope":"users__fail_and_warn","source_file":"views/users__fail_and_warn.view.lkml","source_file_path":"eye_exam/views/users__fail_and_warn.view.lkml","suggest_dimension":"users__fail_and_warn.id","suggest_explore":"users__fail_and_warn","suggestable":false,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"sql":null,"sql_case":null}],"table_calculations":[],"pivots":[]},"fill_fields":[],"has_totals":false,"has_row_totals":false,"applied_filters":{},"applied_filter_expression":"1=2","number_format":"1,234.56","explore":{"name":"users__fail_and_warn","label":"Users
+        Fail and Warn","description":null},"timezone":"America/Los_Angeles","data":[],"errors":[{"message":"Note:
+        This query contains derived tables with conditional SQL for Development Mode.
+        Query results in Production Mode might be different.","message_details":null,"params":null,"edit_url":null,"error_pos":null,"fatal":false,"level":"error","login_required_oauth_application_id":null}],"drill_menu_build_time":0.041357000000000005,"has_subtotals":false}},"fc54cfb2c536c84c3726d4169b6e407f":{"status":"error","result_source":"query","data":{"from_cache":true,"id":"fc54cfb2c536c84c3726d4169b6e407f","truncated":true,"supports_pivot_in_db":true,"null_sort_treatment":"high","expired":false,"ran_at":"2020-05-14T19:51:36+00:00","runtime":"0.772","added_params":{"sorts":["users__fail_and_warn.last_name"]},"sql":"WITH
+        users__fail_and_warn AS (select * from\n         \"PUBLIC\".\"USERS\"\n        --
+        if prod -- \"PUBLIC\".\"USERS\"\n        )\nSELECT\n\tusers__fail_and_warn.\"LAST_NAME\"  AS
+        \"users__fail_and_warn.last_name\"\nFROM users__fail_and_warn\n\nWHERE 1 =
+        2\nGROUP BY 1\nORDER BY 1\nLIMIT 0","sql_explain":"EXPLAIN WITH users__fail_and_warn
+        AS (select * from\n         \"PUBLIC\".\"USERS\"\n        -- if prod -- \"PUBLIC\".\"USERS\"\n        )\nSELECT
+        \n\tusers__fail_and_warn.\"LAST_NAME\"  AS \"users__fail_and_warn.last_name\"\nFROM
+        users__fail_and_warn\n\nWHERE 1 = 2\nGROUP BY 1\nORDER BY 1 \nLIMIT 0","fields":{"measures":[],"dimensions":[{"align":"left","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":false,"label":"Users
+        Fail and Warn Last Name","label_from_parameter":null,"label_short":"Last Name","lookml_link":"/projects/eye_exam/files/views%2Fusers.view.lkml?line=33","map_layer":null,"name":"users__fail_and_warn.last_name","strict_value_format":false,"permanent":null,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"string","user_attribute_filter_types":["string","advanced_filter_string"],"value_format":null,"view":"users__fail_and_warn","view_label":"Users
+        Fail and Warn","dynamic":false,"week_start_day":"monday","error":null,"field_group_variant":"Last
+        Name","measure":false,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users__fail_and_warn","source_file":"views/users__fail_and_warn.view.lkml","source_file_path":"eye_exam/views/users__fail_and_warn.view.lkml","suggest_dimension":"users__fail_and_warn.last_name","suggest_explore":"users__fail_and_warn","suggestable":true,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"sql":null,"sql_case":null,"sorted":{"sort_index":0,"desc":false}}],"table_calculations":[],"pivots":[]},"fill_fields":[],"has_totals":false,"has_row_totals":false,"applied_filters":{},"applied_filter_expression":"1=2","number_format":"1,234.56","explore":{"name":"users__fail_and_warn","label":"Users
+        Fail and Warn","description":null},"timezone":"America/Los_Angeles","data":[],"errors":[{"message":"Note:
+        This query contains derived tables with conditional SQL for Development Mode.
+        Query results in Production Mode might be different.","message_details":null,"params":null,"edit_url":null,"error_pos":null,"fatal":false,"level":"error","login_required_oauth_application_id":null}],"drill_menu_build_time":0.038733,"has_subtotals":false}}}'
     headers:
       Connection:
       - keep-alive
       Content-Length:
-      - '14043'
+      - '12576'
       Content-Type:
       - application/json
       Date:
-      - Thu, 14 May 2020 18:50:25 GMT
+      - Thu, 14 May 2020 19:51:36 GMT
       Server:
       - nginx
       Vary:
