@@ -181,6 +181,78 @@ class TestValidateFail:
         jsonschema.validate(results, schema)
 
 
+@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
+class TestValidateFailWithWarning:
+    @pytest.fixture(scope="class")
+    def validator_fail_with_warning(
+        self, record_mode, validator
+    ) -> Iterable[Tuple[SqlValidator, Dict]]:
+        with vcr.use_cassette(
+            f"tests/cassettes/test_sql_validator/fixture_validator_fail_with_warning.yaml",
+            match_on=["uri", "method", "raw_body"],
+            filter_headers=["Authorization"],
+            record_mode=record_mode,
+        ):
+            # Move to dev mode to test conditional logic warning
+            validator.client.update_workspace("eye_exam", "dev")
+            validator.client.checkout_branch("eye_exam", "pytest")
+
+            validator.build_project(selectors=["eye_exam/users__fail_and_warn"])
+            results = validator.validate(mode="hybrid")
+            yield validator, results
+
+    def test_in_hybrid_mode_should_run_n_queries(self, validator_fail_with_warning):
+        validator = validator_fail_with_warning[0]
+        assert (
+            len(validator._query_by_task_id) == 1 + EXPECTED_QUERY_COUNTS["dimensions"]
+        )
+
+    def test_should_set_errored_and_queried(self, validator_fail_with_warning):
+        validator = validator_fail_with_warning[0]
+        assert validator.project.errored is True
+        assert validator.project.queried is True
+
+    def test_running_queries_should_be_empty(self, validator_fail_with_warning):
+        validator = validator_fail_with_warning[0]
+        assert len(validator._running_queries) == 0
+
+    def test_results_should_conform_to_schema(
+        self, schema, validator_fail_with_warning
+    ):
+        results = validator_fail_with_warning[1]
+        jsonschema.validate(results, schema)
+
+
+@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
+class TestValidatePassWithWarning:
+    @pytest.fixture(scope="class")
+    def validator_warn(
+        self, record_mode, validator
+    ) -> Iterable[Tuple[SqlValidator, Dict]]:
+        with vcr.use_cassette(
+            f"tests/cassettes/test_sql_validator/fixture_validator_pass_with_warning.yaml",
+            match_on=["uri", "method", "raw_body"],
+            filter_headers=["Authorization"],
+            record_mode=record_mode,
+        ):
+            # Move to dev mode to test conditional logic warning
+            validator.client.update_workspace("eye_exam", "dev")
+            validator.client.checkout_branch("eye_exam", "pytest")
+
+            validator.build_project(selectors=["eye_exam/users__warn"])
+            results = validator.validate(mode="hybrid")
+            yield validator, results
+
+    def test_in_hybrid_mode_should_run_one_query(self, validator_warn):
+        validator = validator_warn[0]
+        assert len(validator._query_by_task_id) == 1
+
+    def test_should_set_queried_and_not_errored(self, validator_warn):
+        validator = validator_warn[0]
+        assert validator.project.errored is False
+        assert validator.project.queried is True
+
+
 def test_create_and_run_keyboard_interrupt_cancels_queries(validator):
     validator._running_queries = [
         Query(
@@ -338,3 +410,39 @@ def test_extract_error_details_error_loc_wo_line(validator):
     extracted = validator._extract_error_details(query_result)
     assert extracted["message"] == message
     assert extracted["sql"] == sql
+
+
+def test_extract_error_details_error_and_warning(validator):
+    error_message = "An error message."
+    warning_message = (
+        "Note: This query contains derived tables with conditional SQL for Development Mode. "
+        "Query results in Production Mode might be different."
+    )
+    sql = "SELECT x FROM orders"
+    query_result = {
+        "status": "error",
+        "data": {
+            "errors": [
+                {"message": warning_message},
+                {"message": error_message, "sql_error_loc": {"character": 8}},
+            ],
+            "sql": sql,
+        },
+    }
+    extracted = validator._extract_error_details(query_result)
+    assert extracted["message"] == error_message
+    assert extracted["sql"] == sql
+
+
+def test_extract_error_details_warning(validator):
+    warning_message = (
+        "Note: This query contains derived tables with conditional SQL for Development Mode. "
+        "Query results in Production Mode might be different."
+    )
+    sql = "SELECT x FROM orders"
+    query_result = {
+        "status": "error",
+        "data": {"errors": [{"message": warning_message}], "sql": sql},
+    }
+    extracted = validator._extract_error_details(query_result)
+    assert extracted is None

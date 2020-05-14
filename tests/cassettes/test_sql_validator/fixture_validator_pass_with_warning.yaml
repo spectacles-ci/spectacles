@@ -1,0 +1,369 @@
+interactions:
+- request:
+    body: '{"workspace_id": "dev"}'
+    headers:
+      Content-Length:
+      - '23'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=10763
+    method: PATCH
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"dev","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '76'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 14 May 2020 19:51:37 GMT
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"name": "pytest"}'
+    headers:
+      Content-Length:
+      - '18'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=10763
+    method: PUT
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
+  response:
+    body:
+      string: '{"name":"pytest","remote":"origin","remote_name":"pytest","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1589480855,"ref":"09493e3834e5c0bf65fc0916182d9ed9850ed554","remote_ref":"09493e3834e5c0bf65fc0916182d9ed9850ed554","can":{}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '363'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 14 May 2020 19:51:37 GMT
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=10763
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/lookml_models
+  response:
+    body:
+      string: '[{"explores":[{"description":null,"label":"Cohort Data Tool","hidden":true,"group_label":"1)
+        eCommerce with Event Data","name":"cohorts","can":{}},{"description":null,"label":"Web
+        Analytics Data Tool","hidden":true,"group_label":"1) eCommerce with Event
+        Data","name":"data_tool","can":{}},{"description":null,"label":"(1) Orders,
+        Items and Users","hidden":false,"group_label":"1) eCommerce with Event Data","name":"order_items","can":{}},{"description":null,"label":"(2)
+        Web Event Data","hidden":false,"group_label":"1) eCommerce with Event Data","name":"events","can":{}},{"description":null,"label":"(3)
+        Web Session Data","hidden":false,"group_label":"1) eCommerce with Event Data","name":"sessions","can":{}},{"description":null,"label":"(4)
+        Affinity Analysis","hidden":false,"group_label":"1) eCommerce with Event Data","name":"affinity","can":{}},{"description":null,"label":"(5)
+        Share of Wallet Analysis","hidden":false,"group_label":"1) eCommerce with
+        Event Data","name":"orders_with_share_of_wallet_application","can":{}},{"description":null,"label":"(6)
+        Customer Journey Mapping","hidden":false,"group_label":"1) eCommerce with
+        Event Data","name":"journey_mapping","can":{}},{"description":null,"label":"(7)
+        Stock Analysis","hidden":false,"group_label":"1) eCommerce with Event Data","name":"inventory_items","can":{}},{"description":null,"label":"(8)
+        Historical Stock Snapshot Analysis","hidden":false,"group_label":"1) eCommerce
+        with Event Data","name":"inventory_snapshot","can":{}},{"description":null,"label":"Order
+        Items (Kittens)","hidden":true,"group_label":"1) eCommerce with Event Data","name":"kitten_order_items","can":{}}],"has_content":true,"label":"1)
+        eCommerce with Event Data","name":"thelook","project_name":"welcome_to_looker","unlimited_db_connections":false,"allowed_db_connection_names":["snowlooker"],"can":{"index":true,"show":true,"create":true,"update":true,"destroy":true}},{"explores":[{"description":null,"label":"Fct
+        Orders","hidden":false,"group_label":"Jaffle Shop","name":"fct_orders","can":{}}],"has_content":true,"label":"Jaffle
+        Shop","name":"jaffle_shop","project_name":"jaffle_shop","unlimited_db_connections":false,"allowed_db_connection_names":["bigquery"],"can":{"index":true,"show":true,"create":true,"update":true,"destroy":true}},{"explores":[],"has_content":false,"label":"Admin","name":"admin","project_name":"jaffle_shop","unlimited_db_connections":false,"allowed_db_connection_names":["bigquery"],"can":{"index":true,"show":true,"create":true,"update":true,"destroy":true}},{"explores":[{"description":null,"label":"Users","hidden":false,"group_label":"Eye
+        Exam","name":"users","can":{}},{"description":null,"label":"Users Fail","hidden":false,"group_label":"Eye
+        Exam","name":"users__fail","can":{}},{"description":null,"label":"Users Fail
+        and Warn","hidden":false,"group_label":"Eye Exam","name":"users__fail_and_warn","can":{}},{"description":null,"label":"Users
+        Warn","hidden":false,"group_label":"Eye Exam","name":"users__warn","can":{}}],"has_content":true,"label":"Eye
+        Exam","name":"eye_exam","project_name":"eye_exam","unlimited_db_connections":false,"allowed_db_connection_names":["snowlooker"],"can":{"index":true,"show":true,"create":true,"update":true,"destroy":true}},{"explores":[{"description":null,"label":"Content
+        Usage","hidden":false,"group_label":"System Activity","name":"content_usage","can":{}},{"description":null,"label":"Dashboard","hidden":false,"group_label":"System
+        Activity","name":"dashboard","can":{}},{"description":null,"label":"Dashboard
+        Performance","hidden":false,"group_label":"System Activity","name":"dashboard_performance","can":{}},{"description":null,"label":"DB
+        Connection","hidden":false,"group_label":"System Activity","name":"db_connection","can":{}},{"description":null,"label":"Event","hidden":false,"group_label":"System
+        Activity","name":"event","can":{}},{"description":null,"label":"Event Attribute","hidden":false,"group_label":"System
+        Activity","name":"event_attribute","can":{}},{"description":null,"label":"Field
+        Usage","hidden":false,"group_label":"System Activity","name":"field_usage","can":{}},{"description":null,"label":"Group","hidden":false,"group_label":"System
+        Activity","name":"group","can":{}},{"description":null,"label":"History","hidden":false,"group_label":"System
+        Activity","name":"history","can":{}},{"description":null,"label":"Look","hidden":false,"group_label":"System
+        Activity","name":"look","can":{}},{"description":null,"label":"Merge Query","hidden":false,"group_label":"System
+        Activity","name":"merge_query","can":{}},{"description":null,"label":"PDT
+        Event Log","hidden":false,"group_label":"System Activity","name":"pdt_event_log","can":{}},{"description":null,"label":"PDT
+        Builds","hidden":false,"group_label":"System Activity","name":"pdt_builds","can":{}},{"description":null,"label":"Result
+        Maker Lookup","hidden":false,"group_label":"System Activity","name":"result_maker_lookup","can":{}},{"description":null,"label":"Scheduled
+        Plan","hidden":false,"group_label":"System Activity","name":"scheduled_plan","can":{}},{"description":null,"label":"Space","hidden":false,"group_label":"System
+        Activity","name":"space","can":{}},{"description":null,"label":"SQL Query","hidden":false,"group_label":"System
+        Activity","name":"sql_query","can":{}},{"description":null,"label":"User","hidden":false,"group_label":"System
+        Activity","name":"user","can":{}},{"description":null,"label":"Role","hidden":false,"group_label":"System
+        Activity","name":"role","can":{}}],"has_content":true,"label":"System Activity","name":"system__activity","project_name":"system__activity","unlimited_db_connections":false,"allowed_db_connection_names":[],"can":{"index":true,"show":true,"create":true,"update":true,"destroy":true}}]'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '5744'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 14 May 2020 19:51:37 GMT
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=10763
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/lookml_models/eye_exam/explores/users__warn
+  response:
+    body:
+      string: '{"id":"eye_exam::users__warn","name":"users__warn","description":null,"scopes":["users__warn"],"can_total":true,"can_save":true,"can_explain":true,"can_pivot_in_db":true,"can_subtotal":true,"has_timezone_support":true,"supports_cost_estimate":false,"connection_name":"snowlooker","null_sort_treatment":"high","files":null,"source_file":"eye_exam.model.lkml","model_name":"eye_exam","view_name":"users__warn","hidden":false,"sql_table_name":"users__warn","access_filters":[],"aliases":[],"always_filter":[],"conditionally_filter":[],"index_fields":[],"sets":[{"name":"users__warn","value":["users__warn.id","users__warn.age","users__warn.city","users__warn.email","users__warn.first_name","users__warn.last_name","users__warn.count"]},{"name":"ALL_FIELDS","value":["users__warn.id","users__warn.age","users__warn.city","users__warn.email","users__warn.first_name","users__warn.last_name","users__warn.count"]}],"tags":[],"errors":null,"fields":{"dimensions":[{"align":"right","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":true,"label":"Users
+        Warn Age","label_from_parameter":null,"label_short":"Age","lookml_link":"/projects/eye_exam/files/views%2Fusers.view.lkml?line=12","map_layer":null,"name":"users__warn.age","strict_value_format":false,"permanent":null,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"number","user_attribute_filter_types":["number","advanced_filter_number"],"value_format":null,"view":"users__warn","view_label":"Users
+        Warn","dynamic":false,"week_start_day":"monday","error":null,"field_group_variant":"Age","measure":false,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users__warn","source_file":"views/users__warn.view.lkml","source_file_path":"eye_exam/views/users__warn.view.lkml","suggest_dimension":"users__warn.age","suggest_explore":"users__warn","suggestable":false,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"sql":"--spectacles:
+        ignore\n         ${TABLE}.\"AGE\" ","sql_case":null},{"align":"left","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":false,"label":"Users
+        Warn City","label_from_parameter":null,"label_short":"City","lookml_link":"/projects/eye_exam/files/views%2Fusers.view.lkml?line=18","map_layer":null,"name":"users__warn.city","strict_value_format":false,"permanent":null,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"string","user_attribute_filter_types":["string","advanced_filter_string"],"value_format":null,"view":"users__warn","view_label":"Users
+        Warn","dynamic":false,"week_start_day":"monday","error":null,"field_group_variant":"City","measure":false,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users__warn","source_file":"views/users__warn.view.lkml","source_file_path":"eye_exam/views/users__warn.view.lkml","suggest_dimension":"users__warn.city","suggest_explore":"users__warn","suggestable":true,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"sql":"${TABLE}.\"CITY\"
+        ","sql_case":null},{"align":"left","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":false,"label":"Users
+        Warn Email","label_from_parameter":null,"label_short":"Email","lookml_link":"/projects/eye_exam/files/views%2Fusers.view.lkml?line=23","map_layer":null,"name":"users__warn.email","strict_value_format":false,"permanent":null,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"string","user_attribute_filter_types":["string","advanced_filter_string"],"value_format":null,"view":"users__warn","view_label":"Users
+        Warn","dynamic":false,"week_start_day":"monday","error":null,"field_group_variant":"Email","measure":false,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users__warn","source_file":"views/users__warn.view.lkml","source_file_path":"eye_exam/views/users__warn.view.lkml","suggest_dimension":"users__warn.email","suggest_explore":"users__warn","suggestable":true,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"sql":"${TABLE}.\"EMAIL\"
+        ","sql_case":null},{"align":"left","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":false,"label":"Users
+        Warn First Name","label_from_parameter":null,"label_short":"First Name","lookml_link":"/projects/eye_exam/files/views%2Fusers.view.lkml?line=28","map_layer":null,"name":"users__warn.first_name","strict_value_format":false,"permanent":null,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"string","user_attribute_filter_types":["string","advanced_filter_string"],"value_format":null,"view":"users__warn","view_label":"Users
+        Warn","dynamic":false,"week_start_day":"monday","error":null,"field_group_variant":"First
+        Name","measure":false,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users__warn","source_file":"views/users__warn.view.lkml","source_file_path":"eye_exam/views/users__warn.view.lkml","suggest_dimension":"users__warn.first_name","suggest_explore":"users__warn","suggestable":true,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"sql":"${TABLE}.\"FIRST_NAME\"
+        ","sql_case":null},{"align":"right","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":true,"label":"Users
+        Warn ID","label_from_parameter":null,"label_short":"ID","lookml_link":"/projects/eye_exam/files/views%2Fusers.view.lkml?line=6","map_layer":null,"name":"users__warn.id","strict_value_format":false,"permanent":null,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"number","user_attribute_filter_types":["number","advanced_filter_number"],"value_format":null,"view":"users__warn","view_label":"Users
+        Warn","dynamic":false,"week_start_day":"monday","error":null,"field_group_variant":"ID","measure":false,"parameter":false,"primary_key":true,"project_name":"eye_exam","scope":"users__warn","source_file":"views/users__warn.view.lkml","source_file_path":"eye_exam/views/users__warn.view.lkml","suggest_dimension":"users__warn.id","suggest_explore":"users__warn","suggestable":false,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"sql":"${TABLE}.\"ID\"
+        ","sql_case":null},{"align":"left","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":false,"label":"Users
+        Warn Last Name","label_from_parameter":null,"label_short":"Last Name","lookml_link":"/projects/eye_exam/files/views%2Fusers.view.lkml?line=33","map_layer":null,"name":"users__warn.last_name","strict_value_format":false,"permanent":null,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"string","user_attribute_filter_types":["string","advanced_filter_string"],"value_format":null,"view":"users__warn","view_label":"Users
+        Warn","dynamic":false,"week_start_day":"monday","error":null,"field_group_variant":"Last
+        Name","measure":false,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users__warn","source_file":"views/users__warn.view.lkml","source_file_path":"eye_exam/views/users__warn.view.lkml","suggest_dimension":"users__warn.last_name","suggest_explore":"users__warn","suggestable":true,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"sql":"${TABLE}.\"LAST_NAME\"
+        ","sql_case":null}],"measures":[{"align":"right","can_filter":true,"category":"measure","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":true,"label":"Users
+        Warn Count","label_from_parameter":null,"label_short":"Count","lookml_link":"/projects/eye_exam/files/views%2Fusers.view.lkml?line=38","map_layer":null,"name":"users__warn.count","strict_value_format":false,"permanent":null,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"count","user_attribute_filter_types":["number","advanced_filter_number"],"value_format":null,"view":"users__warn","view_label":"Users
+        Warn","dynamic":false,"week_start_day":"monday","error":null,"field_group_variant":"Count","measure":true,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users__warn","source_file":"views/users__warn.view.lkml","source_file_path":"eye_exam/views/users__warn.view.lkml","suggest_dimension":"users__warn.count","suggest_explore":"users__warn","suggestable":false,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"sql":"users__warn.count","sql_case":null}],"filters":[],"parameters":[]},"joins":[],"group_label":"Eye
+        Exam","supported_measure_types":[{"dimension_type":"number","measure_types":["count_distinct","sum","average","min","max","median"]},{"dimension_type":"distance","measure_types":["count_distinct","sum","average","min","max","median"]},{"dimension_type":"string","measure_types":["count_distinct","list"]},{"dimension_type":"unquoted","measure_types":["count_distinct","list"]},{"dimension_type":"yesno","measure_types":["count_distinct","list"]},{"dimension_type":"location","measure_types":["count_distinct","list"]},{"dimension_type":"location_bin_level","measure_types":["count_distinct","list"]},{"dimension_type":"zipcode","measure_types":["count_distinct","list"]},{"dimension_type":"time","measure_types":["count_distinct"]},{"dimension_type":"turtle_look","measure_types":["count_distinct"]},{"dimension_type":"date","measure_types":["count_distinct"]},{"dimension_type":"date_date","measure_types":["count_distinct"]},{"dimension_type":"date_day_of_year","measure_types":["count_distinct","sum","average","min","max","median"]},{"dimension_type":"date_day_of_month","measure_types":["count_distinct","sum","average","min","max","median"]},{"dimension_type":"date_day_of_week","measure_types":["count_distinct","list"]},{"dimension_type":"date_day_of_week_index","measure_types":["count_distinct","sum","average","min","max","median"]},{"dimension_type":"date_hour","measure_types":["count_distinct"]},{"dimension_type":"date_hour_of_day","measure_types":["count_distinct","sum","average","min","max","median"]},{"dimension_type":"date_minute","measure_types":["count_distinct"]},{"dimension_type":"date_month","measure_types":["count_distinct"]},{"dimension_type":"date_month_num","measure_types":["count_distinct","sum","average","min","max","median"]},{"dimension_type":"date_month_number","measure_types":["count_distinct","sum","average","min","max","median"]},{"dimension_type":"date_fiscal_month_num","measure_types":["count_distinct","sum","average","min","max","median"]},{"dimension_type":"date_fiscal_month_number","measure_types":["count_distinct","sum","average","min","max","median"]},{"dimension_type":"date_month_name","measure_types":["count_distinct","list"]},{"dimension_type":"date_mweek","measure_types":["count_distinct"]},{"dimension_type":"date_quarter","measure_types":["count_distinct"]},{"dimension_type":"date_fiscal_quarter","measure_types":["count_distinct"]},{"dimension_type":"date_quarter_of_year","measure_types":["count_distinct","list"]},{"dimension_type":"date_fiscal_quarter_of_year","measure_types":["count_distinct","list"]},{"dimension_type":"date_raw","measure_types":["count_distinct"]},{"dimension_type":"datetime","measure_types":["count_distinct"]},{"dimension_type":"date_time","measure_types":["count_distinct"]},{"dimension_type":"date_second","measure_types":["count_distinct"]},{"dimension_type":"date_millisecond","measure_types":["count_distinct"]},{"dimension_type":"date_microsecond","measure_types":["count_distinct"]},{"dimension_type":"date_time_of_day","measure_types":["count_distinct","list"]},{"dimension_type":"date_week","measure_types":["count_distinct"]},{"dimension_type":"date_week_of_year","measure_types":["count_distinct","sum","average","min","max","median"]},{"dimension_type":"date_hour2","measure_types":["count_distinct"]},{"dimension_type":"date_hour3","measure_types":["count_distinct"]},{"dimension_type":"date_hour4","measure_types":["count_distinct"]},{"dimension_type":"date_hour6","measure_types":["count_distinct"]},{"dimension_type":"date_hour8","measure_types":["count_distinct"]},{"dimension_type":"date_hour12","measure_types":["count_distinct"]},{"dimension_type":"date_minute2","measure_types":["count_distinct"]},{"dimension_type":"date_minute3","measure_types":["count_distinct"]},{"dimension_type":"date_minute4","measure_types":["count_distinct"]},{"dimension_type":"date_minute5","measure_types":["count_distinct"]},{"dimension_type":"date_minute6","measure_types":["count_distinct"]},{"dimension_type":"date_minute10","measure_types":["count_distinct"]},{"dimension_type":"date_minute12","measure_types":["count_distinct"]},{"dimension_type":"date_minute15","measure_types":["count_distinct"]},{"dimension_type":"date_minute20","measure_types":["count_distinct"]},{"dimension_type":"date_minute30","measure_types":["count_distinct"]},{"dimension_type":"date_millisecond2","measure_types":["count_distinct"]},{"dimension_type":"date_millisecond4","measure_types":["count_distinct"]},{"dimension_type":"date_millisecond5","measure_types":["count_distinct"]},{"dimension_type":"date_millisecond8","measure_types":["count_distinct"]},{"dimension_type":"date_millisecond10","measure_types":["count_distinct"]},{"dimension_type":"date_millisecond20","measure_types":["count_distinct"]},{"dimension_type":"date_millisecond25","measure_types":["count_distinct"]},{"dimension_type":"date_millisecond40","measure_types":["count_distinct"]},{"dimension_type":"date_millisecond50","measure_types":["count_distinct"]},{"dimension_type":"date_millisecond100","measure_types":["count_distinct"]},{"dimension_type":"date_millisecond125","measure_types":["count_distinct"]},{"dimension_type":"date_millisecond200","measure_types":["count_distinct"]},{"dimension_type":"date_millisecond250","measure_types":["count_distinct"]},{"dimension_type":"date_millisecond500","measure_types":["count_distinct"]},{"dimension_type":"date_year","measure_types":["count_distinct"]},{"dimension_type":"date_fiscal_year","measure_types":["count_distinct"]},{"dimension_type":"duration","measure_types":["count_distinct","sum","average","min","max","median"]},{"dimension_type":"duration_year","measure_types":["count_distinct","sum","average","min","max","median"]},{"dimension_type":"duration_quarter","measure_types":["count_distinct","sum","average","min","max","median"]},{"dimension_type":"duration_month","measure_types":["count_distinct","sum","average","min","max","median"]},{"dimension_type":"duration_week","measure_types":["count_distinct","sum","average","min","max","median"]},{"dimension_type":"duration_day","measure_types":["count_distinct","sum","average","min","max","median"]},{"dimension_type":"duration_hour","measure_types":["count_distinct","sum","average","min","max","median"]},{"dimension_type":"duration_minute","measure_types":["count_distinct","sum","average","min","max","median"]},{"dimension_type":"duration_second","measure_types":["count_distinct","sum","average","min","max","median"]},{"dimension_type":"tier","measure_types":["count_distinct","list"]}],"label":"Users
+        Warn","project_name":"eye_exam","access_filter_fields":null}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '16428'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 14 May 2020 19:51:37 GMT
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"model": "eye_exam", "view": "users__warn", "fields": ["users__warn.city",
+      "users__warn.email", "users__warn.first_name", "users__warn.id", "users__warn.last_name"],
+      "limit": 0, "filter_expression": "1=2"}'
+    headers:
+      Content-Length:
+      - '206'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=10763
+    method: POST
+    uri: https://spectacles.looker.com:19999/api/3.1/queries
+  response:
+    body:
+      string: '{"id":2046,"view":"users__warn","fields":["users__warn.city","users__warn.email","users__warn.first_name","users__warn.id","users__warn.last_name"],"pivots":null,"fill_fields":null,"filters":null,"filter_expression":"1=2","sorts":null,"limit":"0","column_limit":null,"total":null,"row_total":null,"subtotals":null,"vis_config":null,"filter_config":null,"visible_ui_sections":null,"slug":"ZSVPPrq","dynamic_fields":null,"client_id":"a41oCed7RtZcplEBFDMo4L","share_url":"https://spectacles.looker.com/x/a41oCed7RtZcplEBFDMo4L","expanded_share_url":"https://spectacles.looker.com/explore/eye_exam/users__warn?fields=users__warn.city,users__warn.email,users__warn.first_name,users__warn.id,users__warn.last_name\u0026filter_expression=1%3D2\u0026limit=0\u0026origin=share-expanded","url":"/explore/eye_exam/users__warn?fields=users__warn.city,users__warn.email,users__warn.first_name,users__warn.id,users__warn.last_name\u0026filter_expression=1%3D2\u0026limit=0","query_timezone":null,"runtime":null,"has_table_calculations":false,"model":"eye_exam","can":{"run":true,"see_results":true,"explore":true,"create":true,"show":true,"cost_estimate":true,"index":true,"see_lookml":true,"see_aggregate_table_lookml":false,"see_derived_table_lookml":true,"see_sql":true,"generate_drill_links":true,"download":true,"download_unlimited":true,"schedule":true,"render":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '1360'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 14 May 2020 19:51:38 GMT
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"query_id": 2046, "result_format": "json_detail"}'
+    headers:
+      Content-Length:
+      - '50'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=10763
+    method: POST
+    uri: https://spectacles.looker.com:19999/api/3.1/query_tasks?cache=false
+  response:
+    body:
+      string: '{"query_id":2046,"query":{"id":2046,"view":"users__warn","fields":["users__warn.city","users__warn.email","users__warn.first_name","users__warn.id","users__warn.last_name"],"pivots":null,"fill_fields":null,"filters":null,"filter_expression":"1=2","sorts":null,"limit":"0","column_limit":null,"total":null,"row_total":null,"subtotals":null,"vis_config":null,"filter_config":null,"visible_ui_sections":null,"slug":"ZSVPPrq","dynamic_fields":null,"client_id":"a41oCed7RtZcplEBFDMo4L","share_url":"https://spectacles.looker.com/x/a41oCed7RtZcplEBFDMo4L","expanded_share_url":"https://spectacles.looker.com/explore/eye_exam/users__warn?fields=users__warn.city,users__warn.email,users__warn.first_name,users__warn.id,users__warn.last_name\u0026filter_expression=1%3D2\u0026limit=0\u0026origin=share-expanded","url":"/explore/eye_exam/users__warn?fields=users__warn.city,users__warn.email,users__warn.first_name,users__warn.id,users__warn.last_name\u0026filter_expression=1%3D2\u0026limit=0","query_timezone":null,"runtime":null,"has_table_calculations":false,"model":"eye_exam","can":{"run":true,"see_results":true,"explore":true,"create":true,"show":true,"cost_estimate":true,"index":true,"see_lookml":true,"see_aggregate_table_lookml":false,"see_derived_table_lookml":true,"see_sql":true,"generate_drill_links":true,"download":true,"download_unlimited":true,"schedule":true,"render":true}},"generate_links":true,"force_production":false,"path_prefix":"/explore","cache":false,"server_table_calcs":true,"cache_only":false,"cache_key":null,"status":"added","source":"api","runtime":null,"rebuild_pdts":false,"result_source":null,"look_id":null,"dashboard_id":null,"result_format":"json_detail","id":"40f0f6fbf4cc0eb1060c142ebd12e915","can":{"index":true,"show":true,"kill":true,"see_results":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '1792'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 14 May 2020 19:51:38 GMT
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=10763
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/query_tasks/multi_results?query_task_ids=40f0f6fbf4cc0eb1060c142ebd12e915
+  response:
+    body:
+      string: '{"40f0f6fbf4cc0eb1060c142ebd12e915":{"status":"added"}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '55'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 14 May 2020 19:51:38 GMT
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=10763
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/query_tasks/multi_results?query_task_ids=40f0f6fbf4cc0eb1060c142ebd12e915
+  response:
+    body:
+      string: '{"40f0f6fbf4cc0eb1060c142ebd12e915":{"status":"running"}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '57'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 14 May 2020 19:51:38 GMT
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=10763
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/query_tasks/multi_results?query_task_ids=40f0f6fbf4cc0eb1060c142ebd12e915
+  response:
+    body:
+      string: '{"40f0f6fbf4cc0eb1060c142ebd12e915":{"status":"error","result_source":"query","data":{"from_cache":true,"id":"40f0f6fbf4cc0eb1060c142ebd12e915","truncated":true,"supports_pivot_in_db":true,"null_sort_treatment":"high","expired":false,"ran_at":"2020-05-14T19:51:39+00:00","runtime":"0.823","added_params":{"sorts":["users__warn.city"]},"sql":"WITH
+        users__warn AS (select * from\n         \"PUBLIC\".\"USERS\"\n        -- if
+        prod -- \"PUBLIC\".\"USERS\"\n        )\nSELECT\n\tusers__warn.\"CITY\"  AS
+        \"users__warn.city\",\n\tusers__warn.\"EMAIL\"  AS \"users__warn.email\",\n\tusers__warn.\"FIRST_NAME\"  AS
+        \"users__warn.first_name\",\n\tusers__warn.\"ID\"  AS \"users__warn.id\",\n\tusers__warn.\"LAST_NAME\"  AS
+        \"users__warn.last_name\"\nFROM users__warn\n\nWHERE 1 = 2\nORDER BY 1\nLIMIT
+        0","sql_explain":"EXPLAIN WITH users__warn AS (select * from\n         \"PUBLIC\".\"USERS\"\n        --
+        if prod -- \"PUBLIC\".\"USERS\"\n        )\nSELECT \n\tusers__warn.\"CITY\"  AS
+        \"users__warn.city\",\n\tusers__warn.\"EMAIL\"  AS \"users__warn.email\",\n\tusers__warn.\"FIRST_NAME\"  AS
+        \"users__warn.first_name\",\n\tusers__warn.\"ID\"  AS \"users__warn.id\",\n\tusers__warn.\"LAST_NAME\"  AS
+        \"users__warn.last_name\"\nFROM users__warn\n\nWHERE 1 = 2\nORDER BY 1 \nLIMIT
+        0","fields":{"measures":[],"dimensions":[{"align":"left","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":false,"label":"Users
+        Warn City","label_from_parameter":null,"label_short":"City","lookml_link":"/projects/eye_exam/files/views%2Fusers.view.lkml?line=18","map_layer":null,"name":"users__warn.city","strict_value_format":false,"permanent":null,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"string","user_attribute_filter_types":["string","advanced_filter_string"],"value_format":null,"view":"users__warn","view_label":"Users
+        Warn","dynamic":false,"week_start_day":"monday","error":null,"field_group_variant":"City","measure":false,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users__warn","source_file":"views/users__warn.view.lkml","source_file_path":"eye_exam/views/users__warn.view.lkml","suggest_dimension":"users__warn.city","suggest_explore":"users__warn","suggestable":true,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"sql":null,"sql_case":null,"sorted":{"sort_index":0,"desc":false}},{"align":"left","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":false,"label":"Users
+        Warn Email","label_from_parameter":null,"label_short":"Email","lookml_link":"/projects/eye_exam/files/views%2Fusers.view.lkml?line=23","map_layer":null,"name":"users__warn.email","strict_value_format":false,"permanent":null,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"string","user_attribute_filter_types":["string","advanced_filter_string"],"value_format":null,"view":"users__warn","view_label":"Users
+        Warn","dynamic":false,"week_start_day":"monday","error":null,"field_group_variant":"Email","measure":false,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users__warn","source_file":"views/users__warn.view.lkml","source_file_path":"eye_exam/views/users__warn.view.lkml","suggest_dimension":"users__warn.email","suggest_explore":"users__warn","suggestable":true,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"sql":null,"sql_case":null},{"align":"left","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":false,"label":"Users
+        Warn First Name","label_from_parameter":null,"label_short":"First Name","lookml_link":"/projects/eye_exam/files/views%2Fusers.view.lkml?line=28","map_layer":null,"name":"users__warn.first_name","strict_value_format":false,"permanent":null,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"string","user_attribute_filter_types":["string","advanced_filter_string"],"value_format":null,"view":"users__warn","view_label":"Users
+        Warn","dynamic":false,"week_start_day":"monday","error":null,"field_group_variant":"First
+        Name","measure":false,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users__warn","source_file":"views/users__warn.view.lkml","source_file_path":"eye_exam/views/users__warn.view.lkml","suggest_dimension":"users__warn.first_name","suggest_explore":"users__warn","suggestable":true,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"sql":null,"sql_case":null},{"align":"right","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":true,"label":"Users
+        Warn ID","label_from_parameter":null,"label_short":"ID","lookml_link":"/projects/eye_exam/files/views%2Fusers.view.lkml?line=6","map_layer":null,"name":"users__warn.id","strict_value_format":false,"permanent":null,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"number","user_attribute_filter_types":["number","advanced_filter_number"],"value_format":null,"view":"users__warn","view_label":"Users
+        Warn","dynamic":false,"week_start_day":"monday","error":null,"field_group_variant":"ID","measure":false,"parameter":false,"primary_key":true,"project_name":"eye_exam","scope":"users__warn","source_file":"views/users__warn.view.lkml","source_file_path":"eye_exam/views/users__warn.view.lkml","suggest_dimension":"users__warn.id","suggest_explore":"users__warn","suggestable":false,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"sql":null,"sql_case":null},{"align":"left","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":false,"label":"Users
+        Warn Last Name","label_from_parameter":null,"label_short":"Last Name","lookml_link":"/projects/eye_exam/files/views%2Fusers.view.lkml?line=33","map_layer":null,"name":"users__warn.last_name","strict_value_format":false,"permanent":null,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"string","user_attribute_filter_types":["string","advanced_filter_string"],"value_format":null,"view":"users__warn","view_label":"Users
+        Warn","dynamic":false,"week_start_day":"monday","error":null,"field_group_variant":"Last
+        Name","measure":false,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users__warn","source_file":"views/users__warn.view.lkml","source_file_path":"eye_exam/views/users__warn.view.lkml","suggest_dimension":"users__warn.last_name","suggest_explore":"users__warn","suggestable":true,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"sql":null,"sql_case":null}],"table_calculations":[],"pivots":[]},"fill_fields":[],"has_totals":false,"has_row_totals":false,"applied_filters":{},"applied_filter_expression":"1=2","number_format":"1,234.56","explore":{"name":"users__warn","label":"Users
+        Warn","description":null},"timezone":"America/Los_Angeles","data":[],"errors":[{"message":"Note:
+        This query contains derived tables with conditional SQL for Development Mode.
+        Query results in Production Mode might be different.","message_details":null,"params":null,"edit_url":null,"error_pos":null,"fatal":false,"level":"error","login_required_oauth_application_id":null}],"drill_menu_build_time":0.02541,"has_subtotals":false}}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '8170'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 14 May 2020 19:51:39 GMT
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+version: 1
