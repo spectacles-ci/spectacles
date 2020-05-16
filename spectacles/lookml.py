@@ -284,7 +284,7 @@ class Project(LookMlObject):
                 }
                 tested.append(test)
 
-        passed = min(test["passed"] for test in tested)
+        passed = min((test["passed"] for test in tested), default=True)
         return {
             "validator": "sql",
             "status": "passed" if passed else "failed",
