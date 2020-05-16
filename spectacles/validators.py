@@ -127,7 +127,7 @@ class DataTestValidator(Validator):
                 passed=test["passed"], source=f"{test['model']}.{test['explore']}"
             )
 
-        passed = min(test["passed"] for test in tested)
+        passed = min((test["passed"] for test in tested), default=True)
         return {
             "validator": "data_test",
             "status": "passed" if passed else "failed",
