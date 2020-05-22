@@ -36,6 +36,23 @@ def print_header(text: str, line_width: int = LINE_WIDTH) -> None:
     logger.info(f"\n{header}\n")
 
 
+def print_content_error(
+    model: str,
+    explore: str,
+    message: str,
+    content_type: str,
+    space: str,
+    title: str,
+    url: str,
+):
+    path = f"{title} [{space}]"
+    message = f"Error in {model}/{explore}: {message}"
+    print_header(red(path), LINE_WIDTH + COLOR_CODE_LENGTH)
+    wrapped = textwrap.fill(message, LINE_WIDTH)
+    logger.info(wrapped)
+    logger.info("\n" + f"{content_type.title()}: {url}")
+
+
 def print_data_test_error(
     model: str, explore: str, test_name: str, message: str, lookml_url: str
 ) -> None:

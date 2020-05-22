@@ -1,6 +1,6 @@
 from typing import List, Dict, Any, Optional, NamedTuple
 from spectacles.client import LookerClient
-from spectacles.validators import SqlValidator, DataTestValidator
+from spectacles.validators import SqlValidator, DataTestValidator, ContentValidator
 from spectacles.utils import log_duration, time_hash
 from spectacles.logger import GLOBAL_LOGGER as logger
 from spectacles.types import QueryMode
@@ -130,7 +130,7 @@ class Runner:
         api_version: float = 3.1,
         remote_reset: bool = False,
         import_projects: bool = False,
-        commit_ref: str = None,
+        commit_ref: Optional[str] = None,
     ):
         self.project = project
         self.import_projects = import_projects
@@ -167,4 +167,11 @@ class Runner:
         with self.branch_manager:
             data_test_validator = DataTestValidator(self.client, self.project)
             results = data_test_validator.validate(selectors, exclusions)
+        return results
+
+    @log_duration
+    def validate_content(self) -> Dict[str, Any]:
+        with self.branch_manager:
+            content_validator = ContentValidator(self.client)
+            results = content_validator.validate()
         return results

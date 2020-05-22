@@ -10,6 +10,7 @@ from spectacles.logger import GLOBAL_LOGGER as logger
 from spectacles.exceptions import (
     SqlError,
     DataTestError,
+    ContentError,
     SpectaclesException,
     LookMlNotFound,
 )
@@ -59,6 +60,48 @@ class Validator(ABC):  # pragma: no cover
     @abstractmethod
     def validate(self):
         raise NotImplementedError
+
+
+class ContentValidator(Validator):
+    def __init__(self, client: LookerClient):
+        super().__init__(client)
+
+    def validate(self):
+        errors = []
+        result = self.client.content_validation()
+        for content in result["content_with_errors"]:
+            error = content["errors"][0]
+            if content["dashboard"]:
+                content_type = "dashboard"
+            elif content["look"]:
+                content_type = "look"
+            else:
+                logger.debug(
+                    f"Skipping content because it does not seem to be a dashboard or "
+                    f"a look. The content received was: {result}"
+                )
+                continue
+            content_id = content[content_type]["id"]
+            errors.append(
+                ContentError(
+                    model=error["model_name"],
+                    explore=error["explore_name"],
+                    message=error["message"],
+                    field_name=error["field_name"],
+                    content_type=content_type,
+                    title=content[content_type]["title"],
+                    space=content[content_type]["space"]["name"],
+                    url=f"{self.client.base_url}/{content_type}s/{content_id}",
+                ).__dict__
+            )
+
+        # TODO: Get information on all content so we can return a useful "tested"
+        return {
+            "validator": "content",
+            "status": "failed" if errors else "passed",
+            "tested": [],
+            "errors": errors,
+        }
 
 
 class DataTestValidator(Validator):
