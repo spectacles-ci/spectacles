@@ -121,3 +121,27 @@ class DataTestError(ValidationError):
         super().__init__(
             model=model, explore=explore, test=None, message=message, metadata=metadata
         )
+
+
+class ContentError(ValidationError):
+    def __init__(
+        self,
+        model: str,
+        explore: str,
+        message: str,
+        field_name: str,
+        content_type: str,
+        title: str,
+        space: str,
+        url: str,
+    ):
+        metadata = {
+            "field_name": field_name,
+            "content_type": content_type,
+            "title": title,
+            "space": space,
+            "url": url,
+        }
+        super().__init__(
+            model=model, explore=explore, test=None, message=message, metadata=metadata
+        )

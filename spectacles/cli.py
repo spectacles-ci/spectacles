@@ -262,6 +262,19 @@ def main():
             args.import_projects,
             args.commit_ref,
         )
+    elif args.command == "content":
+        run_content(
+            args.project,
+            args.branch,
+            args.base_url,
+            args.client_id,
+            args.client_secret,
+            args.port,
+            args.api_version,
+            args.remote_reset,
+            args.import_projects,
+            args.commit_ref,
+        )
 
     if not args.do_not_track:
         tracking.track_invocation_end(
@@ -288,6 +301,7 @@ def create_parser() -> argparse.ArgumentParser:
     _build_connect_subparser(subparser_action, base_subparser)
     _build_sql_subparser(subparser_action, base_subparser)
     _build_assert_subparser(subparser_action, base_subparser)
+    _build_content_subparser(subparser_action, base_subparser)
     return parser
 
 
@@ -524,11 +538,68 @@ def _build_assert_subparser(
     _build_validator_subparser(subparser_action, subparser)
 
 
+def _build_content_subparser(
+    subparser_action: argparse._SubParsersAction,
+    base_subparser: argparse.ArgumentParser,
+) -> None:
+    subparser = subparser_action.add_parser(
+        "content", parents=[base_subparser], help="Run Looker content validation."
+    )
+
+    _build_validator_subparser(subparser_action, subparser)
+
+
 def run_connect(
     base_url: str, client_id: str, client_secret: str, port: int, api_version: float
 ) -> None:
     """Tests the connection and credentials for the Looker API."""
     LookerClient(base_url, client_id, client_secret, port, api_version)
+
+
+def run_content(
+    project,
+    branch,
+    base_url,
+    client_id,
+    client_secret,
+    port,
+    api_version,
+    remote_reset,
+    import_projects,
+    commit_ref,
+) -> None:
+    runner = Runner(
+        base_url,
+        project,
+        branch,
+        client_id,
+        client_secret,
+        port,
+        api_version,
+        remote_reset,
+        import_projects,
+        commit_ref,
+    )
+    results = runner.validate_content()
+    errors = sorted(
+        results["errors"],
+        key=lambda x: (x["model"], x["explore"], x["metadata"]["field_name"]),
+    )
+    if errors:
+        for error in errors:
+            printer.print_content_error(
+                error["model"],
+                error["explore"],
+                error["message"],
+                error["metadata"]["content_type"],
+                error["metadata"]["space"],
+                error["metadata"]["title"],
+                error["metadata"]["url"],
+            )
+        logger.info("")
+        raise GenericValidationError
+    else:
+        logger.info("")
 
 
 def run_assert(
