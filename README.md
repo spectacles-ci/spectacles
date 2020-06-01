@@ -10,14 +10,14 @@
 
 You can run the following validators as subcommands (e.g. `spectacles sql`):
 
-- [**SQL** validation](https://spectacles.dev/docs/validators/#the-sql-validator) - tests for database errors or invalid SQL
-- [**Assert** validation](https://spectacles.dev/docs/validators/#the-assert-validator) - runs [LookML/data tests](https://docs.looker.com/reference/model-params/test)
+- [**SQL** validation](https://docs.spectacles.dev/docs/validators/#the-sql-validator) - tests for database errors or invalid SQL
+- [**Assert** validation](https://docs.spectacles.dev/docs/validators/#the-assert-validator) - runs [LookML/data tests](https://docs.looker.com/reference/model-params/test)
 - **Content** validation _(coming soon)_
 - **Linting** _(coming soon)_
 
 ## Documentation
 
-You can find detailed documentation on our website: [spectacles.dev](https://spectacles.dev/docs/).
+You can find detailed documentation on our website: [spectacles.dev](https://docs.spectacles.dev/docs/).
 
 ## Installation
 
