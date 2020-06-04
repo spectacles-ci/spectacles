@@ -1,8 +1,14 @@
-from unittest.mock import patch
+from unittest.mock import patch, Mock
+import logging
 import pytest
+import requests
 from tests.constants import ENV_VARS
 from spectacles.cli import main, create_parser, handle_exceptions
-from spectacles.exceptions import SpectaclesException, GenericValidationError
+from spectacles.exceptions import (
+    LookerApiError,
+    SpectaclesException,
+    GenericValidationError,
+)
 
 
 @pytest.fixture
@@ -55,6 +61,37 @@ def test_handle_exceptions_unhandled_error(exception, exit_code):
         raise_exception()
 
     assert pytest_error.value.code == exit_code
+
+
+def test_handle_exceptions_looker_error_should_log_response_and_status(caplog):
+    caplog.set_level(logging.DEBUG)
+    response = Mock(spec=requests.Response)
+    response.request = Mock(spec=requests.PreparedRequest)
+    response.request.url = "https://api.looker.com"
+    response.request.method = "GET"
+    response.json.return_value = {
+        "message": "Not found",
+        "documentation_url": "http://docs.looker.com/",
+    }
+    status = 404
+
+    @handle_exceptions
+    def raise_exception():
+        raise LookerApiError(
+            name="exception-name",
+            title="An exception occurred.",
+            detail="Couldn't handle the truth. Please try again.",
+            status=status,
+            response=response,
+        )
+
+    with pytest.raises(SystemExit) as pytest_error:
+        raise_exception()
+    captured = "\n".join(record.msg for record in caplog.records)
+    assert str(status) in captured
+    assert '"message": "Not found"' in captured
+    assert '"documentation_url": "http://docs.looker.com/"' in captured
+    assert pytest_error.value.code == 101
 
 
 def test_parse_args_with_no_arguments_supplied(clean_env, capsys):
