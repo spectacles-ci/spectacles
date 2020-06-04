@@ -1,6 +1,7 @@
 from pathlib import Path
 import sys
 import yaml
+import json
 from yaml.parser import ParserError
 import argparse
 import logging
@@ -9,7 +10,11 @@ from typing import Callable, Iterable, List
 from spectacles import __version__
 from spectacles.runner import Runner
 from spectacles.client import LookerClient
-from spectacles.exceptions import SpectaclesException, GenericValidationError
+from spectacles.exceptions import (
+    LookerApiError,
+    SpectaclesException,
+    GenericValidationError,
+)
 from spectacles.logger import GLOBAL_LOGGER as logger, set_file_handler
 import spectacles.printer as printer
 import spectacles.tracking as tracking
@@ -144,6 +149,23 @@ def handle_exceptions(function: Callable) -> Callable:
         try:
             return function(*args, **kwargs)
         except GenericValidationError as error:
+            sys.exit(error.exit_code)
+        except LookerApiError as error:
+            logger.error(
+                f"\n{error}\n\n"
+                + printer.dim(
+                    "Run in verbose mode (-v) or check your log file to see the full "
+                    "response from the Looker API. "
+                    "For support, please create an issue at "
+                    "https://github.com/spectacles-ci/spectacles/issues"
+                )
+                + "\n"
+            )
+            looker_api_response = json.dumps(error.looker_api_response, indent=2)
+            logger.debug(
+                f"Spectacles received a {error.status} response code from "
+                f"the Looker API with the following details: {looker_api_response}\n"
+            )
             sys.exit(error.exit_code)
         except SpectaclesException as error:
             logger.error(
