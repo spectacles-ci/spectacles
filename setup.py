@@ -15,7 +15,14 @@ setup(
     py_modules=["spectacles"],
     packages=find_packages(exclude=["docs", "tests*", "scripts"]),
     include_package_data=True,
-    install_requires=["requests", "PyYAML", "colorama", "backoff", "analytics-python"],
+    install_requires=[
+        "requests",
+        "PyYAML",
+        "colorama",
+        "backoff",
+        "analytics-python",
+        "typing-extensions",
+    ],
     tests_require=[
         "black",
         "mypy",
@@ -26,7 +33,7 @@ setup(
         "flake8",
         "pre-commit",
         "vcrpy",
-        "jsonschema"
+        "jsonschema",
     ],
     entry_points={"console_scripts": ["spectacles = spectacles.cli:main"]},
     author="Spectacles",
