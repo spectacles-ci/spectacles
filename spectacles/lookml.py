@@ -1,6 +1,7 @@
 import re
 from typing import Dict, List, Sequence, Optional, Any
 from spectacles.exceptions import SqlError
+from spectacles.types import QueryMode
 
 
 class LookMlObject:
@@ -259,12 +260,12 @@ class Project(LookMlObject):
             if model.errored:
                 yield model
 
-    def get_results(self) -> Dict[str, Any]:
+    def get_results(self, mode: QueryMode) -> Dict[str, Any]:
         errors = []
         tested = []
 
         def parse_explore_errors(explore):
-            if explore.error:
+            if mode == "batch":
                 errors.append(explore.error.__dict__)
             else:
                 for dimension in explore.dimensions:

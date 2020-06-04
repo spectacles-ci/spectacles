@@ -3,6 +3,7 @@ from spectacles.client import LookerClient
 from spectacles.validators import SqlValidator, DataTestValidator
 from spectacles.utils import log_duration, time_hash
 from spectacles.logger import GLOBAL_LOGGER as logger
+from spectacles.types import QueryMode
 
 
 class BranchState(NamedTuple):
@@ -150,7 +151,7 @@ class Runner:
         self,
         selectors: List[str],
         exclusions: List[str],
-        mode: str = "batch",
+        mode: QueryMode = "batch",
         concurrency: int = 10,
     ) -> Dict[str, Any]:
         with self.branch_manager:

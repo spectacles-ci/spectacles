@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 from collections import defaultdict, OrderedDict
 from spectacles.client import LookerClient
 from spectacles.lookml import Project, Model, Explore, Dimension
+from spectacles.types import QueryMode
 from spectacles.logger import GLOBAL_LOGGER as logger
 from spectacles.exceptions import (
     SqlError,
@@ -327,7 +328,7 @@ class SqlValidator(Validator):
             model for model in selected_models if len(model.explores) > 0
         ]
 
-    def validate(self, mode: str = "batch") -> Dict[str, Any]:
+    def validate(self, mode: QueryMode = "batch") -> Dict[str, Any]:
         """Queries selected explores and returns the project tree with errors."""
         self._query_by_task_id = {}
         explore_count = self._count_explores()
@@ -349,9 +350,9 @@ class SqlValidator(Validator):
                     passed=not explore.errored, source=message
                 )
 
-        return self.project.get_results()
+        return self.project.get_results(mode)
 
-    def _create_and_run(self, mode: str = "batch") -> None:
+    def _create_and_run(self, mode: QueryMode = "batch") -> None:
         """Runs a single validation using a specified mode"""
         queries: List[Query] = []
         try:
@@ -378,7 +379,7 @@ class SqlValidator(Validator):
                 detail=message,
             )
 
-    def _create_queries(self, mode: str) -> List[Query]:
+    def _create_queries(self, mode: QueryMode) -> List[Query]:
         """Creates a list of queries to be executed for validation"""
         queries: List[Query] = []
         for model in self.project.models:
