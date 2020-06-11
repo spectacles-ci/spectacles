@@ -1,4 +1,4 @@
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 import time
 from dataclasses import dataclass
 import backoff  # type: ignore
@@ -65,13 +65,15 @@ class LookerClient:
 
         self.base_url: str = base_url.rstrip("/")
         self.api_url: str = f"{self.base_url}:{port}/api/{api_version}/"
+        self.client_id: str = client_id
+        self.client_secret: str = client_secret
+        self.api_version: float = api_version
+        self.access_token: Optional[AccessToken] = None
         self.session: requests.Session = requests.Session()
 
-        self.authenticate(client_id, client_secret, api_version)
+        self.authenticate()
 
-    def authenticate(
-        self, client_id: str, client_secret: str, api_version: float
-    ) -> None:
+    def authenticate(self) -> None:
         """Logs in to Looker's API using a client ID/secret pair and an API version.
 
         Args:
@@ -83,8 +85,8 @@ class LookerClient:
         logger.debug("Authenticating Looker API credentials")
 
         url = utils.compose_url(self.api_url, path=["login"])
-        body = {"client_id": client_id, "client_secret": client_secret}
-        response = self.session.post(url=url, data=body, timeout=TIMEOUT_SEC)
+        body = {"client_id": self.client_id, "client_secret": self.client_secret}
+        response = self.post(url=url, data=body, timeout=TIMEOUT_SEC)
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError:
@@ -93,20 +95,42 @@ class LookerClient:
                 title="Couldn't authenticate to the Looker API.",
                 status=response.status_code,
                 detail=(
-                    f"Unable to authenticate with client ID '{client_id}'. "
+                    f"Unable to authenticate with client ID '{self.client_id}'. "
                     "Check that your credentials are correct and try again."
                 ),
                 response=response,
             )
 
-        access_token = response.json()["access_token"]
-        self.session.headers = {"Authorization": f"token {access_token}"}
+        result = response.json()
+        self.access_token = AccessToken(**result)
+        self.session.headers = {"Authorization": f"token {self.access_token}"}
 
         looker_version = self.get_looker_release_version()
         logger.info(
             f"Connected to Looker version {looker_version} "
-            f"using Looker API {api_version}"
+            f"using Looker API {self.api_version}"
         )
+
+    def request(self, method: str, url: str, *args, **kwargs) -> requests.Response:
+        if self.access_token and self.access_token.expired:
+            logger.debug("Looker API access token has expired, requesting a new one")
+            self.authenticate()
+        return self.session.request(method, url, *args, **kwargs)
+
+    def get(self, url, *args, **kwargs) -> requests.Response:
+        return self.request("GET", url, *args, **kwargs)
+
+    def post(self, url, *args, **kwargs) -> requests.Response:
+        return self.request("POST", url, *args, **kwargs)
+
+    def patch(self, url, *args, **kwargs) -> requests.Response:
+        return self.request("PATCH", url, *args, **kwargs)
+
+    def put(self, url, *args, **kwargs) -> requests.Response:
+        return self.request("PUT", url, *args, **kwargs)
+
+    def delete(self, url, *args, **kwargs) -> requests.Response:
+        return self.request("DELETE", url, *args, **kwargs)
 
     def get_looker_release_version(self) -> str:
         """Gets the version number of connected Looker instance.
@@ -119,7 +143,7 @@ class LookerClient:
 
         url = utils.compose_url(self.api_url, path=["versions"])
 
-        response = self.session.get(url=url, timeout=TIMEOUT_SEC)
+        response = self.get(url=url, timeout=TIMEOUT_SEC)
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError:
@@ -146,7 +170,7 @@ class LookerClient:
         logger.debug(f"Updating session to use the {workspace} workspace")
         url = utils.compose_url(self.api_url, path=["session"])
         body = {"workspace_id": workspace}
-        response = self.session.patch(url=url, json=body, timeout=TIMEOUT_SEC)
+        response = self.patch(url=url, json=body, timeout=TIMEOUT_SEC)
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError:
@@ -173,7 +197,7 @@ class LookerClient:
         url = utils.compose_url(
             self.api_url, path=["projects", project, "git_branches"]
         )
-        response = self.session.get(url=url, timeout=TIMEOUT_SEC)
+        response = self.get(url=url, timeout=TIMEOUT_SEC)
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError:
@@ -200,7 +224,7 @@ class LookerClient:
         logger.debug(f"Setting Git branch to '{branch}'")
         url = utils.compose_url(self.api_url, path=["projects", project, "git_branch"])
         body = {"name": branch}
-        response = self.session.put(url=url, json=body, timeout=TIMEOUT_SEC)
+        response = self.put(url=url, json=body, timeout=TIMEOUT_SEC)
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError:
@@ -227,7 +251,7 @@ class LookerClient:
         url = utils.compose_url(
             self.api_url, path=["projects", project, "reset_to_remote"]
         )
-        response = self.session.post(url=url, timeout=TIMEOUT_SEC)
+        response = self.post(url=url, timeout=TIMEOUT_SEC)
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError:
@@ -253,7 +277,7 @@ class LookerClient:
         """
         logger.debug(f"Getting manifest details")
         url = utils.compose_url(self.api_url, path=["projects", project, "manifest"])
-        response = self.session.get(url=url, timeout=TIMEOUT_SEC)
+        response = self.get(url=url, timeout=TIMEOUT_SEC)
 
         try:
             response.raise_for_status()
@@ -285,7 +309,7 @@ class LookerClient:
         """
         logger.debug(f"Getting active branch for project '{project}'")
         url = utils.compose_url(self.api_url, path=["projects", project, "git_branch"])
-        response = self.session.get(url=url, timeout=TIMEOUT_SEC)
+        response = self.get(url=url, timeout=TIMEOUT_SEC)
 
         try:
             response.raise_for_status()
@@ -325,7 +349,7 @@ class LookerClient:
 
         body = {"name": branch, "ref": ref}
         url = utils.compose_url(self.api_url, path=["projects", project, "git_branch"])
-        response = self.session.post(url=url, json=body, timeout=TIMEOUT_SEC)
+        response = self.post(url=url, json=body, timeout=TIMEOUT_SEC)
 
         try:
             response.raise_for_status()
@@ -356,7 +380,7 @@ class LookerClient:
 
         body = {"name": branch, "ref": ref}
         url = utils.compose_url(self.api_url, path=["projects", project, "git_branch"])
-        response = self.session.put(url=url, json=body, timeout=TIMEOUT_SEC)
+        response = self.put(url=url, json=body, timeout=TIMEOUT_SEC)
 
         try:
             response.raise_for_status()
@@ -385,7 +409,7 @@ class LookerClient:
         url = utils.compose_url(
             self.api_url, path=["projects", project, "git_branch", branch]
         )
-        response = self.session.delete(url=url, timeout=TIMEOUT_SEC)
+        response = self.delete(url=url, timeout=TIMEOUT_SEC)
 
         try:
             response.raise_for_status()
@@ -415,7 +439,7 @@ class LookerClient:
         url = utils.compose_url(
             self.api_url, path=["projects", project, "lookml_tests"]
         )
-        response = self.session.get(url=url, timeout=TIMEOUT_SEC)
+        response = self.get(url=url, timeout=TIMEOUT_SEC)
 
         try:
             response.raise_for_status()
@@ -452,11 +476,9 @@ class LookerClient:
             self.api_url, path=["projects", project, "lookml_tests", "run"]
         )
         if model is not None:
-            response = self.session.get(
-                url=url, params={"model": model}, timeout=TIMEOUT_SEC
-            )
+            response = self.get(url=url, params={"model": model}, timeout=TIMEOUT_SEC)
         else:
-            response = self.session.get(url=url, timeout=TIMEOUT_SEC)
+            response = self.get(url=url, timeout=TIMEOUT_SEC)
 
         try:
             response.raise_for_status()
@@ -483,7 +505,7 @@ class LookerClient:
         """
         logger.debug(f"Getting all models and explores from {self.base_url}")
         url = utils.compose_url(self.api_url, path=["lookml_models"])
-        response = self.session.get(url=url, timeout=TIMEOUT_SEC)
+        response = self.get(url=url, timeout=TIMEOUT_SEC)
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError:
@@ -513,7 +535,7 @@ class LookerClient:
         url = utils.compose_url(
             self.api_url, path=["lookml_models", model, "explores", explore]
         )
-        response = self.session.get(url=url, timeout=TIMEOUT_SEC)
+        response = self.get(url=url, timeout=TIMEOUT_SEC)
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError:
@@ -556,7 +578,7 @@ class LookerClient:
             "filter_expression": "1=2",
         }
         url = utils.compose_url(self.api_url, path=["queries"])
-        response = self.session.post(url=url, json=body, timeout=TIMEOUT_SEC)
+        response = self.post(url=url, json=body, timeout=TIMEOUT_SEC)
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError:
@@ -603,7 +625,7 @@ class LookerClient:
         body = {"query_id": query_id, "result_format": "json_detail"}
         url = utils.compose_url(self.api_url, path=["query_tasks"])
 
-        response = self.session.post(
+        response = self.post(
             url=url, json=body, params={"cache": "false"}, timeout=TIMEOUT_SEC
         )
 
@@ -643,7 +665,7 @@ class LookerClient:
             "Attempting to get results for %d query tasks", len(query_task_ids)
         )
         url = utils.compose_url(self.api_url, path=["query_tasks", "multi_results"])
-        response = self.session.get(
+        response = self.get(
             url=url,
             params={"query_task_ids": ",".join(query_task_ids)},
             timeout=TIMEOUT_SEC,
@@ -676,7 +698,7 @@ class LookerClient:
         """
         logger.debug(f"Cancelling query task: {query_task_id}")
         url = utils.compose_url(self.api_url, path=["running_queries", query_task_id])
-        self.session.delete(url=url, timeout=TIMEOUT_SEC)
+        self.delete(url=url, timeout=TIMEOUT_SEC)
 
         # No raise_for_status() here because Looker API seems to give a 404
         # if you try to cancel a finished query which can happen as part of cleanup
