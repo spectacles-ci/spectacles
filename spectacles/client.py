@@ -1,4 +1,6 @@
 from typing import List, Dict, Any
+import time
+from dataclasses import dataclass
 import backoff  # type: ignore
 import requests
 from requests.exceptions import Timeout
@@ -8,6 +10,21 @@ from spectacles.exceptions import SpectaclesException, LookerApiError
 
 JsonDict = Dict[str, Any]
 TIMEOUT_SEC = 300
+
+
+@dataclass(frozen=True)  # Token is immutable
+class AccessToken:
+    access_token: str
+    token_type: str
+    expires_in: int
+    expires_at: float
+
+    def __str__(self) -> str:
+        return self.access_token
+
+    @property
+    def expired(self) -> bool:
+        return False if time.time() < self.expires_at else True
 
 
 class LookerClient:
