@@ -33,7 +33,7 @@ def set_file_handler(log_dir: str) -> None:
     # Create subfolder to save the SQL for failed queries
     (log_dir_path / "queries").mkdir(exist_ok=True)
 
-    fh = logging.FileHandler(LOG_FILEPATH)
+    fh = logging.FileHandler(LOG_FILEPATH, encoding="utf-8")
     fh.setLevel(logging.DEBUG)
 
     formatter = FileFormatter("%(asctime)s %(levelname)s | %(message)s")
