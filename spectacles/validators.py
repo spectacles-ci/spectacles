@@ -99,12 +99,18 @@ class DataTestValidator(Validator):
             tested.append(test)
             if not result["success"]:
                 for error in result["errors"]:
+                    project, file_path = error["file_path"].split("/", 1)
+                    lookml_url = (
+                        f"{self.client.base_url}/projects/{self.project}"
+                        f"/files/{file_path}?line={error['line_number']}"
+                    )
                     errors.append(
                         DataTestError(
                             model=error["model_id"],
                             explore=error["explore"],
                             message=error["message"],
                             test_name=result["test_name"],
+                            lookml_url=lookml_url,
                         ).__dict__
                     )
 

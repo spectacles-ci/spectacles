@@ -114,8 +114,10 @@ class SqlError(ValidationError):
 
 
 class DataTestError(ValidationError):
-    def __init__(self, model: str, explore: str, message: str, test_name: str):
-        metadata = {"test_name": test_name}
+    def __init__(
+        self, model: str, explore: str, message: str, test_name: str, lookml_url: str
+    ):
+        metadata = {"test_name": test_name, "lookml_url": lookml_url}
         super().__init__(
             model=model, explore=explore, test=None, message=message, metadata=metadata
         )
