@@ -102,6 +102,9 @@ class LookerClient:
             )
 
         result = response.json()
+        if "expires_at" not in result:
+            # Calculate the expiration time with a one-minute buffer
+            result["expires_at"] = time.time() + result["expires_in"] - 60
         self.access_token = AccessToken(**result)
         self.session.headers = {"Authorization": f"token {self.access_token}"}
 
