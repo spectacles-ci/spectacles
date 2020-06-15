@@ -1,11 +1,22 @@
 from typing import List, Tuple, Callable
 import os
+import time
 import inspect
 import pytest
 from unittest.mock import patch, Mock
 import requests
-from spectacles.client import LookerClient
+from spectacles.client import LookerClient, AccessToken
 from spectacles.exceptions import SpectaclesException, LookerApiError
+
+
+def test_expired_access_token_should_be_expired():
+    token = AccessToken(
+        access_token="abc123",
+        token_type="Bearer",
+        expires_in=3600,
+        expires_at=time.time() - 1,
+    )
+    assert token.expired
 
 
 def get_client_method_names() -> List[str]:
@@ -16,7 +27,16 @@ def get_client_method_names() -> List[str]:
     client_methods: List[str] = [
         member[0] for member in client_members if not member[0].startswith("__")
     ]
-    for skip_method in ("authenticate", "cancel_query_task"):
+    for skip_method in (
+        "authenticate",
+        "cancel_query_task",
+        "request",
+        "get",
+        "post",
+        "put",
+        "patch",
+        "delete",
+    ):
         client_methods.remove(skip_method)
     return client_methods
 
@@ -142,14 +162,16 @@ def test_bad_requests_should_raise_looker_api_errors(
         client_method(**client_kwargs[method_name])
 
 
-@patch("spectacles.client.requests.Session.post")
+@patch("spectacles.client.LookerClient.post")
 def test_authenticate_should_set_session_headers(mock_post, monkeypatch):
     mock_looker_version = Mock(spec=LookerClient.get_looker_release_version)
     mock_looker_version.return_value("1.2.3")
     monkeypatch.setattr(LookerClient, "get_looker_release_version", mock_looker_version)
 
     mock_post_response = Mock(spec=requests.Response)
-    mock_post_response.json.return_value = {"access_token": "test_access_token"}
+    mock_post_response.json.return_value = dict(
+        access_token="test_access_token", token_type="Bearer", expires_in=3600
+    )
     mock_post.return_value = mock_post_response
     client = LookerClient("base_url", "client_id", "client_secret")
     assert client.session.headers == {"Authorization": f"token test_access_token"}
