@@ -145,4 +145,32 @@ interactions:
     status:
       code: 200
       message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=4560
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/lookml_tests
+  response:
+    body:
+      string: '{"message":"Requires authentication.","documentation_url":"http://docs.looker.com/"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '84'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 16 Jun 2020 20:33:37 GMT
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 401
+      message: Unauthorized
 version: 1
