@@ -74,7 +74,11 @@ class DataTestValidator(Validator):
         super().__init__(client)
         self.project = project
 
-    def validate(self) -> Dict[str, Any]:
+    def validate(
+        self,
+        selectors: Optional[List[str]] = None,
+        exclusions: Optional[List[str]] = None,
+    ) -> Dict[str, Any]:
         tests = self.client.all_lookml_tests(self.project)
 
         # The error objects don't contain the name of the explore
