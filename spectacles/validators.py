@@ -85,20 +85,34 @@ class DataTestValidator(Validator):
         if exclusions is None:
             exclusions = []
 
-        tests = self.client.all_lookml_tests(self.project)
+        all_tests = self.client.all_lookml_tests(self.project)
+        selected_tests = []
+        test_to_explore = {}
+        for test in all_tests:
+            if is_selected(
+                test["model_name"], test["explore_name"], selectors, exclusions
+            ):
+                selected_tests.append(test)
+                # The error objects don't contain the name of the explore
+                # We create this mapping to help look up the explore from the test name
+                test_to_explore[test["name"]] = test["explore_name"]
 
-        # The error objects don't contain the name of the explore
-        # We create this mapping to help look up the explore from the test name (unique)
-        test_to_explore = {test["name"]: test["explore_name"] for test in tests}
-
-        test_count = len(tests)
+        test_count = len(selected_tests)
         printer.print_header(
             f"Running {test_count} {'test' if test_count == 1 else 'tests'}"
         )
 
+        test_results: List[Dict[str, Any]] = []
+        for test in selected_tests:
+            test_name = test["name"]
+            model_name = test["model_name"]
+            results = self.client.run_lookml_test(
+                self.project, model=model_name, test=test_name
+            )
+            test_results.extend(results)
+
         tested = []
         errors = []
-        test_results = self.client.run_lookml_test(self.project)
 
         for result in test_results:
             explore = test_to_explore[result["test_name"]]
