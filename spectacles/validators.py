@@ -79,6 +79,12 @@ class DataTestValidator(Validator):
         selectors: Optional[List[str]] = None,
         exclusions: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
+        # Assign default values for selectors and exclusions
+        if selectors is None:
+            selectors = ["*/*"]
+        if exclusions is None:
+            exclusions = []
+
         tests = self.client.all_lookml_tests(self.project)
 
         # The error objects don't contain the name of the explore
