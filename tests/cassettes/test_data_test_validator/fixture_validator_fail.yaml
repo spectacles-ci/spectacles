@@ -3,7 +3,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=4560
+      - looker.browser=4962
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/lookml_tests
   response:
@@ -17,7 +17,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 13 May 2020 23:41:04 GMT
+      - Tue, 16 Jun 2020 20:27:06 GMT
       Server:
       - nginx
       Vary:
@@ -32,29 +32,113 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=4560
+      - looker.browser=4962
     method: GET
-    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/lookml_tests/run
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/lookml_tests/run?model=eye_exam&test=users_age_should_be_in_expected_range
   response:
     body:
-      string: '[{"model_name":"eye_exam","test_name":"users_age_should_be_in_expected_range","assertions_count":2,"assertions_failed":0,"errors":[],"warnings":[],"success":true,"can":{}},{"model_name":"eye_exam","test_name":"users_name_should_be_in_caps","assertions_count":2,"assertions_failed":0,"errors":[],"warnings":[],"success":true,"can":{}},{"model_name":"eye_exam","test_name":"users__fail_age_should_be_in_expected_range","assertions_count":2,"assertions_failed":2,"errors":[{"code":null,"severity":"error","kind":null,"message":"Assertion
-        \"age_should_be_greater_than_zero\" failed: expression evaluated to \"No\".","field_name":"users__fail.age","file_path":"eye_exam/eye_exam.model.lkml","line_number":40,"model_id":"eye_exam","explore":"users__fail","help_url":null,"params":{"__FILE":"eye_exam/eye_exam.model.lkml","__LINE_NUM":40,"model_id":"eye_exam","explore":"users__fail","field_name":"users__fail.age","level":"error"},"sanitized_message":"Assertion
-        \"(?)\" failed: expression evaluated to \"No\"."},{"code":null,"severity":"error","kind":null,"message":"Assertion
-        \"age_should_be_less_than_130\" failed: expression evaluated to \"No\".","field_name":"users__fail.age","file_path":"eye_exam/eye_exam.model.lkml","line_number":40,"model_id":"eye_exam","explore":"users__fail","help_url":null,"params":{"__FILE":"eye_exam/eye_exam.model.lkml","__LINE_NUM":40,"model_id":"eye_exam","explore":"users__fail","field_name":"users__fail.age","level":"error"},"sanitized_message":"Assertion
-        \"(?)\" failed: expression evaluated to \"No\"."}],"warnings":[],"success":false,"can":{}},{"model_name":"eye_exam","test_name":"users__fail_name_should_be_in_caps","assertions_count":2,"assertions_failed":0,"errors":[],"warnings":[],"success":true,"can":{}}]'
+      string: '[{"model_name":"eye_exam","test_name":"users_age_should_be_in_expected_range","assertions_count":2,"assertions_failed":0,"errors":[],"warnings":[],"success":true,"can":{}}]'
     headers:
       Connection:
       - keep-alive
       Content-Length:
-      - '1747'
+      - '172'
       Content-Type:
       - application/json
       Date:
-      - Wed, 13 May 2020 23:41:05 GMT
+      - Tue, 16 Jun 2020 20:27:06 GMT
       Server:
       - nginx
       Vary:
       - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=4962
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/lookml_tests/run?model=eye_exam&test=users_name_should_be_in_caps
+  response:
+    body:
+      string: '[{"model_name":"eye_exam","test_name":"users_name_should_be_in_caps","assertions_count":2,"assertions_failed":0,"errors":[],"warnings":[],"success":true,"can":{}}]'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '163'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 16 Jun 2020 20:27:06 GMT
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=4962
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/lookml_tests/run?model=eye_exam&test=users__fail_age_should_be_in_expected_range
+  response:
+    body:
+      string: '[{"model_name":"eye_exam","test_name":"users__fail_age_should_be_in_expected_range","assertions_count":2,"assertions_failed":2,"errors":[{"code":null,"severity":"error","kind":null,"message":"Assertion
+        \"age_should_be_greater_than_zero\" failed: expression evaluated to \"No\".","field_name":"users__fail.age","file_path":"eye_exam/eye_exam.model.lkml","line_number":40,"model_id":"eye_exam","explore":"users__fail","help_url":null,"params":{"__FILE":"eye_exam/eye_exam.model.lkml","__LINE_NUM":40,"model_id":"eye_exam","explore":"users__fail","field_name":"users__fail.age","level":"error"},"sanitized_message":"Assertion
+        \"(?)\" failed: expression evaluated to \"No\"."},{"code":null,"severity":"error","kind":null,"message":"Assertion
+        \"age_should_be_less_than_130\" failed: expression evaluated to \"No\".","field_name":"users__fail.age","file_path":"eye_exam/eye_exam.model.lkml","line_number":40,"model_id":"eye_exam","explore":"users__fail","help_url":null,"params":{"__FILE":"eye_exam/eye_exam.model.lkml","__LINE_NUM":40,"model_id":"eye_exam","explore":"users__fail","field_name":"users__fail.age","level":"error"},"sanitized_message":"Assertion
+        \"(?)\" failed: expression evaluated to \"No\"."}],"warnings":[],"success":false,"can":{}}]'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '1246'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 16 Jun 2020 20:27:07 GMT
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=4962
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/lookml_tests/run?model=eye_exam&test=users__fail_name_should_be_in_caps
+  response:
+    body:
+      string: '[{"model_name":"eye_exam","test_name":"users__fail_name_should_be_in_caps","assertions_count":2,"assertions_failed":0,"errors":[],"warnings":[],"success":true,"can":{}}]'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '169'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 16 Jun 2020 20:27:07 GMT
+      Server:
+      - nginx
+      Vary:
       - Accept-Encoding
       X-Content-Type-Options:
       - nosniff
