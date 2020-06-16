@@ -181,9 +181,13 @@ class Runner:
         return results
 
     @log_duration
-    def validate_content(self, incremental: bool = False) -> Dict[str, Any]:
+    def validate_content(
+        self, incremental: bool = False, exclude_personal: bool = False
+    ) -> Dict[str, Any]:
         with self.branch_manager:
-            content_validator = ContentValidator(self.client)
+            content_validator = ContentValidator(
+                self.client, self.project, exclude_personal
+            )
             results = content_validator.validate()
         if incremental and self.branch_manager.name != "master":
             self.branch_manager.name = "master"

@@ -275,6 +275,7 @@ def main():
             args.import_projects,
             args.commit_ref,
             args.incremental,
+            args.exclude_personal,
         )
 
     if not args.do_not_track:
@@ -550,8 +551,13 @@ def _build_content_subparser(
     subparser.add_argument(
         "--incremental",
         action="store_true",
-        help="When provided, the Content Validator will only display errors which \
-            are not present on the master branch.",
+        help="Only display errors which are not present on the master branch.",
+    )
+
+    subparser.add_argument(
+        "--exclude-personal",
+        action="store_true",
+        help="Exclude errors found in content in personal folders.",
     )
 
     _build_validator_subparser(subparser_action, subparser)
@@ -576,6 +582,7 @@ def run_content(
     import_projects,
     commit_ref,
     incremental,
+    exclude_personal,
 ) -> None:
     runner = Runner(
         base_url,
@@ -589,7 +596,7 @@ def run_content(
         import_projects,
         commit_ref,
     )
-    results = runner.validate_content(incremental)
+    results = runner.validate_content(incremental, exclude_personal)
     errors = sorted(
         results["errors"],
         key=lambda x: (x["model"], x["explore"], x["metadata"]["field_name"]),
