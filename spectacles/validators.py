@@ -1,10 +1,11 @@
 import time
-from typing import Any, List, Dict, Sequence, DefaultDict, Union, Optional
+from typing import Any, List, Dict, Union, Optional
 from abc import ABC, abstractmethod
-from collections import defaultdict, OrderedDict
+from collections import OrderedDict
 from spectacles.client import LookerClient
 from spectacles.lookml import Project, Model, Explore, Dimension
 from spectacles.types import QueryMode
+from spectacles.select import is_selected
 from spectacles.logger import GLOBAL_LOGGER as logger
 from spectacles.exceptions import (
     SqlError,
@@ -175,63 +176,7 @@ class SqlValidator(Validator):
             if query.query_task_id
         ]
 
-    @staticmethod
-    def parse_selectors(selectors: List[str]) -> DefaultDict[str, set]:
-        """Parses explore selectors with the format 'model_name/explore_name'.
-
-        Args:
-            selectors: List of selector strings in 'model_name/explore_name' format.
-                The '*' wildcard selects all models or explores. For instance,
-                'model_name/*' would select all explores in the 'model_name' model.
-
-        Returns:
-            DefaultDict[str, set]: A hierarchy of selected model names (keys) and
-                explore names (values).
-
-        """
-        selection: DefaultDict = defaultdict(set)
-        for selector in selectors:
-            try:
-                model, explore = selector.split("/")
-            except ValueError:
-                raise SpectaclesException(
-                    name="invalid-selector-format",
-                    title="Specified explore selector is invalid.",
-                    detail=(
-                        f"'{selector}' is not a valid format. "
-                        "Instead, use the format 'model_name/explore_name'. "
-                        f"Use 'model_name/*' to select all explores in a model."
-                    ),
-                )
-            else:
-                selection[model].add(explore)
-        return selection
-
-    # TODO: Refactor this so it's more obvious how selection works
-    def _select(self, choices: Sequence[str], select_from: Sequence) -> Sequence:
-        unique_choices = set(choices)
-        select_from_names = set(each.name for each in select_from)
-        difference = unique_choices.difference(select_from_names)
-        if difference:
-            lookml_type = select_from[0].__class__.__name__
-            lookml_type += "" if len(difference) == 1 else "s"
-            raise LookMlNotFound(
-                name="selector-not-found",
-                title="Selected LookML models or explores were not found.",
-                detail=(
-                    f"{lookml_type} "
-                    + ", ".join(f"'{diff}'" for diff in difference)
-                    + f" not found in LookML for project '{self.project.name}'. "
-                    "Check that the models and explores specified exist, the project "
-                    "name is correct, and try again. For models, make sure they have "
-                    f"been configured at {self.client.base_url}/projects"
-                ),
-            )
-        return [each for each in select_from if each.name in unique_choices]
-
-    def build_project(
-        self, selectors: List[str] = None, exclusions: List[str] = None
-    ) -> None:
+    def build_project(self, selectors: List[str], exclusions: List[str]) -> None:
         """Creates an object representation of the project's LookML.
 
         Args:
@@ -240,14 +185,6 @@ class SqlValidator(Validator):
                 'model_name/*' would select all explores in the 'model_name' model.
 
         """
-        # Set default values for selecting and excluding
-        if not selectors:
-            selectors = ["*/*"]
-        if not exclusions:
-            exclusions = []
-
-        selection = self.parse_selectors(selectors)
-        exclusion = self.parse_selectors(exclusions)
         logger.info(
             f"Building LookML project hierarchy for project {self.project.name}"
         )
@@ -270,68 +207,24 @@ class SqlValidator(Validator):
                 ),
             )
 
-        # Expand wildcard operator to include all specified or discovered models
-        selected_model_names = selection.keys()
-        if "*" in selected_model_names:
-            explore_names = selection.pop("*")
-            for model in project_models:
-                selection[model.name].update(explore_names)
-
-        selected_models = self._select(
-            choices=tuple(selection.keys()), select_from=project_models
-        )
-        excluded_models = self._select(
-            choices=tuple(exclusion.keys()), select_from=project_models
-        )
-
-        excluded_explores = {}
-        for model in excluded_models:
-            # Expand wildcard operator to include all specified or discovered explores
-            excluded_explore_names = exclusion[model.name]
-            if "*" in excluded_explore_names:
-                excluded_explore_names.remove("*")
-                excluded_explore_names.update(
-                    set(explore.name for explore in model.explores)
-                )
-
-            excluded_explores[model.name] = self._select(
-                choices=tuple(excluded_explore_names), select_from=model.explores
-            )
-
-        for model in selected_models:
-            selected_explore_names = selection[model.name]
-            if "*" in selected_explore_names:
-                selected_explore_names.remove("*")
-                selected_explore_names.update(
-                    set(explore.name for explore in model.explores)
-                )
-
-            selected_explores = self._select(
-                choices=tuple(selected_explore_names), select_from=model.explores
-            )
-            if model.name in excluded_explores:
-                selected_explores = [
-                    explore
-                    for explore in selected_explores
-                    if explore not in excluded_explores[model.name]
-                ]
-
-            for explore in selected_explores:
-                dimensions_json = self.client.get_lookml_dimensions(
-                    model.name, explore.name
-                )
-                for dimension_json in dimensions_json:
-                    dimension = Dimension.from_json(
-                        dimension_json, model.name, explore.name
+        for model in project_models:
+            for explore in model.explores:
+                if is_selected(model.name, explore.name, selectors, exclusions):
+                    dimensions_json = self.client.get_lookml_dimensions(
+                        model.name, explore.name
                     )
-                    dimension.url = self.client.base_url + dimension.url
-                    if not dimension.ignore:
-                        explore.add_dimension(dimension)
-
-            model.explores = selected_explores
+                    for dimension_json in dimensions_json:
+                        dimension = Dimension.from_json(
+                            dimension_json, model.name, explore.name
+                        )
+                        dimension.url = self.client.base_url + dimension.url
+                        if not dimension.ignore:
+                            explore.add_dimension(dimension)
+                else:
+                    del explore
 
         self.project.models = [
-            model for model in selected_models if len(model.explores) > 0
+            model for model in project_models if len(model.explores) > 0
         ]
 
     def validate(self, mode: QueryMode = "batch") -> Dict[str, Any]:
