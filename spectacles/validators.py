@@ -176,7 +176,11 @@ class SqlValidator(Validator):
             if query.query_task_id
         ]
 
-    def build_project(self, selectors: List[str], exclusions: List[str]) -> None:
+    def build_project(
+        self,
+        selectors: Optional[List[str]] = None,
+        exclusions: Optional[List[str]] = None,
+    ) -> None:
         """Creates an object representation of the project's LookML.
 
         Args:
@@ -185,6 +189,12 @@ class SqlValidator(Validator):
                 'model_name/*' would select all explores in the 'model_name' model.
 
         """
+        # Assign default values for selectors and exclusions
+        if selectors is None:
+            selectors = ["*/*"]
+        if exclusions is None:
+            exclusions = []
+
         logger.info(
             f"Building LookML project hierarchy for project {self.project.name}"
         )
@@ -208,20 +218,22 @@ class SqlValidator(Validator):
             )
 
         for model in project_models:
+            model.explores = [
+                explore
+                for explore in model.explores
+                if is_selected(model.name, explore.name, selectors, exclusions)
+            ]
             for explore in model.explores:
-                if is_selected(model.name, explore.name, selectors, exclusions):
-                    dimensions_json = self.client.get_lookml_dimensions(
-                        model.name, explore.name
+                dimensions_json = self.client.get_lookml_dimensions(
+                    model.name, explore.name
+                )
+                for dimension_json in dimensions_json:
+                    dimension = Dimension.from_json(
+                        dimension_json, model.name, explore.name
                     )
-                    for dimension_json in dimensions_json:
-                        dimension = Dimension.from_json(
-                            dimension_json, model.name, explore.name
-                        )
-                        dimension.url = self.client.base_url + dimension.url
-                        if not dimension.ignore:
-                            explore.add_dimension(dimension)
-                else:
-                    del explore
+                    dimension.url = self.client.base_url + dimension.url
+                    if not dimension.ignore:
+                        explore.add_dimension(dimension)
 
         self.project.models = [
             model for model in project_models if len(model.explores) > 0

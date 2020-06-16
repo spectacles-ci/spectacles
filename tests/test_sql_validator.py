@@ -1,5 +1,4 @@
 from typing import Iterable, Tuple, Dict
-from collections import defaultdict
 from unittest.mock import patch, create_autospec
 import pytest
 import jsonschema
@@ -290,29 +289,6 @@ def test_get_running_query_tasks(validator):
     ]
     validator._running_queries = queries
     assert validator.get_running_query_tasks() == ["abc", "def"]
-
-
-def test_parse_selectors_should_handle_duplicates():
-    expected = defaultdict(set, model_one=set(["explore_one"]))
-    assert (
-        SqlValidator.parse_selectors(["model_one/explore_one", "model_one/explore_one"])
-        == expected
-    )
-
-
-def test_parse_selectors_should_handle_same_explore_in_different_model():
-    expected = defaultdict(
-        set, model_one=set(["explore_one"]), model_two=set(["explore_one"])
-    )
-    assert (
-        SqlValidator.parse_selectors(["model_one/explore_one", "model_two/explore_one"])
-        == expected
-    )
-
-
-def test_parse_selectors_with_invalid_format_should_raise_error():
-    with pytest.raises(SpectaclesException):
-        SqlValidator.parse_selectors(["model_one.explore_one", "model_two:explore_one"])
 
 
 @patch("spectacles.validators.LookerClient.cancel_query_task")

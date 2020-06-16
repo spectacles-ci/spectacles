@@ -21,10 +21,12 @@ def test_select_wildcard_should_match():
 
 def test_select_model_wildcard_should_match():
     assert is_selected("model_a", "explore_a", ["model_a/*"], [])
+    assert is_selected("model_a", "explore_b", ["model_a/*"], [])
 
 
 def test_select_explore_wildcard_should_match():
     assert is_selected("model_a", "explore_a", ["*/explore_a"], [])
+    assert is_selected("model_b", "explore_a", ["*/explore_a"], [])
 
 
 def test_select_exact_model_and_explore_should_match():
