@@ -58,3 +58,15 @@ def time_hash() -> str:
     hash = hashlib.sha1()
     hash.update(str(time.time()).encode("utf-8"))
     return hash.hexdigest()[:10]
+
+
+def hash_error(error: Dict[str, Any]) -> int:
+    """Convert an error dictionary into a hash of the important keys."""
+    items = (
+        error["model"],
+        error["explore"],
+        error["message"],
+        *(v for v in error["metadata"].values() if v),
+    )
+    hashed = hash(items)
+    return hashed

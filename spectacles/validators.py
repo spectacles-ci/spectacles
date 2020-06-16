@@ -69,18 +69,25 @@ class ContentValidator(Validator):
     def validate(self):
         errors = []
         result = self.client.content_validation()
+
         for content in result["content_with_errors"]:
-            errors.extend(self.errors_from_result(content))
+            content_errors = self.errors_from_result(content)
+            errors.extend(content_errors)
+
+        unique_errors = []
+        for error in errors:
+            if error.__dict__ not in unique_errors:
+                unique_errors.append(error.__dict__)
 
         # TODO: Get information on all content so we can return a useful "tested"
         return {
             "validator": "content",
-            "status": "failed" if errors else "passed",
+            "status": "failed" if unique_errors else "passed",
             "tested": [],
-            "errors": errors,
+            "errors": unique_errors,
         }
 
-    def errors_from_result(self, content: Dict) -> List[Dict[str, Any]]:
+    def errors_from_result(self, content: Dict) -> List[ContentError]:
         errors = []
         for error in content["errors"]:
             if content["dashboard"]:
@@ -104,7 +111,7 @@ class ContentValidator(Validator):
                     title=content[content_type]["title"],
                     space=content[content_type]["space"]["name"],
                     url=f"{self.client.base_url}/{content_type}s/{content_id}",
-                ).__dict__
+                )
             )
         return errors
 
