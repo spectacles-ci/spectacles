@@ -259,6 +259,8 @@ def main():
         run_content(
             args.project,
             args.branch,
+            args.explores,
+            args.exclude,
             args.base_url,
             args.client_id,
             args.client_secret,
@@ -566,6 +568,8 @@ def run_connect(
 def run_content(
     project,
     branch,
+    explores,
+    excludes,
     base_url,
     client_id,
     client_secret,
@@ -589,7 +593,7 @@ def run_content(
         import_projects,
         commit_ref,
     )
-    results = runner.validate_content(incremental, exclude_personal)
+    results = runner.validate_content(explores, excludes, incremental, exclude_personal)
     errors = sorted(
         results["errors"],
         key=lambda x: (x["model"], x["explore"], x["metadata"]["field_name"]),
