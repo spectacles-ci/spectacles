@@ -244,6 +244,8 @@ def main():
         run_assert(
             args.project,
             args.branch,
+            args.explores,
+            args.exclude,
             args.base_url,
             args.client_id,
             args.client_secret,
@@ -307,14 +309,14 @@ def _build_base_subparser() -> argparse.ArgumentParser:
         action=EnvVarAction,
         env_var="LOOKER_CLIENT_ID",
         required=True,
-        help="The client ID of the Looker user that spectacles will authenticate as.",
+        help="The client ID of the Looker user that Spectacles will authenticate as.",
     )
     base_subparser.add_argument(
         "--client-secret",
         action=EnvVarAction,
         env_var="LOOKER_CLIENT_SECRET",
         required=True,
-        help="The client secret of the Looker user that spectacles \
+        help="The client secret of the Looker user that Spectacles \
             will authenticate as.",
     )
     base_subparser.add_argument(
@@ -340,7 +342,7 @@ def _build_base_subparser() -> argparse.ArgumentParser:
         dest="log_level",
         const=logging.DEBUG,
         default=logging.INFO,
-        help="Display debug logging during spectacles execution. \
+        help="Display debug logging during Spectacles execution. \
             Useful for debugging and making bug reports.",
     )
     base_subparser.add_argument(
@@ -414,6 +416,24 @@ def _build_validator_subparser(
             that are clones of master for any project that is a local dependency of the \
             of the project being tested. These branches are deleted at the end of the run.",
     )
+    base_subparser.add_argument(
+        "--explores",
+        nargs="+",
+        default=["*/*"],
+        help="Specify the explores Spectacles should test. \
+            List of strings in 'model_name/explore_name' format. \
+            The '*' wildcard selects all models or explores. For instance,\
+            'model_name/*' would select all explores in the 'model_name' model.",
+    )
+    base_subparser.add_argument(
+        "--exclude",
+        nargs="+",
+        default=[],
+        help="Specify the explores Spectacles should exclude when testing. \
+            List of strings in 'model_name/explore_name' format. \
+            The '*' wildcard excludes all models or explores. For instance,\
+            'model_name/*' would select all explores in the 'model_name' model.",
+    )
     group = base_subparser.add_mutually_exclusive_group()
     group.add_argument(
         "--remote-reset",
@@ -457,24 +477,6 @@ def _build_sql_subparser(
 
     _build_validator_subparser(subparser_action, subparser)
 
-    subparser.add_argument(
-        "--explores",
-        nargs="+",
-        default=["*/*"],
-        help="Specify the explores spectacles should test. \
-            List of selector strings in 'model_name/explore_name' format. \
-            The '*' wildcard selects all models or explores. For instance,\
-            'model_name/*' would select all explores in the 'model_name' model.",
-    )
-    subparser.add_argument(
-        "--exclude",
-        nargs="+",
-        default=[],
-        help="Specify the explores spectacles should exclude when testing. \
-            List of selector strings in 'model_name/explore_name' format. \
-            The '*' wildcard excludes all models or explores. For instance,\
-            'model_name/*' would select all explores in the 'model_name' model.",
-    )
     subparser.add_argument(
         "--mode",
         choices=["batch", "single", "hybrid"],
@@ -525,6 +527,8 @@ def run_connect(
 def run_assert(
     project,
     branch,
+    explores,
+    exclude,
     base_url,
     client_id,
     client_secret,
@@ -546,7 +550,7 @@ def run_assert(
         import_projects,
         commit_ref,
     )
-    results = runner.validate_data_tests()
+    results = runner.validate_data_tests(explores, exclude)
 
     errors = sorted(
         results["errors"],
