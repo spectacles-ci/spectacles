@@ -1,4 +1,6 @@
 from typing import List, Dict, Any, Optional, NamedTuple
+from copy import deepcopy
+import hashlib
 from spectacles.client import LookerClient
 from spectacles.validators import SqlValidator, DataTestValidator, ContentValidator
 from spectacles.utils import log_duration, time_hash
@@ -180,8 +182,41 @@ class Runner:
         return results
 
     @log_duration
-    def validate_content(self) -> Dict[str, Any]:
+    def validate_content(self, incremental: bool = False) -> Dict[str, Any]:
         with self.branch_manager:
             content_validator = ContentValidator(self.client)
             results = content_validator.validate()
-        return results
+        if incremental and self.branch_manager.name != "master":
+            self.branch_manager.name = "master"
+            with self.branch_manager:
+                master_results = content_validator.validate()
+            return self.incremental_results(main=master_results, additional=results)
+        else:
+            return results
+
+    def incremental_results(
+        self, main: Dict[str, Any], additional: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Returns a new result with only the additional errors in `additional`."""
+        # Create a unique representation of each error
+        main_error_ids = [self.hash_error(error) for error in main["errors"]]
+        incremental_errors = [
+            error
+            for error in additional["errors"]
+            if self.hash_error(error) not in main_error_ids
+        ]
+        incremental = deepcopy(additional)
+        incremental["errors"] = incremental_errors
+        return incremental
+
+    @staticmethod
+    def hash_error(error: Dict[str, Any]) -> str:
+        """Convert an error dictionary into an MD5 hash of the important keys."""
+        items = (
+            error["model"],
+            error["explore"],
+            error["message"],
+            *(v for v in error["metadata"].values() if v),
+        )
+        hashed = hashlib.md5("".join(items).encode("utf-8")).hexdigest()
+        return hashed
