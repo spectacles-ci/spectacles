@@ -722,7 +722,7 @@ class LookerClient:
     def content_validation(self) -> JsonDict:
         logger.debug(f"Validating content")
         url = utils.compose_url(self.api_url, path=["content_validation"])
-        response = self.session.get(url=url, timeout=TIMEOUT_SEC)
+        response = self.get(url=url, timeout=TIMEOUT_SEC)
 
         try:
             response.raise_for_status()
@@ -732,6 +732,25 @@ class LookerClient:
                 title="Couldn't validate Looks and Dashboards.",
                 status=response.status_code,
                 detail=("Failed to run the content validator. Please try again."),
+                response=response,
+            )
+
+        result = response.json()
+        return result
+
+    def all_folders(self, project: str) -> List[JsonDict]:
+        logger.debug("Getting information about all folders")
+        url = utils.compose_url(self.api_url, path=["folders"])
+        response = self.get(url=url, timeout=TIMEOUT_SEC)
+
+        try:
+            response.raise_for_status()
+        except requests.exceptions.HTTPError:
+            raise LookerApiError(
+                name="unable-to-get-folders",
+                title="Couldn't obtain project folders.",
+                status=response.status_code,
+                detail=(f"Failed to get all folders for project '{project}'."),
                 response=response,
             )
 

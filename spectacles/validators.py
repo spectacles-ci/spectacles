@@ -63,16 +63,42 @@ class Validator(ABC):  # pragma: no cover
 
 
 class ContentValidator(Validator):
-    def __init__(self, client: LookerClient):
+    def __init__(
+        self, client: LookerClient, project: str, exclude_personal: bool = False
+    ):
         super().__init__(client)
+        self.project = project
+        personal_folders = self.get_personal_folders() if exclude_personal else []
+        self.personal_folders: List[int] = personal_folders
+
+    def get_personal_folders(self) -> List[int]:
+        personal_folders = []
+        result = self.client.all_folders(self.project)
+        for folder in result:
+            if folder["is_personal"] or folder["is_personal_descendant"]:
+                personal_folders.append(folder["id"])
+        return personal_folders
 
     def validate(self):
         errors = []
         result = self.client.content_validation()
 
         for content in result["content_with_errors"]:
-            content_errors = self.errors_from_result(content)
-            errors.extend(content_errors)
+            try:
+                content_type = self.get_content_type(content)
+            except KeyError:
+                logger.debug(
+                    f"Skipping content because it does not seem to be a dashboard or "
+                    f"a look. The content received was: {content}"
+                )
+                continue
+
+            # If exclude_personal isn't specified, personal_folders list is empty
+            if content[content_type]["folder"]["id"] in self.personal_folders:
+                continue
+            else:
+                content_errors = self.errors_from_result(content, content_type)
+                errors.extend(content_errors)
 
         unique_errors = []
         for error in errors:
@@ -87,19 +113,20 @@ class ContentValidator(Validator):
             "errors": unique_errors,
         }
 
-    def errors_from_result(self, content: Dict) -> List[ContentError]:
+    @staticmethod
+    def get_content_type(content: Dict[str, Any]) -> str:
+        if content["dashboard"]:
+            return "dashboard"
+        elif content["look"]:
+            return "look"
+        else:
+            raise KeyError("Content type not found. Valid keys are 'look', 'dashboard'")
+
+    def errors_from_result(
+        self, content: Dict, content_type: str
+    ) -> List[ContentError]:
         errors = []
         for error in content["errors"]:
-            if content["dashboard"]:
-                content_type = "dashboard"
-            elif content["look"]:
-                content_type = "look"
-            else:
-                logger.debug(
-                    f"Skipping content because it does not seem to be a dashboard or "
-                    f"a look. The content received was: {content}"
-                )
-                continue
             content_id = content[content_type]["id"]
             errors.append(
                 ContentError(
