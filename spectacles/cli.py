@@ -267,6 +267,7 @@ def main():
             args.remote_reset,
             args.import_projects,
             args.commit_ref,
+            args.incremental,
         )
 
     if not args.do_not_track:
@@ -539,6 +540,13 @@ def _build_content_subparser(
         "content", parents=[base_subparser], help="Run Looker content validation."
     )
 
+    subparser.add_argument(
+        "--incremental",
+        action="store_true",
+        help="When provided, the Content Validator will only display errors which \
+            are not present on the master branch.",
+    )
+
     _build_validator_subparser(subparser_action, subparser)
 
 
@@ -560,6 +568,7 @@ def run_content(
     remote_reset,
     import_projects,
     commit_ref,
+    incremental,
 ) -> None:
     runner = Runner(
         base_url,
@@ -573,7 +582,7 @@ def run_content(
         import_projects,
         commit_ref,
     )
-    results = runner.validate_content()
+    results = runner.validate_content(incremental)
     errors = sorted(
         results["errors"],
         key=lambda x: (x["model"], x["explore"], x["metadata"]["field_name"]),

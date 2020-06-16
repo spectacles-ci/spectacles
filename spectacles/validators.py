@@ -70,7 +70,19 @@ class ContentValidator(Validator):
         errors = []
         result = self.client.content_validation()
         for content in result["content_with_errors"]:
-            error = content["errors"][0]
+            errors.extend(self.errors_from_result(content))
+
+        # TODO: Get information on all content so we can return a useful "tested"
+        return {
+            "validator": "content",
+            "status": "failed" if errors else "passed",
+            "tested": [],
+            "errors": errors,
+        }
+
+    def errors_from_result(self, content: Dict) -> List[Dict[str, Any]]:
+        errors = []
+        for error in content["errors"]:
             if content["dashboard"]:
                 content_type = "dashboard"
             elif content["look"]:
@@ -78,7 +90,7 @@ class ContentValidator(Validator):
             else:
                 logger.debug(
                     f"Skipping content because it does not seem to be a dashboard or "
-                    f"a look. The content received was: {result}"
+                    f"a look. The content received was: {content}"
                 )
                 continue
             content_id = content[content_type]["id"]
@@ -94,14 +106,7 @@ class ContentValidator(Validator):
                     url=f"{self.client.base_url}/{content_type}s/{content_id}",
                 ).__dict__
             )
-
-        # TODO: Get information on all content so we can return a useful "tested"
-        return {
-            "validator": "content",
-            "status": "failed" if errors else "passed",
-            "tested": [],
-            "errors": errors,
-        }
+        return errors
 
 
 class DataTestValidator(Validator):
