@@ -1,9 +1,8 @@
 from typing import List, Dict, Any, Optional, NamedTuple
 from copy import deepcopy
-import hashlib
 from spectacles.client import LookerClient
 from spectacles.validators import SqlValidator, DataTestValidator, ContentValidator
-from spectacles.utils import log_duration, time_hash
+from spectacles.utils import log_duration, time_hash, hash_error
 from spectacles.logger import GLOBAL_LOGGER as logger
 from spectacles.types import QueryMode
 
@@ -199,24 +198,12 @@ class Runner:
     ) -> Dict[str, Any]:
         """Returns a new result with only the additional errors in `additional`."""
         # Create a unique representation of each error
-        main_error_ids = [self.hash_error(error) for error in main["errors"]]
+        main_error_ids = [hash_error(error) for error in main["errors"]]
         incremental_errors = [
             error
             for error in additional["errors"]
-            if self.hash_error(error) not in main_error_ids
+            if hash_error(error) not in main_error_ids
         ]
         incremental = deepcopy(additional)
         incremental["errors"] = incremental_errors
         return incremental
-
-    @staticmethod
-    def hash_error(error: Dict[str, Any]) -> str:
-        """Convert an error dictionary into an MD5 hash of the important keys."""
-        items = (
-            error["model"],
-            error["explore"],
-            error["message"],
-            *(v for v in error["metadata"].values() if v),
-        )
-        hashed = hashlib.md5("".join(items).encode("utf-8")).hexdigest()
-        return hashed
