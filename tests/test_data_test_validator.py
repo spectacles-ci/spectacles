@@ -39,5 +39,6 @@ class TestValidateFail:
         jsonschema.validate(results, schema)
 
     def test_no_data_tests_should_raise_error(self, validator):
-        with pytest.raises(SpectaclesException):
+        with pytest.raises(SpectaclesException) as error:
             validator.validate(exclusions=["*/*"])
+            assert error.type == "no-data-tests-found"
