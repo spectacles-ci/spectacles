@@ -67,17 +67,69 @@ class ContentValidator(Validator):
         self, client: LookerClient, project: str, exclude_personal: bool = False
     ):
         super().__init__(client)
-        self.project = project
+        self.project = Project(project, models=[])
         personal_folders = self.get_personal_folders() if exclude_personal else []
         self.personal_folders: List[int] = personal_folders
 
     def get_personal_folders(self) -> List[int]:
         personal_folders = []
-        result = self.client.all_folders(self.project)
+        result = self.client.all_folders(self.project.name)
         for folder in result:
             if folder["is_personal"] or folder["is_personal_descendant"]:
                 personal_folders.append(folder["id"])
         return personal_folders
+
+    def build_project(
+        self,
+        selectors: Optional[List[str]] = None,
+        exclusions: Optional[List[str]] = None,
+    ) -> None:
+        """Creates an object representation of the project's LookML.
+
+        Args:
+            selectors: List of selector strings in 'model_name/explore_name' format.
+                The '*' wildcard selects all models or explores. For instance,
+                'model_name/*' would select all explores in the 'model_name' model.
+
+        """
+        # Assign default values for selectors and exclusions
+        if selectors is None:
+            selectors = ["*/*"]
+        if exclusions is None:
+            exclusions = []
+
+        logger.info(
+            f"Building LookML project hierarchy for project {self.project.name}"
+        )
+
+        all_models = [
+            Model.from_json(model) for model in self.client.get_lookml_models()
+        ]
+        project_models = [
+            model for model in all_models if model.project_name == self.project.name
+        ]
+
+        if not project_models:
+            raise LookMlNotFound(
+                name="project-models-not-found",
+                title="No configured models found for the specified project.",
+                detail=(
+                    f"Go to {self.client.base_url}/projects and confirm "
+                    "a) at least one model exists for the project and "
+                    "b) it has an active configuration."
+                ),
+            )
+
+        for model in project_models:
+            model.explores = [
+                explore
+                for explore in model.explores
+                if is_selected(model.name, explore.name, selectors, exclusions)
+            ]
+
+        self.project.models = [
+            model for model in project_models if len(model.explores) > 0
+        ]
 
     def validate(self):
         errors = []
@@ -122,16 +174,30 @@ class ContentValidator(Validator):
         else:
             raise KeyError("Content type not found. Valid keys are 'look', 'dashboard'")
 
+    def is_project_member(self, model: str, explore: str) -> bool:
+        matching_model = next((m for m in self.project.models if m.name == model), None)
+        if matching_model is None:
+            return False
+        if next((True for e in matching_model.explores if e.name == explore), False):
+            return True
+        else:
+            return False
+
     def errors_from_result(
         self, content: Dict, content_type: str
     ) -> List[ContentError]:
         errors = []
         for error in content["errors"]:
+            model_name = error["model_name"]
+            explore_name = error["explore_name"]
+            if not self.is_project_member(model_name, explore_name):
+                continue
+
             content_id = content[content_type]["id"]
             errors.append(
                 ContentError(
-                    model=error["model_name"],
-                    explore=error["explore_name"],
+                    model=model_name,
+                    explore=explore_name,
                     message=error["message"],
                     field_name=error["field_name"],
                     content_type=content_type,
