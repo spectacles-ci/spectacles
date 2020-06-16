@@ -44,10 +44,6 @@ class TestBuildProject:
         validator.build_project(selectors=["eye_exam/users", "eye_exam/users"])
         assert len(validator.project.models) == 1
 
-    def test_invalid_model_selector_should_raise_error(self, validator):
-        with pytest.raises(SpectaclesException):
-            validator.build_project(selectors=["dummy/*"])
-
 
 @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
 class TestBuildUnconfiguredProject:
