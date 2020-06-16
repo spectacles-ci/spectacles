@@ -27,15 +27,13 @@ class LookerBranchManager:
         """Context manager for Git branch checkout, creation, and deletion."""
         self.client = client
         self.project = project
+        self.commit_ref = commit_ref
         self.name = name
         self.remote_reset = remote_reset
         self.import_projects = import_projects
-        self.commit_ref = commit_ref
 
         # Get the current branch so we can return to it afterwards
         self.original_branch = self.client.get_active_branch_name(self.project)
-        # If the desired branch is master and no ref is passed, we can stay in prod
-        self.workspace = "production" if name == "master" and not commit_ref else "dev"
         self.temp_branches: List[BranchState] = []
 
     def __enter__(self):
@@ -66,6 +64,18 @@ class LookerBranchManager:
 
         # Return to the starting branch
         self.restore_branch(self.project, self.original_branch)
+
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @name.setter
+    def name(self, name: str):
+        self._name = name
+        # If the desired branch is master and no ref is passed, we can stay in prod
+        self.workspace = (
+            "production" if name == "master" and not self.commit_ref else "dev"
+        )
 
     def setup_temp_branch(self, project: str, original_branch: str) -> str:
         name = "tmp_spectacles_" + time_hash()
