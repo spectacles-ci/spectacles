@@ -298,7 +298,7 @@ class SqlValidator(Validator):
         if not project_models:
             raise LookMlNotFound(
                 name="project-models-not-found",
-                title="No matching models found for the specified project and selectors.",
+                title="No configured models found for the specified project.",
                 detail=(
                     f"Go to {self.client.base_url}/projects and confirm "
                     "a) at least one model exists for the project and "
