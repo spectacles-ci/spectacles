@@ -98,6 +98,16 @@ class DataTestValidator(Validator):
                 test_to_explore[test["name"]] = test["explore_name"]
 
         test_count = len(selected_tests)
+        if test_count == 0:
+            raise SpectaclesException(
+                name="no-data-tests-found",
+                title="No data tests found.",
+                detail=(
+                    "If you're using --explores or --exclude, make sure your project "
+                    "has data tests that reference those models or explores."
+                ),
+            )
+
         printer.print_header(
             f"Running {test_count} {'test' if test_count == 1 else 'tests'}"
         )
