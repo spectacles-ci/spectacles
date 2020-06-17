@@ -226,6 +226,9 @@ class Project(LookMlObject):
 
         return self.name == other.name and self.models == other.models
 
+    def count_explores(self) -> int:
+        return sum(len(model.explores) for model in self.models)
+
     @property
     def errored(self):
         if self.queried:
