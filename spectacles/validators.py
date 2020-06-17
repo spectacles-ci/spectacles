@@ -377,10 +377,6 @@ class SqlValidator(Validator):
         if exclusions is None:
             exclusions = []
 
-        logger.info(
-            f"Building LookML project hierarchy for project {self.project.name}"
-        )
-
         all_models = [
             Model.from_json(model) for model in self.client.get_lookml_models()
         ]
