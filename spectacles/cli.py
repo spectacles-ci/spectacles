@@ -706,6 +706,11 @@ def run_sql(
                 yield item
 
     results = runner.validate_sql(explores, exclude, mode, concurrency)
+
+    for test in sorted(results["tested"], key=lambda x: (x["model"], x["explore"])):
+        message = f"{test['model']}.{test['explore']}"
+        printer.print_validation_result(passed=test["passed"], source=message)
+
     errors = sorted(
         results["errors"],
         key=lambda x: (x["model"], x["explore"], x["metadata"].get("dimension")),
