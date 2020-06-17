@@ -34,7 +34,11 @@ def human_readable(elapsed: int):
 
 
 def get_detail(fn_name: str):
-    detail_map = {"validate_sql": "SQL ", "validate_data_tests": "test "}
+    detail_map = {
+        "validate_sql": "SQL ",
+        "validate_data_tests": "data test ",
+        "validate_content": "content ",
+    }
     return detail_map.get(fn_name, "")
 
 
