@@ -107,18 +107,6 @@ class Explore(LookMlObject):
             "in its 'error' attribute or contain dimensions in an errored state."
         )
 
-    @property
-    def queried(self):
-        return any(dimension.queried for dimension in self.dimensions)
-
-    @queried.setter
-    def queried(self, value: bool):
-        if not isinstance(value, bool):
-            raise TypeError("Value for queried must be boolean.")
-        for dimension in self.dimensions:
-            if not dimension.ignore:
-                dimension.queried = value
-
     def get_errored_dimensions(self):
         for dimension in self.dimensions:
             if dimension.errored:
