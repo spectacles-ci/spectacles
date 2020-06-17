@@ -424,13 +424,6 @@ class SqlValidator(Validator):
     def validate(self, mode: QueryMode = "batch") -> Dict[str, Any]:
         """Queries selected explores and returns the project tree with errors."""
         self._query_by_task_id = {}
-        explore_count = self._count_explores()
-        printer.print_header(
-            f"Testing {explore_count} "
-            f"{'explore' if explore_count == 1 else 'explores'} "
-            f"[{mode} mode] "
-            f"[concurrency = {self.query_slots}]"
-        )
 
         self._create_and_run(mode)
         if mode == "hybrid" and self.project.errored:
@@ -641,10 +634,3 @@ class SqlValidator(Validator):
         """Asks the Looker API to cancel specified queries"""
         for query_task_id in query_task_ids:
             self.client.cancel_query_task(query_task_id)
-
-    def _count_explores(self) -> int:
-        """Counts the explores in the LookML project hierarchy."""
-        explore_count = 0
-        for model in self.project.models:
-            explore_count += len(model.explores)
-        return explore_count
