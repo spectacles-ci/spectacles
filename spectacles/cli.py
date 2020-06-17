@@ -726,9 +726,13 @@ def run_sql(
             )
         if mode == "batch":
             logger.info(
-                f"\n\nTo determine the exact dimensions responsible for {'this error' if len(errors) == 1 else 'these errors'}, "
-                f"you can re-run \nSpectacles in single-dimension mode, with `--mode single`.\n\n"
-                "You can also run this original validation with `--mode hybrid` to do this automatically."
+                printer.dim(
+                    "\n\nTo determine the exact dimensions responsible for "
+                    f"{'this error' if len(errors) == 1 else 'these errors'}, "
+                    "you can re-run \nSpectacles in single-dimension mode, "
+                    "with `--mode single`.\n\nYou can also run this original "
+                    "validation with `--mode hybrid` to do this automatically."
+                )
             )
 
         logger.info("")
