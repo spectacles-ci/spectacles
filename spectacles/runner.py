@@ -4,6 +4,7 @@ from spectacles.client import LookerClient
 from spectacles.validators import SqlValidator, DataTestValidator, ContentValidator
 from spectacles.utils import log_duration, time_hash, hash_error
 from spectacles.logger import GLOBAL_LOGGER as logger
+from spectacles.printer import print_header
 from spectacles.types import QueryMode
 
 
@@ -77,6 +78,13 @@ class LookerBranchManager:
         self.workspace = (
             "production" if name == "master" and not self.commit_ref else "dev"
         )
+
+    @property
+    def ref(self) -> str:
+        if self.commit_ref:
+            return self.commit_ref[:6]
+        else:
+            return self.name
 
     def setup_temp_branch(self, project: str, original_branch: str) -> str:
         name = "tmp_spectacles_" + time_hash()
@@ -167,7 +175,18 @@ class Runner:
     ) -> Dict[str, Any]:
         with self.branch_manager:
             sql_validator = SqlValidator(self.client, self.project, concurrency)
+            logger.info(
+                "Building LookML project hierarchy for project "
+                f"'{self.project}' @ {self.branch_manager.ref}"
+            )
             sql_validator.build_project(selectors, exclusions)
+            explore_count = sql_validator.project.count_explores()
+            print_header(
+                f"Testing {explore_count} "
+                f"{'explore' if explore_count == 1 else 'explores'} "
+                f"[{mode} mode] "
+                f"[concurrency = {sql_validator.query_slots}]"
+            )
             results = sql_validator.validate(mode)
         return results
 
