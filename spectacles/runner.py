@@ -2,7 +2,7 @@ from typing import List, Dict, Any, Optional, NamedTuple
 from copy import deepcopy
 from spectacles.client import LookerClient
 from spectacles.validators import SqlValidator, DataTestValidator, ContentValidator
-from spectacles.utils import log_duration, time_hash, hash_error
+from spectacles.utils import time_hash, hash_error
 from spectacles.logger import GLOBAL_LOGGER as logger
 from spectacles.printer import print_header
 from spectacles.types import QueryMode
@@ -165,7 +165,6 @@ class Runner:
             commit_ref=commit_ref,
         )
 
-    @log_duration
     def validate_sql(
         self,
         selectors: List[str],
@@ -190,7 +189,6 @@ class Runner:
             results = sql_validator.validate(mode)
         return results
 
-    @log_duration
     def validate_data_tests(
         self, selectors: List[str], exclusions: List[str]
     ) -> Dict[str, Any]:
@@ -199,7 +197,6 @@ class Runner:
             results = data_test_validator.validate(selectors, exclusions)
         return results
 
-    @log_duration
     def validate_content(
         self,
         selectors: List[str],

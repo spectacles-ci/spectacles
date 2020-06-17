@@ -35,9 +35,9 @@ def human_readable(elapsed: int):
 
 def get_detail(fn_name: str):
     detail_map = {
-        "validate_sql": "SQL ",
-        "validate_data_tests": "data test ",
-        "validate_content": "content ",
+        "run_sql": "SQL ",
+        "run_assert": "data test ",
+        "run_content": "content ",
     }
     return detail_map.get(fn_name, "")
 
@@ -47,12 +47,14 @@ def log_duration(fn: Callable):
 
     def timed_function(*args, **kwargs):
         start_time = timeit.default_timer()
-        result = fn(*args, **kwargs)
-        elapsed = timeit.default_timer() - start_time
-        elapsed_str = human_readable(elapsed)
-        message_detail = get_detail(fn.__name__)
+        try:
+            result = fn(*args, **kwargs)
+        finally:
+            elapsed = timeit.default_timer() - start_time
+            elapsed_str = human_readable(elapsed)
+            message_detail = get_detail(fn.__name__)
 
-        logger.info(f"\nCompleted {message_detail}validation in {elapsed_str}.")
+            logger.info(f"Completed {message_detail}validation in {elapsed_str}.\n")
         return result
 
     return timed_function
