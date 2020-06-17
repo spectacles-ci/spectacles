@@ -19,6 +19,7 @@ from spectacles.exceptions import (
 from spectacles.logger import GLOBAL_LOGGER as logger, set_file_handler
 import spectacles.printer as printer
 import spectacles.tracking as tracking
+from spectacles.utils import log_duration
 
 
 class ConfigFileAction(argparse.Action):
@@ -572,6 +573,7 @@ def run_connect(
     LookerClient(base_url, client_id, client_secret, port, api_version)
 
 
+@log_duration
 def run_content(
     project,
     branch,
@@ -622,6 +624,7 @@ def run_content(
         logger.info("")
 
 
+@log_duration
 def run_assert(
     project,
     branch,
@@ -669,6 +672,7 @@ def run_assert(
         logger.info("")
 
 
+@log_duration
 def run_sql(
     log_dir,
     project,
