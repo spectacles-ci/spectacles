@@ -460,7 +460,9 @@ class LookerClient:
 
         return response.json()
 
-    def run_lookml_test(self, project: str, model: str = None) -> List[JsonDict]:
+    def run_lookml_test(
+        self, project: str, model: str = None, test: str = None
+    ) -> List[JsonDict]:
         """Runs all LookML/data tests for a given project and model (optional)
 
         This command only runs tests in production, as the Looker API doesn't currently
@@ -474,14 +476,25 @@ class LookerClient:
             List[JsonDict]: JSON response containing any LookML/data test errors
 
         """
-        logger.debug(f"Running LookML tests for project {project}")
+        if model is None and test is None:
+            logger.debug(f"Running all LookML tests for project '{project}'")
+        elif model is None and test is not None:
+            logger.debug(f"Running LookML test '{test}'")
+        elif model is not None and test is None:
+            logger.debug(f"Running all LookML tests for model '{model}'")
+        elif model is not None and test is not None:
+            logger.debug(f"Running LookML test '{test}' in model '{model}'")
+
         url = utils.compose_url(
             self.api_url, path=["projects", project, "lookml_tests", "run"]
         )
+
+        params = {}
         if model is not None:
-            response = self.get(url=url, params={"model": model}, timeout=TIMEOUT_SEC)
-        else:
-            response = self.get(url=url, timeout=TIMEOUT_SEC)
+            params["model"] = model
+        if test is not None:
+            params["test"] = test
+        response = self.session.get(url=url, params=params, timeout=TIMEOUT_SEC)
 
         try:
             response.raise_for_status()

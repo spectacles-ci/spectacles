@@ -161,8 +161,10 @@ class Runner:
         return results
 
     @log_duration
-    def validate_data_tests(self) -> Dict[str, Any]:
+    def validate_data_tests(
+        self, selectors: List[str], exclusions: List[str]
+    ) -> Dict[str, Any]:
         with self.branch_manager:
             data_test_validator = DataTestValidator(self.client, self.project)
-            results = data_test_validator.validate()
+            results = data_test_validator.validate(selectors, exclusions)
         return results

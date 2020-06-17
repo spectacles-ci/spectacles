@@ -3,6 +3,7 @@ import pytest
 import vcr
 import jsonschema
 from spectacles.validators import DataTestValidator
+from spectacles.exceptions import SpectaclesException
 
 
 @pytest.fixture(scope="class")
@@ -36,3 +37,8 @@ class TestValidateFail:
     def test_results_should_conform_to_schema(self, schema, validator_fail):
         results = validator_fail[1]
         jsonschema.validate(results, schema)
+
+    def test_no_data_tests_should_raise_error(self, validator):
+        with pytest.raises(SpectaclesException) as error:
+            validator.validate(exclusions=["*/*"])
+            assert error.type == "no-data-tests-found"

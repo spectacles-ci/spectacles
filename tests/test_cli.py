@@ -295,6 +295,8 @@ def test_main_with_assert_validator(mock_tracking, mock_run_assert, env):
     mock_run_assert.assert_called_once_with(
         "PROJECT_ENV_VAR",  # project
         "BRANCH_ENV_VAR",  # branch
+        ["*/*"],  # explores
+        [],  # exclude
         "BASE_URL_ENV_VAR",  # base_url
         "CLIENT_ID_ENV_VAR",  # client_id
         "CLIENT_SECRET_ENV_VAR",  # client_secret

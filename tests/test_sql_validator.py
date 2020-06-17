@@ -1,5 +1,4 @@
 from typing import Iterable, Tuple, Dict
-from collections import defaultdict
 from unittest.mock import patch, create_autospec
 import pytest
 import jsonschema
@@ -44,10 +43,6 @@ class TestBuildProject:
     def test_duplicate_selectors_should_be_deduplicated(self, validator):
         validator.build_project(selectors=["eye_exam/users", "eye_exam/users"])
         assert len(validator.project.models) == 1
-
-    def test_invalid_model_selector_should_raise_error(self, validator):
-        with pytest.raises(SpectaclesException):
-            validator.build_project(selectors=["dummy/*"])
 
 
 @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
@@ -290,29 +285,6 @@ def test_get_running_query_tasks(validator):
     ]
     validator._running_queries = queries
     assert validator.get_running_query_tasks() == ["abc", "def"]
-
-
-def test_parse_selectors_should_handle_duplicates():
-    expected = defaultdict(set, model_one=set(["explore_one"]))
-    assert (
-        SqlValidator.parse_selectors(["model_one/explore_one", "model_one/explore_one"])
-        == expected
-    )
-
-
-def test_parse_selectors_should_handle_same_explore_in_different_model():
-    expected = defaultdict(
-        set, model_one=set(["explore_one"]), model_two=set(["explore_one"])
-    )
-    assert (
-        SqlValidator.parse_selectors(["model_one/explore_one", "model_two/explore_one"])
-        == expected
-    )
-
-
-def test_parse_selectors_with_invalid_format_should_raise_error():
-    with pytest.raises(SpectaclesException):
-        SqlValidator.parse_selectors(["model_one.explore_one", "model_two:explore_one"])
 
 
 @patch("spectacles.validators.LookerClient.cancel_query_task")

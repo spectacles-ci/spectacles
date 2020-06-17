@@ -1,0 +1,31 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=4973
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/lookml_tests
+  response:
+    body:
+      string: '[{"model_name":"eye_exam","name":"users_age_should_be_in_expected_range","explore_name":"users","query_url_params":"fields=users.age\u0026limit=500\u0026dynamic_fields=%5B%7B%22table_calculation%22%3A%22looker_assert_age_should_be_greater_than_zero%22%2C%22label%22%3A%22Age+Should+Be+Greater+Than+Zero%22%2C%22expression%22%3A%22%24%7Busers.age%7D+%5Cu003e+0+%22%7D%2C%7B%22table_calculation%22%3A%22looker_assert_age_should_be_less_than_130%22%2C%22label%22%3A%22Age+Should+Be+Less+Than+130%22%2C%22expression%22%3A%22%24%7Busers.age%7D+%5Cu003c+130+%22%7D%5D","file":"eye_exam/eye_exam.model.lkml","line":7,"can":{}},{"model_name":"eye_exam","name":"users_name_should_be_in_caps","explore_name":"users","query_url_params":"fields=users.first_name,users.last_name\u0026limit=500\u0026dynamic_fields=%5B%7B%22table_calculation%22%3A%22looker_assert_users_first_name_should_be_in_caps%22%2C%22label%22%3A%22Users+First+Name+Should+Be+In+Caps%22%2C%22expression%22%3A%22%24%7Busers.first_name%7D+%3D+upper%28%24%7Busers.first_name%7D%29+%22%7D%2C%7B%22table_calculation%22%3A%22looker_assert_users_last_name_should_be_in_caps%22%2C%22label%22%3A%22Users+Last+Name+Should+Be+In+Caps%22%2C%22expression%22%3A%22%24%7Busers.last_name%7D+%3D+upper%28%24%7Busers.last_name%7D%29+%22%7D%5D","file":"eye_exam/eye_exam.model.lkml","line":21,"can":{}},{"model_name":"eye_exam","name":"users__fail_age_should_be_in_expected_range","explore_name":"users__fail","query_url_params":"fields=users__fail.age\u0026limit=500\u0026dynamic_fields=%5B%7B%22table_calculation%22%3A%22looker_assert_age_should_be_greater_than_zero%22%2C%22label%22%3A%22Age+Should+Be+Greater+Than+Zero%22%2C%22expression%22%3A%22%24%7Busers__fail.age%7D+%5Cu003e+130+%22%7D%2C%7B%22table_calculation%22%3A%22looker_assert_age_should_be_less_than_130%22%2C%22label%22%3A%22Age+Should+Be+Less+Than+130%22%2C%22expression%22%3A%22%24%7Busers__fail.age%7D+%5Cu003c+0+%22%7D%5D","file":"eye_exam/eye_exam.model.lkml","line":40,"can":{}},{"model_name":"eye_exam","name":"users__fail_name_should_be_in_caps","explore_name":"users__fail","query_url_params":"fields=users__fail.first_name,users__fail.last_name\u0026limit=500\u0026dynamic_fields=%5B%7B%22table_calculation%22%3A%22looker_assert_users__fail_first_name_should_be_in_caps%22%2C%22label%22%3A%22Users+Fail+First+Name+Should+Be+In+Caps%22%2C%22expression%22%3A%22%24%7Busers__fail.first_name%7D+%3D+upper%28%24%7Busers__fail.first_name%7D%29+%22%7D%2C%7B%22table_calculation%22%3A%22looker_assert_users__fail_last_name_should_be_in_caps%22%2C%22label%22%3A%22Users+Fail+Last+Name+Should+Be+In+Caps%22%2C%22expression%22%3A%22%24%7Busers__fail.last_name%7D+%3D+upper%28%24%7Busers__fail.last_name%7D%29+%22%7D%5D","file":"eye_exam/eye_exam.model.lkml","line":54,"can":{}}]'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '2784'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 16 Jun 2020 20:52:26 GMT
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+version: 1
