@@ -720,7 +720,7 @@ class LookerClient:
         # if you try to cancel a finished query which can happen as part of cleanup
 
     def content_validation(self) -> JsonDict:
-        logger.debug(f"Validating content")
+        logger.debug(f"Validating all content in Looker")
         url = utils.compose_url(self.api_url, path=["content_validation"])
         response = self.get(url=url, timeout=TIMEOUT_SEC)
 
