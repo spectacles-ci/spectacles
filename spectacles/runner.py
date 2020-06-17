@@ -63,6 +63,7 @@ class LookerBranchManager:
             # Tear down any temporary branches
             for project, original_branch, temp_branch in self.temp_branches:
                 self.restore_branch(project, original_branch, temp_branch)
+        self.temp_branches = []
 
         # Return to the starting branch
         self.restore_branch(self.project, self.original_branch)
