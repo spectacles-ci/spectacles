@@ -585,7 +585,7 @@ class SqlValidator(Validator):
                     lookml_url=getattr(lookml_object, "url", None),
                     **result.error,
                 )
-                lookml_object.error = sql_error
+                lookml_object.errors.append(sql_error)
                 return sql_error
         return None
 
