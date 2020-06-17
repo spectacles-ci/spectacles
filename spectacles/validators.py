@@ -179,7 +179,8 @@ class ContentValidator(Validator):
                 space=content[content_type]["space"]["name"],
                 url=f"{self.client.base_url}/{content_type}s/{content_id}",
             )
-            explore.errors.append(content_error)
+            if content_error not in explore.errors:
+                explore.errors.append(content_error)
 
 
 class DataTestValidator(Validator):
