@@ -429,14 +429,7 @@ class SqlValidator(Validator):
         if mode == "hybrid" and self.project.errored:
             self._create_and_run(mode)
 
-        for model in sorted(self.project.models, key=lambda x: x.name):
-            for explore in sorted(model.explores, key=lambda x: x.name):
-                message = f"{model.name}.{explore.name}"
-                printer.print_validation_result(
-                    passed=not explore.errored, source=message
-                )
-
-        return self.project.get_results(mode)
+        return self.project.get_results(validator="sql", mode=mode)
 
     def _create_and_run(self, mode: QueryMode = "batch") -> None:
         """Runs a single validation using a specified mode"""
