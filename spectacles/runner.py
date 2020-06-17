@@ -216,7 +216,7 @@ class Runner:
             content_validator.build_project(selectors, exclusions)
             explore_count = content_validator.project.count_explores()
             print_header(
-                f"Validating content tied to {explore_count} "
+                f"Validating content based on {explore_count} "
                 f"{'explore' if explore_count == 1 else 'explores'}"
                 + (" [incremental mode] " if incremental else "")
             )
