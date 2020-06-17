@@ -209,28 +209,71 @@ class Runner:
             content_validator = ContentValidator(
                 self.client, self.project, exclude_personal
             )
+            logger.info(
+                "Building LookML project hierarchy for project "
+                f"'{self.project}' @ {self.branch_manager.ref}"
+            )
             content_validator.build_project(selectors, exclusions)
+            explore_count = content_validator.project.count_explores()
+            print_header(
+                f"Validating content tied to {explore_count} "
+                f"{'explore' if explore_count == 1 else 'explores'}"
+                + (" [incremental mode] " if incremental else "")
+            )
             results = content_validator.validate()
         if incremental and self.branch_manager.name != "master":
+            logger.debug("Starting another content validation against master")
+            self.branch_manager.commit_ref = None
             self.branch_manager.name = "master"
             with self.branch_manager:
+                logger.debug(
+                    "Building LookML project hierarchy for project "
+                    f"'{self.project}' @ {self.branch_manager.ref}"
+                )
                 content_validator.build_project(selectors, exclusions)
-                master_results = content_validator.validate()
-            return self.incremental_results(main=master_results, additional=results)
+                main_results = content_validator.validate()
+            return self._incremental_results(main=main_results, additional=results)
         else:
             return results
 
-    def incremental_results(
+    def _incremental_results(
         self, main: Dict[str, Any], additional: Dict[str, Any]
     ) -> Dict[str, Any]:
         """Returns a new result with only the additional errors in `additional`."""
+
+        def merge_test(main: Dict[str, Any], additional: Dict[str, Any]):
+            incremental = deepcopy(additional)
+            if not main["passed"] and not additional["passed"]:
+                incremental["passed"] = True
+            return incremental
+
+        def sort_tests(tested: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+            return sorted(tested, key=lambda x: (x["model"], x["explore"]))
+
+        # Don't expect this to happen, but raise an exception here to avoid unexpected
+        # results from `zip` later
+        if len(main["tested"]) != len(additional["tested"]):
+            raise ValueError(
+                "Both main and additional results must "
+                "have the same number of tested explores."
+            )
+
+        incremental: Dict[str, Any] = {"validator": "content", "tested": []}
+        # Combine the tests, only marking `passed = False` if it didn't fail on main
+        for main_test, additional_test in zip(
+            sort_tests(main["tested"]), sort_tests(additional["tested"])
+        ):
+            incremental["tested"].append(merge_test(main_test, additional_test))
+
+        # Recompute the overall state of the test suite
+        passed = min((test["passed"] for test in incremental["tested"]), default=True)
+        incremental["status"] = "passed" if passed else "failed"
+
         # Create a unique representation of each error
         main_error_ids = [hash_error(error) for error in main["errors"]]
-        incremental_errors = [
+        incremental["errors"] = [
             error
             for error in additional["errors"]
             if hash_error(error) not in main_error_ids
         ]
-        incremental = deepcopy(additional)
-        incremental["errors"] = incremental_errors
         return incremental

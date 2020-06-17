@@ -596,6 +596,11 @@ def run_content(
         commit_ref,
     )
     results = runner.validate_content(explores, excludes, incremental, exclude_personal)
+
+    for test in sorted(results["tested"], key=lambda x: (x["model"], x["explore"])):
+        message = f"{test['model']}.{test['explore']}"
+        printer.print_validation_result(passed=test["passed"], source=message)
+
     errors = sorted(
         results["errors"],
         key=lambda x: (x["model"], x["explore"], x["metadata"]["field_name"]),

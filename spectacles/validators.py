@@ -68,10 +68,10 @@ class ContentValidator(Validator):
     ):
         super().__init__(client)
         self.project = Project(project, models=[])
-        personal_folders = self.get_personal_folders() if exclude_personal else []
+        personal_folders = self._get_personal_folders() if exclude_personal else []
         self.personal_folders: List[int] = personal_folders
 
-    def get_personal_folders(self) -> List[int]:
+    def _get_personal_folders(self) -> List[int]:
         personal_folders = []
         result = self.client.all_folders(self.project.name)
         for folder in result:
@@ -97,10 +97,6 @@ class ContentValidator(Validator):
             selectors = ["*/*"]
         if exclusions is None:
             exclusions = []
-
-        logger.info(
-            f"Building LookML project hierarchy for project {self.project.name}"
-        )
 
         all_models = [
             Model.from_json(model) for model in self.client.get_lookml_models()
@@ -131,13 +127,14 @@ class ContentValidator(Validator):
             model for model in project_models if len(model.explores) > 0
         ]
 
-    def validate(self):
-        errors = []
+    def validate(self) -> Dict[str, Any]:
         result = self.client.content_validation()
+        self.project.queried = True
 
         for content in result["content_with_errors"]:
+            # Skip content dicts if they lack a `look` or `dashboard` key
             try:
-                content_type = self.get_content_type(content)
+                content_type = self._get_content_type(content)
             except KeyError:
                 logger.debug(
                     f"Skipping content because it does not seem to be a dashboard or "
@@ -149,24 +146,12 @@ class ContentValidator(Validator):
             if content[content_type]["folder"]["id"] in self.personal_folders:
                 continue
             else:
-                content_errors = self.errors_from_result(content, content_type)
-                errors.extend(content_errors)
+                self._handle_content_result(content, content_type)
 
-        unique_errors = []
-        for error in errors:
-            if error.__dict__ not in unique_errors:
-                unique_errors.append(error.__dict__)
-
-        # TODO: Get information on all content so we can return a useful "tested"
-        return {
-            "validator": "content",
-            "status": "failed" if unique_errors else "passed",
-            "tested": [],
-            "errors": unique_errors,
-        }
+        return self.project.get_results(validator="content")
 
     @staticmethod
-    def get_content_type(content: Dict[str, Any]) -> str:
+    def _get_content_type(content: Dict[str, Any]) -> str:
         if content["dashboard"]:
             return "dashboard"
         elif content["look"]:
@@ -174,39 +159,27 @@ class ContentValidator(Validator):
         else:
             raise KeyError("Content type not found. Valid keys are 'look', 'dashboard'")
 
-    def is_project_member(self, model: str, explore: str) -> bool:
-        matching_model = next((m for m in self.project.models if m.name == model), None)
-        if matching_model is None:
-            return False
-        if next((True for e in matching_model.explores if e.name == explore), False):
-            return True
-        else:
-            return False
-
-    def errors_from_result(
-        self, content: Dict, content_type: str
-    ) -> List[ContentError]:
-        errors = []
+    def _handle_content_result(self, content: Dict, content_type: str) -> None:
         for error in content["errors"]:
             model_name = error["model_name"]
             explore_name = error["explore_name"]
-            if not self.is_project_member(model_name, explore_name):
+            explore = self.project.get_explore(model=model_name, name=explore_name)
+            # Skip errors that are not associated with selected explores
+            if explore is None:
                 continue
 
             content_id = content[content_type]["id"]
-            errors.append(
-                ContentError(
-                    model=model_name,
-                    explore=explore_name,
-                    message=error["message"],
-                    field_name=error["field_name"],
-                    content_type=content_type,
-                    title=content[content_type]["title"],
-                    space=content[content_type]["space"]["name"],
-                    url=f"{self.client.base_url}/{content_type}s/{content_id}",
-                )
+            content_error = ContentError(
+                model=model_name,
+                explore=explore_name,
+                message=error["message"],
+                field_name=error["field_name"],
+                content_type=content_type,
+                title=content[content_type]["title"],
+                space=content[content_type]["space"]["name"],
+                url=f"{self.client.base_url}/{content_type}s/{content_id}",
             )
-        return errors
+            explore.errors.append(content_error)
 
 
 class DataTestValidator(Validator):
