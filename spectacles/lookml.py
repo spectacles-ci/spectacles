@@ -1,6 +1,6 @@
 import re
 from typing import Dict, List, Sequence, Optional, Any
-from spectacles.exceptions import SqlError
+from spectacles.exceptions import ValidationError
 from spectacles.types import QueryMode
 
 
@@ -26,7 +26,7 @@ class Dimension(LookMlObject):
         self.sql = sql
         self.url = url
         self.queried: bool = False
-        self.error: Optional[SqlError] = None
+        self.errors: List[ValidationError] = []
         if re.search(r"spectacles\s*:\s*ignore", sql, re.IGNORECASE):
             self.ignore = True
         else:
@@ -59,7 +59,7 @@ class Dimension(LookMlObject):
     def errored(self, value):
         raise AttributeError(
             "Cannot assign to 'errored' property of a Dimension instance. "
-            "For a dimension to be considered errored, it must have a SqlError "
+            "For a dimension to be considered errored, it must have a ValidationError "
             "in its 'error' attribute."
         )
 
@@ -78,7 +78,7 @@ class Explore(LookMlObject):
         self.model_name = model_name
         self.dimensions = [] if dimensions is None else dimensions
         self.queried: bool = False
-        self.error: Optional[SqlError] = None
+        self.errors: List[ValidationError] = []
 
     def __eq__(self, other):
         if not isinstance(other, Explore):
@@ -93,7 +93,7 @@ class Explore(LookMlObject):
     @property
     def errored(self):
         if self.queried:
-            return bool(self.error) or any(
+            return bool(self.errors) or any(
                 dimension.errored for dimension in self.dimensions
             )
         else:
@@ -103,7 +103,7 @@ class Explore(LookMlObject):
     def errored(self, value):
         raise AttributeError(
             "Cannot assign to 'errored' property of an Explore instance. "
-            "For an explore to be considered errored, it must have a SqlError "
+            "For an explore to be considered errored, it must have a ValidationError "
             "in its 'error' attribute or contain dimensions in an errored state."
         )
 
@@ -135,11 +135,13 @@ class Explore(LookMlObject):
     @property
     def number_of_errors(self):
         if self.errored:
-            if self.error:
-                errors = 1
+            if self.errors:
+                errors = len(self.errors)
             else:
-                errors = len(
-                    [dimension for dimension in self.dimensions if dimension.errored]
+                errors = sum(
+                    len(dimension.errors)
+                    for dimension in self.dimensions
+                    if dimension.errored
                 )
             return errors
         else:
@@ -193,6 +195,11 @@ class Model(LookMlObject):
             raise TypeError("Value for queried must be boolean.")
         for explore in self.explores:
             explore.queried = value
+
+    def get_explore(self, name: str) -> Optional[Explore]:
+        return next(
+            (explore for explore in self.explores if explore.name == name), None
+        )
 
     def get_errored_explores(self):
         for explore in self.explores:
@@ -263,13 +270,25 @@ class Project(LookMlObject):
             if model.errored:
                 yield model
 
-    def get_results(self, mode: QueryMode) -> Dict[str, Any]:
-        errors = []
+    def get_model(self, name: str) -> Optional[Model]:
+        return next((model for model in self.models if model.name == name), None)
+
+    def get_explore(self, model: str, name: str) -> Optional[Explore]:
+        model_object = self.get_model(model)
+        if not model_object:
+            return None
+        else:
+            return model_object.get_explore(name)
+
+    def get_results(
+        self, validator: str, mode: Optional[QueryMode] = None
+    ) -> Dict[str, Any]:
+        errors: List[Dict[str, Any]] = []
         tested = []
 
         def parse_explore_errors(explore):
-            if mode == "batch":
-                errors.append(explore.error.__dict__)
+            if validator != "sql" or mode == "batch":
+                errors.extend([error.__dict__ for error in explore.errors])
             else:
                 for dimension in explore.dimensions:
                     if dimension.errored:
@@ -290,7 +309,7 @@ class Project(LookMlObject):
 
         passed = min((test["passed"] for test in tested), default=True)
         return {
-            "validator": "sql",
+            "validator": validator,
             "status": "passed" if passed else "failed",
             "tested": tested,
             "errors": errors,
