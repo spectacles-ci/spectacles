@@ -53,7 +53,7 @@ class Dimension(LookMlObject):
 
     @property
     def errored(self):
-        return bool(self.error) if self.queried else None
+        return bool(self.errors) if self.queried else None
 
     @errored.setter
     def errored(self, value):
@@ -77,8 +77,8 @@ class Explore(LookMlObject):
         self.name = name
         self.model_name = model_name
         self.dimensions = [] if dimensions is None else dimensions
-        self.queried: bool = False
         self.errors: List[ValidationError] = []
+        self._queried: bool = False
 
     def __eq__(self, other):
         if not isinstance(other, Explore):
@@ -89,6 +89,23 @@ class Explore(LookMlObject):
             and self.model_name == other.model_name
             and self.dimensions == other.dimensions
         )
+
+    @property
+    def queried(self):
+        if self.dimensions:
+            return any(dimension.queried for dimension in self.dimensions)
+        else:
+            return self._queried
+
+    @queried.setter
+    def queried(self, value: bool):
+        if not isinstance(value, bool):
+            raise TypeError("Value for queried must be boolean.")
+        if self.dimensions:
+            for dimension in self.dimensions:
+                dimension.queried = value
+        else:
+            self._queried = value
 
     @property
     def errored(self):
@@ -280,7 +297,7 @@ class Project(LookMlObject):
             else:
                 for dimension in explore.dimensions:
                     if dimension.errored:
-                        errors.append(dimension.error.__dict__)
+                        errors.extend([error.__dict__ for error in dimension.errors])
 
         for model in self.models:
             for explore in model.explores:
