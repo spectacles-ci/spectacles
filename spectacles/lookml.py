@@ -60,7 +60,7 @@ class Dimension(LookMlObject):
         raise AttributeError(
             "Cannot assign to 'errored' property of a Dimension instance. "
             "For a dimension to be considered errored, it must have a ValidationError "
-            "in its 'error' attribute."
+            "in its 'errors' attribute."
         )
 
     @classmethod
@@ -121,7 +121,7 @@ class Explore(LookMlObject):
         raise AttributeError(
             "Cannot assign to 'errored' property of an Explore instance. "
             "For an explore to be considered errored, it must have a ValidationError "
-            "in its 'error' attribute or contain dimensions in an errored state."
+            "in its 'errors' attribute or contain dimensions in an errored state."
         )
 
     def get_errored_dimensions(self):
