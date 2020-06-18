@@ -40,8 +40,6 @@ class LookerBranchManager:
 
     def __enter__(self):
         self.client.update_workspace(self.project, self.workspace)
-        if self.import_projects and self.name != "master":
-            self.branch_imported_projects()
         if self.commit_ref:
             """Can't delete branches from the production workspace so we need to save
             the starting dev branch to return to and to use as a base to delete
@@ -57,6 +55,8 @@ class LookerBranchManager:
             self.client.checkout_branch(self.project, self.name)
             if self.remote_reset:
                 self.client.reset_to_remote(self.project)
+        if self.import_projects and self.name != "master":
+            self.branch_imported_projects()
 
     def __exit__(self, *args):
         if self.temp_branches:
