@@ -323,7 +323,7 @@ class LookerClient:
                 status=response.status_code,
                 detail=(
                     f"Unable to get active branch for project '{project}'. "
-                    "Please try again."
+                    "Please check that the project exists and try again."
                 ),
                 response=response,
             )
