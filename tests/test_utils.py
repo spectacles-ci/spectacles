@@ -39,8 +39,9 @@ def test_human_readable(elapsed, expected):
 
 
 get_detail_testcases = [
-    ("validate_sql", "SQL "),
-    ("validate_data_tests", "test "),
+    ("run_sql", "SQL "),
+    ("run_assert", "data test "),
+    ("run_content", "content "),
     ("OtherClass.validate", ""),
 ]
 
@@ -55,18 +56,26 @@ class TestLogDurationDecorator(unittest.TestCase):
     def test_log_SQL(self):
         with self.assertLogs(logger=logger, level="INFO") as cm:
             func = MagicMock()
-            func.__name__ = "validate_sql"
+            func.__name__ = "run_sql"
             decorated_func = utils.log_duration(func)
             decorated_func()
-        self.assertIn("INFO:spectacles:\nCompleted SQL validation in", cm.output[0])
+        self.assertIn("INFO:spectacles:Completed SQL validation in", cm.output[0])
 
     def test_log_assert(self):
         with self.assertLogs(logger=logger, level="INFO") as cm:
             func = MagicMock()
-            func.__name__ = "validate_data_tests"
+            func.__name__ = "run_assert"
             decorated_func = utils.log_duration(func)
             decorated_func()
-        self.assertIn("INFO:spectacles:\nCompleted test validation in", cm.output[0])
+        self.assertIn("INFO:spectacles:Completed data test validation in", cm.output[0])
+
+    def test_log_content(self):
+        with self.assertLogs(logger=logger, level="INFO") as cm:
+            func = MagicMock()
+            func.__name__ = "run_content"
+            decorated_func = utils.log_duration(func)
+            decorated_func()
+        self.assertIn("INFO:spectacles:Completed content validation in", cm.output[0])
 
     def test_log_other(self):
         with self.assertLogs(logger=logger, level="INFO") as cm:
@@ -74,4 +83,4 @@ class TestLogDurationDecorator(unittest.TestCase):
             func.__name__ = "OtherValidator.validate"
             decorated_func = utils.log_duration(func)
             decorated_func()
-        self.assertIn("INFO:spectacles:\nCompleted validation in", cm.output[0])
+        self.assertIn("INFO:spectacles:Completed validation in", cm.output[0])

@@ -78,7 +78,7 @@ def test_dimensions_with_different_sql_can_be_equal(dimension):
 
 def test_dimension_should_not_be_errored_if_not_queried(dimension, sql_error):
     assert dimension.errored is None
-    dimension.error = sql_error
+    dimension.errors = [sql_error]
     assert dimension.errored is None
     dimension.queried = True
     assert dimension.errored is True
@@ -125,7 +125,7 @@ def test_comparison_to_mismatched_type_object_fails(dimension, explore, model, p
 def test_explore_number_of_errors_batch_with_errors(dimension, explore, sql_error):
     explore.dimensions = [dimension]
     explore.queried = True
-    explore.error = sql_error
+    explore.errors = [sql_error]
     assert explore.number_of_errors == 1
 
 
@@ -136,7 +136,7 @@ def test_explore_number_of_errors_batch_with_no_errors(dimension, explore, sql_e
 
 
 def test_explore_number_of_errors_single_with_errors(dimension, explore, sql_error):
-    dimension.error = sql_error
+    dimension.errors = [sql_error]
     dimension.queried = True
     explore.dimensions = [dimension, dimension]
     assert explore.number_of_errors == 2
@@ -151,7 +151,7 @@ def test_explore_number_of_errors_single_with_no_errors(dimension, explore, sql_
 def test_model_number_of_errors_batch_with_errors(dimension, explore, model, sql_error):
     explore.dimensions = [dimension]
     explore.queried = True
-    explore.error = sql_error
+    explore.errors = [sql_error]
     model.explores = [explore, explore]
     assert model.number_of_errors == 2
 
@@ -168,7 +168,7 @@ def test_model_number_of_errors_batch_with_no_errors(
 def test_model_number_of_errors_single_with_errors(
     dimension, explore, model, sql_error
 ):
-    dimension.error = sql_error
+    dimension.errors = [sql_error]
     explore.dimensions = [dimension, dimension]
     explore.queried = True
     model.explores = [explore, explore]
@@ -189,7 +189,7 @@ def test_project_number_of_errors_batch_with_errors(
 ):
     explore.dimensions = [dimension]
     explore.queried = True
-    explore.error = sql_error
+    explore.errors = [sql_error]
     model.explores = [explore, explore]
     project.models = [model]
     assert project.number_of_errors == 2
@@ -208,7 +208,7 @@ def test_project_number_of_errors_batch_with_no_errors(
 def test_project_number_of_errors_single_with_errors(
     dimension, explore, model, project, sql_error
 ):
-    dimension.error = sql_error
+    dimension.errors = [sql_error]
     explore.dimensions = [dimension, dimension]
     explore.queried = True
     model.explores = [explore, explore]

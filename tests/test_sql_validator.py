@@ -121,7 +121,6 @@ class TestValidatePass:
         validator = validator_pass[0]
         explore = validator.project.models[0].explores[0]
         assert all(dim.queried for dim in explore.dimensions if dim.ignore is False)
-        assert explore.queried is True
 
     @pytest.mark.parametrize("validator_pass", ["batch", "single"], indirect=True)
     def test_ignored_dimensions_are_not_queried(self, validator_pass):
@@ -132,7 +131,7 @@ class TestValidatePass:
     @pytest.mark.parametrize("validator_pass", ["batch"], indirect=True)
     def test_count_explores(self, validator_pass):
         validator = validator_pass[0]
-        assert validator._count_explores() == 1
+        assert validator.project.count_explores() == 1
 
     @pytest.mark.parametrize("validator_pass", ["batch", "single"], indirect=True)
     def test_results_should_conform_to_schema(self, schema, validator_pass):
@@ -162,10 +161,9 @@ class TestValidateFail:
             len(validator._query_by_task_id) == 1 + EXPECTED_QUERY_COUNTS["dimensions"]
         )
 
-    def test_should_set_errored_and_queried(self, validator_fail):
+    def test_should_set_errored(self, validator_fail):
         validator = validator_fail[0]
         assert validator.project.errored is True
-        assert validator.project.queried is True
 
     def test_running_queries_should_be_empty(self, validator_fail):
         validator = validator_fail[0]
