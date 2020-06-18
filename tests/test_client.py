@@ -81,6 +81,8 @@ def client_kwargs():
         get_active_branch_name={"project": "project_name"},
         get_manifest={"project": "project_name"},
         get_all_branches={"project": "project_name"},
+        content_validation={},
+        all_folders={"project": "project_name"},
     )
 
 
