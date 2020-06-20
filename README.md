@@ -10,9 +10,9 @@
 
 You can run the following validators as subcommands (e.g. `spectacles sql`):
 
-- [**SQL** validation](https://docs.spectacles.dev/tutorials/validators#the-sql-validator) - tests for database errors or invalid SQL
-- [**Assert** validation](https://docs.spectacles.dev/tutorials/validators#the-assert-validator) - runs [LookML/data tests](https://docs.looker.com/reference/model-params/test)
-- **Content** validation _(coming soon)_
+- [**SQL** validation](https://docs.spectacles.dev/tutorials/validators#the-sql-validator) - tests the `sql` field of each dimension for database errors
+- [**Assert** validation](https://docs.spectacles.dev/tutorials/validators#the-assert-validator) - runs [Looker data tests](https://docs.looker.com/reference/model-params/test)
+- [**Content** validation](https://docs.spectacles.dev/tutorials/validators#the-content-validator) - tests for errors in Looks and Dashboards
 - **Linting** _(coming soon)_
 
 ## Documentation
