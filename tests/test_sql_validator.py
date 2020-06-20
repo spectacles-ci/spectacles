@@ -3,7 +3,8 @@ from unittest.mock import patch, create_autospec
 import pytest
 import jsonschema
 import vcr
-from spectacles.validators import SqlValidator, Query, QueryResult
+from spectacles.validators import SqlValidator
+from spectacles.validators.sql import Query, QueryResult
 from spectacles.exceptions import SpectaclesException
 
 EXPECTED_QUERY_COUNTS = {"models": 1, "explores": 1, "dimensions": 5}
@@ -285,7 +286,7 @@ def test_get_running_query_tasks(validator):
     assert validator.get_running_query_tasks() == ["abc", "def"]
 
 
-@patch("spectacles.validators.LookerClient.cancel_query_task")
+@patch("spectacles.validators.sql.LookerClient.cancel_query_task")
 def test_cancel_queries(mock_client_cancel, validator):
     """
     Cancelling queries should result in the same number of client calls as
