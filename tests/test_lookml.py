@@ -69,6 +69,19 @@ def test_comparison_to_mismatched_type_object_should_fail(request, obj_name):
     assert lookml_obj != SomethingElse()
 
 
+def test_assign_to_errored_should_raise_attribute_error(project):
+    project.models = []
+    with pytest.raises(AttributeError):
+        project.errored = True
+
+
+@pytest.mark.parametrize("obj_name", ("model", "project"))
+def test_non_bool_errored_should_raise_value_error(request, obj_name):
+    lookml_obj = request.getfixturevalue(obj_name)
+    with pytest.raises(TypeError):
+        lookml_obj.errored = 1
+
+
 def test_dimensions_with_different_sql_can_be_equal(dimension):
     a = dimension
     b = deepcopy(a)

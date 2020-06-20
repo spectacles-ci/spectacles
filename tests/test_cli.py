@@ -283,6 +283,33 @@ def test_main_with_sql_validator(mock_tracking, mock_run_sql, env):
     )
 
 
+@patch("sys.argv", new=["spectacles", "content"])
+@patch("spectacles.cli.run_content")
+@patch("spectacles.cli.tracking")
+def test_main_with_content_validator(mock_tracking, mock_run_content, env):
+    main()
+    mock_tracking.track_invocation_start.assert_called_once_with(
+        "BASE_URL_ENV_VAR", "content", project="PROJECT_ENV_VAR"
+    )
+    mock_tracking.track_invocation_end.assert_called_once()
+    mock_run_content.assert_called_once_with(
+        "PROJECT_ENV_VAR",  # project
+        "BRANCH_ENV_VAR",  # branch
+        ["*/*"],  # explores
+        [],  # exclude
+        "BASE_URL_ENV_VAR",  # base_url
+        "CLIENT_ID_ENV_VAR",  # client_id
+        "CLIENT_SECRET_ENV_VAR",  # client_secret
+        8080,  # port
+        3.1,  # api_version
+        False,  # remote_reset
+        False,  # import_projects
+        None,  # commit_ref
+        False,  # incremental
+        False,  # exclude_personal
+    )
+
+
 @patch("sys.argv", new=["spectacles", "assert"])
 @patch("spectacles.cli.run_assert")
 @patch("spectacles.cli.tracking")
