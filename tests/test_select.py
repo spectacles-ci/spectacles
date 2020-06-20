@@ -14,6 +14,11 @@ def test_invalid_format_should_raise_value_error():
         selector_to_pattern("explore_a")
 
 
+def test_empty_selector_should_raise_value_error():
+    with pytest.raises(ValueError):
+        is_selected("model_a", "explore_a", [], [])
+
+
 def test_select_wildcard_should_match():
     assert is_selected("model_a", "explore_a", ["*/*"], [])
     assert is_selected("model_a", "explore_a", ["model_b/explore_a", "*/*"], [])
