@@ -1,8 +1,8 @@
 from typing import List, Dict, Any, Optional, NamedTuple
-from copy import deepcopy
+import itertools
 from spectacles.client import LookerClient
 from spectacles.validators import SqlValidator, DataTestValidator, ContentValidator
-from spectacles.utils import time_hash, hash_error
+from spectacles.utils import time_hash
 from spectacles.logger import GLOBAL_LOGGER as logger
 from spectacles.printer import print_header
 from spectacles.types import QueryMode
@@ -236,44 +236,46 @@ class Runner:
         else:
             return results
 
+    @staticmethod
     def _incremental_results(
-        self, main: Dict[str, Any], additional: Dict[str, Any]
+        main: Dict[str, Any], additional: Dict[str, Any]
     ) -> Dict[str, Any]:
         """Returns a new result with only the additional errors in `additional`."""
+        incremental: Dict[str, Any] = {
+            "validator": "content",
+            # Start with models and explores we know passed in `additional`
+            "tested": [test for test in additional["tested"] if test["passed"]],
+            "errors": [],
+        }
 
-        def merge_test(main: Dict[str, Any], additional: Dict[str, Any]):
-            incremental = deepcopy(additional)
-            if not main["passed"] and not additional["passed"]:
-                incremental["passed"] = True
-            return incremental
+        # Build a list of disputed tests where dupes by model and explore are allowed
+        tests = []
+        for error in additional["errors"]:
+            if error in main["errors"]:
+                passed = True
+            else:
+                passed = False
+                incremental["errors"].append(error)
 
-        def sort_tests(tested: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-            return sorted(tested, key=lambda x: (x["model"], x["explore"]))
+            test = dict(model=error["model"], explore=error["explore"], passed=passed)
+            tests.append(test)
 
-        # Don't expect this to happen, but raise an exception here to avoid unexpected
-        # results from `zip` later
-        if len(main["tested"]) != len(additional["tested"]):
-            raise ValueError(
-                "Both main and additional results must "
-                "have the same number of tested explores."
-            )
+        def key_by(x):
+            return (x["model"], x["explore"])
 
-        incremental: Dict[str, Any] = {"validator": "content", "tested": []}
-        # Combine the tests, only marking `passed = False` if it didn't fail on main
-        for main_test, additional_test in zip(
-            sort_tests(main["tested"]), sort_tests(additional["tested"])
-        ):
-            incremental["tested"].append(merge_test(main_test, additional_test))
+        if tests:
+            # Dedupe the list of tests, grouping by model and explore and taking the min
+            # To do this, we group by model and explore and sort by `passed`
+            tests = sorted(tests, key=lambda x: (x["model"], x["explore"], x["passed"]))
+            for key, group in itertools.groupby(tests, key=key_by):
+                items = list(group)
+                incremental["tested"].append(items[0])
+
+        # Re-sort the final list
+        incremental["tested"] = sorted(incremental["tested"], key=key_by)
 
         # Recompute the overall state of the test suite
         passed = min((test["passed"] for test in incremental["tested"]), default=True)
         incremental["status"] = "passed" if passed else "failed"
 
-        # Create a unique representation of each error
-        main_error_ids = [hash_error(error) for error in main["errors"]]
-        incremental["errors"] = [
-            error
-            for error in additional["errors"]
-            if hash_error(error) not in main_error_ids
-        ]
         return incremental
