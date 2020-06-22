@@ -82,10 +82,11 @@ class ContentValidator(Validator):
             try:
                 content_type = self._get_content_type(content)
             except KeyError:
-                logger.debug(
-                    f"Skipping content because it does not seem to be a dashboard or "
-                    f"a look. The content received was: {content}"
+                logger.warn(
+                    "Warning: Skipping some content because it does not seem to be a "
+                    "Dashboard or a Look."
                 )
+                logger.debug(f"The unidentified content received was: {content}")
                 continue
 
             # If exclude_personal isn't specified, personal_folders list is empty
