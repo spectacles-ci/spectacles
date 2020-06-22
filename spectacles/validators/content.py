@@ -4,6 +4,7 @@ from spectacles.client import LookerClient
 from spectacles.lookml import Project, Model
 from spectacles.exceptions import LookMlNotFound, ContentError
 from spectacles.select import is_selected
+from spectacles.lookml import Explore
 from spectacles.logger import GLOBAL_LOGGER as logger
 
 
@@ -108,7 +109,9 @@ class ContentValidator(Validator):
         for error in content["errors"]:
             model_name = error["model_name"]
             explore_name = error["explore_name"]
-            explore = self.project.get_explore(model=model_name, name=explore_name)
+            explore: Optional[Explore] = self.project.get_explore(
+                model=model_name, name=explore_name
+            )
             # Skip errors that are not associated with selected explores
             if explore is None:
                 continue
