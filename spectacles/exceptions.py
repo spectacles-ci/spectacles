@@ -66,16 +66,10 @@ class GenericValidationError(SpectaclesException):
 
 class ValidationError(GenericValidationError):
     def __init__(
-        self,
-        model: str,
-        explore: str,
-        test: Optional[str],
-        message: str,
-        metadata: Dict[str, Any],
+        self, model: str, explore: str, message: str, metadata: Dict[str, Any]
     ):
         self.model = model
         self.explore = explore
-        self.test = test
         self.message = message
         self.metadata = metadata
         super().__init__()
@@ -104,12 +98,13 @@ class SqlError(ValidationError):
     ):
         metadata = {
             "dimension": dimension,
+            "sql": sql,
             "line_number": line_number,
             "explore_url": explore_url,
             "lookml_url": lookml_url,
         }
         super().__init__(
-            model=model, explore=explore, test=sql, message=message, metadata=metadata
+            model=model, explore=explore, message=message, metadata=metadata
         )
 
 
@@ -119,5 +114,5 @@ class DataTestError(ValidationError):
     ):
         metadata = {"test_name": test_name, "lookml_url": lookml_url}
         super().__init__(
-            model=model, explore=explore, test=None, message=message, metadata=metadata
+            model=model, explore=explore, message=message, metadata=metadata
         )

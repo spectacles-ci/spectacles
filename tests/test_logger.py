@@ -10,7 +10,7 @@ def test_logging_failing_explore_sql(tmpdir, sql_error):
     log_sql_error(
         sql_error.model,
         sql_error.explore,
-        sql_error.test,
+        sql_error.metadata["sql"],
         tmpdir,
         sql_error.metadata["dimension"],
     )
@@ -29,7 +29,7 @@ def test_logging_failing_dimension_sql(tmpdir, sql_error):
     log_sql_error(
         sql_error.model,
         sql_error.explore,
-        sql_error.test,
+        sql_error.metadata["sql"],
         tmpdir,
         sql_error.metadata["dimension"],
     )
