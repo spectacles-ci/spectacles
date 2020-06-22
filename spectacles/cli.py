@@ -731,7 +731,7 @@ def run_sql(
                 model=error["model"],
                 explore=error["explore"],
                 message=error["message"],
-                sql=error["test"],
+                sql=error["metadata"]["sql"],
                 log_dir=log_dir,
                 dimension=error["metadata"].get("dimension"),
                 lookml_url=error["metadata"].get("lookml_url"),
