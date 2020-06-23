@@ -115,3 +115,8 @@ def test_data_test_error_prints_with_relevant_info(sql_error, caplog):
     assert test_name in caplog.text
     assert message in caplog.text
     assert lookml_url in caplog.text
+
+
+def test_print_validation_result_should_work():
+    printer.print_validation_result(passed=True, source="model.explore")
+    printer.print_validation_result(passed=False, source="model.explore")
