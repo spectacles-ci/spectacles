@@ -179,7 +179,7 @@ class Runner:
                 "Building LookML project hierarchy for project "
                 f"'{self.project}' @ {self.branch_manager.ref}"
             )
-            sql_validator.build_project(selectors, exclusions)
+            sql_validator.build_project(selectors, exclusions, build_dimensions=True)
             explore_count = sql_validator.project.count_explores()
             print_header(
                 f"Testing {explore_count} "
