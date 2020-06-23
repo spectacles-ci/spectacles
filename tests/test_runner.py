@@ -1,25 +1,5 @@
 from spectacles.runner import Runner
-
-
-def build_validation(validator):
-    return {
-        "validator": validator,
-        "status": "failed",
-        "tested": [
-            dict(model="ecommerce", explore="orders", passed=True),
-            dict(model="ecommerce", explore="sessions", passed=True),
-            dict(model="ecommerce", explore="users", passed=False),
-        ],
-        "errors": [
-            dict(
-                model="ecommerce",
-                explore="users",
-                test=None,
-                message="An error occurred",
-                metadata={},
-            )
-        ],
-    }
+from tests.utils import build_validation
 
 
 def test_incremental_same_results_should_not_have_errors():
