@@ -197,6 +197,23 @@ def test_model_number_of_errors_single_with_no_errors(
     assert model.number_of_errors == 0
 
 
+def test_model_cannot_assign_errored_without_explorse(model):
+    model.explores = []
+    with pytest.raises(AttributeError):
+        model.errored = True
+
+
+def test_model_get_errored_explores_returns_the_correct_explore(
+    model, explore, sql_error
+):
+    explore.queried = True
+    pass_explore = deepcopy(explore)
+    fail_explore = deepcopy(explore)
+    fail_explore.errors = [sql_error]
+    model.explores = [pass_explore, fail_explore]
+    assert list(model.get_errored_explores()) == [fail_explore]
+
+
 def test_project_number_of_errors_batch_with_errors(
     dimension, explore, model, project, sql_error
 ):
