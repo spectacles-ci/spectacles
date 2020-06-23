@@ -69,11 +69,11 @@ class LookerBranchManager:
         self.restore_branch(self.project, self.original_branch)
 
     @property
-    def name(self) -> str:
+    def name(self) -> Optional[str]:
         return self._name
 
     @name.setter
-    def name(self, name: str):
+    def name(self, name: Optional[str]):
         self._name = name
         # If the desired branch is master and no ref is passed, we can stay in prod
         self.workspace = (
@@ -81,7 +81,7 @@ class LookerBranchManager:
         )
 
     @property
-    def ref(self) -> str:
+    def ref(self) -> Optional[str]:
         if self.commit_ref:
             return self.commit_ref[:6]
         else:
