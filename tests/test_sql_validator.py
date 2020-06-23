@@ -147,7 +147,7 @@ class TestValidateFail:
         self, record_mode, validator
     ) -> Iterable[Tuple[SqlValidator, Dict]]:
         with vcr.use_cassette(
-            f"tests/cassettes/test_sql_validator/fixture_validator_fail.yaml",
+            "tests/cassettes/test_sql_validator/fixture_validator_fail.yaml",
             match_on=["uri", "method", "raw_body"],
             filter_headers=["Authorization"],
             record_mode=record_mode,
@@ -182,7 +182,7 @@ class TestValidateFailWithWarning:
         self, record_mode, validator
     ) -> Iterable[Tuple[SqlValidator, Dict]]:
         with vcr.use_cassette(
-            f"tests/cassettes/test_sql_validator/fixture_validator_fail_with_warning.yaml",
+            "tests/cassettes/test_sql_validator/fixture_validator_fail_with_warning.yaml",
             match_on=["uri", "method", "raw_body"],
             filter_headers=["Authorization"],
             record_mode=record_mode,
@@ -224,7 +224,7 @@ class TestValidatePassWithWarning:
         self, record_mode, validator
     ) -> Iterable[Tuple[SqlValidator, Dict]]:
         with vcr.use_cassette(
-            f"tests/cassettes/test_sql_validator/fixture_validator_pass_with_warning.yaml",
+            "tests/cassettes/test_sql_validator/fixture_validator_pass_with_warning.yaml",
             match_on=["uri", "method", "raw_body"],
             filter_headers=["Authorization"],
             record_mode=record_mode,

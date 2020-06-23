@@ -89,7 +89,7 @@ def client_kwargs():
 @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
 def test_branch_management_should_work(looker_client):
     project = "eye_exam"
-    tmp_branch = f"tmp-pytest"
+    tmp_branch = "tmp-pytest"
     looker_client.update_workspace(project=project, workspace="dev")
     looker_client.checkout_branch(project=project, branch="pytest")
     looker_client.create_branch("eye_exam", tmp_branch)
@@ -176,4 +176,4 @@ def test_authenticate_should_set_session_headers(mock_post, monkeypatch):
     )
     mock_post.return_value = mock_post_response
     client = LookerClient("base_url", "client_id", "client_secret")
-    assert client.session.headers == {"Authorization": f"token test_access_token"}
+    assert client.session.headers == {"Authorization": "token test_access_token"}

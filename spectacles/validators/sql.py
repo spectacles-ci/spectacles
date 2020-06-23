@@ -252,7 +252,7 @@ class SqlValidator(Validator):
                     raise SpectaclesException(
                         name="unexpected-query-result-format",
                         title="Encountered an unexpected query result format.",
-                        detail=f"Unable to extract error details. The unexpected result has been logged.",
+                        detail="Unable to extract error details. The unexpected result has been logged.",
                     ) from error
                 else:
                     query_result.error = error_details

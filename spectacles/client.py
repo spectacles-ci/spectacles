@@ -155,7 +155,7 @@ class LookerClient:
                 title="Couldn't get Looker's release version.",
                 status=response.status_code,
                 detail=(
-                    f"Unable to get the release version of your Looker instance. "
+                    "Unable to get the release version of your Looker instance. "
                     "Please try again."
                 ),
                 response=response,
@@ -250,7 +250,7 @@ class LookerClient:
             project: Name of the Looker project to use.
 
         """
-        logger.debug(f"Resetting branch to remote.")
+        logger.debug("Resetting branch to remote.")
         url = utils.compose_url(
             self.api_url, path=["projects", project, "reset_to_remote"]
         )
@@ -263,7 +263,7 @@ class LookerClient:
                 title="Couldn't checkout Git branch.",
                 status=response.status_code,
                 detail=(
-                    f"Unable to reset local Git branch"
+                    "Unable to reset local Git branch"
                     "to match remote. Please try again."
                 ),
                 response=response,
@@ -278,7 +278,7 @@ class LookerClient:
         Returns:
             List[JsonDict]: JSON response containing all dependent projects
         """
-        logger.debug(f"Getting manifest details")
+        logger.debug("Getting manifest details")
         url = utils.compose_url(self.api_url, path=["projects", project, "manifest"])
         response = self.get(url=url, timeout=TIMEOUT_SEC)
 
@@ -720,7 +720,7 @@ class LookerClient:
         # if you try to cancel a finished query which can happen as part of cleanup
 
     def content_validation(self) -> JsonDict:
-        logger.debug(f"Validating all content in Looker")
+        logger.debug("Validating all content in Looker")
         url = utils.compose_url(self.api_url, path=["content_validation"])
         response = self.get(url=url, timeout=TIMEOUT_SEC)
 

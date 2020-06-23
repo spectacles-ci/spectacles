@@ -206,7 +206,7 @@ def main():
         raise SpectaclesException(
             name="insufficient-python-version",
             title="Spectacles requires Python 3.7 or higher.",
-            detail=f"The current Python version is %s." % platform.python_version(),
+            detail="The current Python version is %s." % platform.python_version(),
         )
     parser = create_parser()
     args = parser.parse_args()
