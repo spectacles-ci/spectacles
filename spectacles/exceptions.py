@@ -138,5 +138,5 @@ class ContentError(ValidationError):
             "url": url,
         }
         super().__init__(
-            model=model, explore=explore, test=None, message=message, metadata=metadata
+            model=model, explore=explore, message=message, metadata=metadata
         )
