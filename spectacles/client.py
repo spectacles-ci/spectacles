@@ -106,7 +106,9 @@ class LookerClient:
             # Calculate the expiration time with a one-minute buffer
             result["expires_at"] = time.time() + result["expires_in"] - 60
         self.access_token = AccessToken(**result)
-        self.session.headers = {"Authorization": f"token {self.access_token}"}
+        self.session.headers = {  # type: ignore
+            "Authorization": f"token {self.access_token}"
+        }
 
         looker_version = self.get_looker_release_version()
         logger.info(
