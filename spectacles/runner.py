@@ -174,28 +174,38 @@ class Runner:
         concurrency: int = 10,
     ) -> Dict[str, Any]:
         with self.branch_manager:
-            sql_validator = SqlValidator(self.client, self.project, concurrency)
+            validator = SqlValidator(self.client, self.project, concurrency)
             logger.info(
                 "Building LookML project hierarchy for project "
                 f"'{self.project}' @ {self.branch_manager.ref}"
             )
-            sql_validator.build_project(selectors, exclusions, build_dimensions=True)
-            explore_count = sql_validator.project.count_explores()
+            validator.build_project(selectors, exclusions, build_dimensions=True)
+            explore_count = validator.project.count_explores()
             print_header(
                 f"Testing {explore_count} "
                 f"{'explore' if explore_count == 1 else 'explores'} "
                 f"[{mode} mode] "
-                f"[concurrency = {sql_validator.query_slots}]"
+                f"[concurrency = {validator.query_slots}]"
             )
-            results = sql_validator.validate(mode)
+            results = validator.validate(mode)
         return results
 
     def validate_data_tests(
         self, selectors: List[str], exclusions: List[str]
     ) -> Dict[str, Any]:
         with self.branch_manager:
-            data_test_validator = DataTestValidator(self.client, self.project)
-            results = data_test_validator.validate(selectors, exclusions)
+            validator = DataTestValidator(self.client, self.project)
+            logger.info(
+                "Building LookML project hierarchy for project "
+                f"'{self.project}' @ {self.branch_manager.ref}"
+            )
+            validator.build_project(selectors, exclusions)
+            explore_count = validator.project.count_explores()
+            print_header(
+                f"Running data tests based on {explore_count} "
+                f"{'explore' if explore_count == 1 else 'explores'}"
+            )
+            results = validator.validate()
         return results
 
     def validate_content(
@@ -206,21 +216,19 @@ class Runner:
         exclude_personal: bool = False,
     ) -> Dict[str, Any]:
         with self.branch_manager:
-            content_validator = ContentValidator(
-                self.client, self.project, exclude_personal
-            )
+            validator = ContentValidator(self.client, self.project, exclude_personal)
             logger.info(
                 "Building LookML project hierarchy for project "
                 f"'{self.project}' @ {self.branch_manager.ref}"
             )
-            content_validator.build_project(selectors, exclusions)
-            explore_count = content_validator.project.count_explores()
+            validator.build_project(selectors, exclusions)
+            explore_count = validator.project.count_explores()
             print_header(
                 f"Validating content based on {explore_count} "
                 f"{'explore' if explore_count == 1 else 'explores'}"
                 + (" [incremental mode] " if incremental else "")
             )
-            results = content_validator.validate()
+            results = validator.validate()
         if incremental and self.branch_manager.name != "master":
             logger.debug("Starting another content validation against master")
             self.branch_manager.commit_ref = None
@@ -230,8 +238,8 @@ class Runner:
                     "Building LookML project hierarchy for project "
                     f"'{self.project}' @ {self.branch_manager.ref}"
                 )
-                content_validator.build_project(selectors, exclusions)
-                main_results = content_validator.validate()
+                validator.build_project(selectors, exclusions)
+                main_results = validator.validate()
             return self._incremental_results(main=main_results, additional=results)
         else:
             return results
