@@ -14,16 +14,13 @@ Spectacles follows semantic versioning. Familiarize yourself with [semver](https
 
 ## Get code and docs ready
 
-All code to be released should be merged into `master`. There should be a corresponding, approved PR on the docs repository ready to be merged that covers any notable new functionality or API changes.
+All code to be released should be merged into `master`. If the release is a major or minor release, there should be a corresponding, approved PR on the docs repository ready to be merged that covers any notable new functionality or API changes.
 
 ## Bump the version
 
-You'll need bump2version installed (`pip install -r requirements-dev.txt`).
+The version number for Spectacles is stored in the `__init__.py` file in `spectacles/` as the argument `__version__`.
 
-Then run this command to bump the version:
-```
-bump2version minor
-```
+Change the version there and commit it with the message "Bump version [CURRENT_VERSION] > [NEW_VERSION]". You can commit this directly to `master` or create a separate branch (e.g. `release/0.2.2`) for this change.
 
 ## Build distributions
 To build distributions, run the following command from the root of the Spectacles repository on the `master` branch.
