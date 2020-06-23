@@ -18,6 +18,28 @@ def validator(looker_client, record_mode) -> Iterable[DataTestValidator]:
         yield validator
 
 
+class TestValidatePass:
+    """Test the eye_exam Looker project on master for an explore without errors."""
+
+    @pytest.fixture(scope="class")
+    def validator_pass(
+        self, record_mode, validator
+    ) -> Iterable[Tuple[DataTestValidator, Dict]]:
+        with vcr.use_cassette(
+            "tests/cassettes/test_data_test_validator/fixture_validator_pass.yaml",
+            match_on=["uri", "method", "raw_body", "query"],
+            filter_headers=["Authorization"],
+            record_mode=record_mode,
+        ):
+            validator.build_project(selectors=["eye_exam/users"])
+            results = validator.validate()
+            yield validator, results
+
+    def test_results_should_conform_to_schema(self, schema, validator_pass):
+        results = validator_pass[1]
+        jsonschema.validate(results, schema)
+
+
 class TestValidateFail:
     """Test the eye_exam Looker project on master for an explore without errors."""
 
