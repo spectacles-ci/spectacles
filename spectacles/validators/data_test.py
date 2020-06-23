@@ -1,9 +1,7 @@
-from typing import Optional, List, Dict, Any
-from collections import OrderedDict
+from typing import Optional, Dict, Any
 from spectacles.validators.validator import Validator
-from spectacles.select import is_selected
+from spectacles.lookml import Explore
 from spectacles.exceptions import SpectaclesException, DataTestError
-import spectacles.printer as printer
 
 
 class DataTestValidator(Validator):
@@ -15,31 +13,30 @@ class DataTestValidator(Validator):
 
     """
 
-    def validate(
-        self,
-        selectors: Optional[List[str]] = None,
-        exclusions: Optional[List[str]] = None,
-    ) -> Dict[str, Any]:
-        # Assign default values for selectors and exclusions
-        if selectors is None:
-            selectors = ["*/*"]
-        if exclusions is None:
-            exclusions = []
-
+    def validate(self) -> Dict[str, Any]:
         all_tests = self.client.all_lookml_tests(self.project.name)
-        selected_tests = []
-        test_to_explore = {}
-        for test in all_tests:
-            if is_selected(
-                test["model_name"], test["explore_name"], selectors, exclusions
-            ):
-                selected_tests.append(test)
-                # The error objects don't contain the name of the explore
-                # We create this mapping to help look up the explore from the test name
-                test_to_explore[test["name"]] = test["explore_name"]
 
-        test_count = len(selected_tests)
-        if test_count == 0:
+        # Filter the list of tests to those that are selected
+        selected_tests = []
+        # The error objects don't contain the name of the explore
+        # We create this mapping to help look up the explore from the test name
+        test_to_explore = {}
+
+        for test in all_tests:
+            model_name = test["model_name"]
+            explore_name = test["explore_name"]
+            explore: Optional[Explore] = self.project.get_explore(
+                model=model_name, name=explore_name
+            )
+
+            # Skip tests that are not associated with a selected explore
+            if explore is None:
+                continue
+
+            selected_tests.append(test)
+            test_to_explore[test["name"]] = explore
+
+        if len(selected_tests) == 0:
             raise SpectaclesException(
                 name="no-data-tests-found",
                 title="No data tests found.",
@@ -49,71 +46,28 @@ class DataTestValidator(Validator):
                 ),
             )
 
-        printer.print_header(
-            f"Running {test_count} {'test' if test_count == 1 else 'tests'}"
-        )
-
-        test_results: List[Dict[str, Any]] = []
         for test in selected_tests:
-            test_name = test["name"]
-            model_name = test["model_name"]
             results = self.client.run_lookml_test(
-                self.project.name, model=model_name, test=test_name
+                self.project.name, model=test["model_name"], test=test["name"]
             )
-            test_results.extend(results)
+            explore = test_to_explore[test["name"]]
+            explore.queried = True
+            result = results[0]  # For a single test, list with length 1
 
-        tested = []
-        errors = []
-
-        for result in test_results:
-            explore = test_to_explore[result["test_name"]]
-            test = {
-                "model": result["model_name"],
-                "explore": explore,
-                "passed": result["success"],
-            }
-            tested.append(test)
-            if not result["success"]:
-                for error in result["errors"]:
-                    project, file_path = error["file_path"].split("/", 1)
-                    lookml_url = (
-                        f"{self.client.base_url}/projects/{self.project}"
-                        f"/files/{file_path}?line={error['line_number']}"
-                    )
-                    errors.append(
-                        DataTestError(
-                            model=error["model_id"],
-                            explore=error["explore"],
-                            message=error["message"],
-                            test_name=result["test_name"],
-                            lookml_url=lookml_url,
-                        ).__dict__
-                    )
-
-        def reduce_result(results):
-            """Aggregate individual test results to get pass/fail by explore"""
-            agg = OrderedDict()
-            for result in results:
-                # Keys by model and explore, adds additional values for `passed` to a set
-                agg.setdefault((result["model"], result["explore"]), set()).add(
-                    result["passed"]
+            for error in result["errors"]:
+                project, file_path = error["file_path"].split("/", 1)
+                lookml_url = (
+                    f"{self.client.base_url}/projects/{self.project.name}"
+                    f"/files/{file_path}?line={error['line_number']}"
                 )
-            reduced = [
-                {"model": k[0], "explore": k[1], "passed": min(v)}
-                for k, v in agg.items()
-            ]
-            return reduced
+                explore.errors.append(
+                    DataTestError(
+                        model=error["model_id"],
+                        explore=error["explore"],
+                        message=error["message"],
+                        test_name=result["test_name"],
+                        lookml_url=lookml_url,
+                    )
+                )
 
-        tested = reduce_result(tested)
-        for test in tested:
-            printer.print_validation_result(
-                passed=test["passed"], source=f"{test['model']}.{test['explore']}"
-            )
-
-        passed = min((test["passed"] for test in tested), default=True)
-        return {
-            "validator": "data_test",
-            "status": "passed" if passed else "failed",
-            "tested": tested,
-            "errors": errors,
-        }
+        return self.project.get_results(validator="data_test")

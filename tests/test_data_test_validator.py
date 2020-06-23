@@ -27,10 +27,11 @@ class TestValidateFail:
     ) -> Iterable[Tuple[DataTestValidator, Dict]]:
         with vcr.use_cassette(
             "tests/cassettes/test_data_test_validator/fixture_validator_fail.yaml",
-            match_on=["uri", "method", "raw_body"],
+            match_on=["uri", "method", "raw_body", "query"],
             filter_headers=["Authorization"],
             record_mode=record_mode,
         ):
+            validator.build_project(selectors=["eye_exam/users__fail"])
             results = validator.validate()
             yield validator, results
 
@@ -38,7 +39,8 @@ class TestValidateFail:
         results = validator_fail[1]
         jsonschema.validate(results, schema)
 
-    def test_no_data_tests_should_raise_error(self, validator):
-        with pytest.raises(SpectaclesException) as error:
-            validator.validate(exclusions=["*/*"])
-            assert error.type == "no-data-tests-found"
+
+def test_no_data_tests_should_raise_error(validator):
+    with pytest.raises(SpectaclesException):
+        validator.build_project(exclusions=["*/*"])
+        validator.validate()
