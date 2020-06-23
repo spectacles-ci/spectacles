@@ -1,6 +1,5 @@
 from typing import Optional, List, Dict, Any
 from collections import OrderedDict
-from spectacles.client import LookerClient
 from spectacles.validators.validator import Validator
 from spectacles.select import is_selected
 from spectacles.exceptions import SpectaclesException, DataTestError
@@ -16,10 +15,6 @@ class DataTestValidator(Validator):
 
     """
 
-    def __init__(self, client: LookerClient, project: str):
-        super().__init__(client)
-        self.project = project
-
     def validate(
         self,
         selectors: Optional[List[str]] = None,
@@ -31,7 +26,7 @@ class DataTestValidator(Validator):
         if exclusions is None:
             exclusions = []
 
-        all_tests = self.client.all_lookml_tests(self.project)
+        all_tests = self.client.all_lookml_tests(self.project.name)
         selected_tests = []
         test_to_explore = {}
         for test in all_tests:
@@ -63,7 +58,7 @@ class DataTestValidator(Validator):
             test_name = test["name"]
             model_name = test["model_name"]
             results = self.client.run_lookml_test(
-                self.project, model=model_name, test=test_name
+                self.project.name, model=model_name, test=test_name
             )
             test_results.extend(results)
 
