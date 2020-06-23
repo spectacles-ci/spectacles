@@ -1,6 +1,7 @@
 from typing import Dict, Any, Optional
 import requests
 from spectacles.utils import details_from_http_error
+from spectacles.types import JsonDict
 
 
 class SpectaclesException(Exception):
@@ -47,9 +48,7 @@ class LookerApiError(SpectaclesException):
         request: requests.PreparedRequest = response.request
         super().__init__("looker-api-errors/" + name, title, detail)
         self.status = status
-        self.looker_api_response: Optional[Dict[str, Any]] = details_from_http_error(
-            response
-        )
+        self.looker_api_response: Optional[JsonDict] = details_from_http_error(response)
         self.request = {"url": request.url, "method": request.method}
 
 

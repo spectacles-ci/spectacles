@@ -1,14 +1,14 @@
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Optional
 import time
 from dataclasses import dataclass
 import backoff  # type: ignore
 import requests
 from requests.exceptions import Timeout
 import spectacles.utils as utils
+from spectacles.types import JsonDict
 from spectacles.logger import GLOBAL_LOGGER as logger
 from spectacles.exceptions import SpectaclesException, LookerApiError
 
-JsonDict = Dict[str, Any]
 TIMEOUT_SEC = 300
 
 

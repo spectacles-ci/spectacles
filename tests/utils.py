@@ -1,9 +1,10 @@
 from typing import Dict, Any
 from pathlib import Path
 import json
+from spectacles.types import JsonDict
 
 
-def load_resource(filename) -> Dict[str, Any]:
+def load_resource(filename) -> JsonDict:
     """Helper method to load a JSON file from tests/resources and parse it."""
     path = Path(__file__).parent / "resources" / filename
     with path.open() as file:
