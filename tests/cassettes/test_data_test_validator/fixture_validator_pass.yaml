@@ -1,0 +1,157 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=5185
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/lookml_models
+  response:
+    body:
+      string: '[{"explores":[{"description":null,"label":"Cohort Data Tool","hidden":true,"group_label":"1)
+        eCommerce with Event Data","name":"cohorts","can":{}},{"description":null,"label":"Web
+        Analytics Data Tool","hidden":true,"group_label":"1) eCommerce with Event
+        Data","name":"data_tool","can":{}},{"description":null,"label":"(1) Orders,
+        Items and Users","hidden":false,"group_label":"1) eCommerce with Event Data","name":"order_items","can":{}},{"description":null,"label":"(2)
+        Web Event Data","hidden":false,"group_label":"1) eCommerce with Event Data","name":"events","can":{}},{"description":null,"label":"(3)
+        Web Session Data","hidden":false,"group_label":"1) eCommerce with Event Data","name":"sessions","can":{}},{"description":null,"label":"(4)
+        Affinity Analysis","hidden":false,"group_label":"1) eCommerce with Event Data","name":"affinity","can":{}},{"description":null,"label":"(5)
+        Share of Wallet Analysis","hidden":false,"group_label":"1) eCommerce with
+        Event Data","name":"orders_with_share_of_wallet_application","can":{}},{"description":null,"label":"(6)
+        Customer Journey Mapping","hidden":false,"group_label":"1) eCommerce with
+        Event Data","name":"journey_mapping","can":{}},{"description":null,"label":"(7)
+        Stock Analysis","hidden":false,"group_label":"1) eCommerce with Event Data","name":"inventory_items","can":{}},{"description":null,"label":"(8)
+        Historical Stock Snapshot Analysis","hidden":false,"group_label":"1) eCommerce
+        with Event Data","name":"inventory_snapshot","can":{}},{"description":null,"label":"Order
+        Items (Kittens)","hidden":true,"group_label":"1) eCommerce with Event Data","name":"kitten_order_items","can":{}}],"has_content":true,"label":"1)
+        eCommerce with Event Data","name":"thelook","project_name":"welcome_to_looker","unlimited_db_connections":false,"allowed_db_connection_names":["snowlooker"],"can":{"index":true,"show":true,"create":true,"update":true,"destroy":true}},{"explores":[{"description":null,"label":"Orders","hidden":false,"group_label":"Jaffle
+        Shop","name":"fct_orders","can":{}}],"has_content":true,"label":"Jaffle Shop","name":"jaffle_shop","project_name":"jaffle_shop","unlimited_db_connections":false,"allowed_db_connection_names":["bigquery"],"can":{"index":true,"show":true,"create":true,"update":true,"destroy":true}},{"explores":[],"has_content":false,"label":"Admin","name":"admin","project_name":"jaffle_shop","unlimited_db_connections":false,"allowed_db_connection_names":["bigquery"],"can":{"index":true,"show":true,"create":true,"update":true,"destroy":true}},{"explores":[{"description":null,"label":"Users","hidden":false,"group_label":"Eye
+        Exam","name":"users","can":{}},{"description":null,"label":"Users Fail","hidden":false,"group_label":"Eye
+        Exam","name":"users__fail","can":{}},{"description":null,"label":"Users Fail
+        and Warn","hidden":false,"group_label":"Eye Exam","name":"users__fail_and_warn","can":{}},{"description":null,"label":"Users
+        Warn","hidden":false,"group_label":"Eye Exam","name":"users__warn","can":{}}],"has_content":true,"label":"Eye
+        Exam","name":"eye_exam","project_name":"eye_exam","unlimited_db_connections":false,"allowed_db_connection_names":["snowlooker"],"can":{"index":true,"show":true,"create":true,"update":true,"destroy":true}},{"explores":[{"description":null,"label":"Content
+        Usage","hidden":false,"group_label":"System Activity","name":"content_usage","can":{}},{"description":null,"label":"Dashboard","hidden":false,"group_label":"System
+        Activity","name":"dashboard","can":{}},{"description":null,"label":"Dashboard
+        Performance","hidden":false,"group_label":"System Activity","name":"dashboard_performance","can":{}},{"description":null,"label":"DB
+        Connection","hidden":false,"group_label":"System Activity","name":"db_connection","can":{}},{"description":null,"label":"Event","hidden":false,"group_label":"System
+        Activity","name":"event","can":{}},{"description":null,"label":"Event Attribute","hidden":false,"group_label":"System
+        Activity","name":"event_attribute","can":{}},{"description":null,"label":"Field
+        Usage","hidden":false,"group_label":"System Activity","name":"field_usage","can":{}},{"description":null,"label":"Group","hidden":false,"group_label":"System
+        Activity","name":"group","can":{}},{"description":null,"label":"History","hidden":false,"group_label":"System
+        Activity","name":"history","can":{}},{"description":null,"label":"Look","hidden":false,"group_label":"System
+        Activity","name":"look","can":{}},{"description":null,"label":"Merge Query","hidden":false,"group_label":"System
+        Activity","name":"merge_query","can":{}},{"description":null,"label":"PDT
+        Event Log","hidden":false,"group_label":"System Activity","name":"pdt_event_log","can":{}},{"description":null,"label":"PDT
+        Builds","hidden":false,"group_label":"System Activity","name":"pdt_builds","can":{}},{"description":null,"label":"Result
+        Maker Lookup","hidden":false,"group_label":"System Activity","name":"result_maker_lookup","can":{}},{"description":null,"label":"Scheduled
+        Plan","hidden":false,"group_label":"System Activity","name":"scheduled_plan","can":{}},{"description":null,"label":"Space","hidden":false,"group_label":"System
+        Activity","name":"space","can":{}},{"description":null,"label":"SQL Query","hidden":false,"group_label":"System
+        Activity","name":"sql_query","can":{}},{"description":null,"label":"User","hidden":false,"group_label":"System
+        Activity","name":"user","can":{}},{"description":null,"label":"Role","hidden":false,"group_label":"System
+        Activity","name":"role","can":{}}],"has_content":true,"label":"System Activity","name":"system__activity","project_name":"system__activity","unlimited_db_connections":false,"allowed_db_connection_names":[],"can":{"index":true,"show":true,"create":true,"update":true,"destroy":true}}]'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '5740'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 23 Jun 2020 22:18:06 GMT
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=5185
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/lookml_tests
+  response:
+    body:
+      string: '[{"model_name":"eye_exam","name":"users_age_should_be_in_expected_range","explore_name":"users","query_url_params":"fields=users.age\u0026limit=500\u0026dynamic_fields=%5B%7B%22table_calculation%22%3A%22looker_assert_age_should_be_greater_than_zero%22%2C%22label%22%3A%22Age+Should+Be+Greater+Than+Zero%22%2C%22expression%22%3A%22%24%7Busers.age%7D+%5Cu003e+0+%22%7D%2C%7B%22table_calculation%22%3A%22looker_assert_age_should_be_less_than_130%22%2C%22label%22%3A%22Age+Should+Be+Less+Than+130%22%2C%22expression%22%3A%22%24%7Busers.age%7D+%5Cu003c+130+%22%7D%5D","file":"eye_exam/eye_exam.model.lkml","line":7,"can":{}},{"model_name":"eye_exam","name":"users_name_should_be_in_caps","explore_name":"users","query_url_params":"fields=users.first_name,users.last_name\u0026limit=500\u0026dynamic_fields=%5B%7B%22table_calculation%22%3A%22looker_assert_users_first_name_should_be_in_caps%22%2C%22label%22%3A%22Users+First+Name+Should+Be+In+Caps%22%2C%22expression%22%3A%22%24%7Busers.first_name%7D+%3D+upper%28%24%7Busers.first_name%7D%29+%22%7D%2C%7B%22table_calculation%22%3A%22looker_assert_users_last_name_should_be_in_caps%22%2C%22label%22%3A%22Users+Last+Name+Should+Be+In+Caps%22%2C%22expression%22%3A%22%24%7Busers.last_name%7D+%3D+upper%28%24%7Busers.last_name%7D%29+%22%7D%5D","file":"eye_exam/eye_exam.model.lkml","line":21,"can":{}},{"model_name":"eye_exam","name":"users__fail_age_should_be_in_expected_range","explore_name":"users__fail","query_url_params":"fields=users__fail.age\u0026limit=500\u0026dynamic_fields=%5B%7B%22table_calculation%22%3A%22looker_assert_age_should_be_greater_than_zero%22%2C%22label%22%3A%22Age+Should+Be+Greater+Than+Zero%22%2C%22expression%22%3A%22%24%7Busers__fail.age%7D+%5Cu003e+130+%22%7D%2C%7B%22table_calculation%22%3A%22looker_assert_age_should_be_less_than_130%22%2C%22label%22%3A%22Age+Should+Be+Less+Than+130%22%2C%22expression%22%3A%22%24%7Busers__fail.age%7D+%5Cu003c+0+%22%7D%5D","file":"eye_exam/eye_exam.model.lkml","line":40,"can":{}},{"model_name":"eye_exam","name":"users__fail_name_should_be_in_caps","explore_name":"users__fail","query_url_params":"fields=users__fail.first_name,users__fail.last_name\u0026limit=500\u0026dynamic_fields=%5B%7B%22table_calculation%22%3A%22looker_assert_users__fail_first_name_should_be_in_caps%22%2C%22label%22%3A%22Users+Fail+First+Name+Should+Be+In+Caps%22%2C%22expression%22%3A%22%24%7Busers__fail.first_name%7D+%3D+upper%28%24%7Busers__fail.first_name%7D%29+%22%7D%2C%7B%22table_calculation%22%3A%22looker_assert_users__fail_last_name_should_be_in_caps%22%2C%22label%22%3A%22Users+Fail+Last+Name+Should+Be+In+Caps%22%2C%22expression%22%3A%22%24%7Busers__fail.last_name%7D+%3D+upper%28%24%7Busers__fail.last_name%7D%29+%22%7D%5D","file":"eye_exam/eye_exam.model.lkml","line":54,"can":{}}]'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '2784'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 23 Jun 2020 22:18:06 GMT
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=5185
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/lookml_tests/run?model=eye_exam&test=users_age_should_be_in_expected_range
+  response:
+    body:
+      string: '[{"model_name":"eye_exam","test_name":"users_age_should_be_in_expected_range","assertions_count":2,"assertions_failed":0,"errors":[],"warnings":[],"success":true,"can":{}}]'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '172'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 23 Jun 2020 22:18:07 GMT
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=5185
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/lookml_tests/run?model=eye_exam&test=users_name_should_be_in_caps
+  response:
+    body:
+      string: '[{"model_name":"eye_exam","test_name":"users_name_should_be_in_caps","assertions_count":2,"assertions_failed":0,"errors":[],"warnings":[],"success":true,"can":{}}]'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '163'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 23 Jun 2020 22:18:08 GMT
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+version: 1
