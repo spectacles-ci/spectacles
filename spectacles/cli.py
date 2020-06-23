@@ -1,5 +1,6 @@
 from pathlib import Path
 import sys
+import platform
 import yaml
 import json
 from yaml.parser import ParserError
@@ -200,6 +201,12 @@ def handle_exceptions(function: Callable) -> Callable:
 @handle_exceptions
 def main():
     """Runs main function. This is the entry point."""
+    if sys.version_info < (3, 7):
+        raise SpectaclesException(
+            name="insufficient-python-version",
+            title="Spectacles requires Python 3.7 or higher.",
+            detail=f"The current Python version is %s." % platform.python_version(),
+        )
     parser = create_parser()
     args = parser.parse_args()
     for handler in logger.handlers:
