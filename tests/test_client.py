@@ -164,7 +164,7 @@ def test_bad_requests_should_raise_looker_api_errors(
         client_method(**client_kwargs[method_name])
 
 
-@patch("spectacles.client.LookerClient.post")
+@patch("spectacles.client.requests.Session.post")
 def test_authenticate_should_set_session_headers(mock_post, monkeypatch):
     mock_looker_version = Mock(spec=LookerClient.get_looker_release_version)
     mock_looker_version.return_value("1.2.3")

@@ -86,7 +86,8 @@ class LookerClient:
 
         url = utils.compose_url(self.api_url, path=["login"])
         body = {"client_id": self.client_id, "client_secret": self.client_secret}
-        response = self.post(url=url, data=body, timeout=TIMEOUT_SEC)
+        # This should not use `self.post` or it will create a recursive loop
+        response = self.session.post(url=url, data=body, timeout=TIMEOUT_SEC)
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError:
