@@ -55,6 +55,7 @@ jobs:
       - run:
           name: bandit
           command: |
+            . venv/bin/activate
             bandit -r spectacles
 
       - run:
