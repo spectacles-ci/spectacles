@@ -61,6 +61,6 @@ def log_duration(fn: Callable):
 
 
 def time_hash() -> str:
-    hash = hashlib.sha1()
+    hash = hashlib.sha1()  # nosec
     hash.update(str(time.time()).encode("utf-8"))
     return hash.hexdigest()[:10]
