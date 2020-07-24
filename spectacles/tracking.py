@@ -7,7 +7,7 @@ analytics.write_key = "QnqzXWlqkmgDSm7X2qFDrxx3LGCW7Rba"
 
 
 def anonymise(trait: str) -> str:
-    trait = hashlib.md5(trait.encode()).hexdigest()
+    trait = hashlib.md5(trait.encode()).hexdigest()  # nosec
     return trait
 
 

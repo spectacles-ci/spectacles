@@ -54,6 +54,12 @@ jobs:
             black --check spectacles tests
 
       - run:
+          name: bandit
+          command: |
+            . venv/bin/activate
+            bandit -r spectacles
+
+      - run:
           name: pytest and coverage
           command: |
             . venv/bin/activate

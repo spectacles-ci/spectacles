@@ -6,9 +6,11 @@ from spectacles.exceptions import SpectaclesException
 def selector_to_pattern(selector: str) -> str:
     try:
         model, explore = selector.split("/")
-        assert model
-        assert explore
-    except (ValueError, AssertionError):
+        if not (model and explore):
+            raise TypeError(
+                "Could not extract model or explore from selector (type is None)."
+            )
+    except (ValueError, TypeError):
         raise SpectaclesException(
             name="invalid-selector-format",
             title="Specified explore selector is invalid.",
