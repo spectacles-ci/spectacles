@@ -10,7 +10,7 @@ def selector_to_pattern(selector: str) -> str:
             raise TypeError(
                 "Could not extract model or explore from selector (type is None)."
             )
-    except TypeError:
+    except (ValueError, TypeError):
         raise SpectaclesException(
             name="invalid-selector-format",
             title="Specified explore selector is invalid.",
