@@ -86,6 +86,7 @@ class LookerClient:
 
         url = utils.compose_url(self.api_url, path=["login"])
         body = {"client_id": self.client_id, "client_secret": self.client_secret}
+        self.session.auth = NullAuth()
         # This should not use `self.post` or it will create a recursive loop
         response = self.session.post(url=url, data=body, timeout=TIMEOUT_SEC)
         try:
@@ -759,3 +760,12 @@ class LookerClient:
 
         result = response.json()
         return result
+
+
+class NullAuth(requests.auth.AuthBase):
+    """A custom auth class which ensures requests does not override authorization
+    headers with netrc file credentials if present.
+    """
+
+    def __call__(self, r):
+        return r
