@@ -267,7 +267,6 @@ class SqlValidator(Validator):
             line_number = None
             sql = None
         else:
-            print(data)
             raise TypeError(
                 "Unexpected error response type. "
                 "Expected a dict or a list, "
