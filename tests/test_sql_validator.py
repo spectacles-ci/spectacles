@@ -332,6 +332,21 @@ def test_extract_error_details_error_dict(validator):
     assert extracted["sql"] == sql
 
 
+def test_extract_error_details_error_str(validator):
+    message = "An error message."
+    sql = "SELECT * FROM orders"
+    query_result = {
+        "status": "error",
+        "data": {
+            "errors": [message],
+            "sql": sql,
+        },
+    }
+    extracted = validator._extract_error_details(query_result)
+    assert extracted["message"] == f"{message} {message_details}"
+    assert extracted["sql"] == sql
+
+
 def test_extract_error_details_error_list(validator):
     message = "An error message."
     query_result = {"status": "error", "data": [message]}
