@@ -34,7 +34,7 @@ You can find detailed documentation for the CLI and web app on our docs page: [d
 
 ## Why we built this
 
-Occasionally, when we make changes to LookML or our data warehouse, we break downstream experiences in Looker..
+Occasionally, when we make changes to LookML or our data warehouse, we break downstream experiences in Looker:
 
 * Changing the name of a database column without changing the corresponding `sql` field in our Looker view, leaving our users with a database error when using that field
 * Adding an invalid join to an explore that fans out our data, inflating a key metric that drives our business without realising
