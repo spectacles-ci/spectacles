@@ -20,7 +20,7 @@ From the command line, you can run the following validators as subcommands (e.g.
 
 ## Installation
 
-Spectacles is distributed on PyPi and is easy to install with pip:
+Spectacles CLI is distributed on PyPi and is easy to install with pip:
 
 ```bash
 pip install spectacles
@@ -47,4 +47,4 @@ We wanted a single tool to perform these checks for us, so we built Spectacles t
 
 ## Community
 
-Have a question or just want to chat Spectacles and Looker? [Join us in Slack.](https://join.slack.com/t/spectacles-ci/shared_invite/zt-akmm4mo6-XnPcUUaG3Z5~giRc_5JaUQ)
+Have a question or just want to chat Spectacles or Looker? [Join us in Slack.](https://join.slack.com/t/spectacles-ci/shared_invite/zt-akmm4mo6-XnPcUUaG3Z5~giRc_5JaUQ)
