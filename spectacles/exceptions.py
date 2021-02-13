@@ -67,9 +67,17 @@ class ValidationError(GenericValidationError):
     def __init__(
         self, model: str, explore: str, message: str, metadata: Dict[str, Any]
     ):
+        MAX_WORDS = 100
+        words = message.split(" ")
+        # On some warehouses, these error messages are prohibitively long
+        # Truncate to n words to keep the response lightweight
+        if len(words) > MAX_WORDS:
+            self.message = " ".join(words[:MAX_WORDS]) + "..."
+        else:
+            self.message = message
+
         self.model = model
         self.explore = explore
-        self.message = message
         self.metadata = metadata
         super().__init__()
 
