@@ -350,8 +350,7 @@ def _build_base_subparser() -> argparse.ArgumentParser:
         type=int,
         action=EnvVarAction,
         env_var="LOOKER_PORT",
-        default=19999,
-        help="The port of your Looker instance’s API. The default is port 19999.",
+        help="The port of your Looker instance’s API. The default is port 443 (HTTPS) for GCP-hosted instances and 19999 for legacy instances.",
     )
     base_subparser.add_argument(
         "--api-version",

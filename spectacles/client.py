@@ -48,7 +48,7 @@ class LookerClient:
         base_url: str,
         client_id: str,
         client_secret: str,
-        port: int = 19999,
+        port: Optional[int] = None,
         api_version: float = 3.1,
     ):
         supported_api_versions = [3.1]
@@ -64,7 +64,17 @@ class LookerClient:
             )
 
         self.base_url: str = base_url.rstrip("/")
-        self.api_url: str = f"{self.base_url}:{port}/api/{api_version}/"
+        if port is None and self.base_url.endswith("cloud.looker.com"):
+            # GCP-hosted instance, so use default port of 443 with HTTPS
+            if not self.base_url.startswith("https"):
+                raise SpectaclesException(
+                    name="invalid-base-url",
+                    title="Looker instance base URL is not valid.",
+                    detail="The URL must be an HTTPS URL.",
+                )
+            self.api_url: str = f"{self.base_url}/api/{api_version}/"
+        else:
+            self.api_url = f"{self.base_url}:{port or 19999}/api/{api_version}/"
         self.client_id: str = client_id
         self.client_secret: str = client_secret
         self.api_version: float = api_version
