@@ -1,11 +1,13 @@
 from typing import Union, Dict, Any, List, Optional
 import time
+from tabulate import tabulate
 from spectacles.validators.validator import Validator
 from spectacles.client import LookerClient
 from spectacles.lookml import Dimension, Explore
 from spectacles.types import QueryMode
 from spectacles.exceptions import SpectaclesException, SqlError
 from spectacles.logger import GLOBAL_LOGGER as logger
+from spectacles.printer import print_header
 
 
 class Query:
@@ -28,11 +30,26 @@ class QueryResult:
     """Stores ID, query status, and error details for a completed query task"""
 
     def __init__(
-        self, query_task_id: str, status: str, error: Optional[Dict[str, Any]] = None
+        self,
+        query_task_id: str,
+        status: str,
+        runtime: Optional[float] = None,
+        error: Optional[Dict[str, Any]] = None,
     ):
         self.query_task_id = query_task_id
         self.status = status
+        self.runtime = runtime
         self.error = error
+
+
+class ProfilerResult:
+    def __init__(
+        self, query_id: int, query_task_id: str, lookml_obj_type: str, runtime: float
+    ):
+        self.query_id = query_id
+        self.query_task_id = query_task_id
+        self.lookml_obj_type = lookml_obj_type
+        self.runtime = runtime
 
 
 class SqlValidator(Validator):
@@ -54,6 +71,7 @@ class SqlValidator(Validator):
         self._running_queries: List[Query] = []
         # Lookup used to retrieve the LookML object
         self._query_by_task_id: Dict[str, Query] = {}
+        self.long_running_queries: List[ProfilerResult] = []
 
     def get_query_by_task_id(self, query_task_id: str) -> Query:
         return self._query_by_task_id[query_task_id]
@@ -80,6 +98,20 @@ class SqlValidator(Validator):
         self._create_and_run(mode)
         if mode == "hybrid" and self.project.errored:
             self._create_and_run(mode)
+
+        char = "."
+        print_header("Query profiler results", char=char, leading_newline=False)
+        logger.info(
+            tabulate(
+                sorted(self.long_running_queries, key=lambda x: x[2], reverse=True),
+                headers=["Type", "Name", "Runtime (s)", "Query ID", "Query Task ID"],
+                tablefmt="github",
+                numalign="left",
+                floatfmt=".1f",
+            )
+            + "\n"
+        )
+        print_header(char, char=char, leading_newline=False)
 
         return self.project.get_results(validator="sql", mode=mode)
 
@@ -187,7 +219,13 @@ class SqlValidator(Validator):
                     ),
                 )
             logger.debug(f"Query task {query_task_id} status is: {status}")
-            query_result = QueryResult(query_task_id, status)
+
+            try:
+                runtime = float(result["data"]["runtime"])
+            except KeyError:
+                runtime = None
+
+            query_result = QueryResult(query_task_id, status, runtime)
             if status == "error":
                 try:
                     error_details = self._extract_error_details(result)
@@ -212,6 +250,16 @@ class SqlValidator(Validator):
             self.query_slots += 1
             lookml_object = query.lookml_ref
             lookml_object.queried = True
+            if result.runtime >= 0:
+                self.long_running_queries.append(
+                    [
+                        lookml_object.__class__.__name__.lower(),
+                        lookml_object.name,
+                        result.runtime,
+                        query.query_id,
+                        result.query_task_id,
+                    ]
+                )
 
             if result.status == "error" and result.error:
                 model_name = lookml_object.model_name
@@ -232,6 +280,7 @@ class SqlValidator(Validator):
                 )
                 lookml_object.errors.append(sql_error)
                 return sql_error
+
         return None
 
     @staticmethod
