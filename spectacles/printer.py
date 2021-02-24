@@ -31,9 +31,16 @@ def green(text: str) -> str:
     return color(text, "green")
 
 
-def print_header(text: str, line_width: int = LINE_WIDTH) -> None:
-    header = f" {text} ".center(line_width, "=")
-    logger.info(f"\n{header}\n")
+def print_header(
+    text: str,
+    line_width: int = LINE_WIDTH,
+    char: str = "=",
+    leading_newline: bool = True,
+) -> None:
+    header = f" {text} ".center(line_width, char)
+    if leading_newline:
+        header = "\n" + header
+    logger.info(f"{header}\n")
 
 
 def print_content_error(
