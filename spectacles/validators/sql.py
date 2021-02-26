@@ -71,7 +71,7 @@ class SqlValidator(Validator):
         self._running_queries: List[Query] = []
         # Lookup used to retrieve the LookML object
         self._query_by_task_id: Dict[str, Query] = {}
-        self.long_running_queries: List[ProfilerResult] = []
+        self.long_running_queries: List = []
 
     def get_query_by_task_id(self, query_task_id: str) -> Query:
         return self._query_by_task_id[query_task_id]
@@ -91,7 +91,9 @@ class SqlValidator(Validator):
     ) -> None:
         super().build_project(selectors, exclusions, build_dimensions)
 
-    def validate(self, mode: QueryMode = "batch") -> Dict[str, Any]:
+    def validate(
+        self, mode: QueryMode = "batch", profile: bool = False
+    ) -> Dict[str, Any]:
         """Queries selected explores and returns the project tree with errors."""
         self._query_by_task_id = {}
 
@@ -99,19 +101,18 @@ class SqlValidator(Validator):
         if mode == "hybrid" and self.project.errored:
             self._create_and_run(mode)
 
-        char = "."
-        print_header("Query profiler results", char=char, leading_newline=False)
-        logger.info(
-            tabulate(
+        if profile:
+            char = "."
+            print_header("Query profiler results", char=char, leading_newline=False)
+            table_string = tabulate(
                 sorted(self.long_running_queries, key=lambda x: x[2], reverse=True),
                 headers=["Type", "Name", "Runtime (s)", "Query ID", "Query Task ID"],
                 tablefmt="github",
                 numalign="left",
                 floatfmt=".1f",
             )
-            + "\n"
-        )
-        print_header(char, char=char, leading_newline=False)
+            logger.info(table_string)
+            print_header(char, char=char)
 
         return self.project.get_results(validator="sql", mode=mode)
 
@@ -221,7 +222,7 @@ class SqlValidator(Validator):
             logger.debug(f"Query task {query_task_id} status is: {status}")
 
             try:
-                runtime = float(result["data"]["runtime"])
+                runtime: Optional[float] = float(result["data"]["runtime"])
             except KeyError:
                 runtime = None
 
@@ -250,7 +251,7 @@ class SqlValidator(Validator):
             self.query_slots += 1
             lookml_object = query.lookml_ref
             lookml_object.queried = True
-            if result.runtime >= 0:
+            if result.runtime and result.runtime >= 0:
                 self.long_running_queries.append(
                     [
                         lookml_object.__class__.__name__.lower(),

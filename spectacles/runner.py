@@ -172,6 +172,7 @@ class Runner:
         exclusions: List[str],
         mode: QueryMode = "batch",
         concurrency: int = 10,
+        profile: bool = False,
     ) -> Dict[str, Any]:
         with self.branch_manager:
             validator = SqlValidator(self.client, self.project, concurrency)
@@ -187,7 +188,7 @@ class Runner:
                 f"[{mode} mode] "
                 f"[concurrency = {validator.query_slots}]"
             )
-            results = validator.validate(mode)
+            results = validator.validate(mode, profile)
         return results
 
     def validate_data_tests(

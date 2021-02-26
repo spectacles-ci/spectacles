@@ -247,6 +247,7 @@ def main():
             args.import_projects,
             args.concurrency,
             args.commit_ref,
+            args.profile,
         )
     elif args.command == "assert":
         run_assert(
@@ -509,7 +510,7 @@ def _build_sql_subparser(
         help="Specify the mode the SQL validator should run.\
             In single-dimension mode, the SQL validator will run one query \
             per dimension. In batch mode, the SQL validator will create one \
-            query per explore. In hybrid mode, the SQL validator will run in \
+            query per explore. In hybrid mode, the SQL validator will first run in \
             batch mode and then run errored explores in single-dimension mode.",
     )
     subparser.add_argument(
@@ -518,6 +519,15 @@ def _build_sql_subparser(
         type=int,
         help="Specify how many concurrent queries you want to have running \
             against your data warehouse. The default is 10.",
+    )
+    subparser.add_argument(
+        "-p",
+        "--profile",
+        action="store_true",
+        help=(
+            "After validation, display queries that took longer than 5 seconds to "
+            "complete."
+        ),
     )
 
 
@@ -697,6 +707,7 @@ def run_sql(
     import_projects,
     concurrency,
     commit_ref,
+    profile,
 ) -> None:
     """Runs and validates the SQL for each selected LookML dimension."""
     runner = Runner(
@@ -717,7 +728,7 @@ def run_sql(
             if item.errored:
                 yield item
 
-    results = runner.validate_sql(explores, exclude, mode, concurrency)
+    results = runner.validate_sql(explores, exclude, mode, concurrency, profile)
 
     for test in sorted(results["tested"], key=lambda x: (x["model"], x["explore"])):
         message = f"{test['model']}.{test['explore']}"
