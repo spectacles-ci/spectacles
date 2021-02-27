@@ -42,16 +42,6 @@ class QueryResult:
         self.error = error
 
 
-class ProfilerResult:
-    def __init__(
-        self, query_id: int, query_task_id: str, lookml_obj_type: str, runtime: float
-    ):
-        self.query_id = query_id
-        self.query_task_id = query_task_id
-        self.lookml_obj_type = lookml_obj_type
-        self.runtime = runtime
-
-
 class SqlValidator(Validator):
     """Runs and validates the SQL for each selected LookML dimension.
 
@@ -106,7 +96,13 @@ class SqlValidator(Validator):
             print_header("Query profiler results", char=char, leading_newline=False)
             table_string = tabulate(
                 sorted(self.long_running_queries, key=lambda x: x[2], reverse=True),
-                headers=["Type", "Name", "Runtime (s)", "Query ID", "Query Task ID"],
+                headers=[
+                    "Type",
+                    "Name",
+                    "Runtime (s)",
+                    "Query ID",
+                    "Explore From Here",
+                ],
                 tablefmt="github",
                 numalign="left",
                 floatfmt=".1f",
@@ -258,7 +254,7 @@ class SqlValidator(Validator):
                         lookml_object.name,
                         result.runtime,
                         query.query_id,
-                        result.query_task_id,
+                        query.explore_url,
                     ]
                 )
 
