@@ -48,6 +48,9 @@ class SqlValidator(Validator):
     Args:
         client: Looker API client.
         project: Name of the LookML project to validate.
+        concurrency: The number of simultaneous queries to run.
+        runtime_threshold: When profiling, only display queries lasting longer
+            than this.
 
     Attributes:
         project: LookML project object representation.
@@ -55,9 +58,16 @@ class SqlValidator(Validator):
 
     """
 
-    def __init__(self, client: LookerClient, project: str, concurrency: int = 10):
+    def __init__(
+        self,
+        client: LookerClient,
+        project: str,
+        concurrency: int = 10,
+        runtime_threshold: int = 5,
+    ):
         super().__init__(client, project)
         self.query_slots = concurrency
+        self.runtime_threshold = runtime_threshold
         self._running_queries: List[Query] = []
         # Lookup used to retrieve the LookML object
         self._query_by_task_id: Dict[str, Query] = {}
@@ -94,20 +104,29 @@ class SqlValidator(Validator):
         if profile:
             char = "."
             print_header("Query profiler results", char=char, leading_newline=False)
-            table_string = tabulate(
-                sorted(self.long_running_queries, key=lambda x: x[2], reverse=True),
-                headers=[
-                    "Type",
-                    "Name",
-                    "Runtime (s)",
-                    "Query ID",
-                    "Explore From Here",
-                ],
-                tablefmt="github",
-                numalign="left",
-                floatfmt=".1f",
-            )
-            logger.info(table_string)
+            if self.long_running_queries:
+                queries_in_order = (
+                    sorted(self.long_running_queries, key=lambda x: x[2], reverse=True),
+                )  # type: ignore
+                output = tabulate(
+                    queries_in_order,
+                    headers=[
+                        "Type",
+                        "Name",
+                        "Runtime (s)",
+                        "Query ID",
+                        "Explore From Here",
+                    ],
+                    tablefmt="github",
+                    numalign="left",
+                    floatfmt=".1f",
+                )
+            else:
+                output = (
+                    f"All queries completed in less than {self.runtime_threshold} "
+                    "seconds."
+                )
+            logger.info(output)
             print_header(char, char=char)
 
         return self.project.get_results(validator="sql", mode=mode)
@@ -247,7 +266,7 @@ class SqlValidator(Validator):
             self.query_slots += 1
             lookml_object = query.lookml_ref
             lookml_object.queried = True
-            if result.runtime and result.runtime >= 0:
+            if result.runtime and result.runtime >= self.runtime_threshold:
                 self.long_running_queries.append(
                     [
                         lookml_object.__class__.__name__.lower(),

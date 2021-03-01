@@ -78,7 +78,7 @@ class YamlConfigAction(ConfigFileAction):
             with Path(path).open("r") as file:
                 return yaml.safe_load(file)
         except (FileNotFoundError, ParserError) as error:
-            raise argparse.ArgumentError(self, error)
+            raise argparse.ArgumentError(self, str(error))
 
 
 class EnvVarAction(argparse.Action):
@@ -248,6 +248,7 @@ def main():
             args.concurrency,
             args.commit_ref,
             args.profile,
+            args.runtime_threshold,
         )
     elif args.command == "assert":
         run_assert(
@@ -529,6 +530,15 @@ def _build_sql_subparser(
             "complete."
         ),
     )
+    subparser.add_argument(
+        "--runtime-threshold",
+        type=int,
+        default=5,
+        help=(
+            "When profiling, only display queries that ran longer than this value in "
+            "seconds."
+        ),
+    )
 
 
 def _build_assert_subparser(
@@ -708,6 +718,7 @@ def run_sql(
     concurrency,
     commit_ref,
     profile,
+    runtime_threshold,
 ) -> None:
     """Runs and validates the SQL for each selected LookML dimension."""
     runner = Runner(
@@ -728,7 +739,9 @@ def run_sql(
             if item.errored:
                 yield item
 
-    results = runner.validate_sql(explores, exclude, mode, concurrency, profile)
+    results = runner.validate_sql(
+        explores, exclude, mode, concurrency, profile, runtime_threshold
+    )
 
     for test in sorted(results["tested"], key=lambda x: (x["model"], x["explore"])):
         message = f"{test['model']}.{test['explore']}"

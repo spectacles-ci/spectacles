@@ -173,9 +173,12 @@ class Runner:
         mode: QueryMode = "batch",
         concurrency: int = 10,
         profile: bool = False,
+        runtime_threshold: int = 5,
     ) -> Dict[str, Any]:
         with self.branch_manager:
-            validator = SqlValidator(self.client, self.project, concurrency)
+            validator = SqlValidator(
+                self.client, self.project, concurrency, runtime_threshold
+            )
             logger.info(
                 "Building LookML project hierarchy for project "
                 f"'{self.project}' @ {self.branch_manager.ref}"
