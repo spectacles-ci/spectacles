@@ -1,11 +1,13 @@
 from typing import Union, Dict, Any, List, Optional
 import time
+from tabulate import tabulate
 from spectacles.validators.validator import Validator
 from spectacles.client import LookerClient
 from spectacles.lookml import Dimension, Explore
 from spectacles.types import QueryMode
 from spectacles.exceptions import SpectaclesException, SqlError
 from spectacles.logger import GLOBAL_LOGGER as logger
+from spectacles.printer import print_header
 
 
 class Query:
@@ -28,10 +30,15 @@ class QueryResult:
     """Stores ID, query status, and error details for a completed query task"""
 
     def __init__(
-        self, query_task_id: str, status: str, error: Optional[Dict[str, Any]] = None
+        self,
+        query_task_id: str,
+        status: str,
+        runtime: Optional[float] = None,
+        error: Optional[Dict[str, Any]] = None,
     ):
         self.query_task_id = query_task_id
         self.status = status
+        self.runtime = runtime
         self.error = error
 
 
@@ -41,6 +48,9 @@ class SqlValidator(Validator):
     Args:
         client: Looker API client.
         project: Name of the LookML project to validate.
+        concurrency: The number of simultaneous queries to run.
+        runtime_threshold: When profiling, only display queries lasting longer
+            than this.
 
     Attributes:
         project: LookML project object representation.
@@ -48,12 +58,20 @@ class SqlValidator(Validator):
 
     """
 
-    def __init__(self, client: LookerClient, project: str, concurrency: int = 10):
+    def __init__(
+        self,
+        client: LookerClient,
+        project: str,
+        concurrency: int = 10,
+        runtime_threshold: int = 5,
+    ):
         super().__init__(client, project)
         self.query_slots = concurrency
+        self.runtime_threshold = runtime_threshold
         self._running_queries: List[Query] = []
         # Lookup used to retrieve the LookML object
         self._query_by_task_id: Dict[str, Query] = {}
+        self.long_running_queries: List = []
 
     def get_query_by_task_id(self, query_task_id: str) -> Query:
         return self._query_by_task_id[query_task_id]
@@ -73,13 +91,43 @@ class SqlValidator(Validator):
     ) -> None:
         super().build_project(selectors, exclusions, build_dimensions)
 
-    def validate(self, mode: QueryMode = "batch") -> Dict[str, Any]:
+    def validate(
+        self, mode: QueryMode = "batch", profile: bool = False
+    ) -> Dict[str, Any]:
         """Queries selected explores and returns the project tree with errors."""
         self._query_by_task_id = {}
 
         self._create_and_run(mode)
         if mode == "hybrid" and self.project.errored:
             self._create_and_run(mode)
+
+        if profile:
+            char = "."
+            print_header("Query profiler results", char=char, leading_newline=False)
+            if self.long_running_queries:
+                queries_in_order = (
+                    sorted(self.long_running_queries, key=lambda x: x[2], reverse=True),
+                )  # type: ignore
+                output = tabulate(
+                    queries_in_order,
+                    headers=[
+                        "Type",
+                        "Name",
+                        "Runtime (s)",
+                        "Query ID",
+                        "Explore From Here",
+                    ],
+                    tablefmt="github",
+                    numalign="left",
+                    floatfmt=".1f",
+                )
+            else:
+                output = (
+                    f"All queries completed in less than {self.runtime_threshold} "
+                    "seconds."
+                )
+            logger.info(output)
+            print_header(char, char=char)
 
         return self.project.get_results(validator="sql", mode=mode)
 
@@ -187,7 +235,13 @@ class SqlValidator(Validator):
                     ),
                 )
             logger.debug(f"Query task {query_task_id} status is: {status}")
-            query_result = QueryResult(query_task_id, status)
+
+            try:
+                runtime: Optional[float] = float(result["data"]["runtime"])
+            except KeyError:
+                runtime = None
+
+            query_result = QueryResult(query_task_id, status, runtime)
             if status == "error":
                 try:
                     error_details = self._extract_error_details(result)
@@ -212,6 +266,16 @@ class SqlValidator(Validator):
             self.query_slots += 1
             lookml_object = query.lookml_ref
             lookml_object.queried = True
+            if result.runtime and result.runtime >= self.runtime_threshold:
+                self.long_running_queries.append(
+                    [
+                        lookml_object.__class__.__name__.lower(),
+                        lookml_object.name,
+                        result.runtime,
+                        query.query_id,
+                        query.explore_url,
+                    ]
+                )
 
             if result.status == "error" and result.error:
                 model_name = lookml_object.model_name
@@ -232,6 +296,7 @@ class SqlValidator(Validator):
                 )
                 lookml_object.errors.append(sql_error)
                 return sql_error
+
         return None
 
     @staticmethod

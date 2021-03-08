@@ -172,9 +172,13 @@ class Runner:
         exclusions: List[str],
         mode: QueryMode = "batch",
         concurrency: int = 10,
+        profile: bool = False,
+        runtime_threshold: int = 5,
     ) -> Dict[str, Any]:
         with self.branch_manager:
-            validator = SqlValidator(self.client, self.project, concurrency)
+            validator = SqlValidator(
+                self.client, self.project, concurrency, runtime_threshold
+            )
             logger.info(
                 "Building LookML project hierarchy for project "
                 f"'{self.project}' @ {self.branch_manager.ref}"
@@ -187,7 +191,7 @@ class Runner:
                 f"[{mode} mode] "
                 f"[concurrency = {validator.query_slots}]"
             )
-            results = validator.validate(mode)
+            results = validator.validate(mode, profile)
         return results
 
     def validate_data_tests(

@@ -22,6 +22,7 @@ setup(
         "backoff",
         "analytics-python",
         "typing-extensions",
+        "tabulate",
     ],
     tests_require=[
         "black",
