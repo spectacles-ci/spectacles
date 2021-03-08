@@ -526,8 +526,8 @@ def _build_sql_subparser(
         "--profile",
         action="store_true",
         help=(
-            "After validation, display queries that took longer than 5 seconds to "
-            "complete."
+            "After validation, display queries that took longer than the runtime "
+            "threshold (5 seconds by default) to complete."
         ),
     )
     subparser.add_argument(
