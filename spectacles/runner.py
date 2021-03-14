@@ -21,6 +21,7 @@ class ProjectState:
 class LookerBranchManager:
     def __init__(self, client: LookerClient, project: str, remote_reset: bool = False):
         """Context manager for Git branch checkout, creation, and deletion."""
+        logger.debug(f"Setting up branch manager in project '{project}'")
         self.client = client
         self.project = project
         self.remote_reset = remote_reset
@@ -29,6 +30,9 @@ class LookerBranchManager:
         self.workspace: str = state.workspace
         self.history: List[ProjectState] = [state]
         self.imports: List[str] = self.get_project_imports()
+        logger.debug(
+            f"Project '{self.project}' imports the following projects: {self.imports}"
+        )
 
         self.commit: Optional[str] = None
         self.branch: Optional[str] = None
@@ -61,16 +65,19 @@ class LookerBranchManager:
             self.branch = self.checkout_temp_branch(self.commit)
         # Neither branch nor commit were passed, so go to production.
         else:
-            self.update_workspace("production")
-            prod_state = self.get_project_state()
+            if self.init_state.workspace == "production":
+                prod_state = self.init_state
+            else:
+                self.update_workspace("production")
+                prod_state = self.get_project_state()
             self.branch = prod_state.branch
             self.commit = prod_state.commit
             if self.ephemeral:
                 self.branch = self.checkout_temp_branch(f"origin/{prod_state.branch}")
 
         logger.debug(
-            f"Project '{self.project}' state: branch '{self.branch}' @ "
-            f"{self.commit or 'HEAD'} in '{self.workspace}' workspace "
+            f"Set project '{self.project}' to branch '{self.branch}' @ "
+            f"{(self.commit or 'HEAD')[:6]} in {self.workspace} workspace "
             f"[ephemeral = {self.ephemeral}]"
         )
 
@@ -81,6 +88,10 @@ class LookerBranchManager:
                 manager = LookerBranchManager(self.client, project)
                 manager(ephemeral=True).__enter__()
                 self.import_managers.append(manager)
+        else:
+            logger.debug(
+                "In production, no need for temporary branches in imported projects"
+            )
 
     def __exit__(self, *args):
         message = (

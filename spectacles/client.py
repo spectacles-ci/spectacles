@@ -264,7 +264,7 @@ class LookerClient:
             project: Name of the Looker project to use.
             branch: Name of the Git branch to check out.
         """
-        logger.debug(f"Setting Git branch to '{branch}'")
+        logger.debug(f"Setting project '{project}' branch to '{branch}'")
         url = utils.compose_url(self.api_url, path=["projects", project, "git_branch"])
         body = {"name": branch}
         response = self.put(url=url, json=body, timeout=TIMEOUT_SEC)

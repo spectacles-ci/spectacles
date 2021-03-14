@@ -429,7 +429,6 @@ def _build_validator_subparser(
         "--branch",
         action=EnvVarAction,
         env_var="LOOKER_GIT_BRANCH",
-        required=True,
         help="The branch of your project that Spectacles will use to run queries.",
     )
     base_subparser.add_argument(
