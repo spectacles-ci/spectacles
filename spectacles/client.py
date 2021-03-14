@@ -177,11 +177,37 @@ class LookerClient:
 
         return response.json()["looker_release_version"]
 
-    def update_workspace(self, project: str, workspace: str) -> None:
-        """Updates the session workspace.
+    def get_workspace(self) -> str:
+        """Gets the session workspace.
 
         Args:
             project: Name of the Looker project to use.
+
+        Returns:
+            str: The session workspace, dev or production.
+        """
+        logger.debug("Getting the workspace in use by this session")
+        url = utils.compose_url(self.api_url, path=["session"])
+        response = self.get(url=url, timeout=TIMEOUT_SEC)
+        try:
+            response.raise_for_status()
+        except requests.exceptions.HTTPError:
+            raise LookerApiError(
+                name="unable-to-get-workspace",
+                title="Couldn't get the workspace.",
+                status=response.status_code,
+                detail=(
+                    "Unable to get the workspace in use by this session. "
+                    "Please try again."
+                ),
+                response=response,
+            )
+        return response.json()["workspace_id"]
+
+    def update_workspace(self, workspace: str) -> None:
+        """Updates the session workspace.
+
+        Args:
             workspace: The workspace to switch to, either 'production' or 'dev'
         """
         logger.debug(f"Updating session to use the {workspace} workspace")
@@ -352,7 +378,7 @@ class LookerClient:
         full_response = self.get_active_branch(project)
         return full_response["name"]
 
-    def create_branch(self, project: str, branch: str, ref: str = "origin/master"):
+    def create_branch(self, project: str, branch: str, ref: str):
         """Creates a branch in the given project.
 
         Args:
@@ -383,8 +409,11 @@ class LookerClient:
                 response=response,
             )
 
-    def update_branch(self, project: str, branch: str, ref: str = "origin/master"):
-        """Updates a branch to the ref prodvided.
+    def hard_reset_branch(self, project: str, branch: str, ref: str):
+        """Hard resets a branch to the ref prodvided.
+
+        DANGER: hard reset will be force pushed to the remote. Unsaved changes and
+            commits may be permanently lost.
 
         Args:
             project: Name of the Looker project to use.

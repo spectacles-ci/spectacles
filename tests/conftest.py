@@ -5,7 +5,7 @@ import pytest
 from spectacles.client import LookerClient
 from spectacles.exceptions import SqlError
 from spectacles.lookml import Project, Model, Explore, Dimension
-from tests.utils import load_resource
+from utils import load_resource
 
 
 @pytest.fixture(scope="session")
@@ -26,7 +26,7 @@ def looker_client(record_mode) -> Iterable[LookerClient]:
             client_id=os.environ.get("LOOKER_CLIENT_ID", ""),
             client_secret=os.environ.get("LOOKER_CLIENT_SECRET", ""),
         )
-        client.update_workspace(project="eye_exam", workspace="production")
+        client.update_workspace(workspace="production")
         yield client
 
 
