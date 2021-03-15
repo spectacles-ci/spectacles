@@ -161,7 +161,7 @@ class LookerBranchManager:
             f"project '{self.project}'"
         )
         self.client.create_branch(self.project, name, ref)
-        # self.client.hard_reset_branch(project, name, ref)
+        self.client.hard_reset_branch(self.project, name, ref)
         self.is_temp_branch = True
         return name
 
