@@ -421,7 +421,7 @@ class LookerClient:
             ref: The ref to update the branch from.
         """
         logger.debug(
-            f"Updating branch '{branch}' on project '{project}' to ref '{ref}'"
+            f"Hard resetting branch '{branch}' on project '{project}' to ref '{ref}'"
         )
 
         body = {"name": branch, "ref": ref}
