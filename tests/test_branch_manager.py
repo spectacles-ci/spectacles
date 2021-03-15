@@ -4,12 +4,36 @@ import pytest
 from spectacles.runner import LookerBranchManager
 
 
-def test_should_return_to_initial_state_prod():
-    ...
+@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
+@patch("spectacles.runner.LookerBranchManager.get_project_imports", return_value=[])
+def test_should_return_to_initial_state_prod(
+    mock_get_imports, looker_client: LookerClient
+):
+    # Set up starting branch and workspace
+    project = "eye_exam"
+    looker_client.update_workspace("production")
+
+    manager = LookerBranchManager(looker_client, project)
+    assert manager.init_state.workspace == "production"
+    with manager(branch="pytest"):
+        assert looker_client.get_workspace() == "dev"
+    assert looker_client.get_workspace() == "production"
 
 
-def test_should_return_to_initial_state_dev():
-    ...
+@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
+@patch("spectacles.runner.LookerBranchManager.get_project_imports", return_value=[])
+def test_should_return_to_initial_state_dev(
+    mock_get_imports, looker_client: LookerClient
+):
+    # Set up starting branch and workspace
+    project = "eye_exam"
+    looker_client.update_workspace("dev")
+
+    manager = LookerBranchManager(looker_client, project)
+    assert manager.init_state.workspace == "dev"
+    with manager():
+        assert looker_client.get_workspace() == "production"
+    assert looker_client.get_workspace() == "dev"
 
 
 @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
