@@ -187,6 +187,23 @@ def test_manage_other_branch_with_import_projects(
     assert temp_branch not in looker_client.get_all_branches(dependent_project)
 
 
+@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
+@patch("spectacles.runner.LookerBranchManager.get_project_imports", return_value=[])
+def test_manage_prod_with_advanced_deploy(
+    mock_get_imports, looker_client: LookerClient
+):
+    # Set up starting branch and workspace
+    project = "spectacles-advanced-deploy"
+    looker_client.update_workspace("production")
+    commit = looker_client.get_active_branch(project)["ref"]
+
+    manager = LookerBranchManager(looker_client, project)
+    assert manager.init_state.workspace == "production"
+    assert manager.init_state.commit == commit
+    with manager():
+        assert looker_client.get_workspace() == "production"
+
+
 # @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
 # @patch("spectacles.runner.time_hash", return_value="abc123")
 # def test_manage_other_branch_with_ref_import_projects(mock_time_hash, looker_client: LookerClient):
