@@ -204,46 +204,45 @@ def test_manage_prod_with_advanced_deploy(
         assert looker_client.get_workspace() == "production"
 
 
-# @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
-# @patch("spectacles.runner.time_hash", return_value="abc123")
-# def test_manage_other_branch_with_ref_import_projects(mock_time_hash, looker_client: LookerClient):
-#     """User is on branch A, checkout branch B and test.
+@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
+@patch("spectacles.runner.time_hash", return_value="abc123")
+def test_manage_with_ref_import_projects(mock_time_hash, looker_client: LookerClient):
+    """User is on branch A, checkout branch B and test.
 
-#     The manager should create a new temp branch based on branch B, checkout the temp
-#     branch, test, checkout branch A, and delete the temp branch.
+    The manager should create a new temp branch based on branch B, checkout the temp
+    branch, test, checkout branch A, and delete the temp branch.
 
-#     We are setting import projects to True. The manager should create a temp branch
-#     in the dependent project, and clean it up at the end.
+    We are setting import projects to True. The manager should create a temp branch
+    in the dependent project, and clean it up at the end.
 
-#     """
-#     # Set up starting branch and workspace
-#     project = "eye_exam"
-#     starting_branch = "master"
-#     ref = "e2d21d"
-#     dependent_project = "welcome_to_looker"
-#     looker_client.update_workspace("production")
+    """
+    # Set up starting branch and workspace
+    project = "eye_exam"
+    looker_client.update_workspace("production")
+    dependent_project = "welcome_to_looker"
+    commit = "e2d21d"
 
-#     new_branch = "pytest"
-#     assert new_branch != starting_branch
-#     manager = LookerBranchManager(
-#         looker_client, project, name=new_branch, import_projects=True, commit_ref=ref
-#     )
-#     assert manager.original_branch == starting_branch
+    manager = LookerBranchManager(looker_client, project)
+    assert manager.init_state.workspace == "production"
+    branch_info = looker_client.get_active_branch(project)
+    assert branch_info["ref"][:6] != commit
 
-#     manager.__enter__()
-#     assert len(manager.temp_branches) == 2
-#     temp_branches: List[BranchState] = manager.temp_branches.copy()
-#     for state in temp_branches:
-#         branch_info = looker_client.get_active_branch(state.project)
-#         if state.project == project:
-#             assert branch_info["ref"][:6] == ref
-#         assert branch_info["name"] == state.temp_branch
+    with manager(commit=commit):
+        assert manager.is_temp_branch
+        assert manager.commit and manager.commit[:6] == commit
+        branch_info = looker_client.get_active_branch(manager.project)
+        assert branch_info["ref"][:6] == commit
+        for import_manager in manager.import_managers:
+            branch = looker_client.get_active_branch_name(import_manager.project)
+            assert import_manager.branch == branch
 
-#     manager.__exit__()
-#     branch_info = looker_client.get_active_branch(project)
-#     assert branch_info["name"] == starting_branch
-#     assert branch_info["ref"][:6] != ref
-#     looker_client.update_workspace("dev")
-#     all_branches = set(looker_client.get_all_branches(dependent_project))
-#     # Confirm that no temp branches still remain
-#     assert set(state.temp_branch for state in temp_branches).isdisjoint(all_branches)
+    branch_info = looker_client.get_active_branch(project)
+    assert branch_info["ref"][:6] != commit
+
+    looker_client.update_workspace("dev")
+    all_branches = set(looker_client.get_all_branches(dependent_project))
+    # Confirm that no temp branches still remain
+    temp_branches = set(
+        import_manager.branch for import_manager in manager.import_managers
+    )
+    assert temp_branches.isdisjoint(all_branches)
