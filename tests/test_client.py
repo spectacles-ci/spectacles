@@ -80,7 +80,11 @@ def client_kwargs():
             "branch": "branch_name",
             "ref": "origin/master",
         },
-        hard_reset_branch={"project": "project_name", "branch": "branch_name"},
+        hard_reset_branch={
+            "project": "project_name",
+            "branch": "branch_name",
+            "ref": "origin/master",
+        },
         delete_branch={"project": "project_name", "branch": "branch_name"},
         get_active_branch={"project": "project_name"},
         get_active_branch_name={"project": "project_name"},
@@ -89,24 +93,6 @@ def client_kwargs():
         content_validation={},
         all_folders={"project": "project_name"},
     )
-
-
-@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
-def test_branch_management_should_work(looker_client):
-    project = "eye_exam"
-    tmp_branch = "tmp-pytest"
-    looker_client.update_workspace("dev")
-    looker_client.checkout_branch(project=project, branch="pytest")
-    looker_client.create_branch("eye_exam", tmp_branch)
-    try:
-        looker_client.update_branch(project, tmp_branch, "master")
-        looker_client.update_branch(project, tmp_branch, "origin/master")
-        assert looker_client.get_active_branch_name(project) == tmp_branch
-    finally:
-        # Return to the master branch and delete the temp branch
-        looker_client.update_branch(project, "master")
-        looker_client.delete_branch(project, tmp_branch)
-    looker_client.update_workspace("production")
 
 
 @pytest.mark.vcr

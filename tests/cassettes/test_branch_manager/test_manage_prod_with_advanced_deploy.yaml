@@ -1,0 +1,186 @@
+interactions:
+- request:
+    body: '{"workspace_id": "production"}'
+    headers:
+      Content-Length:
+      - '30'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=9666
+    method: PATCH
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"production","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '83'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 16 Mar 2021 21:18:36 GMT
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - c9183317098608ce
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - c9183317098608ce
+      X-B3-TraceId:
+      - 605120acf7f4a3e3c9183317098608ce
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=9666
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/spectacles-advanced-deploy/git_branch
+  response:
+    body:
+      string: '{"name":"__LOOKER_PROD_af763f8df5dfa602d35543cd478cf0b42d3e110e","remote":"origin","remote_name":"__LOOKER_PROD_af763f8df5dfa602d35543cd478cf0b42d3e110e","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":false,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1615148716,"ref":"af763f8df5dfa602d35543cd478cf0b42d3e110e","remote_ref":null,"can":{}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '428'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 16 Mar 2021 21:18:36 GMT
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - ad467bce77b72c88
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - ad467bce77b72c88
+      X-B3-TraceId:
+      - 605120ac5a1f967fad467bce77b72c88
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=9666
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"production","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '83'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 16 Mar 2021 21:18:36 GMT
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - e2b7cc2b6574a7cf
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - e2b7cc2b6574a7cf
+      X-B3-TraceId:
+      - 605120ac60c5ce40e2b7cc2b6574a7cf
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=9666
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/spectacles-advanced-deploy/git_branch
+  response:
+    body:
+      string: '{"name":"__LOOKER_PROD_af763f8df5dfa602d35543cd478cf0b42d3e110e","remote":"origin","remote_name":"__LOOKER_PROD_af763f8df5dfa602d35543cd478cf0b42d3e110e","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":false,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1615148716,"ref":"af763f8df5dfa602d35543cd478cf0b42d3e110e","remote_ref":null,"can":{}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '428'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 16 Mar 2021 21:18:36 GMT
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 60e090f4349d7420
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 60e090f4349d7420
+      X-B3-TraceId:
+      - 605120ac9e32891660e090f4349d7420
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=9666
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"production","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '83'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 16 Mar 2021 21:18:36 GMT
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - d526eb834af6491a
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - d526eb834af6491a
+      X-B3-TraceId:
+      - 605120ac85227e37d526eb834af6491a
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+version: 1

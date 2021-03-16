@@ -52,9 +52,7 @@ class TestBuildUnconfiguredProject:
 
     def test_project_with_no_configured_models_should_raise_error(self, validator):
         validator.project.name = "eye_exam_unconfigured"
-        validator.client.update_workspace(
-            project="eye_exam_unconfigured", workspace="production"
-        )
+        validator.client.update_workspace(workspace="production")
         with pytest.raises(SpectaclesException):
             validator.build_project()
 

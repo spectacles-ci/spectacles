@@ -272,14 +272,11 @@ def test_main_with_sql_validator(mock_tracking, mock_runner, env, caplog):
     mock_runner.assert_called_once_with(
         "BASE_URL_ENV_VAR",  # base_url
         "PROJECT_ENV_VAR",  # project
-        "BRANCH_ENV_VAR",  # branch
         "CLIENT_ID_ENV_VAR",  # client_id
         "CLIENT_SECRET_ENV_VAR",  # client_secret
         8080,  # port
         3.1,  # api_version
         False,  # remote_reset
-        False,  # import_projects
-        None,  # commit_ref
     )
     assert "ecommerce.orders passed" in caplog.text
     assert "ecommerce.sessions passed" in caplog.text
@@ -302,14 +299,11 @@ def test_main_with_content_validator(mock_tracking, mock_runner, env, caplog):
     mock_runner.assert_called_once_with(
         "BASE_URL_ENV_VAR",  # base_url
         "PROJECT_ENV_VAR",  # project
-        "BRANCH_ENV_VAR",  # branch
         "CLIENT_ID_ENV_VAR",  # client_id
         "CLIENT_SECRET_ENV_VAR",  # client_secret
         8080,  # port
         3.1,  # api_version
         False,  # remote_reset
-        False,  # import_projects
-        None,  # commit_ref
     )
     assert "ecommerce.orders passed" in caplog.text
     assert "ecommerce.sessions passed" in caplog.text
@@ -332,14 +326,11 @@ def test_main_with_assert_validator(mock_tracking, mock_runner, env, caplog):
     mock_runner.assert_called_once_with(
         "BASE_URL_ENV_VAR",  # base_url
         "PROJECT_ENV_VAR",  # project
-        "BRANCH_ENV_VAR",  # branch
         "CLIENT_ID_ENV_VAR",  # client_id
         "CLIENT_SECRET_ENV_VAR",  # client_secret
         8080,  # port
         3.1,  # api_version
         False,  # remote_reset
-        False,  # import_projects
-        None,  # commit_ref
     )
     assert "ecommerce.orders passed" in caplog.text
     assert "ecommerce.sessions passed" in caplog.text
