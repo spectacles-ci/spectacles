@@ -2,8 +2,8 @@ from unittest.mock import patch, Mock
 import logging
 import pytest
 import requests
-from tests.constants import ENV_VARS
-from tests.utils import build_validation
+from constants import ENV_VARS
+from utils import build_validation
 from spectacles.cli import main, create_parser, handle_exceptions
 from spectacles.exceptions import (
     LookerApiError,

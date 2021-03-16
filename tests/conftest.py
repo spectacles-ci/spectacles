@@ -26,7 +26,7 @@ def looker_client(record_mode) -> Iterable[LookerClient]:
             client_id=os.environ.get("LOOKER_CLIENT_ID", ""),
             client_secret=os.environ.get("LOOKER_CLIENT_SECRET", ""),
         )
-        client.update_workspace(workspace="production")
+        client.update_workspace("production")
         yield client
 
 

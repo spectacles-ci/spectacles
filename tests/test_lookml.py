@@ -1,7 +1,7 @@
 from copy import deepcopy
 import pytest
 from spectacles.lookml import Model, Explore, Dimension
-from tests.utils import load_resource
+from utils import load_resource
 
 
 def test_model_from_json():

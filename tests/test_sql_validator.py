@@ -188,7 +188,7 @@ class TestValidateFailWithWarning:
             record_mode=record_mode,
         ):
             # Move to dev mode to test conditional logic warning
-            validator.client.update_workspace("eye_exam", "dev")
+            validator.client.update_workspace("dev")
             validator.client.checkout_branch("eye_exam", "pytest")
 
             validator.build_project(selectors=["eye_exam/users__fail_and_warn"])
@@ -230,7 +230,7 @@ class TestValidatePassWithWarning:
             record_mode=record_mode,
         ):
             # Move to dev mode to test conditional logic warning
-            validator.client.update_workspace("eye_exam", "dev")
+            validator.client.update_workspace("dev")
             validator.client.checkout_branch("eye_exam", "pytest")
 
             validator.build_project(selectors=["eye_exam/users__warn"])

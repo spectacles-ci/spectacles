@@ -60,7 +60,8 @@ def client_kwargs():
     return dict(
         authenticate={"client_id": "", "client_secret": "", "api_version": 3.1},
         get_looker_release_version={},
-        update_workspace={"project": "project_name", "workspace": "dev"},
+        get_workspace={},
+        update_workspace={"workspace": "dev"},
         checkout_branch={"project": "project_name", "branch": "branch_name"},
         reset_to_remote={"project": "project_name"},
         all_lookml_tests={"project": "project_name"},
@@ -74,8 +75,12 @@ def client_kwargs():
         },
         create_query_task={"query_id": 13041},
         get_query_task_multi_results={"query_task_ids": ["ajsdkgj", "askkwk"]},
-        create_branch={"project": "project_name", "branch": "branch_name"},
-        update_branch={"project": "project_name", "branch": "branch_name"},
+        create_branch={
+            "project": "project_name",
+            "branch": "branch_name",
+            "ref": "origin/master",
+        },
+        hard_reset_branch={"project": "project_name", "branch": "branch_name"},
         delete_branch={"project": "project_name", "branch": "branch_name"},
         get_active_branch={"project": "project_name"},
         get_active_branch_name={"project": "project_name"},
@@ -90,7 +95,7 @@ def client_kwargs():
 def test_branch_management_should_work(looker_client):
     project = "eye_exam"
     tmp_branch = "tmp-pytest"
-    looker_client.update_workspace(project=project, workspace="dev")
+    looker_client.update_workspace("dev")
     looker_client.checkout_branch(project=project, branch="pytest")
     looker_client.create_branch("eye_exam", tmp_branch)
     try:
@@ -101,7 +106,7 @@ def test_branch_management_should_work(looker_client):
         # Return to the master branch and delete the temp branch
         looker_client.update_branch(project, "master")
         looker_client.delete_branch(project, tmp_branch)
-    looker_client.update_workspace(project=project, workspace="production")
+    looker_client.update_workspace("production")
 
 
 @pytest.mark.vcr
