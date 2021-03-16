@@ -105,8 +105,8 @@ class SqlValidator(Validator):
             char = "."
             print_header("Query profiler results", char=char, leading_newline=False)
             if self.long_running_queries:
-                queries_in_order = (
-                    sorted(self.long_running_queries, key=lambda x: x[2], reverse=True),
+                queries_in_order = sorted(
+                    self.long_running_queries, key=lambda x: x[2], reverse=True
                 )  # type: ignore
                 output = tabulate(
                     queries_in_order,
