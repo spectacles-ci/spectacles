@@ -18,7 +18,7 @@ interactions:
     uri: https://spectacles.looker.com:19999/api/3.1/login
   response:
     body:
-      string: '{"access_token":"VCwbGNgJ832G7hwp9qymqr8Kz2YgKc3Q5NYCm5PQ","token_type":"Bearer","expires_in":3600}'
+      string: '{"access_token":"VCwbGNgJ83aaahwp9qymqr8Kz2YgKc3Q5NYCm5PQ","token_type":"Bearer","expires_in":3600}'
     headers:
       Connection:
       - keep-alive
@@ -90,6 +90,126 @@ interactions:
       - looker.browser=4560; expires=Sat, 13 May 2023 23:41:04 -0000; HttpOnly
       Vary:
       - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '69'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      User-Agent:
+      - python-requests/2.24.0
+    method: POST
+    uri: https://spectacles.looker.com:19999/api/3.1/login
+  response:
+    body:
+      string: '{"access_token":"CwXfQDRpDc8TwKTVRM6fp7FXgP5NYYCVR2ZYy7Tx","token_type":"Bearer","expires_in":3600}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '99'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 16 Mar 2021 21:18:29 GMT
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 2b6c7e184244d77a
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 2b6c7e184244d77a
+      X-B3-TraceId:
+      - 605120a5eb9f82fa2b6c7e184244d77a
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/versions
+  response:
+    body:
+      string: '{"looker_release_version":"21.0.25","current_version":{"version":"3.1","full_version":"3.1.0","status":"current","swagger_url":"https://spectacles.looker.com:19999/api/3.1/swagger.json"},"supported_versions":[{"version":"2.99","full_version":"2.99.0","status":"internal_test","swagger_url":"https://spectacles.looker.com:19999/api/2.99/swagger.json"},{"version":"3.0","full_version":"3.0.0","status":"legacy","swagger_url":"https://spectacles.looker.com:19999/api/3.0/swagger.json"},{"version":"3.1","full_version":"3.1.0","status":"current","swagger_url":"https://spectacles.looker.com:19999/api/3.1/swagger.json"},{"version":"4.0","full_version":"4.0.21.0","status":"experimental","swagger_url":"https://spectacles.looker.com:19999/api/4.0/swagger.json"}],"api_server_url":"https://spectacles.looker.com:19999"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '813'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 16 Mar 2021 21:18:29 GMT
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - b8f1962b3264e8c5
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - b8f1962b3264e8c5
+      X-B3-TraceId:
+      - 605120a5c1643e23b8f1962b3264e8c5
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"workspace_id": "production"}'
+    headers:
+      Content-Length:
+      - '30'
+      Content-Type:
+      - application/json
+    method: PATCH
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"production","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '83'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 16 Mar 2021 21:18:29 GMT
+      Server:
+      - nginx
+      Set-Cookie:
+      - looker.browser=9666; expires=Fri, 15 Mar 2024 21:18:29 GMT; HttpOnly
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - f7599c656d9c5f8d
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - f7599c656d9c5f8d
+      X-B3-TraceId:
+      - 605120a5f0e3fcf2f7599c656d9c5f8d
       X-Content-Type-Options:
       - nosniff
     status:

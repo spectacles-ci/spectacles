@@ -1,4 +1,6 @@
-from typing import List, Dict, Any, Optional, NamedTuple
+from spectacles.exceptions import LookerApiError
+from typing import List, Dict, Any, Optional
+from dataclasses import dataclass
 import itertools
 from spectacles.client import LookerClient
 from spectacles.validators import SqlValidator, DataTestValidator, ContentValidator
@@ -8,118 +10,164 @@ from spectacles.printer import print_header
 from spectacles.types import QueryMode
 
 
-class BranchState(NamedTuple):
-    """The original state of a project before checking out a temporary branch."""
-
+@dataclass
+class ProjectState:
     project: str
-    original_branch: str
-    temp_branch: Optional[str]
+    workspace: str
+    branch: str
+    commit: str
 
 
 class LookerBranchManager:
-    def __init__(
-        self,
-        client: LookerClient,
-        project: str,
-        name: Optional[str] = None,
-        remote_reset: bool = False,
-        import_projects: bool = False,
-        commit_ref: Optional[str] = None,
-    ):
+    def __init__(self, client: LookerClient, project: str, remote_reset: bool = False):
         """Context manager for Git branch checkout, creation, and deletion."""
+        logger.debug(f"Setting up branch manager in project '{project}'")
         self.client = client
         self.project = project
-        self.commit_ref = commit_ref
-        self.name = name
         self.remote_reset = remote_reset
-        self.import_projects = import_projects
 
-        # Get the current branch so we can return to it afterwards
-        self.original_branch = self.client.get_active_branch_name(self.project)
-        self.temp_branches: List[BranchState] = []
+        state: ProjectState = self.get_project_state()
+        self.workspace: str = state.workspace
+        self.history: List[ProjectState] = [state]
+        self.imports: List[str] = self.get_project_imports()
+        logger.debug(
+            f"Project '{self.project}' imports the following projects: {self.imports}"
+        )
+
+        self.commit: Optional[str] = None
+        self.branch: Optional[str] = None
+        self.is_temp_branch: bool = False
+        self.import_managers: List[LookerBranchManager] = []
+
+    def __call__(
+        self,
+        branch: Optional[str] = None,
+        commit: Optional[str] = None,
+        ephemeral: Optional[bool] = None,
+    ):
+        if branch and commit:
+            raise ValueError("Cannot call with both branch and commit.")
+        self.branch = branch
+        self.commit = commit
+        self.ephemeral = ephemeral or bool(commit)
+        self.is_temp_branch = False
+        self.import_managers = []
+        return self
 
     def __enter__(self):
-        self.client.update_workspace(self.project, self.workspace)
-        if self.commit_ref:
-            """Can't delete branches from the production workspace so we need to save
-            the starting dev branch to return to and to use as a base to delete
-            temporary branches from."""
-            starting_branch = self.client.get_active_branch_name(self.project)
-            temp_branch = self.setup_temp_branch(
-                self.project, original_branch=starting_branch
-            )
-            self.client.create_branch(self.project, temp_branch)
-            self.client.update_branch(self.project, temp_branch, self.commit_ref)
-        # If we didn't start on the desired branch, check it out
-        elif self.original_branch != self.name:
-            self.client.checkout_branch(self.project, self.name)
+        # A branch was passed, so we check it out in dev mode.
+        if self.branch:
+            self.update_workspace("dev")
+            self.client.checkout_branch(self.project, self.branch)
             if self.remote_reset:
                 self.client.reset_to_remote(self.project)
-        if self.import_projects and self.name != "master":
-            self.branch_imported_projects()
+        # A commit was passed, so we non-destructively create a temporary branch we can
+        # hard reset to the commit.
+        elif self.commit:
+            self.branch = self.checkout_temp_branch(self.commit)
+        # Neither branch nor commit were passed, so go to production.
+        else:
+            if self.init_state.workspace == "production":
+                prod_state = self.init_state
+            else:
+                self.update_workspace("production")
+                prod_state = self.get_project_state()
+            self.branch = prod_state.branch
+            self.commit = prod_state.commit
+            if self.ephemeral:
+                self.branch = self.checkout_temp_branch(f"origin/{prod_state.branch}")
+
+        logger.debug(
+            f"Set project '{self.project}' to branch '{self.branch}' @ "
+            f"{(self.commit or 'HEAD')[:6]} in {self.workspace} workspace "
+            f"[ephemeral = {self.ephemeral}]"
+        )
+
+        # Create temporary branches off production for manifest dependencies
+        if not self.imports:
+            logger.debug(f"Project '{self.project}' doesn't import any other projects")
+        elif self.workspace == "production":
+            logger.debug(
+                "In production, no need for temporary branches in imported projects"
+            )
+        else:
+            logger.debug("Creating temporary branches in imported projects")
+            for project in self.imports:
+                manager = LookerBranchManager(self.client, project)
+                manager(ephemeral=True).__enter__()
+                self.import_managers.append(manager)
 
     def __exit__(self, *args):
-        if self.temp_branches:
-            # Tear down any temporary branches
-            for project, original_branch, temp_branch in self.temp_branches:
-                self.restore_branch(project, original_branch, temp_branch)
-        self.temp_branches = []
+        message = (
+            f"Restoring project '{self.project}' to branch '{self.init_state.branch}'"
+        )
+        if self.is_temp_branch:
+            message += f" and deleting temporary branch '{self.branch}'"
+        logger.debug(message)
 
-        # Return to the starting branch
-        self.restore_branch(self.project, self.original_branch)
+        if self.is_temp_branch:
+            dev_state = self.history.pop()
+            self.client.checkout_branch(self.project, dev_state.branch)
+            self.client.delete_branch(self.project, self.branch)
+
+        for manager in self.import_managers:
+            manager.__exit__()
+
+        if self.init_state.workspace == "production":
+            self.update_workspace("production")
+        else:
+            self.update_workspace("dev")
+            self.client.checkout_branch(self.project, self.init_state.branch)
 
     @property
-    def name(self) -> Optional[str]:
-        return self._name
-
-    @name.setter
-    def name(self, name: Optional[str]):
-        self._name = name
-        # If the desired branch is master and no ref is passed, we can stay in prod
-        self.workspace = (
-            "production" if name == "master" and not self.commit_ref else "dev"
-        )
+    def init_state(self) -> ProjectState:
+        return self.history[0]
 
     @property
     def ref(self) -> Optional[str]:
-        if self.commit_ref:
-            return self.commit_ref[:6]
+        if self.commit:
+            return self.commit[:6]
         else:
-            return self.name
+            return self.branch
 
-    def setup_temp_branch(self, project: str, original_branch: str) -> str:
+    def update_workspace(self, workspace: str):
+        if workspace not in ("dev", "production"):
+            raise ValueError("Workspace can only be set to 'dev' or 'production'")
+        if self.workspace != workspace:
+            self.client.update_workspace(workspace)
+            self.workspace = workspace
+
+    def get_project_state(self) -> ProjectState:
+        workspace = self.client.get_workspace()
+        branch_info = self.client.get_active_branch(self.project)
+        return ProjectState(
+            self.project, workspace, branch_info["name"], branch_info["ref"]
+        )
+
+    def get_project_imports(self) -> List[str]:
+        try:
+            manifest = self.client.get_manifest(self.project)
+        except LookerApiError:
+            return []
+        else:
+            return [p["name"] for p in manifest["imports"] if not p["is_remote"]]
+
+    def checkout_temp_branch(self, ref: str) -> str:
+        """Creates a temporary branch off a commit or off production."""
+        # Save the dev mode state so we have somewhere to delete the temp branch
+        # from later. We can't delete branches from prod workspace.
+        self.update_workspace("dev")
+        self.history.append(self.get_project_state())
         name = "tmp_spectacles_" + time_hash()
         logger.debug(
-            f"Branch '{name}' will be restored to branch '{original_branch}' in "
-            f"project '{project}'"
+            f"Branching '{name}' off '{ref}'. "
+            f"Afterwards, restoring to branch '{self.init_state.branch}' in "
+            f"project '{self.project}'"
         )
-        self.temp_branches.append(BranchState(project, original_branch, name))
+        self.client.create_branch(self.project, name, ref)
+        self.client.hard_reset_branch(self.project, name, ref)
+        self.is_temp_branch = True
         return name
-
-    def restore_branch(
-        self, project: str, original_branch: str, temp_branch: Optional[str] = None
-    ):
-        message = f"Restoring project '{project}' to branch '{original_branch}'"
-        if temp_branch:
-            message += f" and deleting temporary branch '{temp_branch}'"
-        logger.debug(message)
-        if original_branch == "master":
-            self.client.update_workspace(project, "production")
-        else:
-            self.client.checkout_branch(project, original_branch)
-        if temp_branch:
-            self.client.delete_branch(project, temp_branch)
-
-    def branch_imported_projects(self):
-        logger.debug("Creating temporary branches in imported projects")
-        manifest = self.client.get_manifest(self.project)
-        local_dependencies = [p for p in manifest["imports"] if not p["is_remote"]]
-
-        for project in local_dependencies:
-            original_branch = self.client.get_active_branch_name(project["name"])
-            temp_branch = self.setup_temp_branch(project["name"], original_branch)
-            self.client.create_branch(project["name"], temp_branch)
-            self.client.update_branch(project["name"], temp_branch)
 
 
 class Runner:
@@ -143,31 +191,22 @@ class Runner:
         self,
         base_url: str,
         project: str,
-        branch: str,
         client_id: str,
         client_secret: str,
         port: int = 19999,
         api_version: float = 3.1,
         remote_reset: bool = False,
-        import_projects: bool = False,
-        commit_ref: Optional[str] = None,
     ):
         self.project = project
-        self.import_projects = import_projects
         self.client = LookerClient(
             base_url, client_id, client_secret, port, api_version
         )
-        self.branch_manager = LookerBranchManager(
-            self.client,
-            project,
-            branch,
-            remote_reset=remote_reset,
-            import_projects=import_projects,
-            commit_ref=commit_ref,
-        )
+        self.branch_manager = LookerBranchManager(self.client, project, remote_reset)
 
     def validate_sql(
         self,
+        branch: Optional[str],
+        commit: Optional[str],
         selectors: List[str],
         exclusions: List[str],
         mode: QueryMode = "batch",
@@ -175,7 +214,7 @@ class Runner:
         profile: bool = False,
         runtime_threshold: int = 5,
     ) -> Dict[str, Any]:
-        with self.branch_manager:
+        with self.branch_manager(branch, commit):
             validator = SqlValidator(
                 self.client, self.project, concurrency, runtime_threshold
             )
@@ -195,9 +234,13 @@ class Runner:
         return results
 
     def validate_data_tests(
-        self, selectors: List[str], exclusions: List[str]
+        self,
+        branch: Optional[str],
+        commit: Optional[str],
+        selectors: List[str],
+        exclusions: List[str],
     ) -> Dict[str, Any]:
-        with self.branch_manager:
+        with self.branch_manager(branch, commit):
             validator = DataTestValidator(self.client, self.project)
             logger.info(
                 "Building LookML project hierarchy for project "
@@ -214,12 +257,14 @@ class Runner:
 
     def validate_content(
         self,
+        branch: Optional[str],
+        commit: Optional[str],
         selectors: List[str],
         exclusions: List[str],
         incremental: bool = False,
         exclude_personal: bool = False,
     ) -> Dict[str, Any]:
-        with self.branch_manager:
+        with self.branch_manager(branch, commit):
             validator = ContentValidator(self.client, self.project, exclude_personal)
             logger.info(
                 "Building LookML project hierarchy for project "
@@ -233,11 +278,9 @@ class Runner:
                 + (" [incremental mode] " if incremental else "")
             )
             results = validator.validate()
-        if incremental and self.branch_manager.name != "master":
-            logger.debug("Starting another content validation against master")
-            self.branch_manager.commit_ref = None
-            self.branch_manager.name = "master"
-            with self.branch_manager:
+        if incremental and (self.branch_manager.branch or self.branch_manager.commit):
+            logger.debug("Starting another content validation against production")
+            with self.branch_manager():
                 logger.debug(
                     "Building LookML project hierarchy for project "
                     f"'{self.project}' @ {self.branch_manager.ref}"

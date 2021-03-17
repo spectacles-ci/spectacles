@@ -210,6 +210,13 @@ def main():
         )
     parser = create_parser()
     args = parser.parse_args()
+
+    # Normally would be cleaner to handle this with an argparse mutually exclusive
+    # group, but this doesn't work with --commit-ref and --remote-reset also needing
+    # to be mutually exclusive, so raise the error manually.
+    if getattr(args, "branch", None) and getattr(args, "commit_ref", None):
+        parser.error("argument --commit-ref not allowed with argument --branch")
+
     for handler in logger.handlers:
         handler.setLevel(args.log_level)
 
@@ -244,7 +251,6 @@ def main():
             args.api_version,
             args.mode,
             args.remote_reset,
-            args.import_projects,
             args.concurrency,
             args.commit_ref,
             args.profile,
@@ -262,7 +268,6 @@ def main():
             args.port,
             args.api_version,
             args.remote_reset,
-            args.import_projects,
             args.commit_ref,
         )
     elif args.command == "content":
@@ -277,7 +282,6 @@ def main():
             args.port,
             args.api_version,
             args.remote_reset,
-            args.import_projects,
             args.commit_ref,
             args.incremental,
             args.exclude_personal,
@@ -432,16 +436,7 @@ def _build_validator_subparser(
         "--branch",
         action=EnvVarAction,
         env_var="LOOKER_GIT_BRANCH",
-        required=True,
         help="The branch of your project that Spectacles will use to run queries.",
-    )
-    base_subparser.add_argument(
-        "--import-projects",
-        action=EnvVarStoreTrueAction,
-        env_var="SPECTACLES_IMPORT_PROJECTS",
-        help="When set to true, the SQL Validator will create temporary branches \
-            that are clones of master for any project that is a local dependency of the \
-            of the project being tested. These branches are deleted at the end of the run.",
     )
     base_subparser.add_argument(
         "--explores",
@@ -573,7 +568,7 @@ def _build_content_subparser(
     subparser.add_argument(
         "--incremental",
         action="store_true",
-        help="Only display errors which are not present on the master branch.",
+        help="Only display errors which are not present on the production branch.",
     )
 
     subparser.add_argument(
@@ -604,24 +599,16 @@ def run_content(
     port,
     api_version,
     remote_reset,
-    import_projects,
     commit_ref,
     incremental,
     exclude_personal,
 ) -> None:
     runner = Runner(
-        base_url,
-        project,
-        branch,
-        client_id,
-        client_secret,
-        port,
-        api_version,
-        remote_reset,
-        import_projects,
-        commit_ref,
+        base_url, project, client_id, client_secret, port, api_version, remote_reset
     )
-    results = runner.validate_content(explores, excludes, incremental, exclude_personal)
+    results = runner.validate_content(
+        branch, commit_ref, explores, excludes, incremental, exclude_personal
+    )
 
     for test in sorted(results["tested"], key=lambda x: (x["model"], x["explore"])):
         message = f"{test['model']}.{test['explore']}"
@@ -660,22 +647,12 @@ def run_assert(
     port,
     api_version,
     remote_reset,
-    import_projects,
     commit_ref,
 ) -> None:
     runner = Runner(
-        base_url,
-        project,
-        branch,
-        client_id,
-        client_secret,
-        port,
-        api_version,
-        remote_reset,
-        import_projects,
-        commit_ref,
+        base_url, project, client_id, client_secret, port, api_version, remote_reset
     )
-    results = runner.validate_data_tests(explores, exclude)
+    results = runner.validate_data_tests(branch, commit_ref, explores, exclude)
 
     for test in sorted(results["tested"], key=lambda x: (x["model"], x["explore"])):
         message = f"{test['model']}.{test['explore']}"
@@ -714,7 +691,6 @@ def run_sql(
     api_version,
     mode,
     remote_reset,
-    import_projects,
     concurrency,
     commit_ref,
     profile,
@@ -722,16 +698,7 @@ def run_sql(
 ) -> None:
     """Runs and validates the SQL for each selected LookML dimension."""
     runner = Runner(
-        base_url,
-        project,
-        branch,
-        client_id,
-        client_secret,
-        port,
-        api_version,
-        remote_reset,
-        import_projects,
-        commit_ref,
+        base_url, project, client_id, client_secret, port, api_version, remote_reset
     )
 
     def iter_errors(lookml: List) -> Iterable:
@@ -740,7 +707,14 @@ def run_sql(
                 yield item
 
     results = runner.validate_sql(
-        explores, exclude, mode, concurrency, profile, runtime_threshold
+        branch,
+        commit_ref,
+        explores,
+        exclude,
+        mode,
+        concurrency,
+        profile,
+        runtime_threshold,
     )
 
     for test in sorted(results["tested"], key=lambda x: (x["model"], x["explore"])):

@@ -1,5 +1,5 @@
 from spectacles.runner import Runner
-from tests.utils import build_validation
+from utils import build_validation
 
 
 def test_incremental_same_results_should_not_have_errors():

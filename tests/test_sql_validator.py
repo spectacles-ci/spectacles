@@ -52,9 +52,7 @@ class TestBuildUnconfiguredProject:
 
     def test_project_with_no_configured_models_should_raise_error(self, validator):
         validator.project.name = "eye_exam_unconfigured"
-        validator.client.update_workspace(
-            project="eye_exam_unconfigured", workspace="production"
-        )
+        validator.client.update_workspace(workspace="production")
         with pytest.raises(SpectaclesException):
             validator.build_project()
 
@@ -188,7 +186,7 @@ class TestValidateFailWithWarning:
             record_mode=record_mode,
         ):
             # Move to dev mode to test conditional logic warning
-            validator.client.update_workspace("eye_exam", "dev")
+            validator.client.update_workspace("dev")
             validator.client.checkout_branch("eye_exam", "pytest")
 
             validator.build_project(selectors=["eye_exam/users__fail_and_warn"])
@@ -230,7 +228,7 @@ class TestValidatePassWithWarning:
             record_mode=record_mode,
         ):
             # Move to dev mode to test conditional logic warning
-            validator.client.update_workspace("eye_exam", "dev")
+            validator.client.update_workspace("dev")
             validator.client.checkout_branch("eye_exam", "pytest")
 
             validator.build_project(selectors=["eye_exam/users__warn"])
