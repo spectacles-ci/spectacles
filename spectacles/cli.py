@@ -210,6 +210,13 @@ def main():
         )
     parser = create_parser()
     args = parser.parse_args()
+
+    # Normally would be cleaner to handle this with an argparse mutually exclusive
+    # group, but this doesn't work with --commit-ref and --remote-reset also needing
+    # to be mutually exclusive, so raise the error manually.
+    if args.branch and args.commit_ref:
+        parser.error("argument --commit-ref not allowed with argument --branch")
+
     for handler in logger.handlers:
         handler.setLevel(args.log_level)
 
