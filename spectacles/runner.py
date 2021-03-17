@@ -50,6 +50,8 @@ class LookerBranchManager:
         self.branch = branch
         self.commit = commit
         self.ephemeral = ephemeral or bool(commit)
+        self.is_temp_branch = False
+        self.import_managers = []
         return self
 
     def __enter__(self):
@@ -276,9 +278,9 @@ class Runner:
                 + (" [incremental mode] " if incremental else "")
             )
             results = validator.validate()
-        if incremental and self.branch_manager.workspace != "production":
+        if incremental and (self.branch_manager.branch or self.branch_manager.commit):
             logger.debug("Starting another content validation against production")
-            with self.branch_manager:
+            with self.branch_manager():
                 logger.debug(
                     "Building LookML project hierarchy for project "
                     f"'{self.project}' @ {self.branch_manager.ref}"
