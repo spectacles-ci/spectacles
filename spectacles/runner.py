@@ -82,16 +82,18 @@ class LookerBranchManager:
         )
 
         # Create temporary branches off production for manifest dependencies
-        if self.imports and self.workspace != "production":
+        if not self.imports:
+            logger.debug(f"Project '{self.project}' doesn't import any other projects")
+        elif self.workspace == "production":
+            logger.debug(
+                "In production, no need for temporary branches in imported projects"
+            )
+        else:
             logger.debug("Creating temporary branches in imported projects")
             for project in self.imports:
                 manager = LookerBranchManager(self.client, project)
                 manager(ephemeral=True).__enter__()
                 self.import_managers.append(manager)
-        else:
-            logger.debug(
-                "In production, no need for temporary branches in imported projects"
-            )
 
     def __exit__(self, *args):
         message = (
