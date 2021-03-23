@@ -176,7 +176,9 @@ class SqlValidator(Validator):
     def _create_explore_query(self, explore: Explore, model_name: str) -> Query:
         """Creates a single query with all dimensions of an explore"""
         dimensions = [dimension.name for dimension in explore.dimensions]
-        query = self.client.create_query(model_name, explore.name, dimensions)
+        query = self.client.create_query(
+            model_name, explore.name, dimensions, fields=["id", "share_url"]
+        )
         return Query(query["id"], lookml_ref=explore, explore_url=query["share_url"])
 
     def _create_dimension_queries(
@@ -185,7 +187,9 @@ class SqlValidator(Validator):
         """Creates individual queries for each dimension in an explore"""
         queries = []
         for dimension in explore.dimensions:
-            query = self.client.create_query(model_name, explore.name, [dimension.name])
+            query = self.client.create_query(
+                model_name, explore.name, [dimension.name], fields=["id", "share_url"]
+            )
             query = Query(
                 query["id"], lookml_ref=dimension, explore_url=query["share_url"]
             )

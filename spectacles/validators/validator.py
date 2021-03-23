@@ -45,7 +45,10 @@ class Validator(ABC):  # pragma: no cover
             exclusions = []
 
         all_models = [
-            Model.from_json(model) for model in self.client.get_lookml_models()
+            Model.from_json(model)
+            for model in self.client.get_lookml_models(
+                fields=["name", "project_name", "explores"]
+            )
         ]
         project_models = [
             model for model in all_models if model.project_name == self.project.name
