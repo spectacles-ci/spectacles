@@ -17,6 +17,24 @@ def test_compose_url_multiple_path_components():
     assert url == "https://test.looker.com/api/3.0/login/42/auth/27"
 
 
+def test_compose_url_multiple_path_components_and_multiple_field_params():
+    url = utils.compose_url(
+        TEST_BASE_URL,
+        ["api", "3.0", "login", "42", "auth", "27"],
+        {"fields": ["joins", "id"]},
+    )
+    assert url == "https://test.looker.com/api/3.0/login/42/auth/27?fields=joins%2Cid"
+
+
+def test_compose_url_multiple_path_components_and_one_field_params():
+    url = utils.compose_url(
+        TEST_BASE_URL,
+        ["api", "3.0", "login", "42", "auth", "27"],
+        {"fields": ["joins"]},
+    )
+    assert url == "https://test.looker.com/api/3.0/login/42/auth/27?fields=joins"
+
+
 def test_compose_url_with_extra_slashes():
     url = utils.compose_url(TEST_BASE_URL + "/", ["/api//", "3.0/login/"])
     assert url == "https://test.looker.com/api/3.0/login"

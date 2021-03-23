@@ -1,4 +1,5 @@
 from typing import List, Callable, Optional, Dict, Any
+from urllib import parse
 from spectacles.logger import GLOBAL_LOGGER as logger
 import functools
 import requests
@@ -7,11 +8,20 @@ import hashlib
 import time
 
 
-def compose_url(base_url: str, path: List) -> str:
+def compose_url(base_url: str, path: List, params: Dict = {}) -> str:
     if not isinstance(path, list):
         raise TypeError("URL path must be a list")
-    parts = [base_url] + path
-    url = "/".join(str(part).strip("/") for part in parts)
+    path_parts = [base_url] + path
+    url_with_path = "/".join(str(part).strip("/") for part in path_parts)
+
+    # comma separate each param list
+    for k in params.keys():
+        params[k] = ",".join(params[k])
+
+    encoded_params = parse.urlencode(params)
+    params_parts = [url_with_path, encoded_params]
+    url = "?".join(str(part) for part in params_parts).strip("?")
+
     return url
 
 
