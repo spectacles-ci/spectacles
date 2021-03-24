@@ -1,11 +1,21 @@
 from typing import Iterable
 import os
 import vcr
+import json
+from github import Github as GitHub, Repository
 import pytest
 from spectacles.client import LookerClient
 from spectacles.exceptions import SqlError
 from spectacles.lookml import Project, Model, Explore, Dimension
 from utils import load_resource
+
+
+def filter_access_token(response):
+    if "access_token" in response["body"]["string"].decode():
+        body = json.loads(response["body"]["string"])
+        del body["access_token"]
+        response["body"]["string"] = json.dumps(body)
+    return response
 
 
 @pytest.fixture(scope="session")
@@ -14,12 +24,14 @@ def vcr_config():
 
 
 @pytest.fixture(scope="session")
-def looker_client(record_mode) -> Iterable[LookerClient]:
+def looker_client() -> Iterable[LookerClient]:
     with vcr.use_cassette(
         "tests/cassettes/init_client.yaml",
         filter_post_data_parameters=["client_id", "client_secret"],
         filter_headers=["Authorization"],
-        record_mode=record_mode,
+        record_mode="all",
+        before_record_response=filter_access_token,
+        decode_compressed_response=True,
     ):
         client = LookerClient(
             base_url="https://spectacles.looker.com",
@@ -28,6 +40,19 @@ def looker_client(record_mode) -> Iterable[LookerClient]:
         )
         client.update_workspace("production")
         yield client
+
+
+@pytest.fixture(scope="session")
+def remote_repo() -> Repository:
+    access_token = os.environ.get("GITHUB_ACCESS_TOKEN")
+    client = GitHub(access_token)
+    with vcr.use_cassette(
+        "tests/cassettes/init_github.yaml",
+        filter_headers=["Authorization"],
+        decode_compressed_response=True,
+    ):
+        repo = client.get_repo("spectacles-ci/eye-exam")
+    return repo
 
 
 @pytest.fixture

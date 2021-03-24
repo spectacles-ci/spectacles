@@ -378,7 +378,7 @@ class LookerClient:
         full_response = self.get_active_branch(project)
         return full_response["name"]
 
-    def create_branch(self, project: str, branch: str, ref: str):
+    def create_branch(self, project: str, branch: str, ref: Optional[str] = None):
         """Creates a branch in the given project.
 
         Args:
@@ -386,11 +386,25 @@ class LookerClient:
             branch: Name of the branch to create.
             ref: The ref to create the branch from.
         """
-        logger.debug(
-            f"Creating branch '{branch}' on project '{project}' with ref '{ref}'"
+        body = {"name": branch}
+        message = f"Creating branch '{branch}' on project '{project}'"
+        detail = (
+            f"Unable to create branch '{branch}' "
+            f"in project '{project}'. "
+            "Confirm the branch doesn't already exist and try again."
         )
 
-        body = {"name": branch, "ref": ref}
+        if ref:
+            body["ref"] = ref
+            message += f" with ref '{ref}'"
+            detail = (
+                f"Unable to create branch '{branch}' "
+                f"in project '{project}' using ref '{ref}'. "
+                "Confirm the branch doesn't already exist and try again."
+            )
+
+        logger.debug(message)
+
         url = utils.compose_url(self.api_url, path=["projects", project, "git_branch"])
         response = self.post(url=url, json=body, timeout=TIMEOUT_SEC)
 
@@ -401,11 +415,7 @@ class LookerClient:
                 name="unable-to-create-branch",
                 title="Couldn't create new Git branch.",
                 status=response.status_code,
-                detail=(
-                    f"Unable to create branch '{branch}' "
-                    f"in project '{project}' using ref '{ref}'. "
-                    "Confirm the branch doesn't already exist and try again."
-                ),
+                detail=detail,
                 response=response,
             )
 
@@ -555,7 +565,7 @@ class LookerClient:
 
         return response.json()
 
-    def get_lookml_models(self) -> List[JsonDict]:
+    def get_lookml_models(self, fields: List = []) -> List[JsonDict]:
         """Gets all models and explores from the LookmlModel endpoint.
 
         Returns:
@@ -563,7 +573,12 @@ class LookerClient:
 
         """
         logger.debug(f"Getting all models and explores from {self.base_url}")
-        url = utils.compose_url(self.api_url, path=["lookml_models"])
+
+        params = {}
+        if fields:
+            params["fields"] = fields
+
+        url = utils.compose_url(self.api_url, path=["lookml_models"], params=params)
         response = self.get(url=url, timeout=TIMEOUT_SEC)
         try:
             response.raise_for_status()
@@ -591,8 +606,11 @@ class LookerClient:
 
         """
         logger.debug(f"Getting all dimensions from explore {explore}")
+        params = {"fields": ["fields"]}
         url = utils.compose_url(
-            self.api_url, path=["lookml_models", model, "explores", explore]
+            self.api_url,
+            path=["lookml_models", model, "explores", explore],
+            params=params,
         )
         response = self.get(url=url, timeout=TIMEOUT_SEC)
         try:
@@ -612,7 +630,9 @@ class LookerClient:
         return response.json()["fields"]["dimensions"]
 
     @backoff.on_exception(backoff.expo, (Timeout,), max_tries=2)
-    def create_query(self, model: str, explore: str, dimensions: List[str]) -> Dict:
+    def create_query(
+        self, model: str, explore: str, dimensions: List[str], fields: List = []
+    ) -> Dict:
         """Creates a Looker async query for one or more specified dimensions.
 
         The query created is a SELECT query, selecting all dimensions specified for a
@@ -636,7 +656,12 @@ class LookerClient:
             "limit": 0,
             "filter_expression": "1=2",
         }
-        url = utils.compose_url(self.api_url, path=["queries"])
+
+        params = {}
+        if fields:
+            params["fields"] = fields
+
+        url = utils.compose_url(self.api_url, path=["queries"], params=params)
         response = self.post(url=url, json=body, timeout=TIMEOUT_SEC)
         try:
             response.raise_for_status()
@@ -682,7 +707,8 @@ class LookerClient:
         # Using old-style string formatting so that strings are formatted lazily
         logger.debug("Starting query %d", query_id)
         body = {"query_id": query_id, "result_format": "json_detail"}
-        url = utils.compose_url(self.api_url, path=["query_tasks"])
+        params = {"fields": ["id"]}
+        url = utils.compose_url(self.api_url, path=["query_tasks"], params=params)
 
         response = self.post(
             url=url, json=body, params={"cache": "false"}, timeout=TIMEOUT_SEC

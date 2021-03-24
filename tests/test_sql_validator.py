@@ -7,7 +7,7 @@ from spectacles.validators import SqlValidator
 from spectacles.validators.sql import Query, QueryResult
 from spectacles.exceptions import SpectaclesException
 
-EXPECTED_QUERY_COUNTS = {"models": 1, "explores": 1, "dimensions": 5}
+EXPECTED_QUERY_COUNTS = {"models": 1, "explores": 1, "dimensions": 6}
 
 
 @pytest.fixture(scope="class")
@@ -156,9 +156,9 @@ class TestValidateFail:
 
     def test_in_hybrid_mode_should_run_n_queries(self, validator_fail):
         validator = validator_fail[0]
-        assert (
-            len(validator._query_by_task_id) == 1 + EXPECTED_QUERY_COUNTS["dimensions"]
-        )
+        # The failing explore has one fewer dimension to induce content errors, so we
+        # add one for hybrid mode and subtract one for the removed dimension.
+        assert len(validator._query_by_task_id) == EXPECTED_QUERY_COUNTS["dimensions"]
 
     def test_should_set_errored(self, validator_fail):
         validator = validator_fail[0]
@@ -195,9 +195,9 @@ class TestValidateFailWithWarning:
 
     def test_in_hybrid_mode_should_run_n_queries(self, validator_fail_with_warning):
         validator = validator_fail_with_warning[0]
-        assert (
-            len(validator._query_by_task_id) == 1 + EXPECTED_QUERY_COUNTS["dimensions"]
-        )
+        # The failing explore has one fewer dimension to induce content errors, so we
+        # add one for hybrid mode and subtract one for the removed dimension.
+        assert len(validator._query_by_task_id) == EXPECTED_QUERY_COUNTS["dimensions"]
 
     def test_should_set_errored_and_queried(self, validator_fail_with_warning):
         validator = validator_fail_with_warning[0]
