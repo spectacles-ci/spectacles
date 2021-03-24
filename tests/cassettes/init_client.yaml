@@ -13,12 +13,12 @@ interactions:
       Content-Type:
       - application/x-www-form-urlencoded
       User-Agent:
-      - python-requests/2.22.0
+      - python-requests/2.25.1
     method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/login
   response:
     body:
-      string: '{"access_token":"VCwbGNgJ83aaahwp9qymqr8Kz2YgKc3Q5NYCm5PQ","token_type":"Bearer","expires_in":3600}'
+      string: '{"token_type": "Bearer", "expires_in": 3600}'
     headers:
       Connection:
       - keep-alive
@@ -27,115 +27,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 13 May 2020 23:41:04 GMT
-      Server:
-      - nginx
-      Vary:
-      - Accept-Encoding
-      X-Content-Type-Options:
-      - nosniff
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers: {}
-    method: GET
-    uri: https://spectacles.looker.com:19999/api/3.1/versions
-  response:
-    body:
-      string: '{"looker_release_version":"7.6.17","current_version":{"version":"3.1","full_version":"3.1.0","status":"current","swagger_url":"https://spectacles.looker.com:19999/api/3.1/swagger.json"},"supported_versions":[{"version":"2.99","full_version":"2.99.0","status":"internal_test","swagger_url":"https://spectacles.looker.com:19999/api/2.99/swagger.json"},{"version":"3.0","full_version":"3.0.0","status":"legacy","swagger_url":"https://spectacles.looker.com:19999/api/3.0/swagger.json"},{"version":"3.1","full_version":"3.1.0","status":"current","swagger_url":"https://spectacles.looker.com:19999/api/3.1/swagger.json"},{"version":"4.0","full_version":"4.0.7.6","status":"experimental","swagger_url":"https://spectacles.looker.com:19999/api/4.0/swagger.json"}]}'
-    headers:
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '756'
-      Content-Type:
-      - application/json
-      Date:
-      - Wed, 13 May 2020 23:41:04 GMT
-      Server:
-      - nginx
-      Vary:
-      - Accept-Encoding
-      X-Content-Type-Options:
-      - nosniff
-    status:
-      code: 200
-      message: OK
-- request:
-    body: '{"workspace_id": "production"}'
-    headers:
-      Content-Length:
-      - '30'
-      Content-Type:
-      - application/json
-    method: PATCH
-    uri: https://spectacles.looker.com:19999/api/3.1/session
-  response:
-    body:
-      string: '{"workspace_id":"production","sudo_user_id":null,"can":{"view":true,"update":true}}'
-    headers:
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '83'
-      Content-Type:
-      - application/json
-      Date:
-      - Wed, 13 May 2020 23:41:04 GMT
-      Server:
-      - nginx
-      Set-Cookie:
-      - looker.browser=4560; expires=Sat, 13 May 2023 23:41:04 -0000; HttpOnly
-      Vary:
-      - Accept-Encoding
-      X-Content-Type-Options:
-      - nosniff
-    status:
-      code: 200
-      message: OK
-- request:
-    body: ''
-    headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip, deflate
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '69'
-      Content-Type:
-      - application/x-www-form-urlencoded
-      User-Agent:
-      - python-requests/2.24.0
-    method: POST
-    uri: https://spectacles.looker.com:19999/api/3.1/login
-  response:
-    body:
-      string: '{"access_token":"CwXfQDRpDc8TwKTVRM6fp7FXgP5NYYCVR2ZYy7Tx","token_type":"Bearer","expires_in":3600}'
-    headers:
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '99'
-      Content-Type:
-      - application/json
-      Date:
-      - Tue, 16 Mar 2021 21:18:29 GMT
+      - Wed, 24 Mar 2021 17:54:36 GMT
       Server:
       - nginx
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 2b6c7e184244d77a
+      - da91e9210c047697
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 2b6c7e184244d77a
+      - da91e9210c047697
       X-B3-TraceId:
-      - 605120a5eb9f82fa2b6c7e184244d77a
+      - 605b7cdb7c72bbdfda91e9210c047697
       X-Content-Type-Options:
       - nosniff
     status:
@@ -157,19 +61,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 16 Mar 2021 21:18:29 GMT
+      - Wed, 24 Mar 2021 17:54:36 GMT
       Server:
       - nginx
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - b8f1962b3264e8c5
+      - 86797cecdaa282da
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - b8f1962b3264e8c5
+      - 86797cecdaa282da
       X-B3-TraceId:
-      - 605120a5c1643e23b8f1962b3264e8c5
+      - 605b7cdcf7a85cb186797cecdaa282da
       X-Content-Type-Options:
       - nosniff
     status:
@@ -195,23 +99,485 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 16 Mar 2021 21:18:29 GMT
+      - Wed, 24 Mar 2021 17:54:36 GMT
       Server:
       - nginx
       Set-Cookie:
-      - looker.browser=9666; expires=Fri, 15 Mar 2024 21:18:29 GMT; HttpOnly
+      - looker.browser=9763; expires=Sat, 23 Mar 2024 17:54:36 GMT; HttpOnly
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - f7599c656d9c5f8d
+      - a42e73d0cc318315
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - f7599c656d9c5f8d
+      - a42e73d0cc318315
       X-B3-TraceId:
-      - 605120a5f0e3fcf2f7599c656d9c5f8d
+      - 605b7cdcaf128b08a42e73d0cc318315
       X-Content-Type-Options:
       - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - PyGithub/Python
+    method: GET
+    uri: https://api.github.com/repos/spectacles-ci/eye-exam
+  response:
+    body:
+      string: '{"id":231133313,"node_id":"MDEwOlJlcG9zaXRvcnkyMzExMzMzMTM=","name":"eye-exam","full_name":"spectacles-ci/eye-exam","private":true,"owner":{"login":"spectacles-ci","id":56096720,"node_id":"MDEyOk9yZ2FuaXphdGlvbjU2MDk2NzIw","avatar_url":"https://avatars.githubusercontent.com/u/56096720?v=4","gravatar_id":"","url":"https://api.github.com/users/spectacles-ci","html_url":"https://github.com/spectacles-ci","followers_url":"https://api.github.com/users/spectacles-ci/followers","following_url":"https://api.github.com/users/spectacles-ci/following{/other_user}","gists_url":"https://api.github.com/users/spectacles-ci/gists{/gist_id}","starred_url":"https://api.github.com/users/spectacles-ci/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/spectacles-ci/subscriptions","organizations_url":"https://api.github.com/users/spectacles-ci/orgs","repos_url":"https://api.github.com/users/spectacles-ci/repos","events_url":"https://api.github.com/users/spectacles-ci/events{/privacy}","received_events_url":"https://api.github.com/users/spectacles-ci/received_events","type":"Organization","site_admin":false},"html_url":"https://github.com/spectacles-ci/eye-exam","description":"Looker
+        project for benchmarking and testing","fork":false,"url":"https://api.github.com/repos/spectacles-ci/eye-exam","forks_url":"https://api.github.com/repos/spectacles-ci/eye-exam/forks","keys_url":"https://api.github.com/repos/spectacles-ci/eye-exam/keys{/key_id}","collaborators_url":"https://api.github.com/repos/spectacles-ci/eye-exam/collaborators{/collaborator}","teams_url":"https://api.github.com/repos/spectacles-ci/eye-exam/teams","hooks_url":"https://api.github.com/repos/spectacles-ci/eye-exam/hooks","issue_events_url":"https://api.github.com/repos/spectacles-ci/eye-exam/issues/events{/number}","events_url":"https://api.github.com/repos/spectacles-ci/eye-exam/events","assignees_url":"https://api.github.com/repos/spectacles-ci/eye-exam/assignees{/user}","branches_url":"https://api.github.com/repos/spectacles-ci/eye-exam/branches{/branch}","tags_url":"https://api.github.com/repos/spectacles-ci/eye-exam/tags","blobs_url":"https://api.github.com/repos/spectacles-ci/eye-exam/git/blobs{/sha}","git_tags_url":"https://api.github.com/repos/spectacles-ci/eye-exam/git/tags{/sha}","git_refs_url":"https://api.github.com/repos/spectacles-ci/eye-exam/git/refs{/sha}","trees_url":"https://api.github.com/repos/spectacles-ci/eye-exam/git/trees{/sha}","statuses_url":"https://api.github.com/repos/spectacles-ci/eye-exam/statuses/{sha}","languages_url":"https://api.github.com/repos/spectacles-ci/eye-exam/languages","stargazers_url":"https://api.github.com/repos/spectacles-ci/eye-exam/stargazers","contributors_url":"https://api.github.com/repos/spectacles-ci/eye-exam/contributors","subscribers_url":"https://api.github.com/repos/spectacles-ci/eye-exam/subscribers","subscription_url":"https://api.github.com/repos/spectacles-ci/eye-exam/subscription","commits_url":"https://api.github.com/repos/spectacles-ci/eye-exam/commits{/sha}","git_commits_url":"https://api.github.com/repos/spectacles-ci/eye-exam/git/commits{/sha}","comments_url":"https://api.github.com/repos/spectacles-ci/eye-exam/comments{/number}","issue_comment_url":"https://api.github.com/repos/spectacles-ci/eye-exam/issues/comments{/number}","contents_url":"https://api.github.com/repos/spectacles-ci/eye-exam/contents/{+path}","compare_url":"https://api.github.com/repos/spectacles-ci/eye-exam/compare/{base}...{head}","merges_url":"https://api.github.com/repos/spectacles-ci/eye-exam/merges","archive_url":"https://api.github.com/repos/spectacles-ci/eye-exam/{archive_format}{/ref}","downloads_url":"https://api.github.com/repos/spectacles-ci/eye-exam/downloads","issues_url":"https://api.github.com/repos/spectacles-ci/eye-exam/issues{/number}","pulls_url":"https://api.github.com/repos/spectacles-ci/eye-exam/pulls{/number}","milestones_url":"https://api.github.com/repos/spectacles-ci/eye-exam/milestones{/number}","notifications_url":"https://api.github.com/repos/spectacles-ci/eye-exam/notifications{?since,all,participating}","labels_url":"https://api.github.com/repos/spectacles-ci/eye-exam/labels{/name}","releases_url":"https://api.github.com/repos/spectacles-ci/eye-exam/releases{/id}","deployments_url":"https://api.github.com/repos/spectacles-ci/eye-exam/deployments","created_at":"2019-12-31T18:38:47Z","updated_at":"2021-03-24T13:59:41Z","pushed_at":"2021-03-24T17:54:53Z","git_url":"git://github.com/spectacles-ci/eye-exam.git","ssh_url":"git@github.com:spectacles-ci/eye-exam.git","clone_url":"https://github.com/spectacles-ci/eye-exam.git","svn_url":"https://github.com/spectacles-ci/eye-exam","homepage":null,"size":34,"stargazers_count":0,"watchers_count":0,"language":"LookML","has_issues":true,"has_projects":true,"has_downloads":true,"has_wiki":true,"has_pages":false,"forks_count":0,"mirror_url":null,"archived":false,"disabled":false,"open_issues_count":15,"license":null,"forks":0,"open_issues":15,"watchers":0,"default_branch":"master","permissions":{"admin":true,"push":true,"pull":true},"temp_clone_token":"ACCFHK2BZSXT3MXCRZFB3VLALN7B6","allow_squash_merge":true,"allow_merge_commit":true,"allow_rebase_merge":true,"delete_branch_on_merge":false,"organization":{"login":"spectacles-ci","id":56096720,"node_id":"MDEyOk9yZ2FuaXphdGlvbjU2MDk2NzIw","avatar_url":"https://avatars.githubusercontent.com/u/56096720?v=4","gravatar_id":"","url":"https://api.github.com/users/spectacles-ci","html_url":"https://github.com/spectacles-ci","followers_url":"https://api.github.com/users/spectacles-ci/followers","following_url":"https://api.github.com/users/spectacles-ci/following{/other_user}","gists_url":"https://api.github.com/users/spectacles-ci/gists{/gist_id}","starred_url":"https://api.github.com/users/spectacles-ci/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/spectacles-ci/subscriptions","organizations_url":"https://api.github.com/users/spectacles-ci/orgs","repos_url":"https://api.github.com/users/spectacles-ci/repos","events_url":"https://api.github.com/users/spectacles-ci/events{/privacy}","received_events_url":"https://api.github.com/users/spectacles-ci/received_events","type":"Organization","site_admin":false},"network_count":0,"subscribers_count":1}'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes,
+        X-Poll-Interval, X-GitHub-Media-Type, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 24 Mar 2021 17:54:59 GMT
+      ETag:
+      - W/"f14eb94791009874f714c32a89fd5f66da3016df6c41b398bdd5adca924a1fbb"
+      Last-Modified:
+      - Wed, 24 Mar 2021 13:59:41 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - repo
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; format=json
+      X-GitHub-Request-Id:
+      - E771:2CB9:E0BF7A:175243E:605B7CF2
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4976'
+      X-RateLimit-Reset:
+      - '1616610426'
+      X-RateLimit-Used:
+      - '24'
+      X-XSS-Protection:
+      - '0'
+      content-length:
+      - '6297'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '69'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      User-Agent:
+      - python-requests/2.25.1
+    method: POST
+    uri: https://spectacles.looker.com:19999/api/3.1/login
+  response:
+    body:
+      string: '{"token_type": "Bearer", "expires_in": 3600}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '99'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 24 Mar 2021 17:56:52 GMT
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 3bf4575988684644
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 3bf4575988684644
+      X-B3-TraceId:
+      - 605b7d64868b0d983bf4575988684644
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/versions
+  response:
+    body:
+      string: '{"looker_release_version":"21.0.25","current_version":{"version":"3.1","full_version":"3.1.0","status":"current","swagger_url":"https://spectacles.looker.com:19999/api/3.1/swagger.json"},"supported_versions":[{"version":"2.99","full_version":"2.99.0","status":"internal_test","swagger_url":"https://spectacles.looker.com:19999/api/2.99/swagger.json"},{"version":"3.0","full_version":"3.0.0","status":"legacy","swagger_url":"https://spectacles.looker.com:19999/api/3.0/swagger.json"},{"version":"3.1","full_version":"3.1.0","status":"current","swagger_url":"https://spectacles.looker.com:19999/api/3.1/swagger.json"},{"version":"4.0","full_version":"4.0.21.0","status":"experimental","swagger_url":"https://spectacles.looker.com:19999/api/4.0/swagger.json"}],"api_server_url":"https://spectacles.looker.com:19999"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '813'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 24 Mar 2021 17:56:52 GMT
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 6378edb10befd344
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 6378edb10befd344
+      X-B3-TraceId:
+      - 605b7d64dc6cc22a6378edb10befd344
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"workspace_id": "production"}'
+    headers:
+      Content-Length:
+      - '30'
+      Content-Type:
+      - application/json
+    method: PATCH
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"production","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '83'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 24 Mar 2021 17:56:52 GMT
+      Server:
+      - nginx
+      Set-Cookie:
+      - looker.browser=9764; expires=Sat, 23 Mar 2024 17:56:52 GMT; HttpOnly
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 35922d4e3ce87b61
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 35922d4e3ce87b61
+      X-B3-TraceId:
+      - 605b7d642705cafb35922d4e3ce87b61
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - PyGithub/Python
+    method: GET
+    uri: https://api.github.com/repos/spectacles-ci/eye-exam
+  response:
+    body:
+      string: '{"id":231133313,"node_id":"MDEwOlJlcG9zaXRvcnkyMzExMzMzMTM=","name":"eye-exam","full_name":"spectacles-ci/eye-exam","private":true,"owner":{"login":"spectacles-ci","id":56096720,"node_id":"MDEyOk9yZ2FuaXphdGlvbjU2MDk2NzIw","avatar_url":"https://avatars.githubusercontent.com/u/56096720?v=4","gravatar_id":"","url":"https://api.github.com/users/spectacles-ci","html_url":"https://github.com/spectacles-ci","followers_url":"https://api.github.com/users/spectacles-ci/followers","following_url":"https://api.github.com/users/spectacles-ci/following{/other_user}","gists_url":"https://api.github.com/users/spectacles-ci/gists{/gist_id}","starred_url":"https://api.github.com/users/spectacles-ci/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/spectacles-ci/subscriptions","organizations_url":"https://api.github.com/users/spectacles-ci/orgs","repos_url":"https://api.github.com/users/spectacles-ci/repos","events_url":"https://api.github.com/users/spectacles-ci/events{/privacy}","received_events_url":"https://api.github.com/users/spectacles-ci/received_events","type":"Organization","site_admin":false},"html_url":"https://github.com/spectacles-ci/eye-exam","description":"Looker
+        project for benchmarking and testing","fork":false,"url":"https://api.github.com/repos/spectacles-ci/eye-exam","forks_url":"https://api.github.com/repos/spectacles-ci/eye-exam/forks","keys_url":"https://api.github.com/repos/spectacles-ci/eye-exam/keys{/key_id}","collaborators_url":"https://api.github.com/repos/spectacles-ci/eye-exam/collaborators{/collaborator}","teams_url":"https://api.github.com/repos/spectacles-ci/eye-exam/teams","hooks_url":"https://api.github.com/repos/spectacles-ci/eye-exam/hooks","issue_events_url":"https://api.github.com/repos/spectacles-ci/eye-exam/issues/events{/number}","events_url":"https://api.github.com/repos/spectacles-ci/eye-exam/events","assignees_url":"https://api.github.com/repos/spectacles-ci/eye-exam/assignees{/user}","branches_url":"https://api.github.com/repos/spectacles-ci/eye-exam/branches{/branch}","tags_url":"https://api.github.com/repos/spectacles-ci/eye-exam/tags","blobs_url":"https://api.github.com/repos/spectacles-ci/eye-exam/git/blobs{/sha}","git_tags_url":"https://api.github.com/repos/spectacles-ci/eye-exam/git/tags{/sha}","git_refs_url":"https://api.github.com/repos/spectacles-ci/eye-exam/git/refs{/sha}","trees_url":"https://api.github.com/repos/spectacles-ci/eye-exam/git/trees{/sha}","statuses_url":"https://api.github.com/repos/spectacles-ci/eye-exam/statuses/{sha}","languages_url":"https://api.github.com/repos/spectacles-ci/eye-exam/languages","stargazers_url":"https://api.github.com/repos/spectacles-ci/eye-exam/stargazers","contributors_url":"https://api.github.com/repos/spectacles-ci/eye-exam/contributors","subscribers_url":"https://api.github.com/repos/spectacles-ci/eye-exam/subscribers","subscription_url":"https://api.github.com/repos/spectacles-ci/eye-exam/subscription","commits_url":"https://api.github.com/repos/spectacles-ci/eye-exam/commits{/sha}","git_commits_url":"https://api.github.com/repos/spectacles-ci/eye-exam/git/commits{/sha}","comments_url":"https://api.github.com/repos/spectacles-ci/eye-exam/comments{/number}","issue_comment_url":"https://api.github.com/repos/spectacles-ci/eye-exam/issues/comments{/number}","contents_url":"https://api.github.com/repos/spectacles-ci/eye-exam/contents/{+path}","compare_url":"https://api.github.com/repos/spectacles-ci/eye-exam/compare/{base}...{head}","merges_url":"https://api.github.com/repos/spectacles-ci/eye-exam/merges","archive_url":"https://api.github.com/repos/spectacles-ci/eye-exam/{archive_format}{/ref}","downloads_url":"https://api.github.com/repos/spectacles-ci/eye-exam/downloads","issues_url":"https://api.github.com/repos/spectacles-ci/eye-exam/issues{/number}","pulls_url":"https://api.github.com/repos/spectacles-ci/eye-exam/pulls{/number}","milestones_url":"https://api.github.com/repos/spectacles-ci/eye-exam/milestones{/number}","notifications_url":"https://api.github.com/repos/spectacles-ci/eye-exam/notifications{?since,all,participating}","labels_url":"https://api.github.com/repos/spectacles-ci/eye-exam/labels{/name}","releases_url":"https://api.github.com/repos/spectacles-ci/eye-exam/releases{/id}","deployments_url":"https://api.github.com/repos/spectacles-ci/eye-exam/deployments","created_at":"2019-12-31T18:38:47Z","updated_at":"2021-03-24T13:59:41Z","pushed_at":"2021-03-24T17:56:57Z","git_url":"git://github.com/spectacles-ci/eye-exam.git","ssh_url":"git@github.com:spectacles-ci/eye-exam.git","clone_url":"https://github.com/spectacles-ci/eye-exam.git","svn_url":"https://github.com/spectacles-ci/eye-exam","homepage":null,"size":34,"stargazers_count":0,"watchers_count":0,"language":"LookML","has_issues":true,"has_projects":true,"has_downloads":true,"has_wiki":true,"has_pages":false,"forks_count":0,"mirror_url":null,"archived":false,"disabled":false,"open_issues_count":15,"license":null,"forks":0,"open_issues":15,"watchers":0,"default_branch":"master","permissions":{"admin":true,"push":true,"pull":true},"temp_clone_token":"ACCFHK66DAU76KAU4S47KWLALN7KK","allow_squash_merge":true,"allow_merge_commit":true,"allow_rebase_merge":true,"delete_branch_on_merge":false,"organization":{"login":"spectacles-ci","id":56096720,"node_id":"MDEyOk9yZ2FuaXphdGlvbjU2MDk2NzIw","avatar_url":"https://avatars.githubusercontent.com/u/56096720?v=4","gravatar_id":"","url":"https://api.github.com/users/spectacles-ci","html_url":"https://github.com/spectacles-ci","followers_url":"https://api.github.com/users/spectacles-ci/followers","following_url":"https://api.github.com/users/spectacles-ci/following{/other_user}","gists_url":"https://api.github.com/users/spectacles-ci/gists{/gist_id}","starred_url":"https://api.github.com/users/spectacles-ci/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/spectacles-ci/subscriptions","organizations_url":"https://api.github.com/users/spectacles-ci/orgs","repos_url":"https://api.github.com/users/spectacles-ci/repos","events_url":"https://api.github.com/users/spectacles-ci/events{/privacy}","received_events_url":"https://api.github.com/users/spectacles-ci/received_events","type":"Organization","site_admin":false},"network_count":0,"subscribers_count":1}'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes,
+        X-Poll-Interval, X-GitHub-Media-Type, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 24 Mar 2021 17:57:13 GMT
+      ETag:
+      - W/"bfdde687a10772068db223d4ca1ad4489dcedf29947f5c61d8ee1bc5d1b76fc2"
+      Last-Modified:
+      - Wed, 24 Mar 2021 13:59:41 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - repo
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; format=json
+      X-GitHub-Request-Id:
+      - E7BB:6546:D28634:15C001F:605B7D78
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4968'
+      X-RateLimit-Reset:
+      - '1616610426'
+      X-RateLimit-Used:
+      - '32'
+      X-XSS-Protection:
+      - '0'
+      content-length:
+      - '6297'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '69'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      User-Agent:
+      - python-requests/2.25.1
+    method: POST
+    uri: https://spectacles.looker.com:19999/api/3.1/login
+  response:
+    body:
+      string: '{"token_type": "Bearer", "expires_in": 3600}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '99'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 24 Mar 2021 17:58:02 GMT
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 759cf83d48d6102e
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 759cf83d48d6102e
+      X-B3-TraceId:
+      - 605b7daa4e83978c759cf83d48d6102e
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/versions
+  response:
+    body:
+      string: '{"looker_release_version":"21.0.25","current_version":{"version":"3.1","full_version":"3.1.0","status":"current","swagger_url":"https://spectacles.looker.com:19999/api/3.1/swagger.json"},"supported_versions":[{"version":"2.99","full_version":"2.99.0","status":"internal_test","swagger_url":"https://spectacles.looker.com:19999/api/2.99/swagger.json"},{"version":"3.0","full_version":"3.0.0","status":"legacy","swagger_url":"https://spectacles.looker.com:19999/api/3.0/swagger.json"},{"version":"3.1","full_version":"3.1.0","status":"current","swagger_url":"https://spectacles.looker.com:19999/api/3.1/swagger.json"},{"version":"4.0","full_version":"4.0.21.0","status":"experimental","swagger_url":"https://spectacles.looker.com:19999/api/4.0/swagger.json"}],"api_server_url":"https://spectacles.looker.com:19999"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '813'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 24 Mar 2021 17:58:02 GMT
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 4f476539e426a41d
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 4f476539e426a41d
+      X-B3-TraceId:
+      - 605b7daa5ade86954f476539e426a41d
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"workspace_id": "production"}'
+    headers:
+      Content-Length:
+      - '30'
+      Content-Type:
+      - application/json
+    method: PATCH
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"production","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '83'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 24 Mar 2021 17:58:02 GMT
+      Server:
+      - nginx
+      Set-Cookie:
+      - looker.browser=9765; expires=Sat, 23 Mar 2024 17:58:02 GMT; HttpOnly
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 70f9635ae320d5c0
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 70f9635ae320d5c0
+      X-B3-TraceId:
+      - 605b7daa01d1edd170f9635ae320d5c0
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - PyGithub/Python
+    method: GET
+    uri: https://api.github.com/repos/spectacles-ci/eye-exam
+  response:
+    body:
+      string: '{"id":231133313,"node_id":"MDEwOlJlcG9zaXRvcnkyMzExMzMzMTM=","name":"eye-exam","full_name":"spectacles-ci/eye-exam","private":true,"owner":{"login":"spectacles-ci","id":56096720,"node_id":"MDEyOk9yZ2FuaXphdGlvbjU2MDk2NzIw","avatar_url":"https://avatars.githubusercontent.com/u/56096720?v=4","gravatar_id":"","url":"https://api.github.com/users/spectacles-ci","html_url":"https://github.com/spectacles-ci","followers_url":"https://api.github.com/users/spectacles-ci/followers","following_url":"https://api.github.com/users/spectacles-ci/following{/other_user}","gists_url":"https://api.github.com/users/spectacles-ci/gists{/gist_id}","starred_url":"https://api.github.com/users/spectacles-ci/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/spectacles-ci/subscriptions","organizations_url":"https://api.github.com/users/spectacles-ci/orgs","repos_url":"https://api.github.com/users/spectacles-ci/repos","events_url":"https://api.github.com/users/spectacles-ci/events{/privacy}","received_events_url":"https://api.github.com/users/spectacles-ci/received_events","type":"Organization","site_admin":false},"html_url":"https://github.com/spectacles-ci/eye-exam","description":"Looker
+        project for benchmarking and testing","fork":false,"url":"https://api.github.com/repos/spectacles-ci/eye-exam","forks_url":"https://api.github.com/repos/spectacles-ci/eye-exam/forks","keys_url":"https://api.github.com/repos/spectacles-ci/eye-exam/keys{/key_id}","collaborators_url":"https://api.github.com/repos/spectacles-ci/eye-exam/collaborators{/collaborator}","teams_url":"https://api.github.com/repos/spectacles-ci/eye-exam/teams","hooks_url":"https://api.github.com/repos/spectacles-ci/eye-exam/hooks","issue_events_url":"https://api.github.com/repos/spectacles-ci/eye-exam/issues/events{/number}","events_url":"https://api.github.com/repos/spectacles-ci/eye-exam/events","assignees_url":"https://api.github.com/repos/spectacles-ci/eye-exam/assignees{/user}","branches_url":"https://api.github.com/repos/spectacles-ci/eye-exam/branches{/branch}","tags_url":"https://api.github.com/repos/spectacles-ci/eye-exam/tags","blobs_url":"https://api.github.com/repos/spectacles-ci/eye-exam/git/blobs{/sha}","git_tags_url":"https://api.github.com/repos/spectacles-ci/eye-exam/git/tags{/sha}","git_refs_url":"https://api.github.com/repos/spectacles-ci/eye-exam/git/refs{/sha}","trees_url":"https://api.github.com/repos/spectacles-ci/eye-exam/git/trees{/sha}","statuses_url":"https://api.github.com/repos/spectacles-ci/eye-exam/statuses/{sha}","languages_url":"https://api.github.com/repos/spectacles-ci/eye-exam/languages","stargazers_url":"https://api.github.com/repos/spectacles-ci/eye-exam/stargazers","contributors_url":"https://api.github.com/repos/spectacles-ci/eye-exam/contributors","subscribers_url":"https://api.github.com/repos/spectacles-ci/eye-exam/subscribers","subscription_url":"https://api.github.com/repos/spectacles-ci/eye-exam/subscription","commits_url":"https://api.github.com/repos/spectacles-ci/eye-exam/commits{/sha}","git_commits_url":"https://api.github.com/repos/spectacles-ci/eye-exam/git/commits{/sha}","comments_url":"https://api.github.com/repos/spectacles-ci/eye-exam/comments{/number}","issue_comment_url":"https://api.github.com/repos/spectacles-ci/eye-exam/issues/comments{/number}","contents_url":"https://api.github.com/repos/spectacles-ci/eye-exam/contents/{+path}","compare_url":"https://api.github.com/repos/spectacles-ci/eye-exam/compare/{base}...{head}","merges_url":"https://api.github.com/repos/spectacles-ci/eye-exam/merges","archive_url":"https://api.github.com/repos/spectacles-ci/eye-exam/{archive_format}{/ref}","downloads_url":"https://api.github.com/repos/spectacles-ci/eye-exam/downloads","issues_url":"https://api.github.com/repos/spectacles-ci/eye-exam/issues{/number}","pulls_url":"https://api.github.com/repos/spectacles-ci/eye-exam/pulls{/number}","milestones_url":"https://api.github.com/repos/spectacles-ci/eye-exam/milestones{/number}","notifications_url":"https://api.github.com/repos/spectacles-ci/eye-exam/notifications{?since,all,participating}","labels_url":"https://api.github.com/repos/spectacles-ci/eye-exam/labels{/name}","releases_url":"https://api.github.com/repos/spectacles-ci/eye-exam/releases{/id}","deployments_url":"https://api.github.com/repos/spectacles-ci/eye-exam/deployments","created_at":"2019-12-31T18:38:47Z","updated_at":"2021-03-24T13:59:41Z","pushed_at":"2021-03-24T17:57:28Z","git_url":"git://github.com/spectacles-ci/eye-exam.git","ssh_url":"git@github.com:spectacles-ci/eye-exam.git","clone_url":"https://github.com/spectacles-ci/eye-exam.git","svn_url":"https://github.com/spectacles-ci/eye-exam","homepage":null,"size":34,"stargazers_count":0,"watchers_count":0,"language":"LookML","has_issues":true,"has_projects":true,"has_downloads":true,"has_wiki":true,"has_pages":false,"forks_count":0,"mirror_url":null,"archived":false,"disabled":false,"open_issues_count":15,"license":null,"forks":0,"open_issues":15,"watchers":0,"default_branch":"master","permissions":{"admin":true,"push":true,"pull":true},"temp_clone_token":"ACCFHK6ZZHEKR4HMDN6NCPTALN7PM","allow_squash_merge":true,"allow_merge_commit":true,"allow_rebase_merge":true,"delete_branch_on_merge":false,"organization":{"login":"spectacles-ci","id":56096720,"node_id":"MDEyOk9yZ2FuaXphdGlvbjU2MDk2NzIw","avatar_url":"https://avatars.githubusercontent.com/u/56096720?v=4","gravatar_id":"","url":"https://api.github.com/users/spectacles-ci","html_url":"https://github.com/spectacles-ci","followers_url":"https://api.github.com/users/spectacles-ci/followers","following_url":"https://api.github.com/users/spectacles-ci/following{/other_user}","gists_url":"https://api.github.com/users/spectacles-ci/gists{/gist_id}","starred_url":"https://api.github.com/users/spectacles-ci/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/spectacles-ci/subscriptions","organizations_url":"https://api.github.com/users/spectacles-ci/orgs","repos_url":"https://api.github.com/users/spectacles-ci/repos","events_url":"https://api.github.com/users/spectacles-ci/events{/privacy}","received_events_url":"https://api.github.com/users/spectacles-ci/received_events","type":"Organization","site_admin":false},"network_count":0,"subscribers_count":1}'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes,
+        X-Poll-Interval, X-GitHub-Media-Type, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 24 Mar 2021 17:58:34 GMT
+      ETag:
+      - W/"f3671a72d14946d01222e8608d7d0d42f330f93bf1a5eeab04f587a29a1b0aa1"
+      Last-Modified:
+      - Wed, 24 Mar 2021 13:59:41 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - repo
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; format=json
+      X-GitHub-Request-Id:
+      - E7DB:3249:1A0F97:56833C:605B7DCA
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4961'
+      X-RateLimit-Reset:
+      - '1616610426'
+      X-RateLimit-Used:
+      - '39'
+      X-XSS-Protection:
+      - '0'
+      content-length:
+      - '6297'
     status:
       code: 200
       message: OK

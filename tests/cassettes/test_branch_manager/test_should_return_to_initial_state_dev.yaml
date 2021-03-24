@@ -7,7 +7,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=9666
+      - looker.browser=9764
     method: PATCH
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -21,19 +21,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 16 Mar 2021 21:18:42 GMT
+      - Wed, 24 Mar 2021 17:57:11 GMT
       Server:
       - nginx
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 89033bd4ac7641f6
+      - df54bc4d4f850aa1
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 89033bd4ac7641f6
+      - df54bc4d4f850aa1
       X-B3-TraceId:
-      - 605120b2b81bcc7f89033bd4ac7641f6
+      - 605b7d77a10aa624df54bc4d4f850aa1
       X-Content-Type-Options:
       - nosniff
     status:
@@ -43,7 +43,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=9666
+      - looker.browser=9764
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -57,19 +57,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 16 Mar 2021 21:18:42 GMT
+      - Wed, 24 Mar 2021 17:57:11 GMT
       Server:
       - nginx
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 7efcdbe1468eec3f
+      - 1667d08dbe05aab9
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 7efcdbe1468eec3f
+      - 1667d08dbe05aab9
       X-B3-TraceId:
-      - 605120b2efbcad0e7efcdbe1468eec3f
+      - 605b7d77f9bc35511667d08dbe05aab9
       X-Content-Type-Options:
       - nosniff
     status:
@@ -79,7 +79,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=9666
+      - looker.browser=9764
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
   response:
@@ -93,19 +93,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 16 Mar 2021 21:18:42 GMT
+      - Wed, 24 Mar 2021 17:57:11 GMT
       Server:
       - nginx
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 0487e59f695a165b
+      - 3e850a9f922b1d4a
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 0487e59f695a165b
+      - 3e850a9f922b1d4a
       X-B3-TraceId:
-      - 605120b29cd8ceb10487e59f695a165b
+      - 605b7d77638062e53e850a9f922b1d4a
       X-Content-Type-Options:
       - nosniff
     status:
@@ -119,7 +119,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=9666
+      - looker.browser=9764
     method: PATCH
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -133,19 +133,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 16 Mar 2021 21:18:42 GMT
+      - Wed, 24 Mar 2021 17:57:12 GMT
       Server:
       - nginx
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 09b4d3a3f78e3f3d
+      - a8f6324a3f632a33
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 09b4d3a3f78e3f3d
+      - a8f6324a3f632a33
       X-B3-TraceId:
-      - 605120b2d3809dba09b4d3a3f78e3f3d
+      - 605b7d7884e01a7ea8f6324a3f632a33
       X-Content-Type-Options:
       - nosniff
     status:
@@ -155,7 +155,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=9666
+      - looker.browser=9764
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -169,19 +169,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 16 Mar 2021 21:18:42 GMT
+      - Wed, 24 Mar 2021 17:57:12 GMT
       Server:
       - nginx
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - b8d38073e1c50214
+      - 2dc1cefecb6c10a4
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - b8d38073e1c50214
+      - 2dc1cefecb6c10a4
       X-B3-TraceId:
-      - 605120b2b801e42eb8d38073e1c50214
+      - 605b7d78de69ada12dc1cefecb6c10a4
       X-Content-Type-Options:
       - nosniff
     status:
@@ -191,12 +191,12 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=9666
+      - looker.browser=9764
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
   response:
     body:
-      string: '{"name":"master","remote":"origin","remote_name":"master","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":true,"ahead_count":0,"behind_count":0,"commit_at":1615928980,"ref":"ca285055ff1762cd2aa9b29c8a44a171d9ecd73b","remote_ref":"ca285055ff1762cd2aa9b29c8a44a171d9ecd73b","can":{}}'
+      string: '{"name":"master","remote":"origin","remote_name":"master","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":true,"ahead_count":0,"behind_count":0,"commit_at":1616594378,"ref":"7792fb0f1f114f414587452cf09d0b2216b220d3","remote_ref":"7792fb0f1f114f414587452cf09d0b2216b220d3","can":{}}'
     headers:
       Connection:
       - keep-alive
@@ -205,19 +205,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 16 Mar 2021 21:18:42 GMT
+      - Wed, 24 Mar 2021 17:57:12 GMT
       Server:
       - nginx
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 96e70d22b9f2c195
+      - fdd606fcd0bb1e78
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 96e70d22b9f2c195
+      - fdd606fcd0bb1e78
       X-B3-TraceId:
-      - 605120b2cb37793896e70d22b9f2c195
+      - 605b7d78783de3f7fdd606fcd0bb1e78
       X-Content-Type-Options:
       - nosniff
     status:
@@ -227,7 +227,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=9666
+      - looker.browser=9764
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -241,19 +241,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 16 Mar 2021 21:18:42 GMT
+      - Wed, 24 Mar 2021 17:57:12 GMT
       Server:
       - nginx
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 2d99a1f3a9e81b38
+      - 530e9b59550e0405
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 2d99a1f3a9e81b38
+      - 530e9b59550e0405
       X-B3-TraceId:
-      - 605120b2919f16fd2d99a1f3a9e81b38
+      - 605b7d78ef28b365530e9b59550e0405
       X-Content-Type-Options:
       - nosniff
     status:
@@ -267,7 +267,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=9666
+      - looker.browser=9764
     method: PATCH
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -281,19 +281,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 16 Mar 2021 21:18:42 GMT
+      - Wed, 24 Mar 2021 17:57:12 GMT
       Server:
       - nginx
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 8cc57c73d8c0f883
+      - 8a68e3385a217fe1
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 8cc57c73d8c0f883
+      - 8a68e3385a217fe1
       X-B3-TraceId:
-      - 605120b2dd1124f58cc57c73d8c0f883
+      - 605b7d7885d98ac58a68e3385a217fe1
       X-Content-Type-Options:
       - nosniff
     status:
@@ -307,7 +307,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=9666
+      - looker.browser=9764
     method: PUT
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
   response:
@@ -321,19 +321,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 16 Mar 2021 21:18:42 GMT
+      - Wed, 24 Mar 2021 17:57:12 GMT
       Server:
       - nginx
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 5b585ee690d18d2e
+      - 2ee7f6d68a760b7e
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 5b585ee690d18d2e
+      - 2ee7f6d68a760b7e
       X-B3-TraceId:
-      - 605120b2cb413b1b5b585ee690d18d2e
+      - 605b7d786fa6b5242ee7f6d68a760b7e
       X-Content-Type-Options:
       - nosniff
     status:
@@ -343,7 +343,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=9666
+      - looker.browser=9764
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -357,19 +357,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 16 Mar 2021 21:18:42 GMT
+      - Wed, 24 Mar 2021 17:57:12 GMT
       Server:
       - nginx
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 859d618e75feb21a
+      - 6cf01a1e33d4e6ed
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 859d618e75feb21a
+      - 6cf01a1e33d4e6ed
       X-B3-TraceId:
-      - 605120b23bb37983859d618e75feb21a
+      - 605b7d781f2047ca6cf01a1e33d4e6ed
       X-Content-Type-Options:
       - nosniff
     status:
