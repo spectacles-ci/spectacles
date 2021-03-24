@@ -98,4 +98,105 @@ interactions:
     status:
       code: 200
       message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=9770
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/lookml_models?fields=name%2Cproject_name%2Cexplores
+  response:
+    body:
+      string: '[{"name":"thelook","project_name":"welcome_to_looker","explores":[{"description":null,"label":"Cohort
+        Data Tool","hidden":true,"group_label":"1) eCommerce with Event Data","name":"cohorts","can":{}},{"description":null,"label":"Web
+        Analytics Data Tool","hidden":true,"group_label":"1) eCommerce with Event
+        Data","name":"data_tool","can":{}},{"description":null,"label":"(1) Orders,
+        Items and Users","hidden":false,"group_label":"1) eCommerce with Event Data","name":"order_items","can":{}},{"description":null,"label":"(2)
+        Web Event Data","hidden":false,"group_label":"1) eCommerce with Event Data","name":"events","can":{}},{"description":null,"label":"(3)
+        Web Session Data","hidden":false,"group_label":"1) eCommerce with Event Data","name":"sessions","can":{}},{"description":null,"label":"(4)
+        Affinity Analysis","hidden":false,"group_label":"1) eCommerce with Event Data","name":"affinity","can":{}},{"description":null,"label":"(5)
+        Share of Wallet Analysis","hidden":false,"group_label":"1) eCommerce with
+        Event Data","name":"orders_with_share_of_wallet_application","can":{}},{"description":null,"label":"(6)
+        Customer Journey Mapping","hidden":false,"group_label":"1) eCommerce with
+        Event Data","name":"journey_mapping","can":{}},{"description":null,"label":"(7)
+        Stock Analysis","hidden":false,"group_label":"1) eCommerce with Event Data","name":"inventory_items","can":{}},{"description":null,"label":"(8)
+        Historical Stock Snapshot Analysis","hidden":false,"group_label":"1) eCommerce
+        with Event Data","name":"inventory_snapshot","can":{}},{"description":null,"label":"Order
+        Items (Kittens)","hidden":true,"group_label":"1) eCommerce with Event Data","name":"kitten_order_items","can":{}}]},{"name":"jaffle_shop","project_name":"jaffle_shop","explores":[{"description":null,"label":"Orders","hidden":false,"group_label":"Jaffle
+        Shop","name":"fct_orders","can":{}}]},{"name":"admin","project_name":"jaffle_shop","explores":[]},{"name":"eye_exam","project_name":"eye_exam","explores":[{"description":null,"label":"Users","hidden":false,"group_label":"Eye
+        Exam","name":"users","can":{}},{"description":null,"label":"Users Fail","hidden":false,"group_label":"Eye
+        Exam","name":"users__fail","can":{}},{"description":null,"label":"Users Fail
+        and Warn","hidden":false,"group_label":"Eye Exam","name":"users__fail_and_warn","can":{}},{"description":null,"label":"Users
+        Warn","hidden":false,"group_label":"Eye Exam","name":"users__warn","can":{}}]},{"name":"web_application","project_name":"spectacles","explores":[{"description":null,"label":"Runs","hidden":false,"group_label":"Web
+        Application","name":"runs","can":{}},{"description":null,"label":"Organisations","hidden":false,"group_label":"Web
+        Application","name":"organisations","can":{}},{"description":null,"label":"Credentials","hidden":false,"group_label":"Web
+        Application","name":"credentials","can":{}}]},{"name":"web_application_gitlab","project_name":"spectacles-gitlab","explores":[{"description":null,"label":"Runs","hidden":false,"group_label":"Web
+        Application Gitlab","name":"runs","can":{}},{"description":null,"label":"Organisations","hidden":false,"group_label":"Web
+        Application Gitlab","name":"organisations","can":{}},{"description":null,"label":"Credentials","hidden":false,"group_label":"Web
+        Application Gitlab","name":"credentials","can":{}}]},{"name":"open_source_gitlab","project_name":"spectacles-gitlab","explores":[{"description":null,"label":"Invocations
+        - this is a change","hidden":false,"group_label":"Open Source","name":"fct_invocations","can":{}}]},{"name":"open_source","project_name":"spectacles","explores":[{"description":null,"label":"Invocations","hidden":false,"group_label":"Open
+        Source","name":"fct_invocations","can":{}}]},{"name":"block_bq_info_schema","project_name":"marketplace_bq_info_schema","explores":[{"description":null,"label":"Commit
+        Facts","hidden":false,"group_label":"Block Bq Info Schema","name":"commit_facts","can":{}},{"description":null,"label":"Completed
+        Queries by Organization","hidden":false,"group_label":"Block Bq Info Schema","name":"jobs_by_organization_raw","can":{}},{"description":null,"label":"All
+        Jobs by Organization","hidden":false,"group_label":"Block Bq Info Schema","name":"jobs_by_organization_raw_all_queries","can":{}},{"description":null,"label":"Jobs
+        Timeline By Organization","hidden":false,"group_label":"Block Bq Info Schema","name":"jobs_timeline_by_organization","can":{}},{"description":null,"label":"Timeline
+        with Commits","hidden":false,"group_label":"Block Bq Info Schema","name":"timeline_with_commits","can":{}},{"description":null,"label":"Concurrency
+        per Second","hidden":false,"group_label":"Block Bq Info Schema","name":"concurrency_per_second","can":{}}]},{"name":"bq_info_schema","project_name":"marketplace_bq_info_schema_config","explores":[]},{"name":"testing_tests","project_name":"spectacles","explores":[]},{"name":"open_source_azure","project_name":"spectacles_azure","explores":[{"description":null,"label":"Invocations","hidden":false,"group_label":"Open
+        Source","name":"fct_invocations","can":{}}]},{"name":"web_application_azure","project_name":"spectacles_azure","explores":[{"description":null,"label":"Runs","hidden":false,"group_label":"Web
+        Application Azure","name":"runs","can":{}},{"description":null,"label":"Organisations","hidden":false,"group_label":"Web
+        Application Azure","name":"organisations","can":{}},{"description":null,"label":"Credentials","hidden":false,"group_label":"Web
+        Application Azure","name":"credentials","can":{}}]},{"name":"open_source_main","project_name":"spectacles-main-branch","explores":[{"description":null,"label":"Invocations","hidden":false,"group_label":"Open
+        Source (Main Branch Project)","name":"fct_invocations","can":{}}]},{"name":"web_application_main","project_name":"spectacles-main-branch","explores":[{"description":null,"label":"Runs","hidden":false,"group_label":"Web
+        Application (Main Branch Project)","name":"runs","can":{}},{"description":null,"label":"Organisations","hidden":false,"group_label":"Web
+        Application (Main Branch Project)","name":"organisations","can":{}},{"description":null,"label":"Credentials","hidden":false,"group_label":"Web
+        Application (Main Branch Project)","name":"credentials","can":{}}]},{"name":"open_source_advanced_deploy","project_name":"spectacles-advanced-deploy","explores":[{"description":null,"label":"Invocations","hidden":false,"group_label":"Open
+        Source (Advanced Deploy)","name":"fct_invocations","can":{}}]},{"name":"web_application_advanced_deploy","project_name":"spectacles-advanced-deploy","explores":[{"description":null,"label":"Runs","hidden":false,"group_label":"Web
+        Application (Advanced Deploy)","name":"runs","can":{}},{"description":null,"label":"Organisations","hidden":false,"group_label":"Web
+        Application (Advanced Deploy)","name":"organisations","can":{}},{"description":null,"label":"Credentials","hidden":false,"group_label":"Web
+        Application (Advanced Deploy)","name":"credentials","can":{}}]},{"name":"system__activity","project_name":"system__activity","explores":[{"description":null,"label":"Content
+        Usage","hidden":false,"group_label":"System Activity","name":"content_usage","can":{}},{"description":null,"label":"Dashboard","hidden":false,"group_label":"System
+        Activity","name":"dashboard","can":{}},{"description":null,"label":"Dashboard
+        Performance","hidden":false,"group_label":"System Activity","name":"dashboard_performance","can":{}},{"description":null,"label":"DB
+        Connection","hidden":false,"group_label":"System Activity","name":"db_connection","can":{}},{"description":null,"label":"Event","hidden":false,"group_label":"System
+        Activity","name":"event","can":{}},{"description":null,"label":"Event Attribute","hidden":false,"group_label":"System
+        Activity","name":"event_attribute","can":{}},{"description":null,"label":"Field
+        Usage","hidden":false,"group_label":"System Activity","name":"field_usage","can":{}},{"description":null,"label":"Group","hidden":false,"group_label":"System
+        Activity","name":"group","can":{}},{"description":null,"label":"History","hidden":false,"group_label":"System
+        Activity","name":"history","can":{}},{"description":null,"label":"Look","hidden":false,"group_label":"System
+        Activity","name":"look","can":{}},{"description":null,"label":"Merge Query","hidden":false,"group_label":"System
+        Activity","name":"merge_query","can":{}},{"description":null,"label":"PDT
+        Event Log","hidden":false,"group_label":"System Activity","name":"pdt_event_log","can":{}},{"description":null,"label":"PDT
+        Builds","hidden":false,"group_label":"System Activity","name":"pdt_builds","can":{}},{"description":null,"label":"Scheduled
+        Plan","hidden":false,"group_label":"System Activity","name":"scheduled_plan","can":{}},{"description":null,"label":"Folders","hidden":false,"group_label":"System
+        Activity","name":"folders","can":{}},{"description":null,"label":"SQL Query","hidden":false,"group_label":"System
+        Activity","name":"sql_query","can":{}},{"description":null,"label":"User","hidden":false,"group_label":"System
+        Activity","name":"user","can":{}},{"description":null,"label":"Role","hidden":false,"group_label":"System
+        Activity","name":"role","can":{}}]}]'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '9164'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 24 Mar 2021 18:17:07 GMT
+      Server:
+      - nginx
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - cffc99de119d8a1a
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - cffc99de119d8a1a
+      X-B3-TraceId:
+      - 605b8223686e3addcffc99de119d8a1a
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
 version: 1

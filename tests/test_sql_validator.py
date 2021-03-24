@@ -7,7 +7,7 @@ from spectacles.validators import SqlValidator
 from spectacles.validators.sql import Query, QueryResult
 from spectacles.exceptions import SpectaclesException
 
-EXPECTED_QUERY_COUNTS = {"models": 1, "explores": 1, "dimensions": 5}
+EXPECTED_QUERY_COUNTS = {"models": 1, "explores": 1, "dimensions": 6}
 
 
 @pytest.fixture(scope="class")
