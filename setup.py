@@ -35,6 +35,7 @@ setup(
         "pre-commit",
         "vcrpy",
         "jsonschema",
+        "PyGithub",
     ],
     entry_points={"console_scripts": ["spectacles = spectacles.cli:main"]},
     author="Spectacles",
