@@ -38,8 +38,10 @@ class ContentValidator(Validator):
                 logger.debug(f"The unidentified content received was: {content}")
                 continue
 
+            # Sometimes the content no longer exists, in which case the folder is None
+            folder_id: Optional[str] = content[content_type]["folder"].get("id")
             # If exclude_personal isn't specified, personal_folders list is empty
-            if content[content_type]["folder"]["id"] in self.personal_folders:
+            if folder_id in self.personal_folders:
                 continue
             else:
                 self._handle_content_result(content, content_type)
