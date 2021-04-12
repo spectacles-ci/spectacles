@@ -303,7 +303,7 @@ class LookerClient:
                 title="Couldn't checkout Git branch.",
                 status=response.status_code,
                 detail=(
-                    "Unable to reset local Git branch"
+                    "Unable to reset local Git branch "
                     "to match remote. Please try again."
                 ),
                 response=response,
