@@ -16,6 +16,7 @@ class Dimension(LookMlObject):
         model_name: str,
         explore_name: str,
         type: str,
+        tags: List[str],
         sql: str,
         url: Optional[str] = None,
     ):
@@ -23,11 +24,16 @@ class Dimension(LookMlObject):
         self.model_name = model_name
         self.explore_name = explore_name
         self.type = type
+        self.tags = tags
         self.sql = sql
         self.url = url
         self.queried: bool = False
         self.errors: List[ValidationError] = []
-        if re.search(r"spectacles\s*:\s*ignore", sql, re.IGNORECASE):
+
+        if (
+            re.search(r"spectacles\s*:\s*ignore", sql, re.IGNORECASE)
+            or "spectacles: ignore" in tags
+        ):
             self.ignore = True
         else:
             self.ignore = False
@@ -67,9 +73,10 @@ class Dimension(LookMlObject):
     def from_json(cls, json_dict, model_name, explore_name):
         name = json_dict["name"]
         type = json_dict["type"]
+        tags = json_dict["tags"]
         sql = json_dict["sql"]
         url = json_dict["lookml_link"]
-        return cls(name, model_name, explore_name, type, sql, url)
+        return cls(name, model_name, explore_name, type, tags, sql, url)
 
 
 class Explore(LookMlObject):
