@@ -75,7 +75,7 @@ class LookerBranchManager:
             self.branch = prod_state.branch
             self.commit = prod_state.commit
             if self.ephemeral:
-                self.branch = self.checkout_temp_branch(f"origin/{prod_state.branch}")
+                self.branch = self.checkout_temp_branch(prod_state.commit)
 
         logger.debug(
             f"Set project '{self.project}' to branch '{self.branch}' @ "
@@ -164,7 +164,7 @@ class LookerBranchManager:
             f"Afterwards, restoring to branch '{self.init_state.branch}' in "
             f"project '{self.project}'"
         )
-        self.client.create_branch(self.project, name, ref)
+        self.client.create_branch(self.project, name)
         self.client.hard_reset_branch(self.project, name, ref)
         self.is_temp_branch = True
         return name
