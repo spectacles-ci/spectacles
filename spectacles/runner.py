@@ -263,9 +263,11 @@ class Runner:
         exclusions: List[str],
         incremental: bool = False,
         exclude_personal: bool = False,
+        exclude_folders: List[int] = [],
+        include_folders: List[int] = [],
     ) -> Dict[str, Any]:
         with self.branch_manager(branch, commit):
-            validator = ContentValidator(self.client, self.project, exclude_personal)
+            validator = ContentValidator(self.client, self.project, exclude_personal, exclude_folders, include_folders)
             logger.info(
                 "Building LookML project hierarchy for project "
                 f"'{self.project}' @ {self.branch_manager.ref}"
