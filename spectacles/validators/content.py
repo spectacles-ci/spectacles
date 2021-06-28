@@ -8,11 +8,18 @@ from spectacles.logger import GLOBAL_LOGGER as logger
 
 class ContentValidator(Validator):
     def __init__(
-        self, client: LookerClient, project: str, exclude_personal: bool = False
+        self,
+        client: LookerClient,
+        project: str,
+        exclude_personal: bool = False,
+        exclude_folders: List[int] = [],
+        include_folders: List[int] = [],
     ):
         super().__init__(client, project)
         personal_folders = self._get_personal_folders() if exclude_personal else []
-        self.personal_folders: List[int] = personal_folders
+
+        self.excluded_folders: List[int] = personal_folders + exclude_folders
+        self.included_folders: List[int] = include_folders
 
     def _get_personal_folders(self) -> List[int]:
         personal_folders = []
@@ -21,6 +28,15 @@ class ContentValidator(Validator):
             if folder["is_personal"] or folder["is_personal_descendant"]:
                 personal_folders.append(folder["id"])
         return personal_folders
+
+    def _ignore_folder_result(self, folder_id: Optional[str]) -> bool:
+        if self.included_folders and folder_id in self.included_folders:
+            # up-select by `--folders` param has precedence
+            return False
+        elif folder_id in self.excluded_folders:
+            return True
+        else:
+            return False
 
     def validate(self) -> Dict[str, Any]:
         result = self.client.content_validation()
@@ -41,7 +57,7 @@ class ContentValidator(Validator):
             # Sometimes the content no longer exists, in which case the folder is None
             folder_id: Optional[str] = content[content_type]["folder"].get("id")
             # If exclude_personal isn't specified, personal_folders list is empty
-            if folder_id in self.personal_folders:
+            if self._ignore_folder_result(folder_id):
                 continue
             else:
                 self._handle_content_result(content, content_type)
