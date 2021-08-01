@@ -102,6 +102,7 @@ def test_data_test_error_prints_with_relevant_info(sql_error, caplog):
     test_name = "assert_metric_is_positive"
     message = "A super important error occurred."
     lookml_url = "https://spectacles.looker.com"
+    explore_url = "https://spectacles.looker.com/explore"
 
     printer.print_data_test_error(
         model=model,
@@ -109,12 +110,14 @@ def test_data_test_error_prints_with_relevant_info(sql_error, caplog):
         test_name=test_name,
         message=message,
         lookml_url=lookml_url,
+        explore_url=explore_url,
     )
     assert model in caplog.text
     assert explore in caplog.text
     assert test_name in caplog.text
     assert message in caplog.text
     assert lookml_url in caplog.text
+    assert explore_url in caplog.text
 
 
 def test_print_validation_result_should_work():

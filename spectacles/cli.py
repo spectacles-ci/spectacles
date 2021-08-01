@@ -670,6 +670,7 @@ def run_assert(
                 error["metadata"]["test_name"],
                 error["message"],
                 error["metadata"]["lookml_url"],
+                error["metadata"]["explore_url"],
             )
         logger.info("")
         raise GenericValidationError
