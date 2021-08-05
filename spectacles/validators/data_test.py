@@ -47,6 +47,9 @@ class DataTestValidator(Validator):
             )
 
         for test in selected_tests:
+            model_name = test["model_name"]
+            explore_name = test["explore_name"]
+            query_url_params = test["query_url_params"]
             results = self.client.run_lookml_test(
                 self.project.name, model=test["model_name"], test=test["name"]
             )
@@ -60,6 +63,10 @@ class DataTestValidator(Validator):
                     f"{self.client.base_url}/projects/{self.project.name}"
                     f"/files/{file_path}?line={error['line_number']}"
                 )
+                explore_url = (
+                    f"{self.client.base_url}/explore/{model_name}"
+                    f"/{explore_name}?{query_url_params}"
+                )
                 explore.errors.append(
                     DataTestError(
                         model=error["model_id"],
@@ -67,6 +74,7 @@ class DataTestValidator(Validator):
                         message=error["message"],
                         test_name=result["test_name"],
                         lookml_url=lookml_url,
+                        explore_url=explore_url,
                     )
                 )
 
