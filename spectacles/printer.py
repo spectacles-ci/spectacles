@@ -61,19 +61,13 @@ def print_content_error(
 
 
 def print_data_test_error(
-    model: str,
-    explore: str,
-    test_name: str,
-    message: str,
-    lookml_url: str,
-    explore_url: str,
+    model: str, explore: str, test_name: str, message: str, lookml_url: str
 ) -> None:
     path = f"{model}/{explore}/{test_name}"
     print_header(red(path), LINE_WIDTH + COLOR_CODE_LENGTH)
     wrapped = textwrap.fill(message, LINE_WIDTH)
     logger.info(wrapped)
     logger.info("\n" + f"LookML: {lookml_url}")
-    logger.info("\n" + f"Explore: {explore_url}")
 
 
 def print_sql_error(
