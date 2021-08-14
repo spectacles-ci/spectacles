@@ -314,8 +314,16 @@ class SqlValidator(Validator):
                     error
                     for error in errors
                     if error.get("message")
-                    != "Note: This query contains derived tables with conditional SQL for Development Mode. "
-                    "Query results in Production Mode might be different."
+                    not in [
+                        (
+                            "Note: This query contains derived tables with conditional SQL for Development Mode. "
+                            "Query results in Production Mode might be different."
+                        ),
+                        (
+                            "Note: This query contains derived tables with Development Mode filters. "
+                            "Query results in Production Mode might be different."
+                        ),
+                    ]
                 )
             except StopIteration:
                 return None
