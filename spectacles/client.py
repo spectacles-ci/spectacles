@@ -80,6 +80,7 @@ class LookerClient:
         self.api_version: float = api_version
         self.access_token: Optional[AccessToken] = None
         self.session: requests.Session = requests.Session()
+        self.requires_dev_mode: bool = False
 
         self.authenticate()
 
@@ -132,6 +133,8 @@ class LookerClient:
         if self.access_token and self.access_token.expired:
             logger.debug("Looker API access token has expired, requesting a new one")
             self.authenticate()
+            if self.requires_dev_mode:
+                self.update_workspace("dev")
         return self.session.request(method, url, *args, **kwargs)
 
     def get(self, url, *args, **kwargs) -> requests.Response:
