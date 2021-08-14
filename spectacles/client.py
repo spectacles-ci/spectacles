@@ -3,7 +3,7 @@ import time
 from dataclasses import dataclass
 import backoff  # type: ignore
 import requests
-from requests.exceptions import Timeout
+from requests.exceptions import Timeout, HTTPError
 import spectacles.utils as utils
 from spectacles.types import JsonDict
 from spectacles.logger import GLOBAL_LOGGER as logger
@@ -128,6 +128,14 @@ class LookerClient:
             f"using Looker API {self.api_version}"
         )
 
+    @backoff.on_exception(
+        backoff.expo,
+        (
+            Timeout,
+            HTTPError,
+        ),
+        max_tries=2,
+    )
     def request(self, method: str, url: str, *args, **kwargs) -> requests.Response:
         if self.access_token and self.access_token.expired:
             logger.debug("Looker API access token has expired, requesting a new one")
@@ -629,7 +637,6 @@ class LookerClient:
 
         return response.json()["fields"]["dimensions"]
 
-    @backoff.on_exception(backoff.expo, (Timeout,), max_tries=2)
     def create_query(
         self, model: str, explore: str, dimensions: List[str], fields: List = []
     ) -> Dict:
@@ -689,7 +696,6 @@ class LookerClient:
         )
         return result
 
-    @backoff.on_exception(backoff.expo, (Timeout,), max_tries=2)
     def create_query_task(self, query_id: int) -> str:
         """Runs a previously created query asynchronously and returns the query task ID.
 
