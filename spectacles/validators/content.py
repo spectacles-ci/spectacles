@@ -18,8 +18,10 @@ class ContentValidator(Validator):
         super().__init__(client, project)
         personal_folders = self._get_personal_folders() if exclude_personal else []
 
-        self.excluded_folders: List[int] = personal_folders + exclude_folders
-        self.included_folders: List[int] = include_folders
+        self.excluded_folders: List[int] = personal_folders + self._get_all_subfolders(
+            exclude_folders
+        )
+        self.included_folders: List[int] = self._get_all_subfolders(include_folders)
 
     def _get_personal_folders(self) -> List[int]:
         personal_folders = []
@@ -28,6 +30,23 @@ class ContentValidator(Validator):
             if folder["is_personal"] or folder["is_personal_descendant"]:
                 personal_folders.append(folder["id"])
         return personal_folders
+
+    def _get_all_subfolders(self, folders: List[int]) -> List[int]:
+        result = []
+        for folder in folders:
+            result.extend(self._get_subfolders(folder))
+        return result
+
+    def _get_subfolders(self, folder_id: int) -> List[int]:
+        all_folders = self.client.all_folders(self.project.name)
+        subfolders = [folder_id]
+        children = [
+            child["id"] for child in all_folders if child["parent_id"] == folder_id
+        ]
+        if children:
+            for child in children:
+                subfolders.extend(self._get_subfolders(child))
+        return subfolders
 
     def _ignore_folder_result(self, folder_id: Optional[str]) -> bool:
         if self.included_folders and folder_id in self.included_folders:

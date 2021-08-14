@@ -286,7 +286,7 @@ def main():
             args.incremental,
             args.exclude_personal,
             args.exclude_folders,
-            args.include,
+            args.folders,
         )
 
     if not args.do_not_track:
@@ -584,12 +584,15 @@ def _build_content_subparser(
         type=int,
         nargs="+",
         help="Exclude errors found in folders specified by id.",
+        default=[],
     )
 
     subparser.add_argument(
         "--folders",
-        action="store_true",
-        help="Include errors found in folders specified by id, takes precedence over --exclue-personal or --exclude-folders."
+        type=int,
+        nargs="+",
+        help="Include errors found in folders specified by id, takes precedence over --exclue-personal or --exclude-folders.",
+        default=[],
     )
 
     _build_validator_subparser(subparser_action, subparser)
@@ -624,7 +627,14 @@ def run_content(
         base_url, project, client_id, client_secret, port, api_version, remote_reset
     )
     results = runner.validate_content(
-        branch, commit_ref, explores, excludes, incremental, exclude_personal, exclude_folders, include_folders
+        branch,
+        commit_ref,
+        explores,
+        excludes,
+        incremental,
+        exclude_personal,
+        exclude_folders,
+        include_folders,
     )
 
     for test in sorted(results["tested"], key=lambda x: (x["model"], x["explore"])):
