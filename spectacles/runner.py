@@ -136,7 +136,6 @@ class LookerBranchManager:
         if self.workspace != workspace:
             self.client.update_workspace(workspace)
             self.workspace = workspace
-        self.client.requires_dev_mode = True if workspace == "dev" else False
 
     def get_project_state(self) -> ProjectState:
         workspace = self.client.get_workspace()
