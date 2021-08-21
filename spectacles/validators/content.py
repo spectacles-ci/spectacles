@@ -4,6 +4,7 @@ from spectacles.client import LookerClient
 from spectacles.exceptions import ContentError
 from spectacles.lookml import Explore
 from spectacles.logger import GLOBAL_LOGGER as logger
+from spectacles.types import JsonDict
 
 
 class ContentValidator(Validator):
@@ -31,21 +32,21 @@ class ContentValidator(Validator):
                 personal_folders.append(folder["id"])
         return personal_folders
 
-    def _get_all_subfolders(self, folders: List[int]) -> List[int]:
+    def _get_all_subfolders(self, input_folders: List[int]) -> List[int]:
         result = []
-        for folder in folders:
-            result.extend(self._get_subfolders(folder))
+        all_folders = self.client.all_folders(self.project.name)
+        for folder in input_folders:
+            result.extend(self._get_subfolders(folder, all_folders))
         return result
 
-    def _get_subfolders(self, folder_id: int) -> List[int]:
-        all_folders = self.client.all_folders(self.project.name)
+    def _get_subfolders(self, folder_id: int, all_folders: List[JsonDict]) -> List[int]:
         subfolders = [folder_id]
         children = [
             child["id"] for child in all_folders if child["parent_id"] == folder_id
         ]
         if children:
             for child in children:
-                subfolders.extend(self._get_subfolders(child))
+                subfolders.extend(self._get_subfolders(child, all_folders))
         return subfolders
 
     def is_selected(self, folder_id: Optional[str]) -> bool:
