@@ -80,6 +80,7 @@ class LookerClient:
         self.api_version: float = api_version
         self.access_token: Optional[AccessToken] = None
         self.session: requests.Session = requests.Session()
+        self.workspace: str = "production"
 
         self.authenticate()
 
@@ -132,6 +133,8 @@ class LookerClient:
         if self.access_token and self.access_token.expired:
             logger.debug("Looker API access token has expired, requesting a new one")
             self.authenticate()
+            if self.workspace == "dev":
+                self.update_workspace("dev")
         return self.session.request(method, url, *args, **kwargs)
 
     def get(self, url, *args, **kwargs) -> requests.Response:
@@ -229,6 +232,7 @@ class LookerClient:
                 ),
                 response=response,
             )
+        self.workspace = workspace
 
     def get_all_branches(self, project: str) -> List[str]:
         """Returns a list of git branches in the project repository.
