@@ -48,14 +48,13 @@ class ContentValidator(Validator):
                 subfolders.extend(self._get_subfolders(child))
         return subfolders
 
-    def _ignore_folder_result(self, folder_id: Optional[str]) -> bool:
-        if self.included_folders and folder_id in self.included_folders:
-            # up-select by `--folders` param has precedence
+    def is_selected(self, folder_id: Optional[str]) -> bool:
+        if folder_id in self.excluded_folders:
             return False
-        elif folder_id in self.excluded_folders:
-            return True
+        if self.included_folders and folder_id not in self.included_folders:
+            return False
         else:
-            return False
+            return True
 
     def validate(self) -> Dict[str, Any]:
         result = self.client.content_validation()
@@ -76,7 +75,7 @@ class ContentValidator(Validator):
             # Sometimes the content no longer exists, in which case the folder is None
             folder_id: Optional[str] = content[content_type]["folder"].get("id")
             # If exclude_personal isn't specified, personal_folders list is empty
-            if self._ignore_folder_result(folder_id):
+            if not self.is_selected(folder_id):
                 continue
             else:
                 self._handle_content_result(content, content_type)
