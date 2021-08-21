@@ -10,6 +10,10 @@ from spectacles.logger import GLOBAL_LOGGER as logger
 from spectacles.exceptions import SpectaclesException, LookerApiError
 
 TIMEOUT_SEC = 300
+BACKOFF_EXCEPTIONS = (
+    Timeout,
+    HTTPError,
+)
 
 
 @dataclass(frozen=True)  # Token is immutable
@@ -129,14 +133,6 @@ class LookerClient:
             f"using Looker API {self.api_version}"
         )
 
-    @backoff.on_exception(
-        backoff.expo,
-        (
-            Timeout,
-            HTTPError,
-        ),
-        max_tries=2,
-    )
     def request(self, method: str, url: str, *args, **kwargs) -> requests.Response:
         if self.access_token and self.access_token.expired:
             logger.debug("Looker API access token has expired, requesting a new one")
@@ -269,6 +265,11 @@ class LookerClient:
 
         return [branch["name"] for branch in response.json()]
 
+    @backoff.on_exception(
+        backoff.expo,
+        BACKOFF_EXCEPTIONS,
+        max_tries=2,
+    )
     def checkout_branch(self, project: str, branch: str) -> None:
         """Checks out a new git branch. Only works in dev workspace.
 
@@ -295,6 +296,11 @@ class LookerClient:
                 response=response,
             )
 
+    @backoff.on_exception(
+        backoff.expo,
+        BACKOFF_EXCEPTIONS,
+        max_tries=2,
+    )
     def reset_to_remote(self, project: str) -> None:
         """Reset a project development branch to the revision of the project that is on the remote.
 
@@ -353,6 +359,11 @@ class LookerClient:
 
         return manifest
 
+    @backoff.on_exception(
+        backoff.expo,
+        BACKOFF_EXCEPTIONS,
+        max_tries=2,
+    )
     def get_active_branch(self, project: str) -> JsonDict:
         """Gets the active branch for the user in the given project.
 
@@ -390,6 +401,11 @@ class LookerClient:
         full_response = self.get_active_branch(project)
         return full_response["name"]
 
+    @backoff.on_exception(
+        backoff.expo,
+        BACKOFF_EXCEPTIONS,
+        max_tries=2,
+    )
     def create_branch(self, project: str, branch: str, ref: Optional[str] = None):
         """Creates a branch in the given project.
 
@@ -431,6 +447,11 @@ class LookerClient:
                 response=response,
             )
 
+    @backoff.on_exception(
+        backoff.expo,
+        BACKOFF_EXCEPTIONS,
+        max_tries=2,
+    )
     def hard_reset_branch(self, project: str, branch: str, ref: str):
         """Hard resets a branch to the ref prodvided.
 
@@ -465,6 +486,11 @@ class LookerClient:
                 response=response,
             )
 
+    @backoff.on_exception(
+        backoff.expo,
+        BACKOFF_EXCEPTIONS,
+        max_tries=2,
+    )
     def delete_branch(self, project: str, branch: str):
         """Deletes a branch in the given project.
 
@@ -641,6 +667,11 @@ class LookerClient:
 
         return response.json()["fields"]["dimensions"]
 
+    @backoff.on_exception(
+        backoff.expo,
+        BACKOFF_EXCEPTIONS,
+        max_tries=2,
+    )
     def create_query(
         self, model: str, explore: str, dimensions: List[str], fields: List = []
     ) -> Dict:
@@ -700,6 +731,11 @@ class LookerClient:
         )
         return result
 
+    @backoff.on_exception(
+        backoff.expo,
+        BACKOFF_EXCEPTIONS,
+        max_tries=2,
+    )
     def create_query_task(self, query_id: int) -> str:
         """Runs a previously created query asynchronously and returns the query task ID.
 
