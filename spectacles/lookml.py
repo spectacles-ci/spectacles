@@ -1,7 +1,7 @@
 import re
 from typing import Dict, List, Sequence, Optional, Any
 from spectacles.exceptions import ValidationError
-from spectacles.types import QueryMode
+from spectacles.types import QueryMode, JsonDict
 
 
 class LookMlObject:
@@ -85,6 +85,7 @@ class Explore(LookMlObject):
         self.model_name = model_name
         self.dimensions = [] if dimensions is None else dimensions
         self.errors: List[ValidationError] = []
+        self.successes: List[JsonDict] = []
         self._queried: bool = False
 
     def __eq__(self, other):
@@ -296,6 +297,7 @@ class Project(LookMlObject):
         self, validator: str, mode: Optional[QueryMode] = None
     ) -> Dict[str, Any]:
         errors: List[Dict[str, Any]] = []
+        successes: List[Dict[str, Any]] = []
         tested = []
 
         def parse_explore_errors(explore):
@@ -317,6 +319,9 @@ class Project(LookMlObject):
                     "explore": explore.name,
                     "passed": passed,
                 }
+                if explore.successes:
+                    successes.extend([success for success in explore.successes])
+
                 tested.append(test)
 
         passed = min((test["passed"] for test in tested), default=True)
@@ -325,6 +330,7 @@ class Project(LookMlObject):
             "status": "passed" if passed else "failed",
             "tested": tested,
             "errors": errors,
+            "successes": successes,
         }
 
     def __repr__(self):

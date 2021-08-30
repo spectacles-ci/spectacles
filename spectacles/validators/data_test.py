@@ -50,6 +50,16 @@ class DataTestValidator(Validator):
             model_name = test["model_name"]
             explore_name = test["explore_name"]
             query_url_params = test["query_url_params"]
+            file_path = test["file"].split("/", 1)[1]
+            explore_url = (
+                f"{self.client.base_url}/explore/{model_name}"
+                f"/{explore_name}?{query_url_params}"
+            )
+            lookml_url = (
+                f"{self.client.base_url}/projects/{self.project.name}"
+                f"/files/{file_path}?line={test['line']}"
+            )
+
             results = self.client.run_lookml_test(
                 self.project.name, model=test["model_name"], test=test["name"]
             )
@@ -58,15 +68,6 @@ class DataTestValidator(Validator):
             result = results[0]  # For a single test, list with length 1
 
             for error in result["errors"]:
-                project, file_path = error["file_path"].split("/", 1)
-                lookml_url = (
-                    f"{self.client.base_url}/projects/{self.project.name}"
-                    f"/files/{file_path}?line={error['line_number']}"
-                )
-                explore_url = (
-                    f"{self.client.base_url}/explore/{model_name}"
-                    f"/{explore_name}?{query_url_params}"
-                )
                 explore.errors.append(
                     DataTestError(
                         model=error["model_id"],
@@ -76,6 +77,20 @@ class DataTestValidator(Validator):
                         lookml_url=lookml_url,
                         explore_url=explore_url,
                     )
+                )
+
+            # TODO: Refactor this into "test" objects
+            if result["success"]:
+                explore.successes.append(
+                    {
+                        "model": model_name,
+                        "explore": explore_name,
+                        "metadata": {
+                            "test_name": result["test_name"],
+                            "explore_url": explore_url,
+                            "lookml_url": lookml_url,
+                        },
+                    }
                 )
 
         return self.project.get_results(validator="data_test")
