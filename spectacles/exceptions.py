@@ -156,7 +156,7 @@ class ContentError(ValidationError):
             "space": space,
             "url": url,
         }
-        if tile_type:
+        if tile_type and tile_title:
             metadata["tile_type"] = tile_type
             metadata["tile_title"] = tile_title
         super().__init__(
