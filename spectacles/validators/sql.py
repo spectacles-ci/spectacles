@@ -15,7 +15,7 @@ class Query:
 
     def __init__(
         self,
-        query_id: str,
+        query_id: int,
         lookml_ref: Union[Dimension, Explore],
         explore_url: str,
         query_task_id: Optional[str] = None,
@@ -187,11 +187,13 @@ class SqlValidator(Validator):
         """Creates individual queries for each dimension in an explore"""
         queries = []
         for dimension in explore.dimensions:
-            query = self.client.create_query(
+            query_response = self.client.create_query(
                 model_name, explore.name, [dimension.name], fields=["id", "share_url"]
             )
             query = Query(
-                query["id"], lookml_ref=dimension, explore_url=query["share_url"]
+                query_response["id"],
+                lookml_ref=dimension,
+                explore_url=query_response["share_url"],
             )
             queries.append(query)
         return queries

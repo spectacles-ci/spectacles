@@ -3,13 +3,17 @@ import time
 from dataclasses import dataclass
 import backoff  # type: ignore
 import requests
-from requests.exceptions import Timeout
+from requests.exceptions import Timeout, HTTPError
 import spectacles.utils as utils
 from spectacles.types import JsonDict
 from spectacles.logger import GLOBAL_LOGGER as logger
 from spectacles.exceptions import SpectaclesException, LookerApiError
 
 TIMEOUT_SEC = 300
+BACKOFF_EXCEPTIONS = (
+    Timeout,
+    HTTPError,
+)
 
 
 @dataclass(frozen=True)  # Token is immutable
@@ -80,6 +84,7 @@ class LookerClient:
         self.api_version: float = api_version
         self.access_token: Optional[AccessToken] = None
         self.session: requests.Session = requests.Session()
+        self.workspace: str = "production"
 
         self.authenticate()
 
@@ -132,6 +137,8 @@ class LookerClient:
         if self.access_token and self.access_token.expired:
             logger.debug("Looker API access token has expired, requesting a new one")
             self.authenticate()
+            if self.workspace == "dev":
+                self.update_workspace("dev")
         return self.session.request(method, url, *args, **kwargs)
 
     def get(self, url, *args, **kwargs) -> requests.Response:
@@ -229,6 +236,7 @@ class LookerClient:
                 ),
                 response=response,
             )
+        self.workspace = workspace
 
     def get_all_branches(self, project: str) -> List[str]:
         """Returns a list of git branches in the project repository.
@@ -257,6 +265,11 @@ class LookerClient:
 
         return [branch["name"] for branch in response.json()]
 
+    @backoff.on_exception(
+        backoff.expo,
+        BACKOFF_EXCEPTIONS,
+        max_tries=2,
+    )
     def checkout_branch(self, project: str, branch: str) -> None:
         """Checks out a new git branch. Only works in dev workspace.
 
@@ -283,6 +296,11 @@ class LookerClient:
                 response=response,
             )
 
+    @backoff.on_exception(
+        backoff.expo,
+        BACKOFF_EXCEPTIONS,
+        max_tries=2,
+    )
     def reset_to_remote(self, project: str) -> None:
         """Reset a project development branch to the revision of the project that is on the remote.
 
@@ -341,6 +359,11 @@ class LookerClient:
 
         return manifest
 
+    @backoff.on_exception(
+        backoff.expo,
+        BACKOFF_EXCEPTIONS,
+        max_tries=2,
+    )
     def get_active_branch(self, project: str) -> JsonDict:
         """Gets the active branch for the user in the given project.
 
@@ -378,6 +401,11 @@ class LookerClient:
         full_response = self.get_active_branch(project)
         return full_response["name"]
 
+    @backoff.on_exception(
+        backoff.expo,
+        BACKOFF_EXCEPTIONS,
+        max_tries=2,
+    )
     def create_branch(self, project: str, branch: str, ref: Optional[str] = None):
         """Creates a branch in the given project.
 
@@ -419,6 +447,11 @@ class LookerClient:
                 response=response,
             )
 
+    @backoff.on_exception(
+        backoff.expo,
+        BACKOFF_EXCEPTIONS,
+        max_tries=2,
+    )
     def hard_reset_branch(self, project: str, branch: str, ref: str):
         """Hard resets a branch to the ref prodvided.
 
@@ -453,6 +486,11 @@ class LookerClient:
                 response=response,
             )
 
+    @backoff.on_exception(
+        backoff.expo,
+        BACKOFF_EXCEPTIONS,
+        max_tries=2,
+    )
     def delete_branch(self, project: str, branch: str):
         """Deletes a branch in the given project.
 
@@ -629,7 +667,11 @@ class LookerClient:
 
         return response.json()["fields"]["dimensions"]
 
-    @backoff.on_exception(backoff.expo, (Timeout,), max_tries=2)
+    @backoff.on_exception(
+        backoff.expo,
+        BACKOFF_EXCEPTIONS,
+        max_tries=2,
+    )
     def create_query(
         self, model: str, explore: str, dimensions: List[str], fields: List = []
     ) -> Dict:
@@ -689,7 +731,11 @@ class LookerClient:
         )
         return result
 
-    @backoff.on_exception(backoff.expo, (Timeout,), max_tries=2)
+    @backoff.on_exception(
+        backoff.expo,
+        BACKOFF_EXCEPTIONS,
+        max_tries=2,
+    )
     def create_query_task(self, query_id: int) -> str:
         """Runs a previously created query asynchronously and returns the query task ID.
 
