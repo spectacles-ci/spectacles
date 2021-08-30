@@ -103,6 +103,24 @@
                 }
             },
             "uniqueItems": true
+        },
+        "successes": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "model": {
+                        "type": "string"
+                    },
+                    "explore": {
+                        "type": "string"
+                    },
+                    "metadata": {
+                        "$ref": "#/definitions/data_test_metadata"
+                    }
+                }
+            },
+            "uniqueItems": true
         }
     }
 }
