@@ -46,6 +46,7 @@ class ContentValidator(Validator):
             else:
                 self._handle_content_result(content, content_type)
 
+        print(self.project.get_results(validator="content"))
         return self.project.get_results(validator="content")
 
     @staticmethod
@@ -56,6 +57,17 @@ class ContentValidator(Validator):
             return "look"
         else:
             raise KeyError("Content type not found. Valid keys are 'look', 'dashboard'")
+
+    @staticmethod
+    def _get_tile_type(content: Dict[str, Any]) -> str:
+        if content["dashboard_element"]:
+            return "dashboard_element"
+        elif content["dashboard_filter"]:
+            return "dashboard_filter"
+        else:
+            raise KeyError(
+                "Tile type not found. Valid keys are 'dashboard_element', 'dashboard_filter'"
+            )
 
     def _handle_content_result(self, content: Dict, content_type: str) -> None:
         for error in content["errors"]:
@@ -78,6 +90,16 @@ class ContentValidator(Validator):
                 title=content[content_type]["title"],
                 space=content[content_type]["space"]["name"],
                 url=f"{self.client.base_url}/{content_type}s/{content_id}",
+                tile_type=(
+                    self._get_tile_type(content)
+                    if content_type == "dashboard"
+                    else None
+                ),
+                tile_title=(
+                    content[self._get_tile_type(content)]["title"]
+                    if content_type == "dashboard"
+                    else None
+                ),
             )
             if content_error not in explore.errors:
                 explore.errors.append(content_error)
