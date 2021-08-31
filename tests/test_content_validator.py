@@ -89,3 +89,79 @@ class TestValidateFail:
         titles = [error["metadata"]["title"] for error in results["errors"]]
         # All failing content in personal spaces has been tagged with "[personal]"
         assert "personal" not in titles
+
+
+class TestValidateFailExcludeFolder:
+    """Test the eye_exam Looker project on master for an explore without errors."""
+
+    @pytest.fixture(scope="class")
+    def validator_fail_with_exclude(
+        self, record_mode, validator
+    ) -> Iterable[Tuple[ContentValidator, Dict]]:
+        with vcr.use_cassette(
+            "tests/cassettes/test_content_validator/fixture_validator_fail.yaml",
+            match_on=["uri", "method", "raw_body"],
+            filter_headers=["Authorization"],
+            record_mode=record_mode,
+        ):
+            validator.build_project(selectors=["eye_exam/users__fail"])
+            validator.excluded_folders.append(26)
+            results = validator.validate()
+            yield validator, results
+
+    def test_personal_folder_content_should_not_be_present(
+        self, validator_fail_with_exclude
+    ):
+        results = validator_fail_with_exclude[1]
+        assert len(results["errors"]) == 0
+
+
+class TestValidateFailIncludeFolder:
+    """Test the eye_exam Looker project on master for an explore without errors."""
+
+    @pytest.fixture(scope="class")
+    def validator_fail_with_include(
+        self, record_mode, validator
+    ) -> Iterable[Tuple[ContentValidator, Dict]]:
+        with vcr.use_cassette(
+            "tests/cassettes/test_content_validator/fixture_validator_fail.yaml",
+            match_on=["uri", "method", "raw_body"],
+            filter_headers=["Authorization"],
+            record_mode=record_mode,
+        ):
+            validator.build_project(selectors=["eye_exam/users__fail"])
+            validator.included_folders.append(26)
+            results = validator.validate()
+            yield validator, results
+
+    def test_personal_folder_content_should_not_be_present(
+        self, validator_fail_with_include
+    ):
+        results = validator_fail_with_include[1]
+        assert len(results["errors"]) == 1
+
+
+class TestValidateFailIncludeExcludeFolder:
+    """Test the eye_exam Looker project on master for an explore without errors."""
+
+    @pytest.fixture(scope="class")
+    def validator_fail_with_include_exclude(
+        self, record_mode, validator
+    ) -> Iterable[Tuple[ContentValidator, Dict]]:
+        with vcr.use_cassette(
+            "tests/cassettes/test_content_validator/fixture_validator_fail.yaml",
+            match_on=["uri", "method", "raw_body"],
+            filter_headers=["Authorization"],
+            record_mode=record_mode,
+        ):
+            validator.build_project(selectors=["eye_exam/users__fail"])
+            validator.included_folders.append(26)
+            validator.excluded_folders.append(26)
+            results = validator.validate()
+            yield validator, results
+
+    def test_personal_folder_content_should_not_be_present(
+        self, validator_fail_with_include_exclude
+    ):
+        results = validator_fail_with_include_exclude[1]
+        assert len(results["errors"]) == 0
