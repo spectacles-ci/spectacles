@@ -146,6 +146,8 @@ class ContentError(ValidationError):
         title: str,
         space: str,
         url: str,
+        tile_type: Optional[str] = None,
+        tile_title: Optional[str] = None,
     ):
         metadata = {
             "field_name": field_name,
@@ -154,6 +156,9 @@ class ContentError(ValidationError):
             "space": space,
             "url": url,
         }
+        if tile_type and tile_title:
+            metadata["tile_type"] = tile_type
+            metadata["tile_title"] = tile_title
         super().__init__(
             model=model, explore=explore, message=message, metadata=metadata
         )
