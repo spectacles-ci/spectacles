@@ -3,6 +3,7 @@ import pytest
 import jsonschema
 import vcr
 from spectacles.validators import ContentValidator
+from spectacles.exceptions import SpectaclesException
 
 
 @pytest.fixture(scope="class")
@@ -109,7 +110,7 @@ class TestValidateFailExcludeFolder:
             results = validator.validate()
             yield validator, results
 
-    def test_personal_folder_content_should_not_be_present(
+    def test_error_from_excluded_folder_should_be_ignored(
         self, validator_fail_with_exclude
     ):
         results = validator_fail_with_exclude[1]
@@ -134,7 +135,7 @@ class TestValidateFailIncludeFolder:
             results = validator.validate()
             yield validator, results
 
-    def test_personal_folder_content_should_not_be_present(
+    def test_error_from_included_folder_should_be_returned(
         self, validator_fail_with_include
     ):
         results = validator_fail_with_include[1]
@@ -160,58 +161,28 @@ class TestValidateFailIncludeExcludeFolder:
             results = validator.validate()
             yield validator, results
 
-    def test_personal_folder_content_should_not_be_present(
+    def test_excluded_folder_should_take_priority_over_included_folder(
         self, validator_fail_with_include_exclude
     ):
         results = validator_fail_with_include_exclude[1]
         assert len(results["errors"]) == 0
 
 
-class TestValidateFailExcludeNonExistantFolder:
-    """Test the eye_exam Looker project on master for an explore without errors."""
-
-    @pytest.fixture(scope="class")
-    def validator_fail_with_exclude_non_existing_folder(
-        self, record_mode, validator
-    ) -> Iterable[Tuple[ContentValidator, Dict]]:
-        with vcr.use_cassette(
-            "tests/cassettes/test_content_validator/fixture_validator_fail.yaml",
-            match_on=["uri", "method", "raw_body"],
-            filter_headers=["Authorization"],
-            record_mode=record_mode,
-        ):
-            validator.build_project(selectors=["eye_exam/users__fail"])
-            validator.excluded_folders.append(999999)
-            results = validator.validate()
-            yield validator, results
-
-    def test_personal_folder_content_should_not_be_present(
-        self, validator_fail_with_exclude_non_existing_folder
-    ):
-        results = validator_fail_with_exclude_non_existing_folder[1]
-        assert len(results["errors"]) == 1
+def test_non_existing_excluded_folder_should_raise_exception(looker_client):
+    with pytest.raises(SpectaclesException):
+        ContentValidator(
+            looker_client,
+            project="eye_exam",
+            exclude_personal=True,
+            exclude_folders=[9999],
+        )
 
 
-class TestValidateFailIncludeNonExistantFolder:
-    """Test the eye_exam Looker project on master for an explore without errors."""
-
-    @pytest.fixture(scope="class")
-    def validator_fail_with_include_non_existing_folder(
-        self, record_mode, validator
-    ) -> Iterable[Tuple[ContentValidator, Dict]]:
-        with vcr.use_cassette(
-            "tests/cassettes/test_content_validator/fixture_validator_fail.yaml",
-            match_on=["uri", "method", "raw_body"],
-            filter_headers=["Authorization"],
-            record_mode=record_mode,
-        ):
-            validator.build_project(selectors=["eye_exam/users__fail"])
-            validator.included_folders.append(999999)
-            results = validator.validate()
-            yield validator, results
-
-    def test_personal_folder_content_should_not_be_present(
-        self, validator_fail_with_include_non_existing_folder
-    ):
-        results = validator_fail_with_include_non_existing_folder[1]
-        assert len(results["errors"]) == 0
+def test_non_existing_included_folder_should_raise_exception(looker_client):
+    with pytest.raises(SpectaclesException):
+        ContentValidator(
+            looker_client,
+            project="eye_exam",
+            exclude_personal=True,
+            include_folders=[9999],
+        )

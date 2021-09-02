@@ -1,7 +1,7 @@
 from typing import List, Optional, Any, Dict
 from spectacles.validators.validator import Validator
 from spectacles.client import LookerClient
-from spectacles.exceptions import ContentError
+from spectacles.exceptions import ContentError, SpectaclesException
 from spectacles.lookml import Explore
 from spectacles.logger import GLOBAL_LOGGER as logger
 from spectacles.types import JsonDict
@@ -35,8 +35,14 @@ class ContentValidator(Validator):
     def _get_all_subfolders(self, input_folders: List[int]) -> List[int]:
         result = []
         all_folders = self.client.all_folders(self.project.name)
-        for folder in input_folders:
-            result.extend(self._get_subfolders(folder, all_folders))
+        for folder_id in input_folders:
+            if not any(folder["id"] == folder_id for folder in all_folders):
+                raise SpectaclesException(
+                    name="folder-id-input-does-not-exist",
+                    title="One of the folders input doesn't exist.",
+                    detail=f"Folder {folder_id} is not a valid folder number.",
+                )
+            result.extend(self._get_subfolders(folder_id, all_folders))
         return result
 
     def _get_subfolders(self, folder_id: int, all_folders: List[JsonDict]) -> List[int]:
