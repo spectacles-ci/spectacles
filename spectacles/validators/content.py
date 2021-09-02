@@ -46,7 +46,6 @@ class ContentValidator(Validator):
             else:
                 self._handle_content_result(content, content_type)
 
-        print(self.project.get_results(validator="content"))
         return self.project.get_results(validator="content")
 
     @staticmethod
