@@ -165,3 +165,53 @@ class TestValidateFailIncludeExcludeFolder:
     ):
         results = validator_fail_with_include_exclude[1]
         assert len(results["errors"]) == 0
+
+
+class TestValidateFailExcludeNonExistantFolder:
+    """Test the eye_exam Looker project on master for an explore without errors."""
+
+    @pytest.fixture(scope="class")
+    def validator_fail_with_exclude_non_existing_folder(
+        self, record_mode, validator
+    ) -> Iterable[Tuple[ContentValidator, Dict]]:
+        with vcr.use_cassette(
+            "tests/cassettes/test_content_validator/fixture_validator_fail.yaml",
+            match_on=["uri", "method", "raw_body"],
+            filter_headers=["Authorization"],
+            record_mode=record_mode,
+        ):
+            validator.build_project(selectors=["eye_exam/users__fail"])
+            validator.excluded_folders.append(999999)
+            results = validator.validate()
+            yield validator, results
+
+    def test_personal_folder_content_should_not_be_present(
+        self, validator_fail_with_exclude_non_existing_folder
+    ):
+        results = validator_fail_with_exclude_non_existing_folder[1]
+        assert len(results["errors"]) == 1
+
+
+class TestValidateFailIncludeNonExistantFolder:
+    """Test the eye_exam Looker project on master for an explore without errors."""
+
+    @pytest.fixture(scope="class")
+    def validator_fail_with_include_non_existing_folder(
+        self, record_mode, validator
+    ) -> Iterable[Tuple[ContentValidator, Dict]]:
+        with vcr.use_cassette(
+            "tests/cassettes/test_content_validator/fixture_validator_fail.yaml",
+            match_on=["uri", "method", "raw_body"],
+            filter_headers=["Authorization"],
+            record_mode=record_mode,
+        ):
+            validator.build_project(selectors=["eye_exam/users__fail"])
+            validator.included_folders.append(999999)
+            results = validator.validate()
+            yield validator, results
+
+    def test_personal_folder_content_should_not_be_present(
+        self, validator_fail_with_include_non_existing_folder
+    ):
+        results = validator_fail_with_include_non_existing_folder[1]
+        assert len(results["errors"]) == 0
