@@ -25,6 +25,12 @@ def test_get_content_type_with_bad_keys_should_raise_key_error(validator):
         validator._get_content_type(content)
 
 
+def test_get_tile_type_with_bad_keys_should_raise_key_error(validator):
+    content = {"lookml_dashboard": "Something goes here."}
+    with pytest.raises(KeyError):
+        validator._get_content_type(content)
+
+
 class TestValidatePass:
     """Test the eye_exam Looker project on master for an explore without errors."""
 
