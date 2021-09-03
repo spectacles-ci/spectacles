@@ -1,11 +1,13 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Validation",
+    "additionalProperties": false,
     "description": "The response from a Spectacles validator.",
     "type": "object",
     "definitions": {
         "sql_metadata": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "dimension": {
                     "type": [
@@ -30,17 +32,63 @@
                         "string",
                         "null"
                     ]
+                },
+                "sql": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 }
             }
         },
         "data_test_metadata": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "test_name": {
                     "type": [
                         "string",
                         "null"
                     ]
+                },
+                "explore_url": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "lookml_url": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            }
+        },
+        "content_metadata": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "field_name": {
+                    "type": "string"
+                },
+                "content_type": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "space": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                },
+                "tile_type": {
+                    "type": "string"
+                },
+                "tile_title": {
+                    "type": "string"
                 }
             }
         }
@@ -52,10 +100,14 @@
         "passed": {
             "type": "boolean"
         },
+        "status": {
+            "type": "string"
+        },
         "tested": {
             "type": "array",
             "items": {
                 "type": "object",
+                "additionalProperties": false,
                 "properties": {
                     "model": {
                         "type": "string"
@@ -74,6 +126,7 @@
             "type": "array",
             "items": {
                 "type": "object",
+                "additionalProperties": false,
                 "properties": {
                     "model": {
                         "type": "string"
@@ -90,6 +143,15 @@
                     "message": {
                         "type": "string"
                     },
+                    "type": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "detail": {
+                        "type": "string"
+                    },
                     "metadata": {
                         "anyOf": [
                             {
@@ -97,6 +159,9 @@
                             },
                             {
                                 "$ref": "#/definitions/data_test_metadata"
+                            },
+                            {
+                                "$ref": "#/definitions/content_metadata"
                             }
                         ]
                     }
