@@ -39,6 +39,11 @@ class TestValidatePass:
         results = validator_pass[1]
         jsonschema.validate(results, schema)
 
+    def test_results_have_correct_number_of_elements(self, validator_pass):
+        results = validator_pass[1]
+        assert len(results["errors"]) == 0
+        assert len(results["successes"]) == 2
+
 
 class TestValidateFail:
     """Test the eye_exam Looker project on master for an explore without errors."""
@@ -60,6 +65,11 @@ class TestValidateFail:
     def test_results_should_conform_to_schema(self, schema, validator_fail):
         results = validator_fail[1]
         jsonschema.validate(results, schema)
+
+    def test_results_have_correct_number_of_elements(self, validator_fail):
+        results = validator_fail[1]
+        assert len(results["errors"]) == 2
+        assert len(results["successes"]) == 1
 
 
 def test_no_data_tests_should_raise_error(validator):
