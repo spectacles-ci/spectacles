@@ -173,6 +173,7 @@
             "type": "array",
             "items": {
                 "type": "object",
+                "additionalProperties": false,
                 "properties": {
                     "model": {
                         "type": "string"
