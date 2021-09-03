@@ -50,12 +50,16 @@ class DataTestValidator(Validator):
             model_name = test["model_name"]
             explore_name = test["explore_name"]
             query_url_params = test["query_url_params"]
-            
+
             try:
                 file_path = test["file"].split("/", 1)[1]
             except IndexError:
-                raise SpectaclesException(f"Couldn't extract file path from unexpected file '{test['file']}'")
-            
+                raise SpectaclesException(
+                    name="data-test-has-incorrect-file-path-format",
+                    title="A data test does not have the correct file path format.",
+                    detail=f"Couldn't extract file path from unexpected file '{test['file']}'",
+                )
+
             explore_url = (
                 f"{self.client.base_url}/explore/{model_name}"
                 f"/{explore_name}?{query_url_params}"
