@@ -70,6 +70,20 @@ def print_data_test_error(
     logger.info("\n" + f"LookML: {lookml_url}")
 
 
+def print_lookml_error(
+    file_path: str, severity: str, message: str, lookml_url: str
+) -> None:
+
+    print_header(red(file_path), LINE_WIDTH + COLOR_CODE_LENGTH)
+    wrapped = textwrap.fill(f'LookML {severity} found: "{message}"', LINE_WIDTH)
+    logger.info(wrapped)
+    logger.info("\n" + f"LookML: {lookml_url}")
+
+
+def print_lookml_success() -> None:
+    logger.info(green("✓ No LookML errors found."))
+
+
 def print_sql_error(
     model: str,
     explore: str,

@@ -853,6 +853,25 @@ class LookerClient:
         result = response.json()
         return result
 
+    def lookml_validation(self, project) -> JsonDict:
+        logger.debug(f"Validating LookML for project {project}")
+        url = utils.compose_url(self.api_url, path=["projects", project, "validate"])
+        response = self.post(url=url, timeout=TIMEOUT_SEC)
+
+        try:
+            response.raise_for_status()
+        except requests.exceptions.HTTPError:
+            raise LookerApiError(
+                name="unable-to-validate-lookml",
+                title=f"Couldn't validate LookML in project {project}.",
+                status=response.status_code,
+                detail=("Failed to run the LookML validator. Please try again."),
+                response=response,
+            )
+
+        result = response.json()
+        return result
+
     def all_folders(self, project: str) -> List[JsonDict]:
         logger.debug("Getting information about all folders")
         url = utils.compose_url(self.api_url, path=["folders"])
