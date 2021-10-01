@@ -92,7 +92,7 @@ def client_kwargs():
         get_all_branches={"project": "project_name"},
         content_validation={},
         all_folders={"project": "project_name"},
-        lookml_validation={},
+        lookml_validation={"project": "project_name"},
     )
 
 
