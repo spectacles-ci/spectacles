@@ -1,6 +1,6 @@
 from typing import Dict, Any
 from spectacles.validators.validator import Validator
-from spectacles.exceptions import SpectaclesException, LookMLError
+from spectacles.exceptions import LookMLError
 
 
 class LookMLValidator(Validator):
