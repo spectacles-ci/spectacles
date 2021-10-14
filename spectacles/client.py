@@ -836,7 +836,7 @@ class LookerClient:
         result = response.json()
         return result
 
-    def all_folders(self, project: str) -> List[JsonDict]:
+    def all_folders(self) -> List[JsonDict]:
         logger.debug("Getting information about all folders")
         url = utils.compose_url(self.api_url, path=["folders"])
         response = self.get(url=url, timeout=TIMEOUT_SEC)
@@ -848,7 +848,7 @@ class LookerClient:
                 name="unable-to-get-folders",
                 title="Couldn't obtain project folders.",
                 status=response.status_code,
-                detail=(f"Failed to get all folders for project '{project}'."),
+                detail=("Failed to get all folders."),
                 response=response,
             )
 
