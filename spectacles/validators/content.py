@@ -22,37 +22,6 @@ class ContentValidator:
         )
         self.included_folders: List[int] = self._get_all_subfolders(include_folders)
 
-    def _get_personal_folders(self) -> List[int]:
-        personal_folders = []
-        result = self.client.all_folders()
-        for folder in result:
-            if folder["is_personal"] or folder["is_personal_descendant"]:
-                personal_folders.append(folder["id"])
-        return personal_folders
-
-    def _get_all_subfolders(self, input_folders: List[int]) -> List[int]:
-        result = []
-        all_folders = self.client.all_folders()
-        for folder_id in input_folders:
-            if not any(folder["id"] == folder_id for folder in all_folders):
-                raise SpectaclesException(
-                    name="folder-id-input-does-not-exist",
-                    title="One of the folders input doesn't exist.",
-                    detail=f"Folder {folder_id} is not a valid folder number.",
-                )
-            result.extend(self._get_subfolders(folder_id, all_folders))
-        return result
-
-    def _get_subfolders(self, folder_id: int, all_folders: List[JsonDict]) -> List[int]:
-        subfolders = [folder_id]
-        children = [
-            child["id"] for child in all_folders if child["parent_id"] == folder_id
-        ]
-        if children:
-            for child in children:
-                subfolders.extend(self._get_subfolders(child, all_folders))
-        return subfolders
-
     def validate(self, project: Project) -> List[ContentError]:
         def is_folder_selected(folder_id: Optional[str]) -> bool:
             if folder_id in self.excluded_folders:
@@ -88,6 +57,37 @@ class ContentValidator:
                 content_errors.extend(errors)
 
         return content_errors
+
+    def _get_personal_folders(self) -> List[int]:
+        personal_folders = []
+        result = self.client.all_folders()
+        for folder in result:
+            if folder["is_personal"] or folder["is_personal_descendant"]:
+                personal_folders.append(folder["id"])
+        return personal_folders
+
+    def _get_all_subfolders(self, input_folders: List[int]) -> List[int]:
+        result = []
+        all_folders = self.client.all_folders()
+        for folder_id in input_folders:
+            if not any(folder["id"] == folder_id for folder in all_folders):
+                raise SpectaclesException(
+                    name="folder-id-input-does-not-exist",
+                    title="One of the folders input doesn't exist.",
+                    detail=f"Folder {folder_id} is not a valid folder number.",
+                )
+            result.extend(self._get_subfolders(folder_id, all_folders))
+        return result
+
+    def _get_subfolders(self, folder_id: int, all_folders: List[JsonDict]) -> List[int]:
+        subfolders = [folder_id]
+        children = [
+            child["id"] for child in all_folders if child["parent_id"] == folder_id
+        ]
+        if children:
+            for child in children:
+                subfolders.extend(self._get_subfolders(child, all_folders))
+        return subfolders
 
     @staticmethod
     def _get_content_type(content: Dict[str, Any]) -> str:
