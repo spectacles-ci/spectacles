@@ -11,9 +11,14 @@ class ContentValidator:
         self,
         client: LookerClient,
         exclude_personal: bool = False,
-        exclude_folders: List[int] = [],
-        include_folders: List[int] = [],
+        exclude_folders: List[int] = None,
+        include_folders: List[int] = None,
     ):
+        if exclude_folders is None:
+            exclude_folders = []
+        if include_folders is None:
+            include_folders = []
+
         self.client = client
         personal_folders = self._get_personal_folders() if exclude_personal else []
 
