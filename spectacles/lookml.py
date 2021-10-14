@@ -1,7 +1,9 @@
 import re
 from typing import Dict, List, Sequence, Optional, Any
-from spectacles.exceptions import ValidationError
+from spectacles.client import LookerClient
+from spectacles.exceptions import ValidationError, LookMlNotFound
 from spectacles.types import QueryMode, JsonDict
+from spectacles.select import is_selected
 
 
 class LookMlObject:
@@ -339,3 +341,62 @@ class Project(LookMlObject):
     @property
     def number_of_errors(self):
         return sum([model.number_of_errors for model in self.models if model.errored])
+
+
+def build_dimensions(
+    client: LookerClient,
+    model_name: str,
+    explore_name: str,
+) -> List[Dimension]:
+    """Creates Dimension objects for all dimensions in a given explore."""
+    dimensions_json = client.get_lookml_dimensions(model_name, explore_name)
+    dimensions: List[Dimension] = []
+    for dimension_json in dimensions_json:
+        dimension = Dimension.from_json(dimension_json, model_name, explore_name)
+        dimension.url = client.base_url + dimension.url
+        if not dimension.ignore:
+            dimensions.append(dimension)
+    return dimensions
+
+
+def build_project(
+    client: LookerClient,
+    name: str,
+    filters: Optional[List[str]] = None,
+    include_dimensions: bool = False,
+) -> Project:
+    """Creates an object (tree) representation of a LookML project."""
+    if filters is None:
+        filters = ["*/*"]
+
+    models = []
+    fields = ["name", "project_name", "explores"]
+    for lookmlmodel in client.get_lookml_models(fields=fields):
+        model = Model.from_json(lookmlmodel)
+        if model.project_name == name and model.explores:
+            models.append(model)
+
+    if not models:
+        raise LookMlNotFound(
+            name="project-models-not-found",
+            title="No configured models found for the specified project.",
+            detail=(
+                f"Go to {client.base_url}/projects and confirm "
+                "a) at least one model exists for the project and "
+                "b) it has an active configuration."
+            ),
+        )
+
+    for model in models:
+        model.explores = [
+            explore
+            for explore in model.explores
+            if is_selected(model.name, explore.name, filters)
+        ]
+
+        if include_dimensions:
+            for explore in model.explores:
+                explore.dimensions = build_dimensions(client, model.name, explore.name)
+
+    project = Project(name, models)
+    return project

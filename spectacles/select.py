@@ -23,17 +23,18 @@ def selector_to_pattern(selector: str) -> str:
     return f"^{selector.replace('*', '.+?')}$"
 
 
-def is_selected(
-    model: str, explore: str, selectors: List[str], exclusions: List[str]
-) -> bool:
-    if not selectors:
-        raise ValueError("Selectors cannot be an empty list.")
+def is_selected(model: str, explore: str, filters: List[str]) -> bool:
+    if not filters:
+        raise ValueError("Filters cannot be an empty list.")
+
     test_string = f"{model}/{explore}"
-    in_any_selector = any(
-        re.match(selector_to_pattern(selector), test_string) for selector in selectors
-    )
-    in_no_exclusions = not any(
-        re.match(selector_to_pattern(exclusion), test_string)
-        for exclusion in exclusions
-    )
-    return in_any_selector and in_no_exclusions
+    included = False
+    for f in filters:
+        if f[0] == "-":
+            if re.match(selector_to_pattern(f[1:]), test_string):
+                return False
+        else:
+            if re.match(selector_to_pattern(f), test_string):
+                included = True
+
+    return included
