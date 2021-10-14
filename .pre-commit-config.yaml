@@ -13,4 +13,4 @@ repos:
     rev: v0.910
     hooks:
     - id: mypy
-      args: [--install-types, --non-interactive]
+      args: [--ignore-missing-imports]
