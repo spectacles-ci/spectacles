@@ -125,27 +125,27 @@ class ContentValidator:
                 model=model_name, name=explore_name
             )
             # Skip errors that are not associated with selected explores
-            if explore is None:
-                continue
-
-            content_id = result[content_type]["id"]
-            content_error = ContentError(
-                model=model_name,
-                explore=explore_name,
-                message=error["message"],
-                field_name=error["field_name"],
-                content_type=content_type,
-                title=result[content_type]["title"],
-                space=result[content_type]["space"]["name"],
-                url=f"{self.client.base_url}/{content_type}s/{content_id}",
-                tile_type=(
-                    self._get_tile_type(result) if content_type == "dashboard" else None
-                ),
-                tile_title=(
-                    result[self._get_tile_type(result)]["title"]
-                    if content_type == "dashboard"
-                    else None
-                ),
-            )
-            content_errors.append(content_error)
+            if explore:
+                content_id = result[content_type]["id"]
+                content_error = ContentError(
+                    model=model_name,
+                    explore=explore_name,
+                    message=error["message"],
+                    field_name=error["field_name"],
+                    content_type=content_type,
+                    title=result[content_type]["title"],
+                    space=result[content_type]["space"]["name"],
+                    url=f"{self.client.base_url}/{content_type}s/{content_id}",
+                    tile_type=(
+                        self._get_tile_type(result)
+                        if content_type == "dashboard"
+                        else None
+                    ),
+                    tile_title=(
+                        result[self._get_tile_type(result)]["title"]
+                        if content_type == "dashboard"
+                        else None
+                    ),
+                )
+                content_errors.append(content_error)
         return content_errors
