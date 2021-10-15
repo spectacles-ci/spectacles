@@ -9,7 +9,9 @@ from spectacles.validators import (
     ContentValidator,
     LookMLValidator,
 )
+from spectacles.types import JsonDict
 from spectacles.utils import time_hash
+from spectacles.lookml import build_project
 from spectacles.logger import GLOBAL_LOGGER as logger
 from spectacles.printer import print_header
 from spectacles.types import QueryMode
@@ -242,22 +244,24 @@ class Runner:
         self,
         branch: Optional[str],
         commit: Optional[str],
-        selectors: List[str],
-        exclusions: List[str],
-    ) -> Dict[str, Any]:
+        filters: List[str],
+    ) -> JsonDict:
         with self.branch_manager(branch, commit):
-            validator = DataTestValidator(self.client, self.project)
+            validator = DataTestValidator(self.client)
             logger.info(
                 "Building LookML project hierarchy for project "
                 f"'{self.project}' @ {self.branch_manager.ref}"
             )
-            validator.build_project(selectors, exclusions)
-            explore_count = validator.project.count_explores()
+            project = build_project(self.client, name=self.project, filters=filters)
+            explore_count = project.count_explores()
             print_header(
                 f"Running data tests based on {explore_count} "
                 f"{'explore' if explore_count == 1 else 'explores'}"
             )
-            results = validator.validate()
+            tests = validator.get_tests(project)
+            validator.validate(tests)
+
+        results = project.get_results(validator="data_test")
         return results
 
     def validate_lookml(
