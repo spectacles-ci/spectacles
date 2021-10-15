@@ -296,33 +296,34 @@ class SqlValidator:
 
     def _handle_query_result(self, result: QueryResult) -> None:
         test = self._test_by_task_id[result.query_task_id]
-        self._running_tests.remove(test)
-        self.query_slots += 1
-        test.status = result.status
-        test.runtime = result.runtime
-        lookml_object = test.lookml_ref
-        lookml_object.queried = True
+        if result.status in ("complete", "error"):
+            self._running_tests.remove(test)
+            self.query_slots += 1
+            test.status = result.status
+            test.runtime = result.runtime
+            lookml_object = test.lookml_ref
+            lookml_object.queried = True
 
-        if result.runtime and result.runtime >= self.runtime_threshold:
-            self._long_running_tests.append(test)
+            if result.runtime and result.runtime >= self.runtime_threshold:
+                self._long_running_tests.append(test)
 
-        if result.status == "error" and result.error:
-            model_name = lookml_object.model_name
-            dimension_name: Optional[str] = None
-            if isinstance(lookml_object, Dimension):
-                explore_name = lookml_object.explore_name
-                dimension_name = lookml_object.name
-            else:
-                explore_name = lookml_object.name
+            if result.status == "error" and result.error:
+                model_name = lookml_object.model_name
+                dimension_name: Optional[str] = None
+                if isinstance(lookml_object, Dimension):
+                    explore_name = lookml_object.explore_name
+                    dimension_name = lookml_object.name
+                else:
+                    explore_name = lookml_object.name
 
-            sql_error = SqlError(
-                model=model_name,
-                explore=explore_name,
-                dimension=dimension_name,
-                **result.error,
-            )
-            test.error = sql_error
-            lookml_object.errors.append(sql_error)
+                sql_error = SqlError(
+                    model=model_name,
+                    explore=explore_name,
+                    dimension=dimension_name,
+                    **result.error,
+                )
+                test.error = sql_error
+                lookml_object.errors.append(sql_error)
 
     @staticmethod
     def _extract_error_details(query_result: Dict) -> Optional[Dict]:
