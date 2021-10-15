@@ -8,13 +8,19 @@ from utils import build_validation
 
 
 @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
-def test_validate_sql_should_work(looker_client):
+@pytest.mark.parametrize("fail_fast", [True, False])
+def test_validate_sql_should_work(looker_client, fail_fast):
     runner = Runner(looker_client, "eye_exam")
-    result = runner.validate_sql(filters=["eye_exam/users", "eye_exam/users__fail"])
+    result = runner.validate_sql(
+        filters=["eye_exam/users", "eye_exam/users__fail"], fail_fast=fail_fast
+    )
     assert result["status"] == "failed"
     assert result["tested"][0]["passed"]
     assert not result["tested"][1]["passed"]
-    assert len(result["errors"]) > 0
+    if fail_fast:
+        assert len(result["errors"]) == 1
+    else:
+        assert len(result["errors"]) > 1
 
 
 @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
