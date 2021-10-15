@@ -2,7 +2,7 @@ import re
 from typing import Dict, List, Sequence, Optional, Any, Iterable
 from spectacles.client import LookerClient
 from spectacles.exceptions import ValidationError, LookMlNotFound
-from spectacles.types import QueryMode, JsonDict
+from spectacles.types import JsonDict
 from spectacles.select import is_selected
 
 
@@ -303,14 +303,14 @@ class Project(LookMlObject):
             return model_object.get_explore(name)
 
     def get_results(
-        self, validator: str, mode: Optional[QueryMode] = None
+        self, validator: str, fail_fast: Optional[bool] = None
     ) -> Dict[str, Any]:
         errors: List[Dict[str, Any]] = []
         successes: List[Dict[str, Any]] = []
         tested = []
 
         def parse_explore_errors(explore):
-            if validator != "sql" or mode == "batch":
+            if validator != "sql" or fail_fast is True:
                 errors.extend([error.__dict__ for error in explore.errors])
             else:
                 for dimension in explore.dimensions:
