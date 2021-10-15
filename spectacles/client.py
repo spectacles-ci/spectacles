@@ -575,7 +575,7 @@ class LookerClient:
 
         return response.json()
 
-    def get_lookml_models(self, fields: List = []) -> List[JsonDict]:
+    def get_lookml_models(self, fields: Optional[List] = None) -> List[JsonDict]:
         """Gets all models and explores from the LookmlModel endpoint.
 
         Returns:
@@ -583,6 +583,8 @@ class LookerClient:
 
         """
         logger.debug(f"Getting all models and explores from {self.base_url}")
+        if fields is None:
+            fields = []
 
         params = {}
         if fields:
@@ -640,7 +642,7 @@ class LookerClient:
         return response.json()["fields"]["dimensions"]
 
     def create_query(
-        self, model: str, explore: str, dimensions: List[str], fields: List = []
+        self, model: str, explore: str, dimensions: List[str], fields: List = None
     ) -> Dict:
         """Creates a Looker async query for one or more specified dimensions.
 
@@ -666,8 +668,10 @@ class LookerClient:
             "filter_expression": "1=2",
         }
 
-        params = {}
-        if fields:
+        params: Dict[str, list] = {}
+        if fields is None:
+            params["fields"] = []
+        else:
             params["fields"] = fields
 
         url = utils.compose_url(self.api_url, path=["queries"], params=params)
