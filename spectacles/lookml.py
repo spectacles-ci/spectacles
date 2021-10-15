@@ -1,5 +1,5 @@
 import re
-from typing import Dict, List, Sequence, Optional, Any
+from typing import Dict, List, Sequence, Optional, Any, Iterable
 from spectacles.client import LookerClient
 from spectacles.exceptions import ValidationError, LookMlNotFound
 from spectacles.types import QueryMode, JsonDict
@@ -250,6 +250,11 @@ class Project(LookMlObject):
 
     def count_explores(self) -> int:
         return sum(len(model.explores) for model in self.models)
+
+    def iter_explores(self) -> Iterable[Explore]:
+        for model in self.models:
+            for explore in model.explores:
+                yield explore
 
     @property
     def errored(self):
