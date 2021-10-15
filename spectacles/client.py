@@ -872,6 +872,40 @@ class LookerClient:
         result = response.json()
         return result
 
+    @backoff.on_exception(backoff.expo, (Timeout,), max_tries=2)
+    def run_query(self, query_id: int) -> str:
+        """Returns the compiled SQL for a given query ID.
+
+        The corresponding Looker API endpoint allows us to run queries with a variety
+        of result formats, however we only use the `sql` result format, which doesn't
+        run the query but does return its compiled SQL.
+
+        If a Timeout exception is received, attempts to retry.
+
+        """
+        # Using old-style string formatting so that strings are formatted lazily
+        logger.debug("Retrieving the SQL for query ID %s", query_id)
+
+        url = utils.compose_url(self.api_url, path=["queries", query_id, "run", "sql"])
+        response = self.get(url=url, timeout=TIMEOUT_SEC)
+        try:
+            response.raise_for_status()
+        except requests.exceptions.HTTPError:
+            raise LookerApiError(
+                name="unable-to-retrieve-compiled-sql",
+                title="Couldn't retrieve compiled SQL.",
+                status=response.status_code,
+                detail=(
+                    f"Failed to retrieve compiled SQL for query '{query_id}'. "
+                    "Please try again."
+                ),
+                response=response,
+            )
+
+        result = response.text
+
+        return result
+
 
 class NullAuth(requests.auth.AuthBase):
     """A custom auth class which ensures requests does not override authorization
