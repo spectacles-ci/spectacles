@@ -3,7 +3,7 @@ from tabulate import tabulate
 from typing import Union, Dict, Any, List, Optional
 import time
 from spectacles.client import LookerClient
-from spectacles.lookml import Dimension, Explore
+from spectacles.lookml import Dimension, Explore, Project
 from spectacles.exceptions import SpectaclesException, SqlError
 from spectacles.logger import GLOBAL_LOGGER as logger
 from spectacles.printer import print_header
@@ -132,10 +132,34 @@ class SqlValidator:
         self._test_by_task_id: Dict[str, SqlTest] = {}
         self._long_running_tests: List[SqlTest] = []
 
-    def create_explore_test(
+    def create_tests(
+        self,
+        project: Project,
+        compile_sql: bool = False,
+        at_dimension_level: bool = False,
+    ) -> List[SqlTest]:
+        tests: List[SqlTest] = []
+        if at_dimension_level:
+            for explore in project.iter_explores():
+                if not explore.skipped and explore.errored:
+                    tests.extend(self._create_dimension_tests(explore, compile_sql))
+        else:
+            for explore in project.iter_explores():
+                test = self._create_explore_test(explore, compile_sql)
+                tests.append(test)
+        return tests
+
+    def _create_explore_test(
         self, explore: Explore, compile_sql: bool = False
     ) -> SqlTest:
         """Creates a SqlTest to query all dimensions in an explore"""
+        if not explore.dimensions:
+            raise AttributeError(
+                "Explore object is missing dimensions, "
+                "meaning this query won't have fields and will error. "
+                "Often this happens because you didn't include dimensions "
+                "when you built the project."
+            )
         dimensions = [dimension.name for dimension in explore.dimensions]
         query = self.client.create_query(
             explore.model_name, explore.name, dimensions, fields=["id", "share_url"]
@@ -147,7 +171,7 @@ class SqlValidator:
             test.sql = self.client.run_query(query["id"])
         return test
 
-    def create_dimension_tests(
+    def _create_dimension_tests(
         self, explore: Explore, compile_sql: bool = False
     ) -> List[SqlTest]:
         """Creates individual queries for each dimension in an explore"""
