@@ -1,4 +1,8 @@
+import jsonschema
 import pytest
+from unittest.mock import Mock, patch
+from spectacles.client import LookerClient
+from spectacles.exceptions import ContentError, DataTestError, SqlError
 from spectacles.runner import Runner
 from utils import build_validation
 
@@ -33,6 +37,101 @@ def test_validate_data_tests_should_work(looker_client):
     assert result["tested"][0]["passed"]
     assert not result["tested"][1]["passed"]
     assert len(result["errors"]) > 0
+
+
+@patch("spectacles.validators.data_test.DataTestValidator.get_tests")
+@patch("spectacles.validators.data_test.DataTestValidator.validate")
+@patch("spectacles.runner.build_project")
+@patch("spectacles.runner.LookerBranchManager")
+def test_validate_data_tests_returns_valid_schema(
+    mock_branch_manager,
+    mock_build_project,
+    mock_validate,
+    mock_get_tests,
+    project,
+    model,
+    explore,
+    schema,
+):
+    error_message = "An error ocurred"
+
+    def add_error_to_project(tests):
+        project.models[0].explores[0].queried = True
+        project.models[0].explores[0].errors = [
+            DataTestError("", "", error_message, "", "", "")
+        ]
+
+    model.explores = [explore]
+    project.models = [model]
+    mock_build_project.return_value = project
+    mock_validate.side_effect = add_error_to_project
+    runner = Runner(client=Mock(spec=LookerClient), project="eye_exam")
+    result = runner.validate_data_tests()
+    assert result["status"] == "failed"
+    assert result["errors"][0]["message"] == error_message
+    jsonschema.validate(result, schema)
+
+
+@patch("spectacles.validators.content.ContentValidator.validate")
+@patch("spectacles.runner.build_project")
+@patch("spectacles.runner.LookerBranchManager")
+def test_validate_content_returns_valid_schema(
+    mock_branch_manager,
+    mock_build_project,
+    mock_validate,
+    project,
+    model,
+    explore,
+    schema,
+):
+    error_message = "An error ocurred"
+
+    def add_error_to_project(tests):
+        project.models[0].explores[0].queried = True
+        project.models[0].explores[0].errors = [
+            ContentError("", "", error_message, "", "", "", "", "")
+        ]
+
+    model.explores = [explore]
+    project.models = [model]
+    mock_build_project.return_value = project
+    mock_validate.side_effect = add_error_to_project
+    runner = Runner(client=Mock(spec=LookerClient), project="eye_exam")
+    result = runner.validate_content()
+    assert result["status"] == "failed"
+    assert result["errors"][0]["message"] == error_message
+    jsonschema.validate(result, schema)
+
+
+@patch("spectacles.validators.sql.SqlValidator.create_tests")
+@patch("spectacles.validators.sql.SqlValidator.run_tests")
+@patch("spectacles.runner.build_project")
+@patch("spectacles.runner.LookerBranchManager")
+def test_validate_sql_returns_valid_schema(
+    mock_branch_manager,
+    mock_build_project,
+    mock_run_tests,
+    mock_create_tests,
+    project,
+    model,
+    explore,
+    schema,
+):
+    error_message = "An error ocurred"
+
+    def add_error_to_project(tests, profile):
+        project.models[0].explores[0].queried = True
+        project.models[0].explores[0].errors = [SqlError("", "", "", "", error_message)]
+
+    model.explores = [explore]
+    project.models = [model]
+    mock_build_project.return_value = project
+    mock_run_tests.side_effect = add_error_to_project
+    runner = Runner(client=Mock(spec=LookerClient), project="eye_exam")
+    result = runner.validate_sql()
+    assert result["status"] == "failed"
+    assert result["errors"][0]["message"] == error_message
+    jsonschema.validate(result, schema)
 
 
 def test_incremental_same_results_should_not_have_errors():
