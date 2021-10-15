@@ -263,17 +263,20 @@ class Runner:
         self,
         branch: Optional[str],
         commit: Optional[str],
-        selectors: List[str],
-        exclusions: List[str],
+        filters: List[str],
         incremental: bool = False,
         exclude_personal: bool = False,
-        exclude_folders: List[int] = [],
-        include_folders: List[int] = [],
-    ) -> Dict[str, Any]:
+        exclude_folders: List[int] = None,
+        include_folders: List[int] = None,
+    ) -> JsonDict:
+        if exclude_folders is None:
+            exclude_folders = []
+        if include_folders is None:
+            include_folders = []
+
         with self.branch_manager(branch, commit):
             validator = ContentValidator(
                 self.client,
-                self.project,
                 exclude_personal,
                 exclude_folders,
                 include_folders,
@@ -282,14 +285,16 @@ class Runner:
                 "Building LookML project hierarchy for project "
                 f"'{self.project}' @ {self.branch_manager.ref}"
             )
-            validator.build_project(selectors, exclusions)
-            explore_count = validator.project.count_explores()
+            project = build_project(self.client, name=self.project, filters=filters)
+            explore_count = project.count_explores()
             print_header(
                 f"Validating content based on {explore_count} "
                 f"{'explore' if explore_count == 1 else 'explores'}"
                 + (" [incremental mode] " if incremental else "")
             )
-            results = validator.validate()
+            validator.validate(project)
+            results = project.get_results(validator="content")
+
         if incremental and (self.branch_manager.branch or self.branch_manager.commit):
             logger.debug("Starting another content validation against production")
             with self.branch_manager():
@@ -297,18 +302,20 @@ class Runner:
                     "Building LookML project hierarchy for project "
                     f"'{self.project}' @ {self.branch_manager.ref}"
                 )
-                validator.build_project(selectors, exclusions)
-                main_results = validator.validate()
-            return self._incremental_results(main=main_results, additional=results)
+                target_project = build_project(
+                    self.client, name=self.project, filters=filters
+                )
+                validator.validate(target_project)
+                target_results = project.get_results(validator="content")
+
+            return self._incremental_results(main=target_results, additional=results)
         else:
             return results
 
     @staticmethod
-    def _incremental_results(
-        main: Dict[str, Any], additional: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def _incremental_results(main: JsonDict, additional: JsonDict) -> JsonDict:
         """Returns a new result with only the additional errors in `additional`."""
-        incremental: Dict[str, Any] = {
+        incremental: JsonDict = {
             "validator": "content",
             # Start with models and explores we know passed in `additional`
             "tested": [test for test in additional["tested"] if test["passed"]],
