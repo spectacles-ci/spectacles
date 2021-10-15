@@ -89,7 +89,7 @@ class TestValidateFailExcludeFolder:
         self, looker_client, validator, record_mode
     ) -> Iterable[List[ContentError]]:
         with vcr.use_cassette(
-            "tests/cassettes/test_content_validator/fixture_validator_fail.yaml",
+            "tests/cassettes/test_content_validator/fixture_validator_fail_excl.yaml",
             match_on=["uri", "method", "raw_body"],
             filter_headers=["Authorization"],
             record_mode=record_mode,
@@ -113,7 +113,7 @@ class TestValidateFailIncludeFolder:
         self, looker_client, validator, record_mode
     ) -> Iterable[List[ContentError]]:
         with vcr.use_cassette(
-            "tests/cassettes/test_content_validator/fixture_validator_fail.yaml",
+            "tests/cassettes/test_content_validator/fixture_validator_fail_incl.yaml",
             match_on=["uri", "method", "raw_body"],
             filter_headers=["Authorization"],
             record_mode=record_mode,
@@ -137,7 +137,10 @@ class TestValidateFailIncludeExcludeFolder:
         self, looker_client, validator, record_mode
     ) -> Iterable[List[ContentError]]:
         with vcr.use_cassette(
-            "tests/cassettes/test_content_validator/fixture_validator_fail.yaml",
+            (
+                "tests/cassettes/test_content_validator/"
+                "fixture_validator_fail_incl_excl.yaml"
+            ),
             match_on=["uri", "method", "raw_body"],
             filter_headers=["Authorization"],
             record_mode=record_mode,
