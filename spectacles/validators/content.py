@@ -147,5 +147,8 @@ class ContentValidator:
                         else None
                     ),
                 )
-                content_errors.append(content_error)
+                if content_error not in explore.errors:
+                    explore.errors.append(content_error)
+                    content_errors.append(content_error)
+
         return content_errors
