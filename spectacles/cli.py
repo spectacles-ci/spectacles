@@ -7,7 +7,7 @@ from yaml.parser import ParserError
 import argparse
 import logging
 import os
-from typing import Callable, Iterable, List
+from typing import Callable
 from spectacles import __version__
 from spectacles.runner import Runner
 from spectacles.client import LookerClient
@@ -217,6 +217,11 @@ def main():
     if getattr(args, "branch", None) and getattr(args, "commit_ref", None):
         parser.error("argument --commit-ref not allowed with argument --branch")
 
+    if getattr(args, "target", None) and not getattr(args, "incremental", None):
+        parser.error(
+            "argument --target can only be passed in incremental mode (--incremental)"
+        )
+
     for handler in logger.handlers:
         handler.setLevel(args.log_level)
 
@@ -228,6 +233,8 @@ def main():
             args.command,
             project=args.project if args.command != "connect" else None,
         )
+
+    ref = args.branch or args.commit_ref
 
     if args.command == "connect":
         run_connect(
@@ -241,49 +248,46 @@ def main():
         run_sql(
             args.log_dir,
             args.project,
-            args.branch,
+            ref,
             args.explores,
-            args.exclude,
             args.base_url,
             args.client_id,
             args.client_secret,
             args.port,
             args.api_version,
-            args.mode,
+            args.fail_fast,
+            args.incremental,
+            args.target,
             args.remote_reset,
             args.concurrency,
-            args.commit_ref,
             args.profile,
             args.runtime_threshold,
         )
     elif args.command == "assert":
         run_assert(
             args.project,
-            args.branch,
+            ref,
             args.explores,
-            args.exclude,
             args.base_url,
             args.client_id,
             args.client_secret,
             args.port,
             args.api_version,
             args.remote_reset,
-            args.commit_ref,
         )
     elif args.command == "content":
         run_content(
             args.project,
-            args.branch,
+            ref,
             args.explores,
-            args.exclude,
             args.base_url,
             args.client_id,
             args.client_secret,
             args.port,
             args.api_version,
             args.remote_reset,
-            args.commit_ref,
             args.incremental,
+            args.target,
             args.exclude_personal,
             args.exclude_folders,
             args.folders,
@@ -444,19 +448,13 @@ def _build_validator_subparser(
         "--explores",
         nargs="+",
         default=["*/*"],
-        help="Specify the explores Spectacles should test. \
-            List of strings in 'model_name/explore_name' format. \
-            The '*' wildcard selects all models or explores. For instance,\
-            'model_name/*' would select all explores in the 'model_name' model.",
-    )
-    base_subparser.add_argument(
-        "--exclude",
-        nargs="+",
-        default=[],
-        help="Specify the explores Spectacles should exclude when testing. \
-            List of strings in 'model_name/explore_name' format. \
-            The '*' wildcard excludes all models or explores. For instance,\
-            'model_name/*' would select all explores in the 'model_name' model.",
+        help=(
+            "Specify the explores Spectacles should test. "
+            "List of strings in 'model_name/explore_name' format. "
+            "The '*' wildcard selects all models or explores. For instance, "
+            "'model_name/*' would select all explores in the 'model_name' model. "
+            "Appending '-' to the string will exclude all matching explores."
+        ),
     )
     group = base_subparser.add_mutually_exclusive_group()
     group.add_argument(
@@ -496,20 +494,34 @@ def _build_sql_subparser(
     subparser = subparser_action.add_parser(
         "sql",
         parents=[base_subparser],
-        help="Build and run queries to test your Looker instance.",
+        help="Run SQL queries to test your Looker instance.",
     )
 
     _build_validator_subparser(subparser_action, subparser)
 
     subparser.add_argument(
-        "--mode",
-        choices=["batch", "single", "hybrid"],
-        default="batch",
-        help="Specify the mode the SQL validator should run.\
-            In single-dimension mode, the SQL validator will run one query \
-            per dimension. In batch mode, the SQL validator will create one \
-            query per explore. In hybrid mode, the SQL validator will first run in \
-            batch mode and then run errored explores in single-dimension mode.",
+        "--fail-fast",
+        action="store_true",
+        help=(
+            "Test explore-by-explore instead of dimension-by-dimension. "
+            "This means that validation takes less time but only returns the first "
+            "error identified in each explore."
+        ),
+    )
+    subparser.add_argument(
+        "--incremental",
+        action="store_true",
+        help=(
+            "Only display errors which are not present on the target branch or commit. "
+            "If --target is not specified, Spectacles compares to production."
+        ),
+    )
+    subparser.add_argument(
+        "--target",
+        help=(
+            "The branch name or commit SHA to compare to for incremental testing. "
+            "Must be used with --incremental."
+        ),
     )
     subparser.add_argument(
         "--concurrency",
@@ -567,35 +579,41 @@ def _build_content_subparser(
         "content", parents=[base_subparser], help="Run Looker content validation."
     )
 
+    _build_validator_subparser(subparser_action, subparser)
+
     subparser.add_argument(
         "--incremental",
         action="store_true",
-        help="Only display errors which are not present on the production branch.",
+        help=(
+            "Only display errors which are not present on the target branch or commit. "
+            "If --target is not specified, Spectacles compares to production."
+        ),
     )
-
+    subparser.add_argument(
+        "--target",
+        help=(
+            "The branch name or commit SHA to compare to for incremental testing. "
+            "Must be used with --incremental."
+        ),
+    )
     subparser.add_argument(
         "--exclude-personal",
         action="store_true",
         help="Exclude errors found in content in personal folders.",
     )
-
-    subparser.add_argument(
-        "--exclude-folders",
-        type=int,
-        nargs="+",
-        help="Exclude errors found in folders specified by id.",
-        default=[],
-    )
-
     subparser.add_argument(
         "--folders",
         type=int,
         nargs="+",
-        help="Include errors found in folders specified by id, takes precedence over --exclue-personal or --exclude-folders.",
+        help=(
+            "Specify the content folder IDs that Spectacles should test. "
+            "Spectacles will also test all content "
+            "found in subfolders of the specified folders. "
+            "Appending '-' to a folder ID will exclude it and all subfolders. "
+            "Takes precedence over --exclude-personal."
+        ),
         default=[],
     )
-
-    _build_validator_subparser(subparser_action, subparser)
 
 
 def run_connect(
@@ -608,30 +626,27 @@ def run_connect(
 @log_duration
 def run_content(
     project,
-    branch,
-    explores,
-    excludes,
+    ref,
+    filters,
     base_url,
     client_id,
     client_secret,
     port,
     api_version,
     remote_reset,
-    commit_ref,
     incremental,
+    target,
     exclude_personal,
     exclude_folders,
     include_folders,
 ) -> None:
-    runner = Runner(
-        base_url, project, client_id, client_secret, port, api_version, remote_reset
-    )
+    client = LookerClient(base_url, client_id, client_secret, port, api_version)
+    runner = Runner(client, project, remote_reset)
     results = runner.validate_content(
-        branch,
-        commit_ref,
-        explores,
-        excludes,
+        ref,
+        filters,
         incremental,
+        target,
         exclude_personal,
         exclude_folders,
         include_folders,
@@ -665,21 +680,19 @@ def run_content(
 @log_duration
 def run_assert(
     project,
-    branch,
-    explores,
-    exclude,
+    ref,
+    filters,
     base_url,
     client_id,
     client_secret,
     port,
     api_version,
     remote_reset,
-    commit_ref,
 ) -> None:
-    runner = Runner(
-        base_url, project, client_id, client_secret, port, api_version, remote_reset
-    )
-    results = runner.validate_data_tests(branch, commit_ref, explores, exclude)
+    client = LookerClient(base_url, client_id, client_secret, port, api_version)
+    runner = Runner(client, project, remote_reset)
+
+    results = runner.validate_data_tests(ref, filters)
 
     for test in sorted(results["tested"], key=lambda x: (x["model"], x["explore"])):
         message = f"{test['model']}.{test['explore']}"
@@ -708,72 +721,65 @@ def run_assert(
 def run_sql(
     log_dir,
     project,
-    branch,
-    explores,
-    exclude,
+    ref,
+    filters,
     base_url,
     client_id,
     client_secret,
     port,
     api_version,
-    mode,
+    fail_fast,
+    incremental,
+    target,
     remote_reset,
     concurrency,
-    commit_ref,
     profile,
     runtime_threshold,
 ) -> None:
     """Runs and validates the SQL for each selected LookML dimension."""
-    runner = Runner(
-        base_url, project, client_id, client_secret, port, api_version, remote_reset
-    )
-
-    def iter_errors(lookml: List) -> Iterable:
-        for item in lookml:
-            if item.errored:
-                yield item
+    client = LookerClient(base_url, client_id, client_secret, port, api_version)
+    runner = Runner(client, project, remote_reset)
 
     results = runner.validate_sql(
-        branch,
-        commit_ref,
-        explores,
-        exclude,
-        mode,
+        ref,
+        filters,
+        fail_fast,
+        incremental,
+        target,
         concurrency,
         profile,
         runtime_threshold,
     )
 
-    for test in sorted(results["tested"], key=lambda x: (x["model"], x["explore"])):
-        message = f"{test['model']}.{test['explore']}"
-        printer.print_validation_result(passed=test["passed"], source=message)
+    explores = sorted(results["explores"], key=lambda x: (x["model"], x["explore"]))
+    for explore in explores:
+        message = f"{explore['model']}.{explore['explore']}"
+        printer.print_validation_result(passed=explore["passed"], source=message)
 
-    errors = sorted(
-        results["errors"],
-        key=lambda x: (x["model"], x["explore"], x["metadata"].get("dimension")),
-    )
+    count_errors = 0
+    for explore in explores:
+        if not explore["passed"]:
+            for test in explore["tests"]:
+                for error in test["errors"]:
+                    count_errors += 1
+                    printer.print_sql_error(
+                        model=error["model"],
+                        explore=error["explore"],
+                        message=error["message"],
+                        sql=error["metadata"]["sql"],
+                        log_dir=log_dir,
+                        dimension=error["metadata"].get("dimension"),
+                        lookml_url=error["metadata"].get("lookml_url"),
+                    )
 
-    if errors:
-        for error in errors:
-            printer.print_sql_error(
-                model=error["model"],
-                explore=error["explore"],
-                message=error["message"],
-                sql=error["metadata"]["sql"],
-                log_dir=log_dir,
-                dimension=error["metadata"].get("dimension"),
-                lookml_url=error["metadata"].get("lookml_url"),
+    if fail_fast:
+        logger.info(
+            printer.dim(
+                "\n\nTo determine the exact dimensions responsible for "
+                f"{'this error' if count_errors == 1 else 'these errors'}, "
+                "you can rerun \nSpectacles without --fail-fast."
             )
-        if mode == "batch":
-            logger.info(
-                printer.dim(
-                    "\n\nTo determine the exact dimensions responsible for "
-                    f"{'this error' if len(errors) == 1 else 'these errors'}, "
-                    "you can re-run \nSpectacles in single-dimension mode, "
-                    "with `--mode single`.\n\nYou can also run this original "
-                    "validation with `--mode hybrid` to do this automatically."
-                )
-            )
+        )
 
         logger.info("")
         raise GenericValidationError
