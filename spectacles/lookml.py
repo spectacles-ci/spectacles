@@ -405,5 +405,5 @@ def build_project(
             for explore in model.explores:
                 explore.dimensions = build_dimensions(client, model.name, explore.name)
 
-    project = Project(name, models)
+    project = Project(name, [model for model in models if len(model.explores) > 0])
     return project
