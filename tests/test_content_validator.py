@@ -34,9 +34,7 @@ class TestValidatePass:
     """Test the eye_exam Looker project on master for an explore without errors."""
 
     @pytest.fixture(scope="class")
-    def validator_errors(
-        self, looker_client, validator, record_mode
-    ) -> Iterable[List[ContentError]]:
+    def validator_errors(self, validator, record_mode) -> Iterable[List[ContentError]]:
         with vcr.use_cassette(
             "tests/cassettes/test_content_validator/fixture_validator_pass.yaml",
             match_on=["uri", "method", "raw_body"],
@@ -44,7 +42,7 @@ class TestValidatePass:
             record_mode=record_mode,
         ):
             project = build_project(
-                looker_client, name="eye_exam", filters=["eye_exam/users"]
+                validator.client, name="eye_exam", filters=["eye_exam/users"]
             )
             errors: List[ContentError] = validator.validate(project)
             yield errors
@@ -57,9 +55,7 @@ class TestValidateFail:
     """Test the eye_exam Looker project on master for an explore without errors."""
 
     @pytest.fixture(scope="class")
-    def validator_errors(
-        self, looker_client, validator, record_mode
-    ) -> Iterable[List[ContentError]]:
+    def validator_errors(self, validator, record_mode) -> Iterable[List[ContentError]]:
         with vcr.use_cassette(
             "tests/cassettes/test_content_validator/fixture_validator_fail.yaml",
             match_on=["uri", "method", "raw_body"],
@@ -67,7 +63,7 @@ class TestValidateFail:
             record_mode=record_mode,
         ):
             project = build_project(
-                looker_client, name="eye_exam", filters=["eye_exam/users__fail"]
+                validator.client, name="eye_exam", filters=["eye_exam/users__fail"]
             )
             errors: List[ContentError] = validator.validate(project)
             yield errors
@@ -85,9 +81,7 @@ class TestValidateFailExcludeFolder:
     """Test the eye_exam Looker project on master for an explore without errors."""
 
     @pytest.fixture(scope="class")
-    def validator_errors(
-        self, looker_client, validator, record_mode
-    ) -> Iterable[List[ContentError]]:
+    def validator_errors(self, validator, record_mode) -> Iterable[List[ContentError]]:
         with vcr.use_cassette(
             "tests/cassettes/test_content_validator/fixture_validator_fail_excl.yaml",
             match_on=["uri", "method", "raw_body"],
@@ -95,7 +89,7 @@ class TestValidateFailExcludeFolder:
             record_mode=record_mode,
         ):
             project = build_project(
-                looker_client, name="eye_exam", filters=["eye_exam/users__fail"]
+                validator.client, name="eye_exam", filters=["eye_exam/users__fail"]
             )
             validator.excluded_folders.append(26)
             errors: List[ContentError] = validator.validate(project)
@@ -109,9 +103,7 @@ class TestValidateFailIncludeFolder:
     """Test the eye_exam Looker project on master for an explore without errors."""
 
     @pytest.fixture(scope="class")
-    def validator_errors(
-        self, looker_client, validator, record_mode
-    ) -> Iterable[List[ContentError]]:
+    def validator_errors(self, validator, record_mode) -> Iterable[List[ContentError]]:
         with vcr.use_cassette(
             "tests/cassettes/test_content_validator/fixture_validator_fail_incl.yaml",
             match_on=["uri", "method", "raw_body"],
@@ -119,7 +111,7 @@ class TestValidateFailIncludeFolder:
             record_mode=record_mode,
         ):
             project = build_project(
-                looker_client, name="eye_exam", filters=["eye_exam/users__fail"]
+                validator.client, name="eye_exam", filters=["eye_exam/users__fail"]
             )
             validator.included_folders.append(26)
             errors: List[ContentError] = validator.validate(project)
@@ -133,9 +125,7 @@ class TestValidateFailIncludeExcludeFolder:
     """Test the eye_exam Looker project on master for an explore without errors."""
 
     @pytest.fixture(scope="class")
-    def validator_errors(
-        self, looker_client, validator, record_mode
-    ) -> Iterable[List[ContentError]]:
+    def validator_errors(self, validator, record_mode) -> Iterable[List[ContentError]]:
         with vcr.use_cassette(
             (
                 "tests/cassettes/test_content_validator/"
@@ -146,7 +136,7 @@ class TestValidateFailIncludeExcludeFolder:
             record_mode=record_mode,
         ):
             project = build_project(
-                looker_client, name="eye_exam", filters=["eye_exam/users__fail"]
+                validator.client, name="eye_exam", filters=["eye_exam/users__fail"]
             )
             validator.included_folders.append(26)
             validator.excluded_folders.append(26)
