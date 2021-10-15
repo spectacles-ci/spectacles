@@ -1,6 +1,6 @@
 import re
 from spectacles.exceptions import LookerApiError
-from typing import List, Dict, Any, Optional
+from typing import List, Optional, cast
 from dataclasses import dataclass
 import itertools
 from spectacles.client import LookerClient
@@ -11,8 +11,10 @@ from spectacles.validators import (
     LookMLValidator,
 )
 from spectacles.types import JsonDict
+from spectacles.validators.sql import SqlTest
+from spectacles.exceptions import SpectaclesException
 from spectacles.utils import time_hash
-from spectacles.lookml import build_project
+from spectacles.lookml import build_project, Project, Explore
 from spectacles.logger import GLOBAL_LOGGER as logger
 from spectacles.printer import print_header, LINE_WIDTH
 
@@ -239,32 +241,129 @@ class Runner:
 
     def validate_sql(
         self,
-        branch: Optional[str],
-        commit: Optional[str],
-        selectors: List[str],
-        exclusions: List[str],
-        mode: QueryMode = "batch",
+        ref: Optional[str] = None,
+        filters: List[str] = None,
+        fail_fast: bool = True,
+        incremental: bool = False,
+        target: Optional[str] = None,
         concurrency: int = 10,
         profile: bool = False,
         runtime_threshold: int = 5,
-    ) -> Dict[str, Any]:
-        with self.branch_manager(branch, commit):
-            validator = SqlValidator(
-                self.client, self.project, concurrency, runtime_threshold
+    ) -> JsonDict:
+        if filters is None:
+            filters = ["*/*"]
+        validator = SqlValidator(self.client, concurrency, runtime_threshold)
+        tests: List[SqlTest] = []
+
+        # Create explore-level tests for the desired ref
+        with self.branch_manager(ref=ref, ephemeral=incremental):
+            base_ref = self.branch_manager.ref  # Resolve the full ref after checkout
+            logger.debug("Building explore tests for the desired ref")
+            project = build_project(
+                self.client, name=self.project, filters=filters, include_dimensions=True
             )
-            logger.info(
-                "Building LookML project hierarchy for project "
-                f"'{self.project}' @ {self.branch_manager.ref}"
+            base_tests: List[SqlTest] = []
+            for explore in project.iter_explores():
+                test = validator.create_explore_test(explore, compile_sql=incremental)
+                base_tests.append(test)
+
+        if incremental:
+            unique_base_tests = set(base_tests)
+            # Create explore tests for the target
+            with self.branch_manager(ref=target, ephemeral=True):
+                target_ref = self.branch_manager.ref
+                if target_ref == base_ref:
+                    raise SpectaclesException(
+                        name="incremental-same-ref",
+                        title="Incremental comparison to the same Git state",
+                        detail=(
+                            f"The base ref ({ref or 'production'}) and "
+                            f"target ref ({target or 'production'}) point to the "
+                            f"same commit ({base_ref}), "
+                            "so incremental comparison isn't possible."
+                        ),
+                    )
+                logger.debug("Building explore tests for the target ref")
+                target_project: Project = build_project(
+                    self.client,
+                    name=self.project,
+                    filters=filters,
+                    include_dimensions=True,
+                )
+                target_tests: List[SqlTest] = []
+                for explore in target_project.iter_explores():
+                    test = validator.create_explore_test(explore, compile_sql=True)
+                    target_tests.append(test)
+                unique_target_tests = set(target_tests)
+
+            # Determine which explore tests are identical between target and base
+            intersection = unique_base_tests & unique_target_tests
+            logger.debug(
+                f"Found {len(unique_base_tests - unique_target_tests)} "
+                "explore tests with unique SQL"
             )
-            validator.build_project(selectors, exclusions, build_dimensions=True)
-            explore_count = validator.project.count_explores()
-            print_header(
-                f"Testing {explore_count} "
-                f"{'explore' if explore_count == 1 else 'explores'} "
-                f"[{mode} mode] "
-                f"[concurrency = {validator.query_slots}]"
+
+            # Mark explores with the same compiled SQL (test) as skipped
+            for test in intersection:
+                explore = cast(Explore, test.lookml_ref)  # Appease mypy
+                explore.skipped = True
+
+            # Test explores with unique SQL for base ref
+            tests = list(unique_base_tests - unique_target_tests)
+        else:
+            tests = base_tests
+
+        explore_count = project.count_explores()
+        print_header(
+            f"Testing {explore_count} "
+            f"{'explore' if explore_count == 1 else 'explores'} "
+            + ("[fail fast] " if fail_fast else "")
+            + f"[concurrency = {validator.query_slots}]"
+        )
+
+        with self.branch_manager(ref=ref):
+            validator.run_tests(tests, profile)
+
+        # Create dimension tests for the desired ref when explores errored
+        if not fail_fast:
+            with self.branch_manager(ref=ref, ephemeral=incremental):
+                base_ref = self.branch_manager.ref
+                logger.debug("Building dimension tests for the desired ref")
+                base_tests = []
+                for explore in project.iter_explores():
+                    if not explore.skipped and explore.errored:
+                        base_tests.extend(
+                            validator.create_dimension_tests(
+                                explore, compile_sql=incremental
+                            )
+                        )
+
+        # Create dimension tests for the target ref
+        if incremental:
+            with self.branch_manager(ref=target, ephemeral=True):
+                target_ref = self.branch_manager.ref
+                logger.debug("Building dimension tests for the target ref")
+                target_tests = []
+                for explore in target_project.iter_explores():
+                    if not explore.skipped:
+                        target_tests.extend(
+                            validator.create_dimension_tests(explore, compile_sql=True)
+                        )
+
+            # Keep only the dimension tests that don't exist on the target branch
+            logger.debug(
+                f"Removing tests that would exist in project @ {target or 'production'}"
             )
-            results = validator.validate(mode, profile)
+            tests = list(set(base_tests) - set(target_tests))
+            logger.debug(
+                f"{len(tests)} tests found @ '{target_ref}' "
+                f"that are not present @ '{base_ref}'"
+            )
+
+        with self.branch_manager(ref=ref):
+            validator.run_tests(tests, profile)
+
+        results = project.get_results(validator="sql", fail_fast=fail_fast)
         return results
 
     def validate_data_tests(
