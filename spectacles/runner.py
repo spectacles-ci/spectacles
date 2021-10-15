@@ -257,10 +257,7 @@ class Runner:
             project = build_project(
                 self.client, name=self.project, filters=filters, include_dimensions=True
             )
-            base_tests: List[SqlTest] = []
-            for explore in project.iter_explores():
-                test = validator.create_explore_test(explore, compile_sql=incremental)
-                base_tests.append(test)
+            base_tests = validator.create_tests(project, compile_sql=incremental)
 
         if incremental:
             unique_base_tests = set(base_tests)
@@ -285,10 +282,7 @@ class Runner:
                     filters=filters,
                     include_dimensions=True,
                 )
-                target_tests: List[SqlTest] = []
-                for explore in target_project.iter_explores():
-                    test = validator.create_explore_test(explore, compile_sql=True)
-                    target_tests.append(test)
+                target_tests = validator.create_tests(target_project, compile_sql=True)
                 unique_target_tests = set(target_tests)
 
             # Determine which explore tests are identical between target and base
@@ -324,26 +318,18 @@ class Runner:
             with self.branch_manager(ref=ref, ephemeral=incremental):
                 base_ref = self.branch_manager.ref
                 logger.debug("Building dimension tests for the desired ref")
-                base_tests = []
-                for explore in project.iter_explores():
-                    if not explore.skipped and explore.errored:
-                        base_tests.extend(
-                            validator.create_dimension_tests(
-                                explore, compile_sql=incremental
-                            )
-                        )
+                base_tests = validator.create_tests(
+                    project, compile_sql=incremental, at_dimension_level=True
+                )
 
         # Create dimension tests for the target ref
         if incremental:
             with self.branch_manager(ref=target, ephemeral=True):
                 target_ref = self.branch_manager.ref
                 logger.debug("Building dimension tests for the target ref")
-                target_tests = []
-                for explore in target_project.iter_explores():
-                    if not explore.skipped:
-                        target_tests.extend(
-                            validator.create_dimension_tests(explore, compile_sql=True)
-                        )
+                target_tests = validator.create_tests(
+                    target_project, compile_sql=True, at_dimension_level=True
+                )
 
             # Keep only the dimension tests that don't exist on the target branch
             logger.debug(
