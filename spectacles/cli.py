@@ -862,35 +862,34 @@ def run_sql(
         runtime_threshold,
     )
 
-    explores = sorted(results["explores"], key=lambda x: (x["model"], x["explore"]))
-    for explore in explores:
-        message = f"{explore['model']}.{explore['explore']}"
-        printer.print_validation_result(passed=explore["passed"], source=message)
+    for test in sorted(results["tested"], key=lambda x: (x["model"], x["explore"])):
+        message = f"{test['model']}.{test['explore']}"
+        printer.print_validation_result(passed=test["passed"], source=message)
 
-    count_errors = 0
-    for explore in explores:
-        if not explore["passed"]:
-            for test in explore["tests"]:
-                for error in test["errors"]:
-                    count_errors += 1
-                    printer.print_sql_error(
-                        model=error["model"],
-                        explore=error["explore"],
-                        message=error["message"],
-                        sql=error["metadata"]["sql"],
-                        log_dir=log_dir,
-                        dimension=error["metadata"].get("dimension"),
-                        lookml_url=error["metadata"].get("lookml_url"),
-                    )
+    errors = sorted(
+        results["errors"],
+        key=lambda x: (x["model"], x["explore"], x["metadata"].get("dimension")),
+    )
 
-    if fail_fast:
-        logger.info(
-            printer.dim(
-                "\n\nTo determine the exact dimensions responsible for "
-                f"{'this error' if count_errors == 1 else 'these errors'}, "
-                "you can rerun \nSpectacles without --fail-fast."
+    if errors:
+        for error in errors:
+            printer.print_sql_error(
+                model=error["model"],
+                explore=error["explore"],
+                message=error["message"],
+                sql=error["metadata"]["sql"],
+                log_dir=log_dir,
+                dimension=error["metadata"].get("dimension"),
+                lookml_url=error["metadata"].get("lookml_url"),
             )
-        )
+        if fail_fast:
+            logger.info(
+                printer.dim(
+                    "\n\nTo determine the exact dimensions responsible for "
+                    f"{'this error' if len(errors) == 1 else 'these errors'}, "
+                    "you can rerun \nSpectacles without --fail-fast."
+                )
+            )
 
         logger.info("")
         raise GenericValidationError
