@@ -225,19 +225,13 @@ class Runner:
 
     def __init__(
         self,
-        base_url: str,
+        client: LookerClient,
         project: str,
-        client_id: str,
-        client_secret: str,
-        port: int = 19999,
-        api_version: float = 3.1,
         remote_reset: bool = False,
     ):
         self.project = project
-        self.client = LookerClient(
-            base_url, client_id, client_secret, port, api_version
-        )
-        self.branch_manager = LookerBranchManager(self.client, project, remote_reset)
+        self.client = client
+        self.branch_manager = LookerBranchManager(client, project, remote_reset)
 
     def validate_sql(
         self,
