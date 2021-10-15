@@ -1,5 +1,38 @@
+import pytest
 from spectacles.runner import Runner
 from utils import build_validation
+
+
+@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
+def test_validate_sql_should_work(looker_client):
+    runner = Runner(looker_client, "eye_exam")
+    result = runner.validate_sql(filters=["eye_exam/users", "eye_exam/users__fail"])
+    assert result["status"] == "failed"
+    assert result["tested"][0]["passed"]
+    assert not result["tested"][1]["passed"]
+    assert len(result["errors"]) > 0
+
+
+@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
+def test_validate_content_should_work(looker_client):
+    runner = Runner(looker_client, "eye_exam")
+    result = runner.validate_content(filters=["eye_exam/users", "eye_exam/users__fail"])
+    assert result["status"] == "failed"
+    assert result["tested"][0]["passed"]
+    assert not result["tested"][1]["passed"]
+    assert len(result["errors"]) > 0
+
+
+@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
+def test_validate_data_tests_should_work(looker_client):
+    runner = Runner(looker_client, "eye_exam")
+    result = runner.validate_data_tests(
+        filters=["eye_exam/users", "eye_exam/users__fail"]
+    )
+    assert result["status"] == "failed"
+    assert result["tested"][0]["passed"]
+    assert not result["tested"][1]["passed"]
+    assert len(result["errors"]) > 0
 
 
 def test_incremental_same_results_should_not_have_errors():
