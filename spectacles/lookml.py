@@ -171,7 +171,7 @@ class Model(LookMlObject):
         self.explores = explores
 
     def __repr__(self):
-        return f"{self.__class__.__name__}(name={self.name}, models={self.models})"
+        return f"{self.__class__.__name__}(name={self.name}, explores={self.explores})"
 
     def __eq__(self, other):
         if not isinstance(other, Model):
