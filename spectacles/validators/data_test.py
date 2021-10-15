@@ -104,15 +104,15 @@ class DataTestValidator:
             else:
                 test.passed = False
                 for error in result["errors"]:
-                    data_test_errors.append(
-                        DataTestError(
-                            model=error["model_id"],
-                            explore=error["explore"],
-                            message=error["message"],
-                            test_name=result["test_name"],
-                            lookml_url=test.lookml_url,
-                            explore_url=test.explore_url,
-                        )
+                    error = DataTestError(
+                        model=error["model_id"],
+                        explore=error["explore"],
+                        message=error["message"],
+                        test_name=result["test_name"],
+                        lookml_url=test.lookml_url,
+                        explore_url=test.explore_url,
                     )
+                    data_test_errors.append(error)
+                    test.explore.errors.append(error)
 
         return data_test_errors
