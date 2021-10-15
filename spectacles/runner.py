@@ -348,9 +348,11 @@ class Runner:
 
     def validate_data_tests(
         self,
-        ref: Optional[str],
-        filters: List[str],
+        ref: Optional[str] = None,
+        filters: List[str] = None,
     ) -> JsonDict:
+        if filters is None:
+            filters = ["*/*"]
         with self.branch_manager(ref):
             validator = DataTestValidator(self.client)
             logger.info(
@@ -380,14 +382,16 @@ class Runner:
 
     def validate_content(
         self,
-        ref: Optional[str],
-        filters: List[str],
+        ref: Optional[str] = None,
+        filters: List[str] = None,
         incremental: bool = False,
         target: Optional[str] = None,
         exclude_personal: bool = False,
         exclude_folders: List[int] = None,
         include_folders: List[int] = None,
     ) -> JsonDict:
+        if filters is None:
+            filters = ["*/*"]
         if exclude_folders is None:
             exclude_folders = []
         if include_folders is None:
