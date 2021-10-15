@@ -1,3 +1,4 @@
+import re
 from spectacles.exceptions import LookerApiError
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass
@@ -13,8 +14,7 @@ from spectacles.types import JsonDict
 from spectacles.utils import time_hash
 from spectacles.lookml import build_project
 from spectacles.logger import GLOBAL_LOGGER as logger
-from spectacles.printer import print_header
-from spectacles.types import QueryMode
+from spectacles.printer import print_header, LINE_WIDTH
 
 
 @dataclass
@@ -23,6 +23,11 @@ class ProjectState:
     workspace: str
     branch: str
     commit: str
+
+
+def is_commit(string: str) -> bool:
+    """Tests if a string is a SHA1 hash."""
+    return bool(re.match("[0-9a-f]{5,40}", string))
 
 
 class LookerBranchManager:
@@ -46,17 +51,36 @@ class LookerBranchManager:
         self.is_temp_branch: bool = False
         self.import_managers: List[LookerBranchManager] = []
 
-    def __call__(
-        self,
-        branch: Optional[str] = None,
-        commit: Optional[str] = None,
-        ephemeral: Optional[bool] = None,
-    ):
-        if branch and commit:
-            raise ValueError("Cannot call with both branch and commit.")
-        self.branch = branch
-        self.commit = commit
-        self.ephemeral = ephemeral or bool(commit)
+    def __call__(self, ref: Optional[str] = None, ephemeral: Optional[bool] = None):
+        logger.debug(
+            f"\nSetting Git state for project '{self.project}' "
+            f"@ {ref or 'production'}\n" + "-" * LINE_WIDTH
+        )
+        self.branch = None
+        self.commit = None
+
+        if ref is None:
+            pass
+        elif is_commit(ref):
+            self.commit = ref
+        else:
+            self.branch = ref
+
+        if ephemeral is None:
+            if self.commit:
+                self.ephemeral = True
+            else:
+                self.ephemeral = False
+        else:
+            if self.commit and ephemeral is False:
+                raise ValueError(
+                    "ephemeral = False is invalid for a commit reference because "
+                    "it's impossible to checkout a commit directly in Looker. "
+                    "You must use a temp branch."
+                )
+
+            self.ephemeral = ephemeral
+
         self.is_temp_branch = False
         self.import_managers = []
         return self
@@ -65,9 +89,12 @@ class LookerBranchManager:
         # A branch was passed, so we check it out in dev mode.
         if self.branch:
             self.update_workspace("dev")
-            self.client.checkout_branch(self.project, self.branch)
-            if self.remote_reset:
-                self.client.reset_to_remote(self.project)
+            if self.ephemeral:
+                self.branch = self.checkout_temp_branch(self.branch)
+            else:
+                self.client.checkout_branch(self.project, self.branch)
+                if self.remote_reset:
+                    self.client.reset_to_remote(self.project)
         # A commit was passed, so we non-destructively create a temporary branch we can
         # hard reset to the commit.
         elif self.commit:
@@ -242,11 +269,10 @@ class Runner:
 
     def validate_data_tests(
         self,
-        branch: Optional[str],
-        commit: Optional[str],
+        ref: Optional[str],
         filters: List[str],
     ) -> JsonDict:
-        with self.branch_manager(branch, commit):
+        with self.branch_manager(ref):
             validator = DataTestValidator(self.client)
             logger.info(
                 "Building LookML project hierarchy for project "
@@ -275,10 +301,10 @@ class Runner:
 
     def validate_content(
         self,
-        branch: Optional[str],
-        commit: Optional[str],
+        ref: Optional[str],
         filters: List[str],
         incremental: bool = False,
+        target: Optional[str] = None,
         exclude_personal: bool = False,
         exclude_folders: List[int] = None,
         include_folders: List[int] = None,
@@ -288,7 +314,7 @@ class Runner:
         if include_folders is None:
             include_folders = []
 
-        with self.branch_manager(branch, commit):
+        with self.branch_manager(ref=ref):
             validator = ContentValidator(
                 self.client,
                 exclude_personal,
@@ -311,7 +337,7 @@ class Runner:
 
         if incremental and (self.branch_manager.branch or self.branch_manager.commit):
             logger.debug("Starting another content validation against production")
-            with self.branch_manager():
+            with self.branch_manager(ref=target):
                 logger.debug(
                     "Building LookML project hierarchy for project "
                     f"'{self.project}' @ {self.branch_manager.ref}"
