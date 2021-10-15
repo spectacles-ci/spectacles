@@ -88,6 +88,7 @@ class Explore(LookMlObject):
         self.dimensions = [] if dimensions is None else dimensions
         self.errors: List[ValidationError] = []
         self.successes: List[JsonDict] = []
+        self.skipped = False
         self._queried: bool = False
 
     def __eq__(self, other):
@@ -249,7 +250,8 @@ class Project(LookMlObject):
         return self.name == other.name and self.models == other.models
 
     def count_explores(self) -> int:
-        return sum(len(model.explores) for model in self.models)
+        """Returns the number of explores in the project, excluding skipped explores."""
+        return len([explore for explore in self.iter_explores() if not explore.skipped])
 
     def iter_explores(self) -> Iterable[Explore]:
         for model in self.models:
