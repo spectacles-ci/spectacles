@@ -285,19 +285,28 @@ class Runner:
                 unique_target_tests = set(target_tests)
 
             # Determine which explore tests are identical between target and base
-            intersection = unique_base_tests & unique_target_tests
+            # Iterate instead of set operations so we have control of which test, and
+            # corresponding which `lookml_ref` is used
+            intersection = []
+            for test in unique_base_tests:
+                if test in unique_target_tests:
+                    intersection.append(test)
+                    # Mark explores with the same compiled SQL (test) as skipped
+                    explore = cast(Explore, test.lookml_ref)  # Appease mypy
+                    explore.skipped = True
+
             logger.debug(
                 f"Found {len(unique_base_tests - unique_target_tests)} "
                 "explore tests with unique SQL"
             )
 
-            # Mark explores with the same compiled SQL (test) as skipped
-            for test in intersection:
-                explore = cast(Explore, test.lookml_ref)  # Appease mypy
-                explore.skipped = True
-
             # Test explores with unique SQL for base ref
-            tests = list(unique_base_tests - unique_target_tests)
+            tests = []
+            # Iterate instead of set operations so we have control of which test, and
+            # corresponding which `lookml_ref` is used
+            for test in unique_base_tests:
+                if test not in unique_target_tests:
+                    tests.append(test)
         else:
             tests = base_tests
 
@@ -334,7 +343,11 @@ class Runner:
             logger.debug(
                 f"Removing tests that would exist in project @ {target or 'production'}"
             )
-            tests = list(set(base_tests) - set(target_tests))
+            # Iterate instead of set operations so we have control of which test, and
+            # corresponding which `lookml_ref` is used
+            for test in set(base_tests):
+                if test not in set(target_tests):
+                    tests.append(test)
             logger.debug(
                 f"{len(tests)} tests found @ '{target_ref}' "
                 f"that are not present @ '{base_ref}'"
