@@ -144,7 +144,7 @@ class SqlValidator:
         tests: List[SqlTest] = []
         if at_dimension_level:
             for explore in project.iter_explores():
-                if not explore.skipped and explore.errored:
+                if not explore.skipped and explore.errored is not False:
                     tests.extend(self._create_dimension_tests(explore, compile_sql))
         else:
             for explore in project.iter_explores():
