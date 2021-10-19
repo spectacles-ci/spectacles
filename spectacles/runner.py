@@ -334,6 +334,8 @@ class Runner:
                 f"{len(tests)} tests found @ '{target_ref}' "
                 f"that are not present @ '{base_ref}'"
             )
+        else:
+            tests = base_tests
 
         with self.branch_manager(ref=ref):
             validator.run_tests(tests, profile)
