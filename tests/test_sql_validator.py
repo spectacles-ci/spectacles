@@ -3,7 +3,7 @@ from unittest.mock import patch, create_autospec
 import pytest
 import vcr
 from spectacles.validators import SqlValidator
-from spectacles.validators.sql import QueryResult, SqlTest
+from spectacles.validators.sql import SqlTest
 from spectacles.exceptions import SpectaclesException
 from spectacles.lookml import Project, build_project
 
@@ -248,23 +248,6 @@ def test_cancel_queries(mock_client_cancel, validator):
     validator._cancel_queries(query_task_ids)
     for task_id in query_task_ids:
         mock_client_cancel.assert_any_call(task_id)
-
-
-def test_handle_running_test(validator, dimension):
-    query_task_id = "sakgwj392jfkajgjcks"
-    test = SqlTest(
-        query_id="19428",
-        lookml_ref=dimension,
-        query_task_id=query_task_id,
-        explore_url="https://spectacles.looker.com/x/qCJsodAZ2Y22QZLbmD0Gvy",
-    )
-    query_result = QueryResult(query_task_id=query_task_id, status="running")
-    validator._running_tests = [test]
-    validator._test_by_task_id[query_task_id] = test
-    returned_sql_error = validator._handle_query_result(query_result)
-
-    assert validator._running_tests == [test]
-    assert not returned_sql_error
 
 
 def test_extract_error_details_error_dict(validator):
