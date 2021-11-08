@@ -3,17 +3,14 @@ import time
 from dataclasses import dataclass
 import backoff  # type: ignore
 import requests
-from requests.exceptions import Timeout, HTTPError
+from requests.exceptions import Timeout, HTTPError, ConnectionError
 import spectacles.utils as utils
 from spectacles.types import JsonDict
 from spectacles.logger import GLOBAL_LOGGER as logger
 from spectacles.exceptions import SpectaclesException, LookerApiError
 
 TIMEOUT_SEC = 300
-BACKOFF_EXCEPTIONS = (
-    Timeout,
-    HTTPError,
-)
+BACKOFF_EXCEPTIONS = (Timeout, HTTPError, ConnectionError)
 
 
 @dataclass(frozen=True)  # Token is immutable
