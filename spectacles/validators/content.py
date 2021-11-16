@@ -19,10 +19,8 @@ class ContentValidator(Validator):
         super().__init__(client, project)
         personal_folders = self._get_personal_folders() if exclude_personal else []
 
-        self.excluded_folders: List[int] = (
-            (personal_folders + self._get_all_subfolders(exclude_folders))
-            if exclude_folders
-            else []
+        self.excluded_folders: List[int] = personal_folders + (
+            self._get_all_subfolders(exclude_folders) if exclude_folders else []
         )
         self.included_folders: List[int] = (
             self._get_all_subfolders(include_folders) if include_folders else []
