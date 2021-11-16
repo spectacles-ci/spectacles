@@ -799,7 +799,9 @@ class LookerClient:
     def content_validation(self) -> JsonDict:
         logger.debug("Validating all content in Looker")
         url = utils.compose_url(self.api_url, path=["content_validation"])
-        response = self.get(url=url, timeout=TIMEOUT_SEC)
+        response = self.get(
+            url=url, timeout=3600
+        )  # 1 hour timeout for content validation
 
         try:
             response.raise_for_status()
