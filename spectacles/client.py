@@ -1,8 +1,10 @@
 from typing import List, Dict, Optional
+import asyncio
 import time
 from dataclasses import dataclass
 import backoff  # type: ignore
 import requests
+import httpx
 from requests.exceptions import Timeout, HTTPError
 import spectacles.utils as utils
 from spectacles.types import JsonDict
@@ -126,7 +128,6 @@ class LookerClient:
         self.session.headers = {  # type: ignore
             "Authorization": f"token {self.access_token}"
         }
-
         looker_version = self.get_looker_release_version()
         logger.info(
             f"Connected to Looker version {looker_version} "
@@ -141,11 +142,28 @@ class LookerClient:
                 self.update_workspace("dev")
         return self.session.request(method, url, *args, **kwargs)
 
+    async def request_async(
+        self, method: str, url: str, *args, **kwargs
+    ) -> httpx.Response:
+        if self.access_token and self.access_token.expired:
+            logger.debug("Looker API access token has expired, requesting a new one")
+            self.authenticate()
+            if self.workspace == "dev":
+                self.update_workspace("dev")
+        async with httpx.AsyncClient(headers=self.session.headers) as client:
+            return await client.request(method, url, *args, **kwargs)
+
     def get(self, url, *args, **kwargs) -> requests.Response:
         return self.request("GET", url, *args, **kwargs)
 
+    async def get_async(self, url, *args, **kwargs) -> httpx.Response:
+        return await self.request_async("GET", url, *args, **kwargs)
+
     def post(self, url, *args, **kwargs) -> requests.Response:
         return self.request("POST", url, *args, **kwargs)
+
+    async def post_async(self, url, *args, **kwargs) -> httpx.Response:
+        return await self.request_async("POST", url, *args, **kwargs)
 
     def patch(self, url, *args, **kwargs) -> requests.Response:
         return self.request("PATCH", url, *args, **kwargs)
@@ -674,7 +692,7 @@ class LookerClient:
         BACKOFF_EXCEPTIONS,
         max_tries=2,
     )
-    def create_query(
+    async def create_query(
         self, model: str, explore: str, dimensions: List[str], fields: List = None
     ) -> Dict:
         """Creates a Looker async query for one or more specified dimensions.
@@ -708,7 +726,7 @@ class LookerClient:
             params["fields"] = fields
 
         url = utils.compose_url(self.api_url, path=["queries"], params=params)
-        response = self.post(url=url, json=body, timeout=TIMEOUT_SEC)
+        response = await self.post_async(url=url, json=body, timeout=TIMEOUT_SEC)
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError:
@@ -876,8 +894,8 @@ class LookerClient:
         result = response.json()
         return result
 
-    @backoff.on_exception(backoff.expo, (Timeout,), max_tries=2)
-    def run_query(self, query_id: int) -> str:
+    # @backoff.on_exception(backoff.expo, (Timeout,), max_tries=2)
+    async def run_query(self, query_id: int) -> str:
         """Returns the compiled SQL for a given query ID.
 
         The corresponding Looker API endpoint allows us to run queries with a variety
@@ -891,7 +909,7 @@ class LookerClient:
         logger.debug("Retrieving the SQL for query ID %s", query_id)
 
         url = utils.compose_url(self.api_url, path=["queries", query_id, "run", "sql"])
-        response = self.get(url=url, timeout=TIMEOUT_SEC)
+        response = await self.get_async(url=url, timeout=TIMEOUT_SEC)
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError:

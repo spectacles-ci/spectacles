@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from tabulate import tabulate
 from typing import Union, Dict, Any, List, Optional
+import asyncio
 import time
 from spectacles.client import LookerClient
 from spectacles.lookml import Dimension, Explore, Project
@@ -142,17 +143,33 @@ class SqlValidator:
         at_dimension_level: bool = False,
     ) -> List[SqlTest]:
         tests: List[SqlTest] = []
-        if at_dimension_level:
-            for explore in project.iter_explores():
-                if not explore.skipped and explore.errored is not False:
-                    tests.extend(self._create_dimension_tests(explore, compile_sql))
-        else:
-            for explore in project.iter_explores():
-                test = self._create_explore_test(explore, compile_sql)
-                tests.append(test)
-        return tests
 
-    def _create_explore_test(
+        async def create_tasks():
+            tasks = []
+            for explore in project.iter_explores():
+                if at_dimension_level:
+                    if not explore.skipped and explore.errored is not False:
+                        for dimension in explore.dimensions:
+                            tasks.append(
+                                asyncio.create_task(
+                                    self._create_dimension_test(
+                                        explore, dimension, compile_sql
+                                    )
+                                )
+                            )
+                else:
+                    tasks.append(
+                        asyncio.create_task(
+                            self._create_explore_test(explore, compile_sql)
+                        )
+                    )
+
+            return await asyncio.gather(*tasks)
+
+        results = asyncio.run(create_tasks())
+        return results
+
+    async def _create_explore_test(
         self, explore: Explore, compile_sql: bool = False
     ) -> SqlTest:
         """Creates a SqlTest to query all dimensions in an explore"""
@@ -164,37 +181,33 @@ class SqlValidator:
                 "when you built the project."
             )
         dimensions = [dimension.name for dimension in explore.dimensions]
-        query = self.client.create_query(
+        query = await self.client.create_query(
             explore.model_name, explore.name, dimensions, fields=["id", "share_url"]
         )
         test = SqlTest(
             query_id=query["id"], lookml_ref=explore, explore_url=query["share_url"]
         )
         if compile_sql:
-            test.sql = self.client.run_query(query["id"])
+            test.sql = await self.client.run_query(query["id"])
         return test
 
-    def _create_dimension_tests(
-        self, explore: Explore, compile_sql: bool = False
-    ) -> List[SqlTest]:
-        """Creates individual queries for each dimension in an explore"""
-        tests: List[SqlTest] = []
-        for dimension in explore.dimensions:
-            query = self.client.create_query(
-                explore.model_name,
-                explore.name,
-                [dimension.name],
-                fields=["id", "share_url"],
-            )
-            test = SqlTest(
-                query_id=query["id"],
-                lookml_ref=dimension,
-                explore_url=query["share_url"],
-            )
-            if compile_sql:
-                test.sql = self.client.run_query(query["id"])
-            tests.append(test)
-        return tests
+    async def _create_dimension_test(
+        self, explore, dimension, compile_sql: bool = False
+    ):
+        query = await self.client.create_query(
+            explore.model_name,
+            explore.name,
+            [dimension.name],
+            fields=["id", "share_url"],
+        )
+        test = SqlTest(
+            query_id=query["id"],
+            lookml_ref=dimension,
+            explore_url=query["share_url"],
+        )
+        if compile_sql:
+            test.sql = await self.client.run_query(query["id"])
+        return test
 
     def run_tests(self, tests: List[SqlTest], profile: bool = False):
         self._test_by_task_id = {}
