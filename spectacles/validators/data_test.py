@@ -49,6 +49,7 @@ class DataTestValidator(Validator):
         for test in selected_tests:
             model_name = test["model_name"]
             explore_name = test["explore_name"]
+            test_name = test["name"]
             query_url_params = test["query_url_params"]
 
             try:
@@ -70,19 +71,19 @@ class DataTestValidator(Validator):
             )
 
             results = self.client.run_lookml_test(
-                self.project.name, model=test["model_name"], test=test["name"]
+                self.project.name, model=model_name, test=test_name
             )
-            explore = test_to_explore[test["name"]]
+            explore = test_to_explore[test_name]
             explore.queried = True
             result = results[0]  # For a single test, list with length 1
 
             for error in result["errors"]:
                 explore.errors.append(
                     DataTestError(
-                        model=error["model_id"],
-                        explore=error["explore"],
+                        model=model_name,
+                        explore=explore_name,
                         message=error["message"],
-                        test_name=result["test_name"],
+                        test_name=test_name,
                         lookml_url=lookml_url,
                         explore_url=explore_url,
                     )
