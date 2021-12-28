@@ -1,5 +1,5 @@
 import re
-from spectacles.exceptions import LookerApiError
+from spectacles.exceptions import LookerApiError, SqlError
 from typing import List, Optional, cast
 from dataclasses import dataclass
 import itertools
@@ -326,37 +326,36 @@ class Runner:
             with self.branch_manager(ref=ref, ephemeral=incremental):
                 base_ref = self.branch_manager.ref
                 logger.debug("Building dimension tests for the desired ref")
-                base_tests = validator.create_tests(
-                    project, compile_sql=incremental, at_dimension_level=True
+                base_tests = validator.create_tests(project, at_dimension_level=True)
+                validator.run_tests(base_tests, profile)
+
+            # For errored dimensions, create dimension tests for the target ref
+            if incremental:
+                with self.branch_manager(ref=target, ephemeral=True):
+                    target_ref = self.branch_manager.ref
+                    logger.debug("Building dimension tests for the target ref")
+
+                    target_sql: List[str] = []
+                    for dimension in project.iter_dimensions(errored=True):
+                        test = validator._create_dimension_test(
+                            dimension, compile_sql=True
+                        )
+                        if test.sql:
+                            target_sql.append(test.sql)
+
+                # Keep only the errors that don't exist on the target branch
+                logger.debug(
+                    "Removing errors that would exist in project "
+                    f"@ {target or 'production'}"
                 )
 
-        # Create dimension tests for the target ref
-        if incremental:
-            with self.branch_manager(ref=target, ephemeral=True):
-                target_ref = self.branch_manager.ref
-                logger.debug("Building dimension tests for the target ref")
-                target_tests = validator.create_tests(
-                    target_project, compile_sql=True, at_dimension_level=True
-                )
-
-            # Keep only the dimension tests that don't exist on the target branch
-            logger.debug(
-                f"Removing tests that would exist in project @ {target or 'production'}"
-            )
-            # Iterate instead of set operations so we have control of which test, and
-            # corresponding which `lookml_ref` is used
-            for test in set(base_tests):
-                if test not in set(target_tests):
-                    tests.append(test)
-            logger.debug(
-                f"{len(tests)} tests found @ '{target_ref}' "
-                f"that are not present @ '{base_ref}'"
-            )
-        else:
-            tests = base_tests
-
-        with self.branch_manager(ref=ref):
-            validator.run_tests(tests, profile)
+                for dimension in project.iter_dimensions(errored=True):
+                    dimension.errors = [
+                        error
+                        for error in dimension.errors
+                        if not isinstance(error, SqlError)
+                        or error.metadata["sql"] not in target_sql
+                    ]
 
         results = project.get_results(validator="sql", fail_fast=fail_fast)
         return results
