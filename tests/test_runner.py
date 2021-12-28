@@ -12,11 +12,13 @@ from utils import build_validation
 def test_validate_sql_should_work(looker_client, fail_fast):
     runner = Runner(looker_client, "eye_exam")
     result = runner.validate_sql(
-        filters=["eye_exam/users", "eye_exam/users__fail"], fail_fast=fail_fast
+        ref="pytest",
+        filters=["eye_exam/users", "eye_exam/users__fail"],
+        fail_fast=fail_fast,
     )
     assert result["status"] == "failed"
-    assert result["tested"][0]["passed"]
-    assert not result["tested"][1]["passed"]
+    assert result["tested"][0]["status"] == "passed"
+    assert result["tested"][1]["status"] == "failed"
     if fail_fast:
         assert len(result["errors"]) == 1
     else:
@@ -28,8 +30,8 @@ def test_validate_content_should_work(looker_client):
     runner = Runner(looker_client, "eye_exam")
     result = runner.validate_content(filters=["eye_exam/users", "eye_exam/users__fail"])
     assert result["status"] == "failed"
-    assert result["tested"][0]["passed"]
-    assert not result["tested"][1]["passed"]
+    assert result["tested"][0]["status"] == "passed"
+    assert result["tested"][1]["status"] == "failed"
     assert len(result["errors"]) > 0
 
 
@@ -40,8 +42,8 @@ def test_validate_data_tests_should_work(looker_client):
         filters=["eye_exam/users", "eye_exam/users__fail"]
     )
     assert result["status"] == "failed"
-    assert result["tested"][0]["passed"]
-    assert not result["tested"][1]["passed"]
+    assert result["tested"][0]["status"] == "passed"
+    assert result["tested"][1]["status"] == "failed"
     assert len(result["errors"]) > 0
 
 
