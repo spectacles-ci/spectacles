@@ -335,21 +335,23 @@ class Project(LookMlObject):
 
         for model in self.models:
             for explore in model.explores:
-                passed = True
-                if explore.errored:
-                    passed = False
+                status = "passed"
+                if explore.skipped:
+                    status = "skipped"
+                elif explore.errored:
+                    status = "failed"
                     parse_explore_errors(explore)
                 test: Dict[str, Any] = {
                     "model": model.name,
                     "explore": explore.name,
-                    "passed": passed,
+                    "status": status,
                 }
                 if explore.successes:
                     successes.extend([success for success in explore.successes])
 
                 tested.append(test)
 
-        passed = min((test["passed"] for test in tested), default=True)
+        passed = min((test["status"] != "failed" for test in tested), default=True)
         return {
             "validator": validator,
             "status": "passed" if passed else "failed",
