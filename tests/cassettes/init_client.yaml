@@ -719,4 +719,309 @@ interactions:
     status:
       code: 200
       message: OK
+- request:
+    body: ''
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '69'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      User-Agent:
+      - python-requests/2.25.1
+    method: POST
+    uri: https://spectacles.looker.com:19999/api/3.1/login
+  response:
+    body:
+      string: '{"token_type": "Bearer", "expires_in": 3600}'
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 28 Dec 2021 18:22:36 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 05185d291d5366a5
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 05185d291d5366a5
+      X-B3-TraceId:
+      - 61cb55ecb513e29205185d291d5366a5
+      X-Content-Type-Options:
+      - nosniff
+      content-length:
+      - '99'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/versions
+  response:
+    body:
+      string: '{"looker_release_version":"21.20.30","current_version":{"version":"3.1","full_version":"3.1.0","status":"current","swagger_url":"https://spectacles.looker.com/api/3.1/swagger.json"},"supported_versions":[{"version":"2.99","full_version":"2.99.0","status":"internal_test","swagger_url":"https://spectacles.looker.com/api/2.99/swagger.json"},{"version":"3.0","full_version":"3.0.0","status":"legacy","swagger_url":"https://spectacles.looker.com/api/3.0/swagger.json"},{"version":"3.1","full_version":"3.1.0","status":"current","swagger_url":"https://spectacles.looker.com/api/3.1/swagger.json"},{"version":"4.0","full_version":"4.0.21.20","status":"beta","swagger_url":"https://spectacles.looker.com/api/4.0/swagger.json"}],"api_server_url":"https://spectacles.looker.com","web_server_url":"https://spectacles.looker.com"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '820'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 28 Dec 2021 18:22:36 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 1eaf6493b28a3aae
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 1eaf6493b28a3aae
+      X-B3-TraceId:
+      - 61cb55ece5eb974f1eaf6493b28a3aae
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"workspace_id": "production"}'
+    headers:
+      Content-Length:
+      - '30'
+      Content-Type:
+      - application/json
+    method: PATCH
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"production","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '83'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 28 Dec 2021 18:22:36 GMT
+      Set-Cookie:
+      - looker.browser=70277007; expires=Fri, 27 Dec 2024 18:22:36 GMT; HttpOnly
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - f20065c9e195b788
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - f20065c9e195b788
+      X-B3-TraceId:
+      - 61cb55ec1fbe9544f20065c9e195b788
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=70277007
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/folders
+  response:
+    body:
+      string: '[{"name":"Shared","parent_id":null,"id":1,"content_metadata_id":1,"created_at":"2019-11-16T02:18:31.000+00:00","creator_id":null,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":false,"is_personal_descendant":false,"is_shared_root":true,"is_users_root":false,"child_count":4,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":false,"update":false,"move_content":true,"edit_content":true}},{"name":"Users","parent_id":null,"id":2,"content_metadata_id":2,"created_at":"2019-11-16T02:18:31.000+00:00","creator_id":null,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":false,"is_personal_descendant":false,"is_shared_root":false,"is_users_root":true,"child_count":10,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":false,"update":false,"move_content":true,"edit_content":true}},{"name":"pytest","parent_id":8,"id":25,"content_metadata_id":31,"created_at":"2020-06-16T02:31:52.000+00:00","creator_id":3,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":false,"is_personal_descendant":true,"is_shared_root":false,"is_users_root":false,"child_count":0,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":true,"update":true,"move_content":true,"edit_content":true}},{"name":"pytest","parent_id":1,"id":26,"content_metadata_id":36,"created_at":"2020-06-20T15:06:58.000+00:00","creator_id":3,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":false,"is_personal_descendant":false,"is_shared_root":false,"is_users_root":false,"child_count":0,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":true,"update":true,"move_content":true,"edit_content":true}},{"name":"Web
+        Application","parent_id":1,"id":27,"content_metadata_id":40,"created_at":"2020-07-02T19:54:46.000+00:00","creator_id":2,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":false,"is_personal_descendant":false,"is_shared_root":false,"is_users_root":false,"child_count":0,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":true,"update":true,"move_content":true,"edit_content":true}},{"name":"Open
+        Source","parent_id":1,"id":28,"content_metadata_id":49,"created_at":"2020-07-26T16:26:48.000+00:00","creator_id":2,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":false,"is_personal_descendant":false,"is_shared_root":false,"is_users_root":false,"child_count":0,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":true,"update":true,"move_content":true,"edit_content":true}},{"name":"Data
+        Deletion","parent_id":1,"id":40,"content_metadata_id":79,"created_at":"2021-06-14T15:24:23.000+00:00","creator_id":2,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":false,"is_personal_descendant":false,"is_shared_root":false,"is_users_root":false,"child_count":0,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":true,"update":true,"move_content":true,"edit_content":true}},{"name":"Test
+        sub-folder","parent_id":6,"id":41,"content_metadata_id":105,"created_at":"2021-08-14T15:03:49.000+00:00","creator_id":2,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":false,"is_personal_descendant":true,"is_shared_root":false,"is_users_root":false,"child_count":2,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":true,"update":true,"move_content":true,"edit_content":true}},{"name":"test
+        subfolder 2","parent_id":41,"id":42,"content_metadata_id":106,"created_at":"2021-08-14T15:03:58.000+00:00","creator_id":2,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":false,"is_personal_descendant":true,"is_shared_root":false,"is_users_root":false,"child_count":0,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":true,"update":true,"move_content":true,"edit_content":true}},{"name":"test
+        subfolder 4","parent_id":41,"id":43,"content_metadata_id":107,"created_at":"2021-08-14T15:04:11.000+00:00","creator_id":2,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":false,"is_personal_descendant":true,"is_shared_root":false,"is_users_root":false,"child_count":0,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":true,"update":true,"move_content":true,"edit_content":true}},{"name":"LookML
+        Dashboards","parent_id":null,"id":"lookml","content_metadata_id":null,"created_at":null,"creator_id":null,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":false,"is_personal_descendant":false,"is_shared_root":false,"is_users_root":false,"child_count":0,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":false,"update":false,"move_content":false,"edit_content":false}},{"name":"Dylan
+        Baker","parent_id":2,"id":6,"content_metadata_id":10,"created_at":"2019-11-18T12:43:02.000+00:00","creator_id":2,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":true,"is_personal_descendant":false,"is_shared_root":false,"is_users_root":false,"child_count":1,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":false,"update":false,"move_content":true,"edit_content":true}},{"name":"Josh
+        Temple","parent_id":2,"id":8,"content_metadata_id":12,"created_at":"2019-11-19T16:26:33.000+00:00","creator_id":3,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":true,"is_personal_descendant":false,"is_shared_root":false,"is_users_root":false,"child_count":1,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":false,"update":false,"move_content":true,"edit_content":true}}]'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '6691'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 28 Dec 2021 18:22:36 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 9e4cf959ad746fb0
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 9e4cf959ad746fb0
+      X-B3-TraceId:
+      - 61cb55ec279e704d9e4cf959ad746fb0
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=70277007
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/folders
+  response:
+    body:
+      string: '[{"name":"Shared","parent_id":null,"id":1,"content_metadata_id":1,"created_at":"2019-11-16T02:18:31.000+00:00","creator_id":null,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":false,"is_personal_descendant":false,"is_shared_root":true,"is_users_root":false,"child_count":4,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":false,"update":false,"move_content":true,"edit_content":true}},{"name":"Users","parent_id":null,"id":2,"content_metadata_id":2,"created_at":"2019-11-16T02:18:31.000+00:00","creator_id":null,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":false,"is_personal_descendant":false,"is_shared_root":false,"is_users_root":true,"child_count":10,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":false,"update":false,"move_content":true,"edit_content":true}},{"name":"pytest","parent_id":8,"id":25,"content_metadata_id":31,"created_at":"2020-06-16T02:31:52.000+00:00","creator_id":3,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":false,"is_personal_descendant":true,"is_shared_root":false,"is_users_root":false,"child_count":0,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":true,"update":true,"move_content":true,"edit_content":true}},{"name":"pytest","parent_id":1,"id":26,"content_metadata_id":36,"created_at":"2020-06-20T15:06:58.000+00:00","creator_id":3,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":false,"is_personal_descendant":false,"is_shared_root":false,"is_users_root":false,"child_count":0,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":true,"update":true,"move_content":true,"edit_content":true}},{"name":"Web
+        Application","parent_id":1,"id":27,"content_metadata_id":40,"created_at":"2020-07-02T19:54:46.000+00:00","creator_id":2,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":false,"is_personal_descendant":false,"is_shared_root":false,"is_users_root":false,"child_count":0,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":true,"update":true,"move_content":true,"edit_content":true}},{"name":"Open
+        Source","parent_id":1,"id":28,"content_metadata_id":49,"created_at":"2020-07-26T16:26:48.000+00:00","creator_id":2,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":false,"is_personal_descendant":false,"is_shared_root":false,"is_users_root":false,"child_count":0,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":true,"update":true,"move_content":true,"edit_content":true}},{"name":"Data
+        Deletion","parent_id":1,"id":40,"content_metadata_id":79,"created_at":"2021-06-14T15:24:23.000+00:00","creator_id":2,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":false,"is_personal_descendant":false,"is_shared_root":false,"is_users_root":false,"child_count":0,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":true,"update":true,"move_content":true,"edit_content":true}},{"name":"Test
+        sub-folder","parent_id":6,"id":41,"content_metadata_id":105,"created_at":"2021-08-14T15:03:49.000+00:00","creator_id":2,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":false,"is_personal_descendant":true,"is_shared_root":false,"is_users_root":false,"child_count":2,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":true,"update":true,"move_content":true,"edit_content":true}},{"name":"test
+        subfolder 2","parent_id":41,"id":42,"content_metadata_id":106,"created_at":"2021-08-14T15:03:58.000+00:00","creator_id":2,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":false,"is_personal_descendant":true,"is_shared_root":false,"is_users_root":false,"child_count":0,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":true,"update":true,"move_content":true,"edit_content":true}},{"name":"test
+        subfolder 4","parent_id":41,"id":43,"content_metadata_id":107,"created_at":"2021-08-14T15:04:11.000+00:00","creator_id":2,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":false,"is_personal_descendant":true,"is_shared_root":false,"is_users_root":false,"child_count":0,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":true,"update":true,"move_content":true,"edit_content":true}},{"name":"LookML
+        Dashboards","parent_id":null,"id":"lookml","content_metadata_id":null,"created_at":null,"creator_id":null,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":false,"is_personal_descendant":false,"is_shared_root":false,"is_users_root":false,"child_count":0,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":false,"update":false,"move_content":false,"edit_content":false}},{"name":"Dylan
+        Baker","parent_id":2,"id":6,"content_metadata_id":10,"created_at":"2019-11-18T12:43:02.000+00:00","creator_id":2,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":true,"is_personal_descendant":false,"is_shared_root":false,"is_users_root":false,"child_count":1,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":false,"update":false,"move_content":true,"edit_content":true}},{"name":"Josh
+        Temple","parent_id":2,"id":8,"content_metadata_id":12,"created_at":"2019-11-19T16:26:33.000+00:00","creator_id":3,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":true,"is_personal_descendant":false,"is_shared_root":false,"is_users_root":false,"child_count":1,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":false,"update":false,"move_content":true,"edit_content":true}}]'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '6691'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 28 Dec 2021 18:22:37 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - cecf613b387e77af
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - cecf613b387e77af
+      X-B3-TraceId:
+      - 61cb55ec84063c01cecf613b387e77af
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=70277007
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/folders
+  response:
+    body:
+      string: '[{"name":"Shared","parent_id":null,"id":1,"content_metadata_id":1,"created_at":"2019-11-16T02:18:31.000+00:00","creator_id":null,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":false,"is_personal_descendant":false,"is_shared_root":true,"is_users_root":false,"child_count":4,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":false,"update":false,"move_content":true,"edit_content":true}},{"name":"Users","parent_id":null,"id":2,"content_metadata_id":2,"created_at":"2019-11-16T02:18:31.000+00:00","creator_id":null,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":false,"is_personal_descendant":false,"is_shared_root":false,"is_users_root":true,"child_count":10,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":false,"update":false,"move_content":true,"edit_content":true}},{"name":"pytest","parent_id":8,"id":25,"content_metadata_id":31,"created_at":"2020-06-16T02:31:52.000+00:00","creator_id":3,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":false,"is_personal_descendant":true,"is_shared_root":false,"is_users_root":false,"child_count":0,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":true,"update":true,"move_content":true,"edit_content":true}},{"name":"pytest","parent_id":1,"id":26,"content_metadata_id":36,"created_at":"2020-06-20T15:06:58.000+00:00","creator_id":3,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":false,"is_personal_descendant":false,"is_shared_root":false,"is_users_root":false,"child_count":0,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":true,"update":true,"move_content":true,"edit_content":true}},{"name":"Web
+        Application","parent_id":1,"id":27,"content_metadata_id":40,"created_at":"2020-07-02T19:54:46.000+00:00","creator_id":2,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":false,"is_personal_descendant":false,"is_shared_root":false,"is_users_root":false,"child_count":0,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":true,"update":true,"move_content":true,"edit_content":true}},{"name":"Open
+        Source","parent_id":1,"id":28,"content_metadata_id":49,"created_at":"2020-07-26T16:26:48.000+00:00","creator_id":2,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":false,"is_personal_descendant":false,"is_shared_root":false,"is_users_root":false,"child_count":0,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":true,"update":true,"move_content":true,"edit_content":true}},{"name":"Data
+        Deletion","parent_id":1,"id":40,"content_metadata_id":79,"created_at":"2021-06-14T15:24:23.000+00:00","creator_id":2,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":false,"is_personal_descendant":false,"is_shared_root":false,"is_users_root":false,"child_count":0,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":true,"update":true,"move_content":true,"edit_content":true}},{"name":"Test
+        sub-folder","parent_id":6,"id":41,"content_metadata_id":105,"created_at":"2021-08-14T15:03:49.000+00:00","creator_id":2,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":false,"is_personal_descendant":true,"is_shared_root":false,"is_users_root":false,"child_count":2,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":true,"update":true,"move_content":true,"edit_content":true}},{"name":"test
+        subfolder 2","parent_id":41,"id":42,"content_metadata_id":106,"created_at":"2021-08-14T15:03:58.000+00:00","creator_id":2,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":false,"is_personal_descendant":true,"is_shared_root":false,"is_users_root":false,"child_count":0,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":true,"update":true,"move_content":true,"edit_content":true}},{"name":"test
+        subfolder 4","parent_id":41,"id":43,"content_metadata_id":107,"created_at":"2021-08-14T15:04:11.000+00:00","creator_id":2,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":false,"is_personal_descendant":true,"is_shared_root":false,"is_users_root":false,"child_count":0,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":true,"update":true,"move_content":true,"edit_content":true}},{"name":"LookML
+        Dashboards","parent_id":null,"id":"lookml","content_metadata_id":null,"created_at":null,"creator_id":null,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":false,"is_personal_descendant":false,"is_shared_root":false,"is_users_root":false,"child_count":0,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":false,"update":false,"move_content":false,"edit_content":false}},{"name":"Dylan
+        Baker","parent_id":2,"id":6,"content_metadata_id":10,"created_at":"2019-11-18T12:43:02.000+00:00","creator_id":2,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":true,"is_personal_descendant":false,"is_shared_root":false,"is_users_root":false,"child_count":1,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":false,"update":false,"move_content":true,"edit_content":true}},{"name":"Josh
+        Temple","parent_id":2,"id":8,"content_metadata_id":12,"created_at":"2019-11-19T16:26:33.000+00:00","creator_id":3,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":true,"is_personal_descendant":false,"is_shared_root":false,"is_users_root":false,"child_count":1,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":false,"update":false,"move_content":true,"edit_content":true}}]'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '6691'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 28 Dec 2021 18:22:37 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 7650b0e838336bb5
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 7650b0e838336bb5
+      X-B3-TraceId:
+      - 61cb55ed7c2b1c367650b0e838336bb5
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=70277007
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/folders
+  response:
+    body:
+      string: '[{"name":"Shared","parent_id":null,"id":1,"content_metadata_id":1,"created_at":"2019-11-16T02:18:31.000+00:00","creator_id":null,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":false,"is_personal_descendant":false,"is_shared_root":true,"is_users_root":false,"child_count":4,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":false,"update":false,"move_content":true,"edit_content":true}},{"name":"Users","parent_id":null,"id":2,"content_metadata_id":2,"created_at":"2019-11-16T02:18:31.000+00:00","creator_id":null,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":false,"is_personal_descendant":false,"is_shared_root":false,"is_users_root":true,"child_count":10,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":false,"update":false,"move_content":true,"edit_content":true}},{"name":"pytest","parent_id":8,"id":25,"content_metadata_id":31,"created_at":"2020-06-16T02:31:52.000+00:00","creator_id":3,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":false,"is_personal_descendant":true,"is_shared_root":false,"is_users_root":false,"child_count":0,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":true,"update":true,"move_content":true,"edit_content":true}},{"name":"pytest","parent_id":1,"id":26,"content_metadata_id":36,"created_at":"2020-06-20T15:06:58.000+00:00","creator_id":3,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":false,"is_personal_descendant":false,"is_shared_root":false,"is_users_root":false,"child_count":0,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":true,"update":true,"move_content":true,"edit_content":true}},{"name":"Web
+        Application","parent_id":1,"id":27,"content_metadata_id":40,"created_at":"2020-07-02T19:54:46.000+00:00","creator_id":2,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":false,"is_personal_descendant":false,"is_shared_root":false,"is_users_root":false,"child_count":0,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":true,"update":true,"move_content":true,"edit_content":true}},{"name":"Open
+        Source","parent_id":1,"id":28,"content_metadata_id":49,"created_at":"2020-07-26T16:26:48.000+00:00","creator_id":2,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":false,"is_personal_descendant":false,"is_shared_root":false,"is_users_root":false,"child_count":0,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":true,"update":true,"move_content":true,"edit_content":true}},{"name":"Data
+        Deletion","parent_id":1,"id":40,"content_metadata_id":79,"created_at":"2021-06-14T15:24:23.000+00:00","creator_id":2,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":false,"is_personal_descendant":false,"is_shared_root":false,"is_users_root":false,"child_count":0,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":true,"update":true,"move_content":true,"edit_content":true}},{"name":"Test
+        sub-folder","parent_id":6,"id":41,"content_metadata_id":105,"created_at":"2021-08-14T15:03:49.000+00:00","creator_id":2,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":false,"is_personal_descendant":true,"is_shared_root":false,"is_users_root":false,"child_count":2,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":true,"update":true,"move_content":true,"edit_content":true}},{"name":"test
+        subfolder 2","parent_id":41,"id":42,"content_metadata_id":106,"created_at":"2021-08-14T15:03:58.000+00:00","creator_id":2,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":false,"is_personal_descendant":true,"is_shared_root":false,"is_users_root":false,"child_count":0,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":true,"update":true,"move_content":true,"edit_content":true}},{"name":"test
+        subfolder 4","parent_id":41,"id":43,"content_metadata_id":107,"created_at":"2021-08-14T15:04:11.000+00:00","creator_id":2,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":false,"is_personal_descendant":true,"is_shared_root":false,"is_users_root":false,"child_count":0,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":true,"update":true,"move_content":true,"edit_content":true}},{"name":"LookML
+        Dashboards","parent_id":null,"id":"lookml","content_metadata_id":null,"created_at":null,"creator_id":null,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":false,"is_personal_descendant":false,"is_shared_root":false,"is_users_root":false,"child_count":0,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":false,"update":false,"move_content":false,"edit_content":false}},{"name":"Dylan
+        Baker","parent_id":2,"id":6,"content_metadata_id":10,"created_at":"2019-11-18T12:43:02.000+00:00","creator_id":2,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":true,"is_personal_descendant":false,"is_shared_root":false,"is_users_root":false,"child_count":1,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":false,"update":false,"move_content":true,"edit_content":true}},{"name":"Josh
+        Temple","parent_id":2,"id":8,"content_metadata_id":12,"created_at":"2019-11-19T16:26:33.000+00:00","creator_id":3,"external_id":null,"is_embed":false,"is_embed_shared_root":false,"is_embed_users_root":false,"is_personal":true,"is_personal_descendant":false,"is_shared_root":false,"is_users_root":false,"child_count":1,"can":{"index":true,"show":true,"create":true,"see_admin_spaces":true,"save_shared_space_as_embed_user":true,"destroy":false,"update":false,"move_content":true,"edit_content":true}}]'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '6691'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 28 Dec 2021 18:22:37 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 1feb0c9983026a6b
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 1feb0c9983026a6b
+      X-B3-TraceId:
+      - 61cb55edb2ed47c61feb0c9983026a6b
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
 version: 1
