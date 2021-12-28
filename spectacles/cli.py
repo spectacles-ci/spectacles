@@ -211,13 +211,19 @@ def main():
     parser = create_parser()
     args = parser.parse_args()
 
+    branch = getattr(args, "branch", None)
+    commit_ref = getattr(args, "commit_ref", None)
+    ref = branch or commit_ref
+    target = getattr(args, "target", None)
+    incremental = getattr(args, "incremental", None)
+
     # Normally would be cleaner to handle this with an argparse mutually exclusive
     # group, but this doesn't work with --commit-ref and --remote-reset also needing
     # to be mutually exclusive, so raise the error manually.
-    if getattr(args, "branch", None) and getattr(args, "commit_ref", None):
+    if branch and commit_ref:
         parser.error("argument --commit-ref not allowed with argument --branch")
 
-    if getattr(args, "target", None) and not getattr(args, "incremental", None):
+    if target and not incremental:
         parser.error(
             "argument --target can only be passed in incremental mode (--incremental)"
         )
@@ -233,8 +239,6 @@ def main():
             args.command,
             project=args.project if args.command != "connect" else None,
         )
-
-    ref = args.branch or args.commit_ref
 
     if args.command == "connect":
         run_connect(
