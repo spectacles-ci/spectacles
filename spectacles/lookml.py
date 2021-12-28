@@ -253,10 +253,31 @@ class Project(LookMlObject):
         """Returns the number of explores in the project, excluding skipped explores."""
         return len([explore for explore in self.iter_explores() if not explore.skipped])
 
-    def iter_explores(self) -> Iterable[Explore]:
+    def iter_models(self, errored: bool = False) -> Iterable[Model]:
         for model in self.models:
+            if errored:
+                if model.errored:
+                    yield model
+            else:
+                yield model
+
+    def iter_explores(self, errored: bool = False) -> Iterable[Explore]:
+        for model in self.iter_models():
             for explore in model.explores:
-                yield explore
+                if errored:
+                    if explore.errored:
+                        yield explore
+                else:
+                    yield explore
+
+    def iter_dimensions(self, errored: bool = False) -> Iterable[Dimension]:
+        for explore in self.iter_explores():
+            for dimension in explore.dimensions:
+                if errored:
+                    if dimension.errored:
+                        yield dimension
+                else:
+                    yield dimension
 
     @property
     def errored(self):
@@ -286,11 +307,6 @@ class Project(LookMlObject):
             raise TypeError("Value for queried must be boolean.")
         for model in self.models:
             model.queried = value
-
-    def get_errored_models(self):
-        for model in self.models:
-            if model.errored:
-                yield model
 
     def get_model(self, name: str) -> Optional[Model]:
         return next((model for model in self.models if model.name == name), None)
