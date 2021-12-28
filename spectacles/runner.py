@@ -402,22 +402,18 @@ class Runner:
         incremental: bool = False,
         target: Optional[str] = None,
         exclude_personal: bool = False,
-        exclude_folders: List[int] = None,
-        include_folders: List[int] = None,
+        folders: List[str] = None,
     ) -> JsonDict:
         if filters is None:
             filters = ["*/*"]
-        if exclude_folders is None:
-            exclude_folders = []
-        if include_folders is None:
-            include_folders = []
+        if folders is None:
+            folders = []
 
         with self.branch_manager(ref=ref):
             validator = ContentValidator(
                 self.client,
                 exclude_personal,
-                exclude_folders,
-                include_folders,
+                folders,
             )
             logger.info(
                 "Building LookML project hierarchy for project "

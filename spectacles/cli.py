@@ -289,7 +289,6 @@ def main():
             args.incremental,
             args.target,
             args.exclude_personal,
-            args.exclude_folders,
             args.folders,
         )
     elif args.command == "lookml":
@@ -664,7 +663,6 @@ def _build_content_subparser(
     )
     subparser.add_argument(
         "--folders",
-        type=int,
         nargs="+",
         help=(
             "Specify the content folder IDs that Spectacles should test. "
@@ -746,8 +744,7 @@ def run_content(
     incremental,
     target,
     exclude_personal,
-    exclude_folders,
-    include_folders,
+    folders,
 ) -> None:
     client = LookerClient(base_url, client_id, client_secret, port, api_version)
     runner = Runner(client, project, remote_reset)
@@ -757,8 +754,7 @@ def run_content(
         incremental,
         target,
         exclude_personal,
-        exclude_folders,
-        include_folders,
+        folders,
     )
 
     for test in sorted(results["tested"], key=lambda x: (x["model"], x["explore"])):

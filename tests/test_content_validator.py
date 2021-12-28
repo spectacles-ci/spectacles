@@ -154,7 +154,7 @@ def test_non_existing_excluded_folder_should_raise_exception(looker_client):
         ContentValidator(
             looker_client,
             exclude_personal=True,
-            exclude_folders=[9999],
+            folders=["-9999"],
         )
 
 
@@ -163,5 +163,5 @@ def test_non_existing_included_folder_should_raise_exception(looker_client):
         ContentValidator(
             looker_client,
             exclude_personal=True,
-            include_folders=[9999],
+            folders=["9999"],
         )
