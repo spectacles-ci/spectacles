@@ -145,7 +145,9 @@ class SqlValidator:
         if at_dimension_level:
             for explore in project.iter_explores():
                 if not explore.skipped and explore.errored is not False:
-                    tests.extend(self._create_dimension_tests(explore, compile_sql))
+                    for dimension in explore.dimensions:
+                        test = self._create_dimension_test(dimension, compile_sql)
+                        tests.append(test)
         else:
             for explore in project.iter_explores():
                 test = self._create_explore_test(explore, compile_sql)
@@ -174,27 +176,23 @@ class SqlValidator:
             test.sql = self.client.run_query(query["id"])
         return test
 
-    def _create_dimension_tests(
-        self, explore: Explore, compile_sql: bool = False
-    ) -> List[SqlTest]:
-        """Creates individual queries for each dimension in an explore"""
-        tests: List[SqlTest] = []
-        for dimension in explore.dimensions:
-            query = self.client.create_query(
-                explore.model_name,
-                explore.name,
-                [dimension.name],
-                fields=["id", "share_url"],
-            )
-            test = SqlTest(
-                query_id=query["id"],
-                lookml_ref=dimension,
-                explore_url=query["share_url"],
-            )
-            if compile_sql:
-                test.sql = self.client.run_query(query["id"])
-            tests.append(test)
-        return tests
+    def _create_dimension_test(
+        self, dimension: Dimension, compile_sql: bool = False
+    ) -> SqlTest:
+        query = self.client.create_query(
+            dimension.model_name,
+            dimension.explore_name,
+            [dimension.name],
+            fields=["id", "share_url"],
+        )
+        test = SqlTest(
+            query_id=query["id"],
+            lookml_ref=dimension,
+            explore_url=query["share_url"],
+        )
+        if compile_sql:
+            test.sql = self.client.run_query(query["id"])
+        return test
 
     def run_tests(self, tests: List[SqlTest], profile: bool = False):
         self._test_by_task_id = {}
