@@ -429,7 +429,7 @@ class Runner:
             results = project.get_results(validator="content")
 
         if incremental and (self.branch_manager.branch or self.branch_manager.commit):
-            logger.debug("Starting another content validation against production")
+            logger.debug("Starting another content validation against the target ref")
             with self.branch_manager(ref=target):
                 logger.debug(
                     "Building LookML project hierarchy for project "
@@ -441,30 +441,30 @@ class Runner:
                 validator.validate(target_project)
                 target_results = project.get_results(validator="content")
 
-            return self._incremental_results(main=target_results, additional=results)
+            return self._incremental_results(base=results, target=target_results)
         else:
             return results
 
     @staticmethod
-    def _incremental_results(main: JsonDict, additional: JsonDict) -> JsonDict:
+    def _incremental_results(base: JsonDict, target: JsonDict) -> JsonDict:
         """Returns a new result with only the additional errors in `additional`."""
-        incremental: JsonDict = {
+        diff: JsonDict = {
             "validator": "content",
-            # Start with models and explores we know passed in `additional`
-            "tested": [test for test in additional["tested"] if test["passed"]],
+            # Start with models and explores we know passed for the base ref
+            "tested": [test for test in base["tested"] if test["status"] != "failed"],
             "errors": [],
         }
 
         # Build a list of disputed tests where dupes by model and explore are allowed
         tests = []
-        for error in additional["errors"]:
-            if error in main["errors"]:
-                passed = True
+        for error in base["errors"]:
+            if error in target["errors"]:
+                status = "passed"
             else:
-                passed = False
-                incremental["errors"].append(error)
+                status = "failed"
+                diff["errors"].append(error)
 
-            test = dict(model=error["model"], explore=error["explore"], passed=passed)
+            test = dict(model=error["model"], explore=error["explore"], status=status)
             tests.append(test)
 
         def key_by(x):
@@ -473,16 +473,20 @@ class Runner:
         if tests:
             # Dedupe the list of tests, grouping by model and explore and taking the min
             # To do this, we group by model and explore and sort by `passed`
-            tests = sorted(tests, key=lambda x: (x["model"], x["explore"], x["passed"]))
-            for key, group in itertools.groupby(tests, key=key_by):
+            tests = sorted(
+                tests, key=lambda x: (x["model"], x["explore"], x["status"] != "failed")
+            )
+            for _, group in itertools.groupby(tests, key=key_by):
                 items = list(group)
-                incremental["tested"].append(items[0])
+                diff["tested"].append(items[0])
 
         # Re-sort the final list
-        incremental["tested"] = sorted(incremental["tested"], key=key_by)
+        diff["tested"] = sorted(diff["tested"], key=key_by)
 
         # Recompute the overall state of the test suite
-        passed = min((test["passed"] for test in incremental["tested"]), default=True)
-        incremental["status"] = "passed" if passed else "failed"
+        passed = min(
+            (test["status"] != "failed" for test in diff["tested"]), default=True
+        )
+        diff["status"] = "passed" if passed else "failed"
 
-        return incremental
+        return diff
