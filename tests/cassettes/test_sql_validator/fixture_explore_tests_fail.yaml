@@ -1,0 +1,84 @@
+interactions:
+- request:
+    body: '{"model": "eye_exam", "view": "users__fail", "fields": ["users__fail.city",
+      "users__fail.email", "users__fail.first_name", "users__fail.id", "users__fail.last_name"],
+      "limit": 0, "filter_expression": "1=2"}'
+    headers:
+      Content-Length:
+      - '206'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=59426826
+    method: POST
+    uri: https://spectacles.looker.com:19999/api/3.1/queries?fields=id%2Cshare_url
+  response:
+    body:
+      string: '{"id":1944,"share_url":"https://spectacles.looker.com/x/qCJsoYAZ2Y22QZLbmD0Gvy"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '80'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 28 Dec 2021 16:14:00 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 855be8a44182c431
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 855be8a44182c431
+      X-B3-TraceId:
+      - 61cb37c835a4e914855be8a44182c431
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=59426826
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/queries/1944/run/sql
+  response:
+    body:
+      string: "SELECT\n    users__fail.\"CITY\"  AS \"users__fail.city\",\n    users__fail.\"EMAIL_ADDRESS\"
+        \ AS \"users__fail.email\",\n    users__fail.\"FIRST_NAME\"  AS \"users__fail.first_name\",\n
+        \   users__fail.\"ID\"  AS \"users__fail.id\",\n    users__fail.\"LAST_NAME\"
+        \ AS \"users__fail.last_name\"\nFROM \"PUBLIC\".\"USERS\"\n   AS users__fail\nWHERE
+        (1 = 2)\nORDER BY\n    1\nFETCH NEXT 0 ROWS ONLY"
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '360'
+      Content-Type:
+      - application/sql
+      Date:
+      - Tue, 28 Dec 2021 16:14:00 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 2b1cb7e82f74176b
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 2b1cb7e82f74176b
+      X-B3-TraceId:
+      - 61cb37c83526a7aa2b1cb7e82f74176b
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -1,0 +1,382 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=59426826
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"production","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '83'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 28 Dec 2021 16:14:28 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - fd86d7f44eb3ed6b
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - fd86d7f44eb3ed6b
+      X-B3-TraceId:
+      - 61cb37e404281252fd86d7f44eb3ed6b
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=59426826
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
+  response:
+    body:
+      string: '{"name":"master","remote":"origin","remote_name":"master","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":true,"ahead_count":0,"behind_count":0,"commit_at":1616610858,"ref":"e65f46cd514f9742c95458a7ef66400baefdf37f","remote_ref":"e65f46cd514f9742c95458a7ef66400baefdf37f","can":{}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '362'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 28 Dec 2021 16:14:28 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 6b16875bb9cd3f33
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 6b16875bb9cd3f33
+      X-B3-TraceId:
+      - 61cb37e4df48dace6b16875bb9cd3f33
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=59426826
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/manifest
+  response:
+    body:
+      string: '{"name":"eye_exam","imports":[{"name":"welcome_to_looker","url":null,"ref":null,"is_remote":false,"can":{}}],"localization_settings":null,"can":{}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '147'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 28 Dec 2021 16:14:28 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - d5019a7c8dab3244
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - d5019a7c8dab3244
+      X-B3-TraceId:
+      - 61cb37e4905ab2b7d5019a7c8dab3244
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=59426826
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/lookml_models?fields=name%2Cproject_name%2Cexplores
+  response:
+    body:
+      string: '[{"name":"thelook","project_name":"welcome_to_looker","explores":[{"description":null,"label":"Cohort
+        Data Tool","hidden":true,"group_label":"1) eCommerce with Event Data","name":"cohorts","can":{}},{"description":null,"label":"Web
+        Analytics Data Tool","hidden":true,"group_label":"1) eCommerce with Event
+        Data","name":"data_tool","can":{}},{"description":null,"label":"(1) Orders,
+        Items and Users","hidden":false,"group_label":"1) eCommerce with Event Data","name":"order_items","can":{}},{"description":null,"label":"(2)
+        Web Event Data","hidden":false,"group_label":"1) eCommerce with Event Data","name":"events","can":{}},{"description":null,"label":"(3)
+        Web Session Data","hidden":false,"group_label":"1) eCommerce with Event Data","name":"sessions","can":{}},{"description":null,"label":"(4)
+        Affinity Analysis","hidden":false,"group_label":"1) eCommerce with Event Data","name":"affinity","can":{}},{"description":null,"label":"(5)
+        Share of Wallet Analysis","hidden":false,"group_label":"1) eCommerce with
+        Event Data","name":"orders_with_share_of_wallet_application","can":{}},{"description":null,"label":"(6)
+        Customer Journey Mapping","hidden":false,"group_label":"1) eCommerce with
+        Event Data","name":"journey_mapping","can":{}},{"description":null,"label":"(7)
+        Stock Analysis","hidden":false,"group_label":"1) eCommerce with Event Data","name":"inventory_items","can":{}},{"description":null,"label":"(8)
+        Historical Stock Snapshot Analysis","hidden":false,"group_label":"1) eCommerce
+        with Event Data","name":"inventory_snapshot","can":{}},{"description":null,"label":"Order
+        Items (Kittens)","hidden":true,"group_label":"1) eCommerce with Event Data","name":"kitten_order_items","can":{}}]},{"name":"jaffle_shop","project_name":"jaffle_shop","explores":[{"description":null,"label":"Orders","hidden":false,"group_label":"Jaffle
+        Shop","name":"fct_orders","can":{}}]},{"name":"admin","project_name":"jaffle_shop","explores":[]},{"name":"eye_exam","project_name":"eye_exam","explores":[{"description":null,"label":"Users","hidden":false,"group_label":"Eye
+        Exam","name":"users","can":{}},{"description":null,"label":"Users Fail","hidden":false,"group_label":"Eye
+        Exam","name":"users__fail","can":{}},{"description":null,"label":"Users Fail
+        and Warn","hidden":false,"group_label":"Eye Exam","name":"users__fail_and_warn","can":{}},{"description":null,"label":"Users
+        Warn","hidden":false,"group_label":"Eye Exam","name":"users__warn","can":{}}]},{"name":"web_application","project_name":"spectacles","explores":[{"description":null,"label":"Runs","hidden":false,"group_label":"Web
+        Application","name":"runs","can":{}},{"description":null,"label":"Organisations","hidden":false,"group_label":"Web
+        Application","name":"organisations","can":{}},{"description":null,"label":"Credentials","hidden":false,"group_label":"Web
+        Application","name":"credentials","can":{}},{"description":null,"label":"Users","hidden":false,"group_label":"Web
+        Application","name":"users","can":{}},{"description":null,"label":"Hightouch
+        Reporting","hidden":false,"group_label":"Web Application","name":"hightouch__users","can":{}},{"description":null,"label":"Suites","hidden":false,"group_label":"Web
+        Application","name":"suites","can":{}},{"description":null,"label":"Revenue
+        Reporting","hidden":false,"group_label":"Web Application","name":"revenue_reporting","can":{}}]},{"name":"web_application_gitlab","project_name":"spectacles-gitlab","explores":[{"description":null,"label":"Runs","hidden":true,"group_label":"Web
+        Application Gitlab","name":"runs","can":{}},{"description":null,"label":"Organisations","hidden":true,"group_label":"Web
+        Application Gitlab","name":"organisations","can":{}},{"description":null,"label":"Credentials","hidden":true,"group_label":"Web
+        Application Gitlab","name":"credentials","can":{}}]},{"name":"open_source_gitlab","project_name":"spectacles-gitlab","explores":[{"description":null,"label":"Invocations
+        - this is a change","hidden":true,"group_label":"Open Source","name":"fct_invocations","can":{}}]},{"name":"open_source","project_name":"spectacles","explores":[{"description":null,"label":"Invocations","hidden":false,"group_label":"Open
+        Source","name":"fct_invocations","can":{}}]},{"name":"open_source_azure","project_name":"spectacles_azure","explores":[{"description":null,"label":"Invocations","hidden":true,"group_label":"Open
+        Source","name":"fct_invocations","can":{}}]},{"name":"web_application_azure","project_name":"spectacles_azure","explores":[{"description":null,"label":"Runs","hidden":true,"group_label":"Web
+        Application Azure","name":"runs","can":{}},{"description":null,"label":"Organisations","hidden":true,"group_label":"Web
+        Application Azure","name":"organisations","can":{}},{"description":null,"label":"Credentials","hidden":true,"group_label":"Web
+        Application Azure","name":"credentials","can":{}}]},{"name":"open_source_main","project_name":"spectacles-main-branch","explores":[{"description":null,"label":"Invocations","hidden":true,"group_label":"Open
+        Source (Main Branch Project)","name":"fct_invocations","can":{}}]},{"name":"web_application_main","project_name":"spectacles-main-branch","explores":[{"description":null,"label":"Runs","hidden":true,"group_label":"Web
+        Application (Main Branch Project)","name":"runs","can":{}},{"description":null,"label":"Organisations","hidden":true,"group_label":"Web
+        Application (Main Branch Project)","name":"organisations","can":{}},{"description":null,"label":"Credentials","hidden":true,"group_label":"Web
+        Application (Main Branch Project)","name":"credentials","can":{}}]},{"name":"open_source_advanced_deploy","project_name":"spectacles-advanced-deploy","explores":[{"description":null,"label":"Invocations","hidden":true,"group_label":"Open
+        Source (Advanced Deploy)","name":"fct_invocations","can":{}}]},{"name":"web_application_advanced_deploy","project_name":"spectacles-advanced-deploy","explores":[{"description":null,"label":"Runs","hidden":true,"group_label":"Web
+        Application (Advanced Deploy)","name":"runs","can":{}},{"description":null,"label":"Organisations","hidden":true,"group_label":"Web
+        Application (Advanced Deploy)","name":"organisations","can":{}},{"description":null,"label":"Credentials","hidden":true,"group_label":"Web
+        Application (Advanced Deploy)","name":"credentials","can":{}}]},{"name":"models","project_name":"import-advanced-deploy","explores":[{"description":null,"label":"Organisations
+        - Import Advanced Deploy","hidden":true,"group_label":"Models","name":"dim_organisations","can":{}}]},{"name":"extension-api-explorer","project_name":"marketplace_extension_api_explorer","explores":[]},{"name":"data-dictionary","project_name":"marketplace_extension_data_dictionary","explores":[]},{"name":"spectacles_strava","project_name":"spectacles_strava","explores":[{"description":null,"label":"Raw
+        Activities","hidden":false,"group_label":"Spectacles Strava","name":"raw_activities","can":{}},{"description":null,"label":"Stg
+        Activities","hidden":false,"group_label":"Spectacles Strava","name":"stg_activities","can":{}},{"description":null,"label":"Activity
+        Types","hidden":false,"group_label":"Spectacles Strava","name":"activity_types","can":{}}]}]'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '7163'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 28 Dec 2021 16:14:28 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - bdf1c1b32136cf69
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - bdf1c1b32136cf69
+      X-B3-TraceId:
+      - 61cb37e4d291874bbdf1c1b32136cf69
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=59426826
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/lookml_tests
+  response:
+    body:
+      string: '[{"model_name":"eye_exam","name":"users_age_should_be_in_expected_range","explore_name":"users","query_url_params":"fields=users.age\u0026limit=500\u0026dynamic_fields=%5B%7B%22table_calculation%22%3A%22looker_assert_age_should_be_greater_than_zero%22%2C%22label%22%3A%22Age+Should+Be+Greater+Than+Zero%22%2C%22expression%22%3A%22%24%7Busers.age%7D+%5Cu003e+0+%22%7D%2C%7B%22table_calculation%22%3A%22looker_assert_age_should_be_less_than_130%22%2C%22label%22%3A%22Age+Should+Be+Less+Than+130%22%2C%22expression%22%3A%22%24%7Busers.age%7D+%5Cu003c+130+%22%7D%5D","file":"eye_exam/eye_exam.model.lkml","line":7,"can":{}},{"model_name":"eye_exam","name":"users_name_should_be_in_caps","explore_name":"users","query_url_params":"fields=users.first_name,users.last_name\u0026limit=500\u0026dynamic_fields=%5B%7B%22table_calculation%22%3A%22looker_assert_users_first_name_should_be_in_caps%22%2C%22label%22%3A%22Users+First+Name+Should+Be+In+Caps%22%2C%22expression%22%3A%22%24%7Busers.first_name%7D+%3D+upper%28%24%7Busers.first_name%7D%29+%22%7D%2C%7B%22table_calculation%22%3A%22looker_assert_users_last_name_should_be_in_caps%22%2C%22label%22%3A%22Users+Last+Name+Should+Be+In+Caps%22%2C%22expression%22%3A%22%24%7Busers.last_name%7D+%3D+upper%28%24%7Busers.last_name%7D%29+%22%7D%5D","file":"eye_exam/eye_exam.model.lkml","line":21,"can":{}},{"model_name":"eye_exam","name":"users__fail_age_should_be_in_expected_range","explore_name":"users__fail","query_url_params":"fields=users__fail.age\u0026limit=500\u0026dynamic_fields=%5B%7B%22table_calculation%22%3A%22looker_assert_age_should_be_greater_than_zero%22%2C%22label%22%3A%22Age+Should+Be+Greater+Than+Zero%22%2C%22expression%22%3A%22%24%7Busers__fail.age%7D+%5Cu003e+130+%22%7D%2C%7B%22table_calculation%22%3A%22looker_assert_age_should_be_less_than_130%22%2C%22label%22%3A%22Age+Should+Be+Less+Than+130%22%2C%22expression%22%3A%22%24%7Busers__fail.age%7D+%5Cu003c+0+%22%7D%5D","file":"eye_exam/eye_exam.model.lkml","line":40,"can":{}},{"model_name":"eye_exam","name":"users__fail_name_should_be_in_caps","explore_name":"users__fail","query_url_params":"fields=users__fail.first_name,users__fail.last_name\u0026limit=500\u0026dynamic_fields=%5B%7B%22table_calculation%22%3A%22looker_assert_users__fail_first_name_should_be_in_caps%22%2C%22label%22%3A%22Users+Fail+First+Name+Should+Be+In+Caps%22%2C%22expression%22%3A%22%24%7Busers__fail.first_name%7D+%3D+upper%28%24%7Busers__fail.first_name%7D%29+%22%7D%2C%7B%22table_calculation%22%3A%22looker_assert_users__fail_last_name_should_be_in_caps%22%2C%22label%22%3A%22Users+Fail+Last+Name+Should+Be+In+Caps%22%2C%22expression%22%3A%22%24%7Busers__fail.last_name%7D+%3D+upper%28%24%7Busers__fail.last_name%7D%29+%22%7D%5D","file":"eye_exam/eye_exam.model.lkml","line":54,"can":{}}]'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '2784'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 28 Dec 2021 16:14:28 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - cb69acb5a2c3a4e4
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - cb69acb5a2c3a4e4
+      X-B3-TraceId:
+      - 61cb37e42ef252c4cb69acb5a2c3a4e4
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=59426826
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/lookml_tests/run?model=eye_exam&test=users_age_should_be_in_expected_range
+  response:
+    body:
+      string: '[{"model_name":"eye_exam","test_name":"users_age_should_be_in_expected_range","assertions_count":2,"assertions_failed":0,"errors":[],"warnings":[],"success":true,"can":{}}]'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '172'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 28 Dec 2021 16:14:29 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 9a334908ce193529
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 9a334908ce193529
+      X-B3-TraceId:
+      - 61cb37e46b53a97d9a334908ce193529
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=59426826
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/lookml_tests/run?model=eye_exam&test=users_name_should_be_in_caps
+  response:
+    body:
+      string: '[{"model_name":"eye_exam","test_name":"users_name_should_be_in_caps","assertions_count":2,"assertions_failed":0,"errors":[],"warnings":[],"success":true,"can":{}}]'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '163'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 28 Dec 2021 16:14:29 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 4066bcc76dd34d1e
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 4066bcc76dd34d1e
+      X-B3-TraceId:
+      - 61cb37e5ede8bf384066bcc76dd34d1e
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=59426826
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/lookml_tests/run?model=eye_exam&test=users__fail_age_should_be_in_expected_range
+  response:
+    body:
+      string: '[{"model_name":"eye_exam","test_name":"users__fail_age_should_be_in_expected_range","assertions_count":2,"assertions_failed":2,"errors":[{"code":null,"severity":"error","kind":null,"message":"Assertion
+        \"age_should_be_greater_than_zero\" failed: expression evaluated to \"No\".","field_name":"users__fail.age","file_path":"eye_exam/eye_exam.model.lkml","line_number":40,"model_id":"eye_exam","explore":"users__fail","help_url":null,"params":{"__FILE":"eye_exam/eye_exam.model.lkml","__LINE_NUM":40,"model_id":"eye_exam","explore":"users__fail","field_name":"users__fail.age","assertion_name":"age_should_be_greater_than_zero","level":"error"},"sanitized_message":"Assertion
+        \"(?)\" failed: expression evaluated to \"No\"."},{"code":null,"severity":"error","kind":null,"message":"Assertion
+        \"age_should_be_less_than_130\" failed: expression evaluated to \"No\".","field_name":"users__fail.age","file_path":"eye_exam/eye_exam.model.lkml","line_number":40,"model_id":"eye_exam","explore":"users__fail","help_url":null,"params":{"__FILE":"eye_exam/eye_exam.model.lkml","__LINE_NUM":40,"model_id":"eye_exam","explore":"users__fail","field_name":"users__fail.age","assertion_name":"age_should_be_less_than_130","level":"error"},"sanitized_message":"Assertion
+        \"(?)\" failed: expression evaluated to \"No\"."}],"warnings":[],"success":false,"can":{}}]'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '1344'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 28 Dec 2021 16:14:29 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - fabb240a9ff23130
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - fabb240a9ff23130
+      X-B3-TraceId:
+      - 61cb37e51620ef11fabb240a9ff23130
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=59426826
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/lookml_tests/run?model=eye_exam&test=users__fail_name_should_be_in_caps
+  response:
+    body:
+      string: '[{"model_name":"eye_exam","test_name":"users__fail_name_should_be_in_caps","assertions_count":2,"assertions_failed":0,"errors":[],"warnings":[],"success":true,"can":{}}]'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '169'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 28 Dec 2021 16:14:30 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 46d3949d440b0d71
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 46d3949d440b0d71
+      X-B3-TraceId:
+      - 61cb37e5b493d0f346d3949d440b0d71
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -9,7 +9,8 @@ from utils import build_validation
 
 @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
 @pytest.mark.parametrize("fail_fast", [True, False])
-def test_validate_sql_should_work(looker_client, fail_fast):
+@patch("spectacles.runner.time_hash", return_value="abc123")
+def test_validate_sql_should_work(mock_time_hash, looker_client, fail_fast):
     runner = Runner(looker_client, "eye_exam")
     result = runner.validate_sql(
         ref="pytest",
@@ -26,7 +27,8 @@ def test_validate_sql_should_work(looker_client, fail_fast):
 
 
 @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
-def test_validate_content_should_work(looker_client):
+@patch("spectacles.runner.time_hash", return_value="abc123")
+def test_validate_content_should_work(mock_time_hash, looker_client):
     runner = Runner(looker_client, "eye_exam")
     result = runner.validate_content(filters=["eye_exam/users", "eye_exam/users__fail"])
     assert result["status"] == "failed"
@@ -36,7 +38,8 @@ def test_validate_content_should_work(looker_client):
 
 
 @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
-def test_validate_data_tests_should_work(looker_client):
+@patch("spectacles.runner.time_hash", return_value="abc123")
+def test_validate_data_tests_should_work(mock_time_hash, looker_client):
     runner = Runner(looker_client, "eye_exam")
     result = runner.validate_data_tests(
         filters=["eye_exam/users", "eye_exam/users__fail"]
@@ -143,37 +146,37 @@ def test_validate_sql_returns_valid_schema(
 
 
 def test_incremental_same_results_should_not_have_errors():
-    main = build_validation("content")
-    additional = build_validation("content")
-    incremental = Runner._incremental_results(main, additional)
-    assert incremental["status"] == "passed"
-    assert incremental["errors"] == []
-    assert incremental["tested"] == [
-        dict(model="ecommerce", explore="orders", passed=True),
-        dict(model="ecommerce", explore="sessions", passed=True),
-        dict(model="ecommerce", explore="users", passed=True),
+    base = build_validation("content")
+    target = build_validation("content")
+    diff = Runner._incremental_results(base, target)
+    assert diff["status"] == "passed"
+    assert diff["errors"] == []
+    assert diff["tested"] == [
+        dict(model="ecommerce", explore="orders", status="passed"),
+        dict(model="ecommerce", explore="sessions", status="passed"),
+        dict(model="ecommerce", explore="users", status="passed"),
     ]
 
 
-def test_incremental_with_fewer_errors_than_main():
-    main = build_validation("content")
-    additional = build_validation("content")
-    additional["tested"][2]["passed"] = True
-    additional["errors"] = []
-    incremental = Runner._incremental_results(main, additional)
-    assert incremental["status"] == "passed"
-    assert incremental["errors"] == []
-    assert incremental["tested"] == [
-        dict(model="ecommerce", explore="orders", passed=True),
-        dict(model="ecommerce", explore="sessions", passed=True),
-        dict(model="ecommerce", explore="users", passed=True),
+def test_incremental_with_fewer_errors_than_target():
+    base = build_validation("content")
+    target = build_validation("content")
+    base["tested"][2]["status"] = "passed"
+    base["errors"] = []
+    diff = Runner._incremental_results(base, target)
+    assert diff["status"] == "passed"
+    assert diff["errors"] == []
+    assert diff["tested"] == [
+        dict(model="ecommerce", explore="orders", status="passed"),
+        dict(model="ecommerce", explore="sessions", status="passed"),
+        dict(model="ecommerce", explore="users", status="passed"),
     ]
 
 
-def test_incremental_with_more_errors_than_main():
-    main = build_validation("content")
-    additional = build_validation("content")
-    additional["tested"][1]["passed"] = False
+def test_incremental_with_more_errors_than_target():
+    base = build_validation("content")
+    target = build_validation("content")
+    base["tested"][1]["status"] = "failed"
     extra_errors = [
         dict(
             model="ecommerce",
@@ -190,21 +193,21 @@ def test_incremental_with_more_errors_than_main():
             metadata={},
         ),
     ]
-    additional["errors"].extend(extra_errors)
-    incremental = Runner._incremental_results(main, additional)
-    assert incremental["status"] == "failed"
-    assert incremental["errors"] == extra_errors
-    assert incremental["tested"] == [
-        dict(model="ecommerce", explore="orders", passed=True),
-        dict(model="ecommerce", explore="sessions", passed=False),
-        dict(model="ecommerce", explore="users", passed=False),
+    base["errors"].extend(extra_errors)
+    diff = Runner._incremental_results(base, target)
+    assert diff["status"] == "failed"
+    assert diff["errors"] == extra_errors
+    assert diff["tested"] == [
+        dict(model="ecommerce", explore="orders", status="passed"),
+        dict(model="ecommerce", explore="sessions", status="failed"),
+        dict(model="ecommerce", explore="users", status="failed"),
     ]
 
 
-def test_incremental_with_fewer_tested_explores_than_main():
-    main = build_validation("content")
-    additional = build_validation("content")
-    _ = additional["tested"].pop(0)
+def test_incremental_with_fewer_tested_explores_than_target():
+    base = build_validation("content")
+    target = build_validation("content")
+    _ = base["tested"].pop(0)
     extra_error = dict(
         model="ecommerce",
         explore="users",
@@ -212,11 +215,11 @@ def test_incremental_with_fewer_tested_explores_than_main():
         message="Another error occurred",
         metadata={},
     )
-    additional["errors"].append(extra_error)
-    incremental = Runner._incremental_results(main, additional)
-    assert incremental["status"] == "failed"
-    assert incremental["errors"] == [extra_error]
-    assert incremental["tested"] == [
-        dict(model="ecommerce", explore="sessions", passed=True),
-        dict(model="ecommerce", explore="users", passed=False),
+    base["errors"].append(extra_error)
+    diff = Runner._incremental_results(base, target)
+    assert diff["status"] == "failed"
+    assert diff["errors"] == [extra_error]
+    assert diff["tested"] == [
+        dict(model="ecommerce", explore="sessions", status="passed"),
+        dict(model="ecommerce", explore="users", status="failed"),
     ]
