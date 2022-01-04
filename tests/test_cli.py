@@ -337,6 +337,32 @@ def test_main_with_assert_validator(mock_tracking, mock_runner, env, caplog):
     assert "ecommerce.users failed" in caplog.text
 
 
+@patch("sys.argv", new=["spectacles", "lookml"])
+@patch("spectacles.cli.Runner", autospec=True)
+@patch("spectacles.cli.tracking")
+def test_main_with_lookml_validator(mock_tracking, mock_runner, env, caplog):
+    validation = build_validation("lookml")
+    mock_runner.return_value.validate_lookml.return_value = validation
+    with pytest.raises(SystemExit):
+        main()
+    mock_tracking.track_invocation_start.assert_called_once_with(
+        "BASE_URL_ENV_VAR", "lookml", project="PROJECT_ENV_VAR"
+    )
+    # TODO: Uncomment the below assertion once #262 is fixed
+    # mock_tracking.track_invocation_end.assert_called_once()
+    mock_runner.assert_called_once_with(
+        "BASE_URL_ENV_VAR",  # base_url
+        "PROJECT_ENV_VAR",  # project
+        "CLIENT_ID_ENV_VAR",  # client_id
+        "CLIENT_SECRET_ENV_VAR",  # client_secret
+        8080,  # port
+        3.1,  # api_version
+        False,  # remote_reset
+    )
+    assert "eye_exam/eye_exam.model.lkml" in caplog.text
+    assert "Could not find a field named 'users__fail.first_name'" in caplog.text
+
+
 @patch("sys.argv", new=["spectacles", "connect"])
 @patch("spectacles.cli.run_connect")
 @patch("spectacles.cli.tracking")

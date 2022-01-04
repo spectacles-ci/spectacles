@@ -77,7 +77,8 @@ def print_lookml_error(
     print_header(red(file_path), LINE_WIDTH + COLOR_CODE_LENGTH)
     wrapped = textwrap.fill(f'LookML {severity} found: "{message}"', LINE_WIDTH)
     logger.info(wrapped)
-    logger.info("\n" + f"LookML: {lookml_url}")
+    if lookml_url:
+        logger.info("\n" + f"LookML: {lookml_url}")
 
 
 def print_lookml_success() -> None:

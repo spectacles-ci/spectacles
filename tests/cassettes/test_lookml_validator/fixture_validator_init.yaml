@@ -1,0 +1,219 @@
+interactions:
+- request:
+    body: '{"workspace_id": "production"}'
+    headers:
+      Content-Length:
+      - '30'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=72443922
+    method: PATCH
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"production","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '83'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 04 Jan 2022 16:43:47 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - d9bb80151d3ac1ce
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - d9bb80151d3ac1ce
+      X-B3-TraceId:
+      - 61d479438c01b079d9bb80151d3ac1ce
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Content-Length:
+      - '0'
+      Cookie:
+      - looker.browser=72443922
+    method: POST
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/validate
+  response:
+    body:
+      string: '{"errors":[],"models_not_validated":[],"computation_time":0.2156679630279541,"project_digest":"9f98f2e3c467f7278687abe04020082a4d15d3cd"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '137'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 04 Jan 2022 16:43:47 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 4f1a413366b6d40b
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 4f1a413366b6d40b
+      X-B3-TraceId:
+      - 61d47943676c459e4f1a413366b6d40b
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"workspace_id": "dev"}'
+    headers:
+      Content-Length:
+      - '23'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=72443922
+    method: PATCH
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"dev","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '76'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 04 Jan 2022 16:43:48 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - d06937269893cfad
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - d06937269893cfad
+      X-B3-TraceId:
+      - 61d47944f49a86a4d06937269893cfad
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"name": "pytest-fail-lookml"}'
+    headers:
+      Content-Length:
+      - '30'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=72443922
+    method: PUT
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
+  response:
+    body:
+      string: '{"name":"pytest-fail-lookml","remote":"origin","remote_name":"pytest-fail-lookml","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1641313431,"ref":"7e33408a177f8c5f8bde99d9cfc79ca2b810b96b","remote_ref":"7e33408a177f8c5f8bde99d9cfc79ca2b810b96b","can":{}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '387'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 04 Jan 2022 16:43:48 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - cf2ecbfbc4432f7c
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - cf2ecbfbc4432f7c
+      X-B3-TraceId:
+      - 61d479440044df7ccf2ecbfbc4432f7c
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Content-Length:
+      - '0'
+      Cookie:
+      - looker.browser=72443922
+    method: POST
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/validate
+  response:
+    body:
+      string: '{"errors":[{"code":null,"severity":"error","kind":"error","message":"Invalid
+        lookml syntax near line 44","field_name":null,"file_path":null,"line_number":44,"model_id":null,"explore":null,"help_url":"http://www.looker.com/kb/analyst/parse-error","params":{},"sanitized_message":null},{"code":null,"severity":"error","kind":"error","message":"Invalid
+        property for \"test\": asser","field_name":null,"file_path":"eye_exam/eye_exam.model.lkml","line_number":13,"model_id":null,"explore":null,"help_url":null,"params":{"level":"error"},"sanitized_message":"Invalid
+        property for \"test\": asser"},{"code":null,"severity":"error","kind":"error","message":"Could
+        not find a field named \"users.age\"","field_name":null,"file_path":"eye_exam/eye_exam.model.lkml","line_number":10,"model_id":null,"explore":null,"help_url":null,"params":{"level":"error"},"sanitized_message":"Could
+        not find a field named \"users.age\""},{"code":null,"severity":"error","kind":"error","message":"Explore
+        name must match a view name, or the explore must provide a ''from:'' or ''view_name:''
+        property","field_name":null,"file_path":"eye_exam/eye_exam.model.lkml","line_number":38,"model_id":null,"explore":null,"help_url":null,"params":{"level":"error"},"sanitized_message":"Explore
+        name must match a view name, or the explore must provide a ''from:'' or ''view_name:''
+        property"},{"code":null,"severity":"error","kind":"error","message":"Could
+        not find a field named \"users__fail.age\"","field_name":null,"file_path":"eye_exam/eye_exam.model.lkml","line_number":43,"model_id":null,"explore":null,"help_url":null,"params":{"level":"error"},"sanitized_message":"Could
+        not find a field named \"users__fail.age\""},{"code":null,"severity":"error","kind":"error","message":"Could
+        not find a field named \"users__fail.first_name\"","field_name":null,"file_path":"eye_exam/eye_exam.model.lkml","line_number":57,"model_id":null,"explore":null,"help_url":null,"params":{"level":"error"},"sanitized_message":"Could
+        not find a field named \"users__fail.first_name\""},{"code":null,"severity":"error","kind":"error","message":"Could
+        not find a field named \"users__fail.last_name\"","field_name":null,"file_path":"eye_exam/eye_exam.model.lkml","line_number":60,"model_id":null,"explore":null,"help_url":null,"params":{"level":"error"},"sanitized_message":"Could
+        not find a field named \"users__fail.last_name\""},{"code":null,"severity":"error","kind":"error","message":"Could
+        not find a view named \"users__fail\" to extend, possible missing include
+        in view file.","field_name":null,"file_path":"eye_exam/views/users__fail_and_warn.view.lkml","line_number":4,"model_id":null,"explore":null,"help_url":null,"params":{"level":"error"},"sanitized_message":"Could
+        not find a view named \"users__fail\" to extend, possible missing include
+        in view file."}],"models_not_validated":[{"name":"eye_exam","project_file_id":"eye_exam.model.lkml"}],"computation_time":0.18851613998413086,"project_digest":"f80e4a16cd6761c72bc8e388cba261be2e3689a2"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '2991'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 04 Jan 2022 16:43:49 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 294c3624f4f9d654
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 294c3624f4f9d654
+      X-B3-TraceId:
+      - 61d4794483cb7e10294c3624f4f9d654
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+version: 1

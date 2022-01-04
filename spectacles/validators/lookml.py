@@ -1,6 +1,6 @@
 from typing import Dict, Any
 from spectacles.validators.validator import Validator
-from spectacles.exceptions import LookMLError
+from spectacles.exceptions import LookMLError, ValidationError
 
 
 class LookMLValidator(Validator):
@@ -16,15 +16,21 @@ class LookMLValidator(Validator):
         validation_results = self.client.lookml_validation(self.project.name)
         errors = []
         for error in validation_results["errors"]:
-            lookml_url = (
-                self.client.base_url
-                + "/projects/"
-                + self.project.name
-                + "/files/"
-                + error["file_path"]
-                + "?line="
-                + str(error["line_number"])
-            )
+
+            if error["file_path"]:
+                lookml_url = (
+                    self.client.base_url
+                    + "/projects/"
+                    + self.project.name
+                    + "/files/"
+                    + error["file_path"]
+                )
+                if error["line_number"]:
+                    lookml_url += "?line=" + str(error["line_number"])
+            else:
+                error["file_path"] = "File path not determinable."
+                lookml_url = None
+
             lookml_error = LookMLError(
                 model=error["model_id"],
                 explore=error["explore"],
