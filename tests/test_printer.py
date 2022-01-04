@@ -75,6 +75,8 @@ def test_content_error_prints_with_relevant_info(sql_error, caplog):
     model = "model_a"
     explore = "explore_a"
     content_type = "dashboard"
+    tile_type = "dashboard_filter"
+    tile_title = "That one filter"
     space = "Shared"
     message = "A super important error occurred."
     title = "My Dashboard"
@@ -84,6 +86,8 @@ def test_content_error_prints_with_relevant_info(sql_error, caplog):
         explore=explore,
         message=message,
         content_type=content_type,
+        tile_type=tile_type,
+        tile_title=tile_title,
         space=space,
         title=title,
         url="https://spectacles.looker.com",
@@ -91,6 +95,8 @@ def test_content_error_prints_with_relevant_info(sql_error, caplog):
     assert model in caplog.text
     assert explore in caplog.text
     assert content_type.title() in caplog.text
+    assert "Filter" in caplog.text
+    assert tile_title in caplog.text
     assert message in caplog.text
     assert space in caplog.text
     assert title in caplog.text

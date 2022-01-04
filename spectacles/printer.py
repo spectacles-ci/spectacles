@@ -48,15 +48,29 @@ def print_content_error(
     explore: str,
     message: str,
     content_type: str,
+    tile_type: Optional[str],
+    tile_title: Optional[str],
     space: str,
     title: str,
     url: str,
 ):
     path = f"{title} [{space}]"
-    message = f"Error in {model}/{explore}: {message}"
     print_header(red(path), LINE_WIDTH + COLOR_CODE_LENGTH)
-    wrapped = textwrap.fill(message, LINE_WIDTH)
+
+    if content_type == "dashboard":
+        if tile_type == "dashboard_filter":
+            tile_type = "Filter"
+        else:
+            tile_type = "Tile"
+        line = f"{tile_type} '{tile_title}' failed validation."
+        wrapped = textwrap.fill(line, LINE_WIDTH)
+        logger.info(wrapped + "\n")
+
+    line = f"Error in {model}/{explore}: {message}"
+    wrapped = textwrap.fill(line, LINE_WIDTH)
     logger.info(wrapped)
+
+    content_type = content_type.title()
     logger.info("\n" + f"{content_type.title()}: {url}")
 
 
