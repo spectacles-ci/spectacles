@@ -28,7 +28,6 @@ class LookMLValidator(Validator):
                 if error["line_number"]:
                     lookml_url += "?line=" + str(error["line_number"])
             else:
-                error["file_path"] = "File path not determinable."
                 lookml_url = None
 
             lookml_error = LookMLError(
