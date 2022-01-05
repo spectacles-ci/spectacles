@@ -1,4 +1,5 @@
 import pytest
+from itertools import permutations
 from spectacles.select import is_selected, selector_to_pattern
 from spectacles.exceptions import SpectaclesException
 
@@ -19,9 +20,10 @@ def test_empty_selector_should_raise_value_error():
         is_selected("model_a", "explore_a", [])
 
 
-def test_select_wildcard_should_match():
+@pytest.mark.parametrize("filters", permutations(["model_b/explore_a", "*/*"]))
+def test_select_wildcard_should_match(filters):
     assert is_selected("model_a", "explore_a", ["*/*"])
-    assert is_selected("model_a", "explore_a", ["model_b/explore_a", "*/*"])
+    assert is_selected("model_a", "explore_a", filters)
 
 
 def test_select_model_wildcard_should_match():
@@ -46,17 +48,21 @@ def test_select_wrong_explore_should_not_match():
     assert not is_selected("model_a", "explore_a", ["model_a/explore_b"])
 
 
-def test_exclude_wildcard_should_not_match():
-    assert not is_selected("model_a", "explore_a", ["*/*", "-*/*"])
+@pytest.mark.parametrize("filters", permutations(["*/*", "~*/*"]))
+def test_exclude_wildcard_should_not_match(filters):
+    assert not is_selected("model_a", "explore_a", filters)
 
 
-def test_exclude_model_wildcard_should_not_match():
-    assert not is_selected("model_a", "explore_a", ["*/*", "-model_a/*"])
+@pytest.mark.parametrize("filters", permutations(["*/*", "~model_a/*"]))
+def test_exclude_model_wildcard_should_not_match(filters):
+    assert not is_selected("model_a", "explore_a", filters)
 
 
-def test_exclude_explore_wildcard_should_not_match():
-    assert not is_selected("model_a", "explore_a", ["*/*", "-*/explore_a"])
+@pytest.mark.parametrize("filters", permutations(["*/*", "~*/explore_a"]))
+def test_exclude_explore_wildcard_should_not_match(filters):
+    assert not is_selected("model_a", "explore_a", filters)
 
 
-def test_exclude_exact_model_and_explore_should_not_match():
-    assert not is_selected("model_a", "explore_a", ["*/*", "-model_a/explore_a"])
+@pytest.mark.parametrize("filters", permutations(["*/*", "~model_a/explore_a"]))
+def test_exclude_exact_model_and_explore_should_not_match(filters):
+    assert not is_selected("model_a", "explore_a", filters)
