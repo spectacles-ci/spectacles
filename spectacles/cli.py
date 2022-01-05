@@ -661,15 +661,23 @@ def run_lookml(
         commit_ref,
     )
 
-    errors = sorted(results["errors"], key=lambda x: (x["metadata"]["file_path"]))
+    errors = sorted(results["errors"], key=lambda x: x["metadata"]["file_path"] or "a")
+    unique_files = sorted(
+        set(
+            error["metadata"]["file_path"]
+            for error in errors
+            if error["metadata"]["file_path"]
+        )
+    )
 
-    for file_path in sorted(set(error["metadata"]["file_path"] for error in errors)):
+    for file_path in unique_files:
         printer.print_validation_result(passed=False, source=file_path)
 
     if errors:
         for error in errors:
             printer.print_lookml_error(
                 error["metadata"]["file_path"],
+                error["metadata"]["line_number"],
                 error["metadata"]["severity"],
                 error["message"],
                 error["metadata"]["lookml_url"],

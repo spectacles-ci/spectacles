@@ -89,10 +89,14 @@ def print_data_test_error(
 
 
 def print_lookml_error(
-    file_path: str, severity: str, message: str, lookml_url: str
+    file_path: str, line_number: int, severity: str, message: str, lookml_url: str
 ) -> None:
+    if file_path is None:
+        file_path = "[File name not given by Looker]"
     header_color = yellow if severity == "warning" else red
-    print_header(header_color(file_path), LINE_WIDTH + COLOR_CODE_LENGTH)
+    print_header(
+        header_color(f"{file_path}:{line_number}"), LINE_WIDTH + COLOR_CODE_LENGTH
+    )
     wrapped = textwrap.fill(f"{severity.title()}: {message}", LINE_WIDTH)
     logger.info(wrapped)
     if lookml_url:

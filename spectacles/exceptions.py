@@ -100,7 +100,7 @@ class LookMLError(ValidationError):
         message: str,
         severity: str,
         lookml_url: str,
-        file_path: str,
+        file_path: Optional[str],
         line_number: Optional[int] = None,
     ):
         metadata = {
