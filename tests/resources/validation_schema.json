@@ -91,6 +91,33 @@
                     "type": "string"
                 }
             }
+        },
+        "lookml_metadata": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "line_number": {
+                    "type": [
+                        "integer",
+                        "null"
+                    ]
+                },
+                "lookml_url": {
+                    "type": "string"
+                },
+                "dimension": {
+                    "type": "string"
+                },
+                "file_path": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "severity": {
+                    "type": "string"
+                }
+            }
         }
     },
     "properties": {
@@ -162,6 +189,9 @@
                             },
                             {
                                 "$ref": "#/definitions/content_metadata"
+                            },
+                            {
+                                "$ref": "#/definitions/lookml_metadata"
                             }
                         ]
                     }
