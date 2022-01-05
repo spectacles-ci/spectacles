@@ -1,91 +1,15 @@
 interactions:
 - request:
-    body: '{"workspace_id": "production"}'
-    headers:
-      Content-Length:
-      - '30'
-      Content-Type:
-      - application/json
-      Cookie:
-      - looker.browser=72443922
-    method: PATCH
-    uri: https://spectacles.looker.com:19999/api/3.1/session
-  response:
-    body:
-      string: '{"workspace_id":"production","sudo_user_id":null,"can":{"view":true,"update":true}}'
-    headers:
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '83'
-      Content-Type:
-      - application/json
-      Date:
-      - Tue, 04 Jan 2022 16:43:47 GMT
-      Strict-Transport-Security:
-      - max-age=15724800; includeSubDomains
-      Vary:
-      - Accept-Encoding, Origin
-      X-B3-ParentSpanId:
-      - d9bb80151d3ac1ce
-      X-B3-Sampled:
-      - '0'
-      X-B3-SpanId:
-      - d9bb80151d3ac1ce
-      X-B3-TraceId:
-      - 61d479438c01b079d9bb80151d3ac1ce
-      X-Content-Type-Options:
-      - nosniff
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Content-Length:
-      - '0'
-      Cookie:
-      - looker.browser=72443922
-    method: POST
-    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/validate
-  response:
-    body:
-      string: '{"errors":[],"models_not_validated":[],"computation_time":0.2156679630279541,"project_digest":"9f98f2e3c467f7278687abe04020082a4d15d3cd"}'
-    headers:
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '137'
-      Content-Type:
-      - application/json
-      Date:
-      - Tue, 04 Jan 2022 16:43:47 GMT
-      Strict-Transport-Security:
-      - max-age=15724800; includeSubDomains
-      Vary:
-      - Accept-Encoding, Origin
-      X-B3-ParentSpanId:
-      - 4f1a413366b6d40b
-      X-B3-Sampled:
-      - '0'
-      X-B3-SpanId:
-      - 4f1a413366b6d40b
-      X-B3-TraceId:
-      - 61d47943676c459e4f1a413366b6d40b
-      X-Content-Type-Options:
-      - nosniff
-    status:
-      code: 200
-      message: OK
-- request:
     body: '{"workspace_id": "dev"}'
     headers:
+      Authorization:
+      - token qfcZvnknJn5xsNnbywKvP48sqJFtG3SbVqg25ykc
       Content-Length:
       - '23'
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=72443922
+      - looker.browser=39774474
     method: PATCH
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -99,19 +23,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 04 Jan 2022 16:43:48 GMT
+      - Wed, 05 Jan 2022 08:45:21 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - d06937269893cfad
+      - 2c86b72bb1604e63
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - d06937269893cfad
+      - 2c86b72bb1604e63
       X-B3-TraceId:
-      - 61d47944f49a86a4d06937269893cfad
+      - 61d55aa1bb7317112c86b72bb1604e63
       X-Content-Type-Options:
       - nosniff
     status:
@@ -120,12 +44,14 @@ interactions:
 - request:
     body: '{"name": "pytest-fail-lookml"}'
     headers:
+      Authorization:
+      - token qfcZvnknJn5xsNnbywKvP48sqJFtG3SbVqg25ykc
       Content-Length:
       - '30'
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=72443922
+      - looker.browser=39774474
     method: PUT
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
   response:
@@ -139,20 +65,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 04 Jan 2022 16:43:48 GMT
+      - Wed, 05 Jan 2022 08:45:22 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - cf2ecbfbc4432f7c
+      - 520bdafddaef89a8
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - cf2ecbfbc4432f7c
+      - 520bdafddaef89a8
       X-B3-TraceId:
-      - 61d479440044df7ccf2ecbfbc4432f7c
+      - 61d55aa10e3617cf520bdafddaef89a8
       X-Content-Type-Options:
       - nosniff
     status:
@@ -161,10 +87,12 @@ interactions:
 - request:
     body: null
     headers:
+      Authorization:
+      - token qfcZvnknJn5xsNnbywKvP48sqJFtG3SbVqg25ykc
       Content-Length:
       - '0'
       Cookie:
-      - looker.browser=72443922
+      - looker.browser=39774474
     method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/validate
   response:
@@ -188,29 +116,29 @@ interactions:
         not find a view named \"users__fail\" to extend, possible missing include
         in view file.","field_name":null,"file_path":"eye_exam/views/users__fail_and_warn.view.lkml","line_number":4,"model_id":null,"explore":null,"help_url":null,"params":{"level":"error"},"sanitized_message":"Could
         not find a view named \"users__fail\" to extend, possible missing include
-        in view file."}],"models_not_validated":[{"name":"eye_exam","project_file_id":"eye_exam.model.lkml"}],"computation_time":0.18851613998413086,"project_digest":"f80e4a16cd6761c72bc8e388cba261be2e3689a2"}'
+        in view file."}],"models_not_validated":[{"name":"eye_exam","project_file_id":"eye_exam.model.lkml"}],"computation_time":0.2382199764251709,"project_digest":"f80e4a16cd6761c72bc8e388cba261be2e3689a2"}'
     headers:
       Connection:
       - keep-alive
       Content-Length:
-      - '2991'
+      - '2990'
       Content-Type:
       - application/json
       Date:
-      - Tue, 04 Jan 2022 16:43:49 GMT
+      - Wed, 05 Jan 2022 08:45:23 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 294c3624f4f9d654
+      - 03c0b1b26e84d632
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 294c3624f4f9d654
+      - 03c0b1b26e84d632
       X-B3-TraceId:
-      - 61d4794483cb7e10294c3624f4f9d654
+      - 61d55aa261bee6db03c0b1b26e84d632
       X-Content-Type-Options:
       - nosniff
     status:

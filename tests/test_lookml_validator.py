@@ -17,6 +17,7 @@ def validator(looker_client, record_mode) -> Iterable[LookMLValidator]:
         yield validator
 
 
+@vcr.use_cassette("tests/cassettes/test_lookml_validator/passing_state.yaml")
 def test_lookml_validator_passes_with_no_errors(validator):
     validator.client.update_workspace("production")
     results = validator.validate()
@@ -25,6 +26,7 @@ def test_lookml_validator_passes_with_no_errors(validator):
     assert len(results["errors"]) == 0
 
 
+@vcr.use_cassette("tests/cassettes/test_lookml_validator/failing_state.yaml")
 def test_lookml_validator_fails_with_errors(validator):
     validator.client.update_workspace("dev")
     validator.client.checkout_branch("eye_exam", "pytest-fail-lookml")
