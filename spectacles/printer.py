@@ -31,6 +31,10 @@ def green(text: str) -> str:
     return color(text, "green")
 
 
+def yellow(text: str) -> str:
+    return color(text, "yellow")
+
+
 def print_header(
     text: str,
     line_width: int = LINE_WIDTH,
@@ -87,9 +91,9 @@ def print_data_test_error(
 def print_lookml_error(
     file_path: str, severity: str, message: str, lookml_url: str
 ) -> None:
-
-    print_header(red(file_path), LINE_WIDTH + COLOR_CODE_LENGTH)
-    wrapped = textwrap.fill(f'LookML {severity} found: "{message}"', LINE_WIDTH)
+    header_color = yellow if severity == "warning" else red
+    print_header(header_color(file_path), LINE_WIDTH + COLOR_CODE_LENGTH)
+    wrapped = textwrap.fill(f"{severity.title()}: {message}", LINE_WIDTH)
     logger.info(wrapped)
     if lookml_url:
         logger.info("\n" + f"LookML: {lookml_url}")
