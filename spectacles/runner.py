@@ -265,7 +265,7 @@ class Runner:
     ) -> Dict[str, Any]:
         with self.branch_manager(branch, commit):
             validator = LookMLValidator(self.client, self.project)
-            print_header(f"Running LookML validator based on {self.project}")
+            print_header(f"Validating LookML in project {self.project}")
             results = validator.validate()
         return results
 
