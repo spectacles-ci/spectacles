@@ -299,6 +299,7 @@ def main():
             args.api_version,
             args.remote_reset,
             args.commit_ref,
+            args.severity,
         )
 
     if not args.do_not_track:
@@ -512,6 +513,18 @@ def _build_lookml_subparser(
         help="Connect to Looker instance to test credentials.",
     )
 
+    subparser.add_argument(
+        "--severity",
+        choices=["info", "warning", "error"],
+        default="warning",
+        help=(
+            "Specify a level of validation error severity to trigger test failure. "
+            "Spectacles will display all errors, regardless of severity, "
+            "but only errors at or higher than this level will cause this "
+            "validator to fail. The default is 'warning'."
+        ),
+    )
+
     _build_validator_subparser(subparser_action, subparser)
 
 
@@ -652,7 +665,14 @@ def run_lookml(
     api_version,
     remote_reset,
     commit_ref,
+    severity,
 ) -> None:
+    # Define constants for severity levels
+    INFO = 10
+    WARNING = 20
+    ERROR = 30
+    NAME_TO_LEVEL = {"info": INFO, "warning": WARNING, "error": ERROR}
+
     runner = Runner(
         base_url, project, client_id, client_secret, port, api_version, remote_reset
     )
@@ -661,6 +681,7 @@ def run_lookml(
         commit_ref,
     )
 
+    severity_level = NAME_TO_LEVEL[severity]
     errors = sorted(results["errors"], key=lambda x: x["metadata"]["file_path"] or "a")
     unique_files = sorted(
         set(
@@ -673,8 +694,11 @@ def run_lookml(
     for file_path in unique_files:
         printer.print_validation_result(passed=False, source=file_path)
 
+    raise_error = False
     if errors:
         for error in errors:
+            if NAME_TO_LEVEL[error["metadata"]["severity"]] >= severity_level:
+                raise_error = True
             printer.print_lookml_error(
                 error["metadata"]["file_path"],
                 error["metadata"]["line_number"],
@@ -683,7 +707,8 @@ def run_lookml(
                 error["metadata"]["lookml_url"],
             )
         logger.info("")
-        raise GenericValidationError
+        if raise_error:
+            raise GenericValidationError
     else:
         printer.print_lookml_success()
         logger.info("")
