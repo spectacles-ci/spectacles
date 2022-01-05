@@ -663,6 +663,9 @@ def run_lookml(
 
     errors = sorted(results["errors"], key=lambda x: (x["metadata"]["file_path"]))
 
+    for file_path in sorted(set(error["metadata"]["file_path"] for error in errors)):
+        printer.print_validation_result(passed=False, source=file_path)
+
     if errors:
         for error in errors:
             printer.print_lookml_error(
