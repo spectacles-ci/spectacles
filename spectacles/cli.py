@@ -1,5 +1,6 @@
 from pathlib import Path
 import sys
+import re
 import platform
 import yaml
 import json
@@ -208,8 +209,14 @@ def main():
             title="Spectacles requires Python 3.7 or higher.",
             detail="The current Python version is %s." % platform.python_version(),
         )
+
+    # Replace any dashes with tildes, otherwise argparse will assume they're options
+    args = []
+    for arg in sys.argv[1:]:
+        args.append(re.sub(r"^-(?:([\w_\*]+/[\w_\*]+)|(\d+))$", r"~\1", arg))
+
     parser = create_parser()
-    args = parser.parse_args()
+    args = parser.parse_args(args)
 
     branch = getattr(args, "branch", None)
     commit_ref = getattr(args, "commit_ref", None)

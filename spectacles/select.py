@@ -28,13 +28,18 @@ def is_selected(model: str, explore: str, filters: List[str]) -> bool:
         raise ValueError("Filters cannot be an empty list.")
 
     test_string = f"{model}/{explore}"
-    included = False
+    included = True
     for f in filters:
-        if f[0] == "-":
+        # If it matches an exclude, stop immediately
+        if f[0] == "~":
             if re.match(selector_to_pattern(f[1:]), test_string):
                 return False
         else:
             if re.match(selector_to_pattern(f), test_string):
                 included = True
+            # If we encounter a non-matching include, assume we're not included unless
+            # we find a matching include later in `filters`
+            else:
+                included = False
 
     return included

@@ -17,7 +17,7 @@ class ContentValidator:
         exclude_folders = []
         if folders:
             for folder_id in folders:
-                if folder_id.startswith("-"):
+                if folder_id.startswith("~"):
                     exclude_folders.append(int(folder_id[1:]))
                 else:
                     include_folders.append(int(folder_id))
