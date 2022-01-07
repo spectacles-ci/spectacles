@@ -1,4 +1,4 @@
-from typing import List, Callable, Optional, Dict, Any
+from typing import List, Callable, Optional, Dict, Any, Iterable
 from urllib import parse
 from spectacles.logger import GLOBAL_LOGGER as logger
 import functools
@@ -74,3 +74,9 @@ def time_hash() -> str:
     hash = hashlib.sha1()  # nosec
     hash.update(str(time.time()).encode("utf-8"))
     return hash.hexdigest()[:10]
+
+
+def chunks(l: list, size: int) -> Iterable:
+    """Yield successive n-sized chunks from the list."""
+    for i in range(0, len(l), size):
+        yield l[i : i + size]
