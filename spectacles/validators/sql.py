@@ -2,16 +2,18 @@ from dataclasses import dataclass
 from tabulate import tabulate
 from typing import Union, Dict, Any, List, Optional
 import time
+from spectacles.utils import chunks
 from spectacles.client import LookerClient
 from spectacles.lookml import Dimension, Explore, Project
 from spectacles.exceptions import SpectaclesException, SqlError
 from spectacles.logger import GLOBAL_LOGGER as logger
 from spectacles.printer import print_header
 
+CHUNK_SIZE = 10
+
 
 @dataclass
 class SqlTest:
-    query_id: int
     lookml_ref: Union[Dimension, Explore]
     explore_url: str
     sql: Optional[str] = None
@@ -63,6 +65,14 @@ class SqlTest:
             self.query_id,
             self.explore_url,
         ]
+
+
+@dataclass
+class Query:
+    test: SqlTest
+    query_id: int
+    query_task_id: str
+    sql: Optional[str]
 
 
 @dataclass
@@ -166,14 +176,16 @@ class SqlValidator:
                 "when you built the project."
             )
         dimensions = [dimension.name for dimension in explore.dimensions]
-        query = self.client.create_query(
-            explore.model_name, explore.name, dimensions, fields=["id", "share_url"]
-        )
+        queries: List[Query] = []
+        for chunk in chunks(dimensions, size=CHUNK_SIZE):
+            query = self.client.create_query(
+                explore.model_name, explore.name, chunk, fields=["id", "share_url"]
+            )
+            sql = self.client.run_query(query["id"]) if compile_sql else None
+            queries.append(Query(query["id"], sql))
         test = SqlTest(
-            query_id=query["id"], lookml_ref=explore, explore_url=query["share_url"]
+            queries=queries, lookml_ref=explore, explore_url=query["share_url"]
         )
-        if compile_sql:
-            test.sql = self.client.run_query(query["id"])
         return test
 
     def _create_dimension_test(
@@ -185,13 +197,12 @@ class SqlValidator:
             [dimension.name],
             fields=["id", "share_url"],
         )
+        sql = self.client.run_query(query["id"]) if compile_sql else None
         test = SqlTest(
-            query_id=query["id"],
+            queries=[Query(query["id"], sql)],
             lookml_ref=dimension,
             explore_url=query["share_url"],
         )
-        if compile_sql:
-            test.sql = self.client.run_query(query["id"])
         return test
 
     def run_tests(self, tests: List[SqlTest], profile: bool = False):
