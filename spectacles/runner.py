@@ -261,12 +261,12 @@ class Runner:
         return results
 
     def validate_lookml(
-        self, branch: Optional[str], commit: Optional[str]
+        self, branch: Optional[str], commit: Optional[str], severity: str
     ) -> Dict[str, Any]:
         with self.branch_manager(branch, commit):
             validator = LookMLValidator(self.client, self.project)
-            print_header(f"Validating LookML in project {self.project}")
-            results = validator.validate()
+            print_header(f"Validating LookML in project {self.project} [{severity}]")
+            results = validator.validate(severity)
         return results
 
     def validate_content(
