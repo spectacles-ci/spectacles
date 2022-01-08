@@ -818,7 +818,7 @@ class LookerClient:
         return result
 
     def lookml_validation(self, project) -> JsonDict:
-        logger.debug(f"Validating LookML for project {project}")
+        logger.debug(f"Validating LookML for project '{project}'")
         url = utils.compose_url(self.api_url, path=["projects", project, "validate"])
         response = self.post(url=url, timeout=TIMEOUT_SEC)
 
