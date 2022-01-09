@@ -321,6 +321,8 @@ class SqlValidator:
                 model=model_name,
                 explore=explore_name,
                 dimension=dimension_name,
+                lookml_url=test.lookml_url,
+                explore_url=test.explore_url,
                 **result.error,
             )
             test.error = sql_error
