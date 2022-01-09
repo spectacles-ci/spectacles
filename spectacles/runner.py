@@ -287,26 +287,20 @@ class Runner:
             # Determine which explore tests are identical between target and base
             # Iterate instead of set operations so we have control of which test, and
             # corresponding which `lookml_ref` is used
-            intersection = []
+            tests = []
             for test in unique_base_tests:
                 if test in unique_target_tests:
-                    intersection.append(test)
                     # Mark explores with the same compiled SQL (test) as skipped
                     explore = cast(Explore, test.lookml_ref)  # Appease mypy
                     explore.skipped = True
+                else:
+                    # Test explores with unique SQL for base ref
+                    tests.append(test)
 
             logger.debug(
                 f"Found {len(unique_base_tests - unique_target_tests)} "
                 "explore tests with unique SQL"
             )
-
-            # Test explores with unique SQL for base ref
-            tests = []
-            # Iterate instead of set operations so we have control of which test, and
-            # corresponding which `lookml_ref` is used
-            for test in unique_base_tests:
-                if test not in unique_target_tests:
-                    tests.append(test)
         else:
             tests = base_tests
 
