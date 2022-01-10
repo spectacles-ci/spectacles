@@ -91,6 +91,30 @@ class ValidationError(GenericValidationError):
         return self.message
 
 
+class LookMLError(ValidationError):
+    def __init__(
+        self,
+        model: str,
+        explore: str,
+        field_name: str,
+        message: str,
+        severity: str,
+        lookml_url: str,
+        file_path: Optional[str],
+        line_number: Optional[int] = None,
+    ):
+        metadata = {
+            "line_number": line_number,
+            "lookml_url": lookml_url,
+            "dimension": field_name,
+            "file_path": file_path,
+            "severity": severity,
+        }
+        super().__init__(
+            model=model, explore=explore, message=message, metadata=metadata
+        )
+
+
 class SqlError(ValidationError):
     def __init__(
         self,

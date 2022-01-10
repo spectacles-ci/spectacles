@@ -31,6 +31,10 @@ def green(text: str) -> str:
     return color(text, "green")
 
 
+def yellow(text: str) -> str:
+    return color(text, "yellow")
+
+
 def print_header(
     text: str,
     line_width: int = LINE_WIDTH,
@@ -82,6 +86,25 @@ def print_data_test_error(
     wrapped = textwrap.fill(message, LINE_WIDTH)
     logger.info(wrapped)
     logger.info("\n" + f"LookML: {lookml_url}")
+
+
+def print_lookml_error(
+    file_path: str, line_number: int, severity: str, message: str, lookml_url: str
+) -> None:
+    if file_path is None:
+        file_path = "[File name not given by Looker]"
+    header_color = yellow if severity == "warning" else red
+    print_header(
+        header_color(f"{file_path}:{line_number}"), LINE_WIDTH + COLOR_CODE_LENGTH
+    )
+    wrapped = textwrap.fill(f"{severity.title()}: {message}", LINE_WIDTH)
+    logger.info(wrapped)
+    if lookml_url:
+        logger.info("\n" + f"LookML: {lookml_url}")
+
+
+def print_lookml_success() -> None:
+    logger.info(green("✓ No LookML errors found."))
 
 
 def print_sql_error(

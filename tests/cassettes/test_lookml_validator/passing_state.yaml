@@ -1,0 +1,84 @@
+interactions:
+- request:
+    body: '{"workspace_id": "production"}'
+    headers:
+      Authorization:
+      - token qfcZvnknJn5xsNnbywKvP48sqJFtG3SbVqg25ykc
+      Content-Length:
+      - '30'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=39774474
+    method: PATCH
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"production","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '83'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 05 Jan 2022 08:45:20 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 4839c1978f10dc21
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 4839c1978f10dc21
+      X-B3-TraceId:
+      - 61d55aa0fc1d9b6a4839c1978f10dc21
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Authorization:
+      - token qfcZvnknJn5xsNnbywKvP48sqJFtG3SbVqg25ykc
+      Content-Length:
+      - '0'
+      Cookie:
+      - looker.browser=39774474
+    method: POST
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/validate
+  response:
+    body:
+      string: '{"errors":[],"models_not_validated":[],"computation_time":0.3703641891479492,"project_digest":"9f98f2e3c467f7278687abe04020082a4d15d3cd"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '137'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 05 Jan 2022 08:45:21 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - d881ca51182be849
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - d881ca51182be849
+      X-B3-TraceId:
+      - 61d55aa0fe967bd6d881ca51182be849
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+version: 1

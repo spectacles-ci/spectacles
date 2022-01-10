@@ -3,7 +3,12 @@ from typing import List, Dict, Any, Optional
 from dataclasses import dataclass
 import itertools
 from spectacles.client import LookerClient
-from spectacles.validators import SqlValidator, DataTestValidator, ContentValidator
+from spectacles.validators import (
+    SqlValidator,
+    DataTestValidator,
+    ContentValidator,
+    LookMLValidator,
+)
 from spectacles.utils import time_hash
 from spectacles.logger import GLOBAL_LOGGER as logger
 from spectacles.printer import print_header
@@ -253,6 +258,15 @@ class Runner:
                 f"{'explore' if explore_count == 1 else 'explores'}"
             )
             results = validator.validate()
+        return results
+
+    def validate_lookml(
+        self, branch: Optional[str], commit: Optional[str], severity: str
+    ) -> Dict[str, Any]:
+        with self.branch_manager(branch, commit):
+            validator = LookMLValidator(self.client, self.project)
+            print_header(f"Validating LookML in project {self.project} [{severity}]")
+            results = validator.validate(severity)
         return results
 
     def validate_content(

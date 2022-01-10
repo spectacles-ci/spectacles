@@ -288,6 +288,19 @@ def main():
             args.exclude_folders,
             args.folders,
         )
+    elif args.command == "lookml":
+        run_lookml(
+            args.project,
+            args.branch,
+            args.base_url,
+            args.client_id,
+            args.client_secret,
+            args.port,
+            args.api_version,
+            args.remote_reset,
+            args.commit_ref,
+            args.severity,
+        )
 
     if not args.do_not_track:
         tracking.track_invocation_end(
@@ -315,6 +328,7 @@ def create_parser() -> argparse.ArgumentParser:
     _build_sql_subparser(subparser_action, base_subparser)
     _build_assert_subparser(subparser_action, base_subparser)
     _build_content_subparser(subparser_action, base_subparser)
+    _build_lookml_subparser(subparser_action, base_subparser)
     return parser
 
 
@@ -479,6 +493,41 @@ def _build_validator_subparser(
     return base_subparser
 
 
+def _build_lookml_subparser(
+    subparser_action: argparse._SubParsersAction,
+    base_subparser: argparse.ArgumentParser,
+) -> None:
+    """Returns the subparser for the subcommand `lookml`.
+
+    Args:
+        subparser_action (type): Description of parameter `subparser_action`.
+        base_subparser (type): Description of parameter `base_subparser`.
+
+    Returns:
+        type: Description of returned object.
+
+    """
+    subparser = subparser_action.add_parser(
+        "lookml",
+        parents=[base_subparser],
+        help="Connect to Looker instance to test credentials.",
+    )
+
+    subparser.add_argument(
+        "--severity",
+        choices=["info", "warning", "error"],
+        default="warning",
+        help=(
+            "Specify a level of validation error severity to trigger test failure. "
+            "Spectacles will display all errors, regardless of severity, "
+            "but only errors at or higher than this level will cause this "
+            "validator to fail. The default is 'warning'."
+        ),
+    )
+
+    _build_validator_subparser(subparser_action, subparser)
+
+
 def _build_sql_subparser(
     subparser_action: argparse._SubParsersAction,
     base_subparser: argparse.ArgumentParser,
@@ -603,6 +652,52 @@ def run_connect(
 ) -> None:
     """Tests the connection and credentials for the Looker API."""
     LookerClient(base_url, client_id, client_secret, port, api_version)
+
+
+@log_duration
+def run_lookml(
+    project,
+    branch,
+    base_url,
+    client_id,
+    client_secret,
+    port,
+    api_version,
+    remote_reset,
+    commit_ref,
+    severity,
+) -> None:
+    runner = Runner(
+        base_url, project, client_id, client_secret, port, api_version, remote_reset
+    )
+    results = runner.validate_lookml(branch, commit_ref, severity)
+    errors = sorted(results["errors"], key=lambda x: x["metadata"]["file_path"] or "a")
+    unique_files = sorted(
+        set(
+            error["metadata"]["file_path"]
+            for error in errors
+            if error["metadata"]["file_path"]
+        )
+    )
+
+    for file_path in unique_files:
+        printer.print_validation_result(passed=False, source=file_path)
+
+    if errors:
+        for error in errors:
+            printer.print_lookml_error(
+                error["metadata"]["file_path"],
+                error["metadata"]["line_number"],
+                error["metadata"]["severity"],
+                error["message"],
+                error["metadata"]["lookml_url"],
+            )
+        logger.info("")
+        if results["status"] == "failed":
+            raise GenericValidationError
+    else:
+        printer.print_lookml_success()
+        logger.info("")
 
 
 @log_duration
