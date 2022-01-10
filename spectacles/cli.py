@@ -325,10 +325,10 @@ def create_parser() -> argparse.ArgumentParser:
     )
     base_subparser = _build_base_subparser()
     _build_connect_subparser(subparser_action, base_subparser)
+    _build_lookml_subparser(subparser_action, base_subparser)
     _build_sql_subparser(subparser_action, base_subparser)
     _build_assert_subparser(subparser_action, base_subparser)
     _build_content_subparser(subparser_action, base_subparser)
-    _build_lookml_subparser(subparser_action, base_subparser)
     return parser
 
 
@@ -434,13 +434,12 @@ def _build_validator_subparser(
     subparser_action: argparse._SubParsersAction,
     base_subparser: argparse.ArgumentParser,
 ) -> argparse.ArgumentParser:
-    """Returns the base subparser with arguments required for every validator   .
+    """Returns the base subparser with arguments required for every validator.
 
     Returns:
         argparse.ArgumentParser: validator subparser with project, branch, remote reset and import projects arguments.
 
     """
-
     base_subparser.add_argument(
         "--project",
         action=EnvVarAction,
@@ -453,24 +452,6 @@ def _build_validator_subparser(
         action=EnvVarAction,
         env_var="LOOKER_GIT_BRANCH",
         help="The branch of your project that Spectacles will use to run queries.",
-    )
-    base_subparser.add_argument(
-        "--explores",
-        nargs="+",
-        default=["*/*"],
-        help="Specify the explores Spectacles should test. \
-            List of strings in 'model_name/explore_name' format. \
-            The '*' wildcard selects all models or explores. For instance,\
-            'model_name/*' would select all explores in the 'model_name' model.",
-    )
-    base_subparser.add_argument(
-        "--exclude",
-        nargs="+",
-        default=[],
-        help="Specify the explores Spectacles should exclude when testing. \
-            List of strings in 'model_name/explore_name' format. \
-            The '*' wildcard excludes all models or explores. For instance,\
-            'model_name/*' would select all explores in the 'model_name' model.",
     )
     group = base_subparser.add_mutually_exclusive_group()
     group.add_argument(
@@ -489,7 +470,31 @@ def _build_validator_subparser(
             In order to test a specific commit, Spectacles will create a new branch \
             for the tests and then delete the branch when it is finished.",
     )
+    return base_subparser
 
+
+def _build_select_subparser(
+    subparser_action: argparse._SubParsersAction,
+    base_subparser: argparse.ArgumentParser,
+) -> argparse.ArgumentParser:
+    base_subparser.add_argument(
+        "--explores",
+        nargs="+",
+        default=["*/*"],
+        help="Specify the explores Spectacles should test. \
+            List of strings in 'model_name/explore_name' format. \
+            The '*' wildcard selects all models or explores. For instance,\
+            'model_name/*' would select all explores in the 'model_name' model.",
+    )
+    base_subparser.add_argument(
+        "--exclude",
+        nargs="+",
+        default=[],
+        help="Specify the explores Spectacles should exclude when testing. \
+            List of strings in 'model_name/explore_name' format. \
+            The '*' wildcard excludes all models or explores. For instance,\
+            'model_name/*' would select all explores in the 'model_name' model.",
+    )
     return base_subparser
 
 
@@ -512,7 +517,6 @@ def _build_lookml_subparser(
         parents=[base_subparser],
         help="Connect to Looker instance to test credentials.",
     )
-
     subparser.add_argument(
         "--severity",
         choices=["info", "warning", "error"],
@@ -524,7 +528,6 @@ def _build_lookml_subparser(
             "validator to fail. The default is 'warning'."
         ),
     )
-
     _build_validator_subparser(subparser_action, subparser)
 
 
@@ -547,9 +550,6 @@ def _build_sql_subparser(
         parents=[base_subparser],
         help="Build and run queries to test your Looker instance.",
     )
-
-    _build_validator_subparser(subparser_action, subparser)
-
     subparser.add_argument(
         "--mode",
         choices=["batch", "single", "hybrid"],
@@ -585,6 +585,8 @@ def _build_sql_subparser(
             "seconds."
         ),
     )
+    _build_validator_subparser(subparser_action, subparser)
+    _build_select_subparser(subparser_action, subparser)
 
 
 def _build_assert_subparser(
@@ -604,8 +606,8 @@ def _build_assert_subparser(
     subparser = subparser_action.add_parser(
         "assert", parents=[base_subparser], help="Run Looker data tests."
     )
-
     _build_validator_subparser(subparser_action, subparser)
+    _build_select_subparser(subparser_action, subparser)
 
 
 def _build_content_subparser(
@@ -615,19 +617,16 @@ def _build_content_subparser(
     subparser = subparser_action.add_parser(
         "content", parents=[base_subparser], help="Run Looker content validation."
     )
-
     subparser.add_argument(
         "--incremental",
         action="store_true",
         help="Only display errors which are not present on the production branch.",
     )
-
     subparser.add_argument(
         "--exclude-personal",
         action="store_true",
         help="Exclude errors found in content in personal folders.",
     )
-
     subparser.add_argument(
         "--exclude-folders",
         type=int,
@@ -635,7 +634,6 @@ def _build_content_subparser(
         help="Exclude errors found in folders specified by id.",
         default=[],
     )
-
     subparser.add_argument(
         "--folders",
         type=int,
@@ -643,8 +641,8 @@ def _build_content_subparser(
         help="Include errors found in folders specified by id, takes precedence over --exclue-personal or --exclude-folders.",
         default=[],
     )
-
     _build_validator_subparser(subparser_action, subparser)
+    _build_select_subparser(subparser_action, subparser)
 
 
 def run_connect(
