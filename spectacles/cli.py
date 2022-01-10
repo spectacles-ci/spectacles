@@ -515,7 +515,7 @@ def _build_lookml_subparser(
     subparser = subparser_action.add_parser(
         "lookml",
         parents=[base_subparser],
-        help="Connect to Looker instance to test credentials.",
+        help="Test for LookML syntax errors.",
     )
     subparser.add_argument(
         "--severity",
