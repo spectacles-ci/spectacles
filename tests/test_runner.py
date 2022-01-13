@@ -145,6 +145,103 @@ def test_validate_sql_returns_valid_schema(
     jsonschema.validate(result, schema)
 
 
+@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
+@pytest.mark.parametrize("fail_fast", [True, False])
+@patch("spectacles.runner.time_hash", return_value="abc123")
+def test_incremental_sql_with_equal_explores_should_not_error(
+    mock_time_hash, looker_client, fail_fast
+):
+    """Case where all explores compile to the same SQL.
+
+    We expect all explores to be skipped, returning no errors.
+    """
+    runner = Runner(looker_client, "eye_exam")
+    result = runner.validate_sql(
+        incremental=True,
+        ref="pytest-incremental-equal",
+        filters=["eye_exam/users", "eye_exam/users__fail"],
+        fail_fast=fail_fast,
+    )
+    assert result["status"] == "passed"
+    assert len(result["errors"]) == 0
+
+
+@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
+@pytest.mark.parametrize("fail_fast", [True, False])
+@patch("spectacles.runner.time_hash", return_value="abc123")
+def test_incremental_sql_with_diff_explores_and_valid_sql_should_not_error(
+    mock_time_hash, looker_client, fail_fast
+):
+    """Case where one explore differs in SQL and has valid SQL.
+
+    We expect the differing explore to be tested and return no errors.
+    """
+    runner = Runner(looker_client, "eye_exam")
+    result = runner.validate_sql(
+        incremental=True,
+        ref="pytest-incremental-valid-diff",
+        filters=["eye_exam/users", "eye_exam/users__fail"],
+        fail_fast=fail_fast,
+    )
+    assert result["status"] == "passed"
+    assert result["tested"][0]["explore"] == "users"
+    assert result["tested"][0]["status"] == "passed"
+    assert result["tested"][1]["explore"] == "users__fail"
+    assert result["tested"][1]["status"] == "skipped"
+    assert len(result["errors"]) == 0
+
+
+@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
+@pytest.mark.parametrize("fail_fast", [True, False])
+@patch("spectacles.runner.time_hash", return_value="abc123")
+def test_incremental_sql_with_diff_explores_and_invalid_sql_should_error(
+    mock_time_hash, looker_client, fail_fast
+):
+    """Case where one explore differs in SQL and has one SQL error.
+
+    We expect the differing explore to be tested and return one error.
+    """
+    runner = Runner(looker_client, "eye_exam")
+    result = runner.validate_sql(
+        incremental=True,
+        ref="pytest-incremental-invalid-diff",
+        filters=["eye_exam/users", "eye_exam/users__fail"],
+        fail_fast=fail_fast,
+    )
+    assert result["status"] == "failed"
+    assert result["tested"][0]["explore"] == "users"
+    assert result["tested"][0]["status"] == "failed"
+    assert result["tested"][1]["explore"] == "users__fail"
+    assert result["tested"][1]["status"] == "skipped"
+    assert len(result["errors"]) == 1
+
+
+@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
+@pytest.mark.parametrize("fail_fast", [True, False])
+@patch("spectacles.runner.time_hash", return_value="abc123")
+def test_incremental_sql_with_diff_explores_and_invalid_diff_sql_should_error(
+    mock_time_hash, looker_client, fail_fast
+):
+    """Case where one explore differs in SQL and has two SQL errors, one present in
+    the target branch, one not present in the target branch.
+
+    We expect the differing explore to be tested and return one error.
+    """
+    runner = Runner(looker_client, "eye_exam")
+    result = runner.validate_sql(
+        incremental=True,
+        ref="pytest-incremental-invalid-equal",
+        filters=["eye_exam/users", "eye_exam/users__fail"],
+        fail_fast=fail_fast,
+    )
+    assert result["status"] == "failed"
+    assert result["tested"][0]["explore"] == "users"
+    assert result["tested"][0]["status"] == "skipped"
+    assert result["tested"][1]["explore"] == "users__fail"
+    assert result["tested"][1]["status"] == "failed"
+    assert len(result["errors"]) == 1
+
+
 def test_incremental_same_results_should_not_have_errors():
     base = build_validation("content")
     target = build_validation("content")
