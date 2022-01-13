@@ -1,6 +1,6 @@
 import re
 from spectacles.exceptions import LookerApiError, SqlError
-from typing import List, Optional, cast
+from typing import List, Optional, cast, Tuple
 from dataclasses import dataclass
 import itertools
 from spectacles.client import LookerClient
@@ -329,7 +329,7 @@ class Runner:
                     target_ref = self.branch_manager.ref
                     logger.debug("Building dimension tests for the target ref")
 
-                    target_sql: List[str] = []
+                    target_sql: List[Tuple[str, str]] = []
                     for dimension in project.iter_dimensions(errored=True):
                         test = validator._create_dimension_test(
                             dimension, compile_sql=True
