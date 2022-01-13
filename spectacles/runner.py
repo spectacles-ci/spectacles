@@ -335,7 +335,7 @@ class Runner:
                             dimension, compile_sql=True
                         )
                         if test.sql:
-                            target_sql.append(test.sql)
+                            target_sql.append((test.lookml_ref.name, test.sql))
 
                 # Keep only the errors that don't exist on the target branch
                 logger.debug(
@@ -348,7 +348,7 @@ class Runner:
                         error
                         for error in dimension.errors
                         if not isinstance(error, SqlError)
-                        or error.metadata["sql"] not in target_sql
+                        or (dimension.name, error.metadata["sql"]) not in target_sql
                     ]
 
         results = project.get_results(validator="sql", fail_fast=fail_fast)
