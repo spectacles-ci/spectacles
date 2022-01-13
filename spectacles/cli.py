@@ -305,14 +305,13 @@ def main():
     elif args.command == "lookml":
         run_lookml(
             args.project,
-            args.branch,
+            ref,
             args.base_url,
             args.client_id,
             args.client_secret,
             args.port,
             args.api_version,
             args.remote_reset,
-            args.commit_ref,
             args.severity,
         )
 
@@ -698,20 +697,18 @@ def run_connect(
 @log_duration
 def run_lookml(
     project,
-    branch,
+    ref,
     base_url,
     client_id,
     client_secret,
     port,
     api_version,
     remote_reset,
-    commit_ref,
     severity,
 ) -> None:
-    runner = Runner(
-        base_url, project, client_id, client_secret, port, api_version, remote_reset
-    )
-    results = runner.validate_lookml(branch, commit_ref, severity)
+    client = LookerClient(base_url, client_id, client_secret, port, api_version)
+    runner = Runner(client, project, remote_reset)
+    results = runner.validate_lookml(ref, severity)
     errors = sorted(results["errors"], key=lambda x: x["metadata"]["file_path"] or "a")
     unique_files = sorted(
         set(
@@ -722,7 +719,7 @@ def run_lookml(
     )
 
     for file_path in unique_files:
-        printer.print_validation_result(passed=False, source=file_path)
+        printer.print_validation_result(status="failed", source=file_path)
 
     if errors:
         for error in errors:

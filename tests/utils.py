@@ -49,9 +49,9 @@ def build_validation(validator) -> Dict[str, Any]:
             "validator": validator,
             "status": "failed",
             "tested": [
-                dict(model="ecommerce", explore="orders", passed="passed"),
-                dict(model="ecommerce", explore="sessions", passed="passed"),
-                dict(model="ecommerce", explore="users", passed="failed"),
+                dict(model="ecommerce", explore="orders", status="passed"),
+                dict(model="ecommerce", explore="sessions", status="passed"),
+                dict(model="ecommerce", explore="users", status="failed"),
             ],
             "errors": [
                 dict(
