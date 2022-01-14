@@ -10,7 +10,7 @@ from utils import build_validation
 
 @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
 @pytest.mark.parametrize("fail_fast", [True, False])
-@patch("spectacles.runner.time_hash", return_value="abc123")
+@patch("spectacles.runner.time_hash", side_effect=tuple(string.ascii_lowercase))
 def test_validate_sql_should_work(mock_time_hash, looker_client, fail_fast):
     runner = Runner(looker_client, "eye_exam")
     result = runner.validate_sql(
@@ -28,7 +28,7 @@ def test_validate_sql_should_work(mock_time_hash, looker_client, fail_fast):
 
 
 @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
-@patch("spectacles.runner.time_hash", return_value="abc123")
+@patch("spectacles.runner.time_hash", side_effect=tuple(string.ascii_lowercase))
 def test_validate_content_should_work(mock_time_hash, looker_client):
     runner = Runner(looker_client, "eye_exam")
     result = runner.validate_content(filters=["eye_exam/users", "eye_exam/users__fail"])
@@ -39,7 +39,7 @@ def test_validate_content_should_work(mock_time_hash, looker_client):
 
 
 @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
-@patch("spectacles.runner.time_hash", return_value="abc123")
+@patch("spectacles.runner.time_hash", side_effect=tuple(string.ascii_lowercase))
 def test_validate_data_tests_should_work(mock_time_hash, looker_client):
     runner = Runner(looker_client, "eye_exam")
     result = runner.validate_data_tests(
@@ -147,10 +147,10 @@ def test_validate_sql_returns_valid_schema(
 
 
 @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
-@pytest.mark.parametrize("fail_fast", [True, False])
-@patch("spectacles.runner.time_hash", return_value="abc123")
+@patch("spectacles.runner.time_hash", side_effect=tuple(string.ascii_lowercase))
 def test_incremental_sql_with_equal_explores_should_not_error(
-    mock_time_hash, looker_client, fail_fast
+    mock_time_hash,
+    looker_client,
 ):
     """Case where all explores compile to the same SQL.
 
@@ -161,17 +161,16 @@ def test_incremental_sql_with_equal_explores_should_not_error(
         incremental=True,
         ref="pytest-incremental-equal",
         filters=["eye_exam/users", "eye_exam/users__fail"],
-        fail_fast=fail_fast,
+        fail_fast=False,
     )
     assert result["status"] == "passed"
     assert len(result["errors"]) == 0
 
 
 @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
-@pytest.mark.parametrize("fail_fast", [True, False])
-@patch("spectacles.runner.time_hash", return_value="abc123")
+@patch("spectacles.runner.time_hash", side_effect=tuple(string.ascii_lowercase))
 def test_incremental_sql_with_diff_explores_and_valid_sql_should_not_error(
-    mock_time_hash, looker_client, fail_fast
+    mock_time_hash, looker_client
 ):
     """Case where one explore differs in SQL and has valid SQL.
 
@@ -182,7 +181,7 @@ def test_incremental_sql_with_diff_explores_and_valid_sql_should_not_error(
         incremental=True,
         ref="pytest-incremental-valid-diff",
         filters=["eye_exam/users", "eye_exam/users__fail"],
-        fail_fast=fail_fast,
+        fail_fast=False,
     )
     assert result["status"] == "passed"
     assert result["tested"][0]["explore"] == "users"
@@ -193,10 +192,9 @@ def test_incremental_sql_with_diff_explores_and_valid_sql_should_not_error(
 
 
 @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
-@pytest.mark.parametrize("fail_fast", [True, False])
-@patch("spectacles.runner.time_hash", return_value="abc123")
+@patch("spectacles.runner.time_hash", side_effect=tuple(string.ascii_lowercase))
 def test_incremental_sql_with_diff_explores_and_invalid_sql_should_error(
-    mock_time_hash, looker_client, fail_fast
+    mock_time_hash, looker_client
 ):
     """Case where one explore differs in SQL and has one SQL error.
 
@@ -207,7 +205,7 @@ def test_incremental_sql_with_diff_explores_and_invalid_sql_should_error(
         incremental=True,
         ref="pytest-incremental-invalid-diff",
         filters=["eye_exam/users", "eye_exam/users__fail"],
-        fail_fast=fail_fast,
+        fail_fast=False,
     )
     assert result["status"] == "failed"
     assert result["tested"][0]["explore"] == "users"
@@ -218,10 +216,9 @@ def test_incremental_sql_with_diff_explores_and_invalid_sql_should_error(
 
 
 @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
-@pytest.mark.parametrize("fail_fast", [True, False])
-@patch("spectacles.runner.time_hash", return_value="abc123")
+@patch("spectacles.runner.time_hash", side_effect=tuple(string.ascii_lowercase))
 def test_incremental_sql_with_diff_explores_and_invalid_diff_sql_should_error(
-    mock_time_hash, looker_client, fail_fast
+    mock_time_hash, looker_client
 ):
     """Case where one explore differs in SQL and has two SQL errors, one present in
     the target branch, one not present in the target branch.
@@ -233,7 +230,7 @@ def test_incremental_sql_with_diff_explores_and_invalid_diff_sql_should_error(
         incremental=True,
         ref="pytest-incremental-invalid-equal",
         filters=["eye_exam/users", "eye_exam/users__fail"],
-        fail_fast=fail_fast,
+        fail_fast=False,
     )
     assert result["status"] == "failed"
     assert result["tested"][0]["explore"] == "users"
