@@ -8,7 +8,7 @@ from yaml.parser import ParserError
 import argparse
 import logging
 import os
-from typing import Callable
+from typing import Callable, List
 from spectacles import __version__
 from spectacles.runner import Runner
 from spectacles.client import LookerClient
@@ -200,6 +200,15 @@ def handle_exceptions(function: Callable) -> Callable:
     return wrapper
 
 
+def preprocess_dashes(args: List[str]) -> List[str]:
+    """Replace any dashes with tildes, otherwise argparse will assume they're options"""
+    pattern = re.compile(r"^-(?=([\w_\*]+/[\w_\*]+)|(\d+)$)")
+    processed = []
+    for arg in args:
+        processed.append(pattern.sub("~", arg))
+    return processed
+
+
 @handle_exceptions
 def main():
     """Runs main function. This is the entry point."""
@@ -210,11 +219,7 @@ def main():
             detail="The current Python version is %s." % platform.python_version(),
         )
 
-    # Replace any dashes with tildes, otherwise argparse will assume they're options
-    args = []
-    for arg in sys.argv[1:]:
-        args.append(re.sub(r"^-(?:([\w_\*]+/[\w_\*]+)|(\d+))$", r"~\1", arg))
-
+    args = preprocess_dashes(sys.argv[1:])
     parser = create_parser()
     args = parser.parse_args(args)
 
