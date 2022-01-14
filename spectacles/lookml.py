@@ -325,22 +325,19 @@ class Project(LookMlObject):
         successes: List[Dict[str, Any]] = []
         tested = []
 
-        def parse_explore_errors(explore):
-            if validator != "sql" or fail_fast is True:
-                errors.extend([error.__dict__ for error in explore.errors])
-            else:
-                for dimension in explore.dimensions:
-                    if dimension.errored:
-                        errors.extend([error.__dict__ for error in dimension.errors])
-
         for model in self.models:
             for explore in model.explores:
                 status = "passed"
                 if explore.skipped:
                     status = "skipped"
-                elif explore.errored:
+                elif explore.errored and (validator != "sql" or fail_fast is True):
                     status = "failed"
-                    parse_explore_errors(explore)
+                    errors.extend([e.__dict__ for e in explore.errors])
+                elif explore.errored:
+                    for dimension in explore.dimensions:
+                        if dimension.errored:
+                            status = "failed"
+                            errors.extend([e.__dict__ for e in dimension.errors])
                 test: Dict[str, Any] = {
                     "model": model.name,
                     "explore": explore.name,
