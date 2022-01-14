@@ -266,7 +266,7 @@ class Runner:
                 if target_ref == base_ref:
                     raise SpectaclesException(
                         name="incremental-same-ref",
-                        title="Incremental comparison to the same Git state",
+                        title="Incremental comparison to the same Git state.",
                         detail=(
                             f"The base ref ({ref or 'production'}) and "
                             f"target ref ({target or 'production'}) point to the "
