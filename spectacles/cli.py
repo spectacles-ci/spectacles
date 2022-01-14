@@ -568,16 +568,17 @@ def _build_sql_subparser(
         parents=[base_subparser],
         help="Run SQL queries to test your Looker instance.",
     )
-    subparser.add_argument(
+    group = subparser.add_mutually_exclusive_group()
+    group.add_argument(
         "--fail-fast",
         action="store_true",
         help=(
             "Test explore-by-explore instead of dimension-by-dimension. "
             "This means that validation takes less time but only returns the first "
-            "error identified in each explore."
+            "error identified in each explore. "
         ),
     )
-    subparser.add_argument(
+    group.add_argument(
         "--incremental",
         action="store_true",
         help=(
