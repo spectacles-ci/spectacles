@@ -1,3 +1,4 @@
+import string
 import jsonschema
 import pytest
 from unittest.mock import Mock, patch
@@ -240,6 +241,33 @@ def test_incremental_sql_with_diff_explores_and_invalid_diff_sql_should_error(
     assert result["tested"][1]["explore"] == "users__fail"
     assert result["tested"][1]["status"] == "failed"
     assert len(result["errors"]) == 1
+
+
+@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
+@patch("spectacles.runner.time_hash", side_effect=tuple(string.ascii_lowercase))
+def test_incremental_sql_with_diff_explores_and_invalid_existing_sql_should_error(
+    mock_time_hash, looker_client
+):
+    """Case where the target branch has many errors, one of which is fixed on the base
+    branch.
+
+    We expect the differing explore to be tested and return no errors, since the
+    remaining errors already exist for the target.
+    """
+    runner = Runner(looker_client, "eye_exam")
+    result = runner.validate_sql(
+        incremental=True,
+        target="pytest-incremental-dirty-prod",
+        ref="pytest-incremental-fix-prod",
+        filters=["eye_exam/users", "eye_exam/users__fail"],
+        fail_fast=False,
+    )
+    assert result["status"] == "passed"
+    assert result["tested"][0]["explore"] == "users"
+    assert result["tested"][0]["status"] == "skipped"
+    assert result["tested"][1]["explore"] == "users__fail"
+    assert result["tested"][1]["status"] == "passed"
+    assert len(result["errors"]) == 0
 
 
 def test_incremental_same_results_should_not_have_errors():

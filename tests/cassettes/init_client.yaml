@@ -3517,4 +3517,1214 @@ interactions:
     status:
       code: 200
       message: OK
+- request:
+    body: ''
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '69'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      User-Agent:
+      - python-requests/2.25.1
+    method: POST
+    uri: https://spectacles.looker.com:19999/api/3.1/login
+  response:
+    body:
+      string: '{"token_type": "Bearer", "expires_in": 3600}'
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 17:12:19 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - d6b34336d881b6f4
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - d6b34336d881b6f4
+      X-B3-TraceId:
+      - 61e1aef32ac74a3ed6b34336d881b6f4
+      X-Content-Type-Options:
+      - nosniff
+      content-length:
+      - '99'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/versions
+  response:
+    body:
+      string: '{"looker_release_version":"21.20.32","current_version":{"version":"3.1","full_version":"3.1.0","status":"current","swagger_url":"https://spectacles.looker.com/api/3.1/swagger.json"},"supported_versions":[{"version":"2.99","full_version":"2.99.0","status":"internal_test","swagger_url":"https://spectacles.looker.com/api/2.99/swagger.json"},{"version":"3.0","full_version":"3.0.0","status":"legacy","swagger_url":"https://spectacles.looker.com/api/3.0/swagger.json"},{"version":"3.1","full_version":"3.1.0","status":"current","swagger_url":"https://spectacles.looker.com/api/3.1/swagger.json"},{"version":"4.0","full_version":"4.0.21.20","status":"beta","swagger_url":"https://spectacles.looker.com/api/4.0/swagger.json"}],"api_server_url":"https://spectacles.looker.com","web_server_url":"https://spectacles.looker.com"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '820'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 17:12:19 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 7da34bb8c5a47bfe
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 7da34bb8c5a47bfe
+      X-B3-TraceId:
+      - 61e1aef3a893af157da34bb8c5a47bfe
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"workspace_id": "production"}'
+    headers:
+      Content-Length:
+      - '30'
+      Content-Type:
+      - application/json
+    method: PATCH
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"production","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '83'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 17:12:19 GMT
+      Set-Cookie:
+      - looker.browser=55018098; expires=Mon, 13 Jan 2025 17:12:19 GMT; HttpOnly
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - d1515e3b7eea65fa
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - d1515e3b7eea65fa
+      X-B3-TraceId:
+      - 61e1aef39550f5dad1515e3b7eea65fa
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '69'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      User-Agent:
+      - python-requests/2.25.1
+    method: POST
+    uri: https://spectacles.looker.com:19999/api/3.1/login
+  response:
+    body:
+      string: '{"token_type": "Bearer", "expires_in": 3599}'
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 17:13:03 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 50145c2121c13ab2
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 50145c2121c13ab2
+      X-B3-TraceId:
+      - 61e1af1f0048087a50145c2121c13ab2
+      X-Content-Type-Options:
+      - nosniff
+      content-length:
+      - '99'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/versions
+  response:
+    body:
+      string: '{"looker_release_version":"21.20.32","current_version":{"version":"3.1","full_version":"3.1.0","status":"current","swagger_url":"https://spectacles.looker.com/api/3.1/swagger.json"},"supported_versions":[{"version":"2.99","full_version":"2.99.0","status":"internal_test","swagger_url":"https://spectacles.looker.com/api/2.99/swagger.json"},{"version":"3.0","full_version":"3.0.0","status":"legacy","swagger_url":"https://spectacles.looker.com/api/3.0/swagger.json"},{"version":"3.1","full_version":"3.1.0","status":"current","swagger_url":"https://spectacles.looker.com/api/3.1/swagger.json"},{"version":"4.0","full_version":"4.0.21.20","status":"beta","swagger_url":"https://spectacles.looker.com/api/4.0/swagger.json"}],"api_server_url":"https://spectacles.looker.com","web_server_url":"https://spectacles.looker.com"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '820'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 17:13:03 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 0d75a0b23fae1083
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 0d75a0b23fae1083
+      X-B3-TraceId:
+      - 61e1af1f1c6a84960d75a0b23fae1083
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"workspace_id": "production"}'
+    headers:
+      Content-Length:
+      - '30'
+      Content-Type:
+      - application/json
+    method: PATCH
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"production","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '83'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 17:13:04 GMT
+      Set-Cookie:
+      - looker.browser=51782684; expires=Mon, 13 Jan 2025 17:13:04 GMT; HttpOnly
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - e31cd501f938e7c3
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - e31cd501f938e7c3
+      X-B3-TraceId:
+      - 61e1af1fa3ba7fa8e31cd501f938e7c3
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '69'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      User-Agent:
+      - python-requests/2.25.1
+    method: POST
+    uri: https://spectacles.looker.com:19999/api/3.1/login
+  response:
+    body:
+      string: '{"token_type": "Bearer", "expires_in": 3599}'
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 17:13:21 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 110c55d29d3e85c0
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 110c55d29d3e85c0
+      X-B3-TraceId:
+      - 61e1af3167f1376b110c55d29d3e85c0
+      X-Content-Type-Options:
+      - nosniff
+      content-length:
+      - '99'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/versions
+  response:
+    body:
+      string: '{"looker_release_version":"21.20.32","current_version":{"version":"3.1","full_version":"3.1.0","status":"current","swagger_url":"https://spectacles.looker.com/api/3.1/swagger.json"},"supported_versions":[{"version":"2.99","full_version":"2.99.0","status":"internal_test","swagger_url":"https://spectacles.looker.com/api/2.99/swagger.json"},{"version":"3.0","full_version":"3.0.0","status":"legacy","swagger_url":"https://spectacles.looker.com/api/3.0/swagger.json"},{"version":"3.1","full_version":"3.1.0","status":"current","swagger_url":"https://spectacles.looker.com/api/3.1/swagger.json"},{"version":"4.0","full_version":"4.0.21.20","status":"beta","swagger_url":"https://spectacles.looker.com/api/4.0/swagger.json"}],"api_server_url":"https://spectacles.looker.com","web_server_url":"https://spectacles.looker.com"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '820'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 17:13:22 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 5c66eb23c669beea
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 5c66eb23c669beea
+      X-B3-TraceId:
+      - 61e1af325f5fabda5c66eb23c669beea
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"workspace_id": "production"}'
+    headers:
+      Content-Length:
+      - '30'
+      Content-Type:
+      - application/json
+    method: PATCH
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"production","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '83'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 17:13:22 GMT
+      Set-Cookie:
+      - looker.browser=46232153; expires=Mon, 13 Jan 2025 17:13:22 GMT; HttpOnly
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - c6b2f1365c13945f
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - c6b2f1365c13945f
+      X-B3-TraceId:
+      - 61e1af328ebda592c6b2f1365c13945f
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '69'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      User-Agent:
+      - python-requests/2.25.1
+    method: POST
+    uri: https://spectacles.looker.com:19999/api/3.1/login
+  response:
+    body:
+      string: '{"token_type": "Bearer", "expires_in": 3599}'
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 17:14:12 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 1b46e56dc30de391
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 1b46e56dc30de391
+      X-B3-TraceId:
+      - 61e1af642429df7e1b46e56dc30de391
+      X-Content-Type-Options:
+      - nosniff
+      content-length:
+      - '99'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/versions
+  response:
+    body:
+      string: '{"looker_release_version":"21.20.32","current_version":{"version":"3.1","full_version":"3.1.0","status":"current","swagger_url":"https://spectacles.looker.com/api/3.1/swagger.json"},"supported_versions":[{"version":"2.99","full_version":"2.99.0","status":"internal_test","swagger_url":"https://spectacles.looker.com/api/2.99/swagger.json"},{"version":"3.0","full_version":"3.0.0","status":"legacy","swagger_url":"https://spectacles.looker.com/api/3.0/swagger.json"},{"version":"3.1","full_version":"3.1.0","status":"current","swagger_url":"https://spectacles.looker.com/api/3.1/swagger.json"},{"version":"4.0","full_version":"4.0.21.20","status":"beta","swagger_url":"https://spectacles.looker.com/api/4.0/swagger.json"}],"api_server_url":"https://spectacles.looker.com","web_server_url":"https://spectacles.looker.com"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '820'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 17:14:12 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - b6f327e1a26c8e0b
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - b6f327e1a26c8e0b
+      X-B3-TraceId:
+      - 61e1af64047febe7b6f327e1a26c8e0b
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"workspace_id": "production"}'
+    headers:
+      Content-Length:
+      - '30'
+      Content-Type:
+      - application/json
+    method: PATCH
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"production","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '83'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 17:14:12 GMT
+      Set-Cookie:
+      - looker.browser=56632695; expires=Mon, 13 Jan 2025 17:14:12 GMT; HttpOnly
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - d9bdb2efe5e2f55f
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - d9bdb2efe5e2f55f
+      X-B3-TraceId:
+      - 61e1af64bedcda4bd9bdb2efe5e2f55f
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '69'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      User-Agent:
+      - python-requests/2.25.1
+    method: POST
+    uri: https://spectacles.looker.com:19999/api/3.1/login
+  response:
+    body:
+      string: '{"token_type": "Bearer", "expires_in": 3599}'
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 17:25:06 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 9fd9366114d50b68
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 9fd9366114d50b68
+      X-B3-TraceId:
+      - 61e1b1f29ede700a9fd9366114d50b68
+      X-Content-Type-Options:
+      - nosniff
+      content-length:
+      - '99'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/versions
+  response:
+    body:
+      string: '{"looker_release_version":"21.20.32","current_version":{"version":"3.1","full_version":"3.1.0","status":"current","swagger_url":"https://spectacles.looker.com/api/3.1/swagger.json"},"supported_versions":[{"version":"2.99","full_version":"2.99.0","status":"internal_test","swagger_url":"https://spectacles.looker.com/api/2.99/swagger.json"},{"version":"3.0","full_version":"3.0.0","status":"legacy","swagger_url":"https://spectacles.looker.com/api/3.0/swagger.json"},{"version":"3.1","full_version":"3.1.0","status":"current","swagger_url":"https://spectacles.looker.com/api/3.1/swagger.json"},{"version":"4.0","full_version":"4.0.21.20","status":"beta","swagger_url":"https://spectacles.looker.com/api/4.0/swagger.json"}],"api_server_url":"https://spectacles.looker.com","web_server_url":"https://spectacles.looker.com"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '820'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 17:25:07 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - b0b130a0200c8455
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - b0b130a0200c8455
+      X-B3-TraceId:
+      - 61e1b1f3c60b4bddb0b130a0200c8455
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"workspace_id": "production"}'
+    headers:
+      Content-Length:
+      - '30'
+      Content-Type:
+      - application/json
+    method: PATCH
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"production","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '83'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 17:25:07 GMT
+      Set-Cookie:
+      - looker.browser=3594686; expires=Mon, 13 Jan 2025 17:25:07 GMT; HttpOnly
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - faaa2f44f3039e76
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - faaa2f44f3039e76
+      X-B3-TraceId:
+      - 61e1b1f32c09fba9faaa2f44f3039e76
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '69'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      User-Agent:
+      - python-requests/2.25.1
+    method: POST
+    uri: https://spectacles.looker.com:19999/api/3.1/login
+  response:
+    body:
+      string: '{"token_type": "Bearer", "expires_in": 3600}'
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 17:25:14 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 5b0e9ffd396ed480
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 5b0e9ffd396ed480
+      X-B3-TraceId:
+      - 61e1b1fa70fcd6e15b0e9ffd396ed480
+      X-Content-Type-Options:
+      - nosniff
+      content-length:
+      - '99'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/versions
+  response:
+    body:
+      string: '{"looker_release_version":"21.20.32","current_version":{"version":"3.1","full_version":"3.1.0","status":"current","swagger_url":"https://spectacles.looker.com/api/3.1/swagger.json"},"supported_versions":[{"version":"2.99","full_version":"2.99.0","status":"internal_test","swagger_url":"https://spectacles.looker.com/api/2.99/swagger.json"},{"version":"3.0","full_version":"3.0.0","status":"legacy","swagger_url":"https://spectacles.looker.com/api/3.0/swagger.json"},{"version":"3.1","full_version":"3.1.0","status":"current","swagger_url":"https://spectacles.looker.com/api/3.1/swagger.json"},{"version":"4.0","full_version":"4.0.21.20","status":"beta","swagger_url":"https://spectacles.looker.com/api/4.0/swagger.json"}],"api_server_url":"https://spectacles.looker.com","web_server_url":"https://spectacles.looker.com"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '820'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 17:25:14 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - c1866ccfb11326e2
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - c1866ccfb11326e2
+      X-B3-TraceId:
+      - 61e1b1fa1601d919c1866ccfb11326e2
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"workspace_id": "production"}'
+    headers:
+      Content-Length:
+      - '30'
+      Content-Type:
+      - application/json
+    method: PATCH
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"production","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '83'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 17:25:14 GMT
+      Set-Cookie:
+      - looker.browser=35614824; expires=Mon, 13 Jan 2025 17:25:14 GMT; HttpOnly
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 59ea5aed6ee9e6a3
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 59ea5aed6ee9e6a3
+      X-B3-TraceId:
+      - 61e1b1fa1a0357bb59ea5aed6ee9e6a3
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '69'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      User-Agent:
+      - python-requests/2.25.1
+    method: POST
+    uri: https://spectacles.looker.com:19999/api/3.1/login
+  response:
+    body:
+      string: '{"token_type": "Bearer", "expires_in": 3599}'
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 17:26:09 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 1441e517aea28dbd
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 1441e517aea28dbd
+      X-B3-TraceId:
+      - 61e1b2313093a6641441e517aea28dbd
+      X-Content-Type-Options:
+      - nosniff
+      content-length:
+      - '99'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/versions
+  response:
+    body:
+      string: '{"looker_release_version":"21.20.32","current_version":{"version":"3.1","full_version":"3.1.0","status":"current","swagger_url":"https://spectacles.looker.com/api/3.1/swagger.json"},"supported_versions":[{"version":"2.99","full_version":"2.99.0","status":"internal_test","swagger_url":"https://spectacles.looker.com/api/2.99/swagger.json"},{"version":"3.0","full_version":"3.0.0","status":"legacy","swagger_url":"https://spectacles.looker.com/api/3.0/swagger.json"},{"version":"3.1","full_version":"3.1.0","status":"current","swagger_url":"https://spectacles.looker.com/api/3.1/swagger.json"},{"version":"4.0","full_version":"4.0.21.20","status":"beta","swagger_url":"https://spectacles.looker.com/api/4.0/swagger.json"}],"api_server_url":"https://spectacles.looker.com","web_server_url":"https://spectacles.looker.com"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '820'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 17:26:09 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 554ff05d0f264dff
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 554ff05d0f264dff
+      X-B3-TraceId:
+      - 61e1b2312d562f99554ff05d0f264dff
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"workspace_id": "production"}'
+    headers:
+      Content-Length:
+      - '30'
+      Content-Type:
+      - application/json
+    method: PATCH
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"production","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '83'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 17:26:10 GMT
+      Set-Cookie:
+      - looker.browser=19527869; expires=Mon, 13 Jan 2025 17:26:10 GMT; HttpOnly
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 65d6375ca3f56f25
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 65d6375ca3f56f25
+      X-B3-TraceId:
+      - 61e1b232b0c882cc65d6375ca3f56f25
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '69'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      User-Agent:
+      - python-requests/2.25.1
+    method: POST
+    uri: https://spectacles.looker.com:19999/api/3.1/login
+  response:
+    body:
+      string: '{"token_type": "Bearer", "expires_in": 3600}'
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 17:28:07 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - bd9ae35998a729f8
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - bd9ae35998a729f8
+      X-B3-TraceId:
+      - 61e1b2a7ee340ef0bd9ae35998a729f8
+      X-Content-Type-Options:
+      - nosniff
+      content-length:
+      - '99'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/versions
+  response:
+    body:
+      string: '{"looker_release_version":"21.20.32","current_version":{"version":"3.1","full_version":"3.1.0","status":"current","swagger_url":"https://spectacles.looker.com/api/3.1/swagger.json"},"supported_versions":[{"version":"2.99","full_version":"2.99.0","status":"internal_test","swagger_url":"https://spectacles.looker.com/api/2.99/swagger.json"},{"version":"3.0","full_version":"3.0.0","status":"legacy","swagger_url":"https://spectacles.looker.com/api/3.0/swagger.json"},{"version":"3.1","full_version":"3.1.0","status":"current","swagger_url":"https://spectacles.looker.com/api/3.1/swagger.json"},{"version":"4.0","full_version":"4.0.21.20","status":"beta","swagger_url":"https://spectacles.looker.com/api/4.0/swagger.json"}],"api_server_url":"https://spectacles.looker.com","web_server_url":"https://spectacles.looker.com"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '820'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 17:28:07 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - d703bbb9d8290a55
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - d703bbb9d8290a55
+      X-B3-TraceId:
+      - 61e1b2a786e6836ed703bbb9d8290a55
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"workspace_id": "production"}'
+    headers:
+      Content-Length:
+      - '30'
+      Content-Type:
+      - application/json
+    method: PATCH
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"production","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '83'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 17:28:07 GMT
+      Set-Cookie:
+      - looker.browser=14207954; expires=Mon, 13 Jan 2025 17:28:07 GMT; HttpOnly
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - df2e00ee35a09636
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - df2e00ee35a09636
+      X-B3-TraceId:
+      - 61e1b2a7f43812addf2e00ee35a09636
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '69'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      User-Agent:
+      - python-requests/2.25.1
+    method: POST
+    uri: https://spectacles.looker.com:19999/api/3.1/login
+  response:
+    body:
+      string: '{"token_type": "Bearer", "expires_in": 3599}'
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 17:28:13 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 074bfdb4072141b3
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 074bfdb4072141b3
+      X-B3-TraceId:
+      - 61e1b2adbd7c7bbc074bfdb4072141b3
+      X-Content-Type-Options:
+      - nosniff
+      content-length:
+      - '99'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/versions
+  response:
+    body:
+      string: '{"looker_release_version":"21.20.32","current_version":{"version":"3.1","full_version":"3.1.0","status":"current","swagger_url":"https://spectacles.looker.com/api/3.1/swagger.json"},"supported_versions":[{"version":"2.99","full_version":"2.99.0","status":"internal_test","swagger_url":"https://spectacles.looker.com/api/2.99/swagger.json"},{"version":"3.0","full_version":"3.0.0","status":"legacy","swagger_url":"https://spectacles.looker.com/api/3.0/swagger.json"},{"version":"3.1","full_version":"3.1.0","status":"current","swagger_url":"https://spectacles.looker.com/api/3.1/swagger.json"},{"version":"4.0","full_version":"4.0.21.20","status":"beta","swagger_url":"https://spectacles.looker.com/api/4.0/swagger.json"}],"api_server_url":"https://spectacles.looker.com","web_server_url":"https://spectacles.looker.com"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '820'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 17:28:14 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 4defb811526bb4f9
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 4defb811526bb4f9
+      X-B3-TraceId:
+      - 61e1b2ad520f15dc4defb811526bb4f9
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"workspace_id": "production"}'
+    headers:
+      Content-Length:
+      - '30'
+      Content-Type:
+      - application/json
+    method: PATCH
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"production","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '83'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 17:28:14 GMT
+      Set-Cookie:
+      - looker.browser=77582946; expires=Mon, 13 Jan 2025 17:28:14 GMT; HttpOnly
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - d19e6bf6f07b5286
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - d19e6bf6f07b5286
+      X-B3-TraceId:
+      - 61e1b2ae5db9c823d19e6bf6f07b5286
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '69'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      User-Agent:
+      - python-requests/2.25.1
+    method: POST
+    uri: https://spectacles.looker.com:19999/api/3.1/login
+  response:
+    body:
+      string: '{"token_type": "Bearer", "expires_in": 3599}'
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 17:31:25 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - cd8a11a7506e68af
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - cd8a11a7506e68af
+      X-B3-TraceId:
+      - 61e1b36d35758079cd8a11a7506e68af
+      X-Content-Type-Options:
+      - nosniff
+      content-length:
+      - '99'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/versions
+  response:
+    body:
+      string: '{"looker_release_version":"21.20.32","current_version":{"version":"3.1","full_version":"3.1.0","status":"current","swagger_url":"https://spectacles.looker.com/api/3.1/swagger.json"},"supported_versions":[{"version":"2.99","full_version":"2.99.0","status":"internal_test","swagger_url":"https://spectacles.looker.com/api/2.99/swagger.json"},{"version":"3.0","full_version":"3.0.0","status":"legacy","swagger_url":"https://spectacles.looker.com/api/3.0/swagger.json"},{"version":"3.1","full_version":"3.1.0","status":"current","swagger_url":"https://spectacles.looker.com/api/3.1/swagger.json"},{"version":"4.0","full_version":"4.0.21.20","status":"beta","swagger_url":"https://spectacles.looker.com/api/4.0/swagger.json"}],"api_server_url":"https://spectacles.looker.com","web_server_url":"https://spectacles.looker.com"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '820'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 17:31:26 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 65aa5a9387991406
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 65aa5a9387991406
+      X-B3-TraceId:
+      - 61e1b36ebfbcdf3965aa5a9387991406
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"workspace_id": "production"}'
+    headers:
+      Content-Length:
+      - '30'
+      Content-Type:
+      - application/json
+    method: PATCH
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"production","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '83'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 17:31:26 GMT
+      Set-Cookie:
+      - looker.browser=53958252; expires=Mon, 13 Jan 2025 17:31:26 GMT; HttpOnly
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 9c8d362186c647e6
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 9c8d362186c647e6
+      X-B3-TraceId:
+      - 61e1b36ed43620bb9c8d362186c647e6
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
 version: 1
