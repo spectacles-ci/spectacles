@@ -1,6 +1,6 @@
 ## Change description
 
-> Description here
+Description here
 
 ## Type of change
 - [ ] Bug fix (fixes an issue)
@@ -8,7 +8,7 @@
 
 ## Related issues
 
-> Closes [#1]() 
+Closes [#1]() 
 
 ## Checklists
 

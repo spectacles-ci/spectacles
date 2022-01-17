@@ -1,48 +1,111 @@
+from dataclasses import dataclass
+from tabulate import tabulate
 from typing import Union, Dict, Any, List, Optional
 import time
-from tabulate import tabulate
-from spectacles.validators.validator import Validator
 from spectacles.client import LookerClient
-from spectacles.lookml import Dimension, Explore
-from spectacles.types import QueryMode
+from spectacles.lookml import Dimension, Explore, Project
 from spectacles.exceptions import SpectaclesException, SqlError
 from spectacles.logger import GLOBAL_LOGGER as logger
 from spectacles.printer import print_header
 
 
-class Query:
-    """Stores IDs and a reference to the LookML object being queried"""
+@dataclass
+class SqlTest:
+    query_id: int
+    lookml_ref: Union[Dimension, Explore]
+    explore_url: str
+    sql: Optional[str] = None
+    query_task_id: Optional[str] = None
+    status: Optional[str] = None
+    runtime: Optional[float] = None
+    error: Optional[SqlError] = None
 
-    def __init__(
-        self,
-        query_id: int,
-        lookml_ref: Union[Dimension, Explore],
-        explore_url: str,
-        query_task_id: Optional[str] = None,
-    ):
-        self.query_id = query_id
-        self.lookml_ref = lookml_ref
-        self.explore_url = explore_url
-        self.query_task_id = query_task_id
+    @property
+    def failed(self) -> bool:
+        return bool(self.error)
+
+    @property
+    def lookml_url(self) -> Optional[str]:
+        return getattr(self.lookml_ref, "url", None)
+
+    def __eq__(self, other: Any) -> bool:
+        if isinstance(other, self.__class__):
+            if self.sql and other.sql:
+                return self.sql == other.sql
+            else:
+                return self.lookml_ref == other.lookml_ref
+        else:
+            return False
+
+    def __hash__(self) -> int:
+        if self.sql is None:
+            raise ValueError("Test has no SQL defined")
+        return hash(self.lookml_ref.name + self.sql)
+
+    def __dict__(self):
+        metadata = {"explore_url": self.explore_url}
+        if self.lookml_url:
+            metadata["lookml_url"] = self.lookml_url
+        output = {
+            "lookml_type": self.lookml_ref.__class__.__name__,
+            "passed": not self.failed,
+            "metadata": metadata,
+        }
+        if self.error:
+            output["errors"] = [self.error.__dict__]
+        return output
+
+    def get_profile_result(self) -> List:
+        return [
+            self.lookml_ref.__class__.__name__.lower(),
+            self.lookml_ref.name,
+            self.runtime,
+            self.query_id,
+            self.explore_url,
+        ]
 
 
+@dataclass
 class QueryResult:
     """Stores ID, query status, and error details for a completed query task"""
 
-    def __init__(
-        self,
-        query_task_id: str,
-        status: str,
-        runtime: Optional[float] = None,
-        error: Optional[Dict[str, Any]] = None,
-    ):
-        self.query_task_id = query_task_id
-        self.status = status
-        self.runtime = runtime
-        self.error = error
+    query_task_id: str
+    status: str
+    runtime: Optional[float] = None
+    error: Optional[Dict[str, Any]] = None
 
 
-class SqlValidator(Validator):
+def print_profile_results(tests: List[SqlTest], runtime_threshold: int) -> None:
+    """Defined here instead of in .printer to avoid circular type imports."""
+    HEADER_CHAR = "."
+    print_header("Query profiler results", char=HEADER_CHAR, leading_newline=False)
+    if tests:
+        tests_by_runtime = sorted(
+            tests,
+            key=lambda x: x.runtime if x.runtime is not None else -1,
+            reverse=True,
+        )
+        profile_results = [test.get_profile_result() for test in tests_by_runtime]
+        output = tabulate(
+            profile_results,
+            headers=[
+                "Type",
+                "Name",
+                "Runtime (s)",
+                "Query ID",
+                "Explore From Here",
+            ],
+            tablefmt="github",
+            numalign="left",
+            floatfmt=".1f",
+        )
+    else:
+        output = f"All queries completed in less than {runtime_threshold} " "seconds."
+    logger.info(output)
+    print_header(HEADER_CHAR, char=HEADER_CHAR)
+
+
+class SqlValidator:
     """Runs and validates the SQL for each selected LookML dimension.
 
     Args:
@@ -61,87 +124,85 @@ class SqlValidator(Validator):
     def __init__(
         self,
         client: LookerClient,
-        project: str,
         concurrency: int = 10,
         runtime_threshold: int = 5,
     ):
-        super().__init__(client, project)
+        self.client = client
         self.query_slots = concurrency
         self.runtime_threshold = runtime_threshold
-        self._running_queries: List[Query] = []
+        self._running_tests: List[SqlTest] = []
         # Lookup used to retrieve the LookML object
-        self._query_by_task_id: Dict[str, Query] = {}
-        self.long_running_queries: List = []
+        self._test_by_task_id: Dict[str, SqlTest] = {}
+        self._long_running_tests: List[SqlTest] = []
 
-    def get_query_by_task_id(self, query_task_id: str) -> Query:
-        return self._query_by_task_id[query_task_id]
-
-    def get_running_query_tasks(self) -> List[str]:
-        return [
-            query.query_task_id
-            for query in self._running_queries
-            if query.query_task_id
-        ]
-
-    def build_project(
+    def create_tests(
         self,
-        selectors: Optional[List[str]] = None,
-        exclusions: Optional[List[str]] = None,
-        build_dimensions: bool = True,
-    ) -> None:
-        super().build_project(selectors, exclusions, build_dimensions)
+        project: Project,
+        compile_sql: bool = False,
+        at_dimension_level: bool = False,
+    ) -> List[SqlTest]:
+        tests: List[SqlTest] = []
+        if at_dimension_level:
+            for explore in project.iter_explores():
+                if not explore.skipped and explore.errored is not False:
+                    for dimension in explore.dimensions:
+                        test = self._create_dimension_test(dimension, compile_sql)
+                        tests.append(test)
+        else:
+            for explore in project.iter_explores():
+                test = self._create_explore_test(explore, compile_sql)
+                tests.append(test)
+        return tests
 
-    def validate(
-        self, mode: QueryMode = "batch", profile: bool = False
-    ) -> Dict[str, Any]:
-        """Queries selected explores and returns the project tree with errors."""
-        self._query_by_task_id = {}
+    def _create_explore_test(
+        self, explore: Explore, compile_sql: bool = False
+    ) -> SqlTest:
+        """Creates a SqlTest to query all dimensions in an explore"""
+        if not explore.dimensions:
+            raise AttributeError(
+                "Explore object is missing dimensions, "
+                "meaning this query won't have fields and will error. "
+                "Often this happens because you didn't include dimensions "
+                "when you built the project."
+            )
+        dimensions = [dimension.name for dimension in explore.dimensions]
+        query = self.client.create_query(
+            explore.model_name, explore.name, dimensions, fields=["id", "share_url"]
+        )
+        test = SqlTest(
+            query_id=query["id"], lookml_ref=explore, explore_url=query["share_url"]
+        )
+        if compile_sql:
+            test.sql = self.client.run_query(query["id"])
+        return test
 
-        self._create_and_run(mode)
-        if mode == "hybrid" and self.project.errored:
-            self._create_and_run(mode)
+    def _create_dimension_test(
+        self, dimension: Dimension, compile_sql: bool = False
+    ) -> SqlTest:
+        query = self.client.create_query(
+            dimension.model_name,
+            dimension.explore_name,
+            [dimension.name],
+            fields=["id", "share_url"],
+        )
+        test = SqlTest(
+            query_id=query["id"],
+            lookml_ref=dimension,
+            explore_url=query["share_url"],
+        )
+        if compile_sql:
+            test.sql = self.client.run_query(query["id"])
+        return test
 
-        if profile:
-            char = "."
-            print_header("Query profiler results", char=char, leading_newline=False)
-            if self.long_running_queries:
-                queries_in_order = sorted(
-                    self.long_running_queries, key=lambda x: x[2], reverse=True
-                )  # type: ignore
-                output = tabulate(
-                    queries_in_order,
-                    headers=[
-                        "Type",
-                        "Name",
-                        "Runtime (s)",
-                        "Query ID",
-                        "Explore From Here",
-                    ],
-                    tablefmt="github",
-                    numalign="left",
-                    floatfmt=".1f",
-                )
-            else:
-                output = (
-                    f"All queries completed in less than {self.runtime_threshold} "
-                    "seconds."
-                )
-            logger.info(output)
-            print_header(char, char=char)
-
-        return self.project.get_results(validator="sql", mode=mode)
-
-    def _create_and_run(self, mode: QueryMode = "batch") -> None:
-        """Runs a single validation using a specified mode"""
-        queries: List[Query] = []
+    def run_tests(self, tests: List[SqlTest], profile: bool = False):
+        self._test_by_task_id = {}
         try:
-            queries = self._create_queries(mode)
-            self._run_queries(queries)
+            self._run_tests(tests)
         except KeyboardInterrupt:
             logger.info(
                 "\n\n" + "Please wait, asking Looker to cancel any running queries..."
             )
-            query_tasks = self.get_running_query_tasks()
+            query_tasks = self._get_running_query_tasks()
             self._cancel_queries(query_tasks)
             if query_tasks:
                 message = (
@@ -158,72 +219,42 @@ class SqlValidator(Validator):
                 detail=message,
             )
 
-    def _create_queries(self, mode: QueryMode) -> List[Query]:
-        """Creates a list of queries to be executed for validation"""
-        queries: List[Query] = []
-        for model in self.project.models:
-            for explore in model.explores:
-                if mode == "batch" or (mode == "hybrid" and not explore.queried):
-                    query = self._create_explore_query(explore, model.name)
-                    queries.append(query)
-                elif mode == "single" or (mode == "hybrid" and explore.errored):
-                    explore_queries = self._create_dimension_queries(
-                        explore, model.name
-                    )
-                    queries.extend(explore_queries)
-        return queries
+        if profile:
+            print_profile_results(self._long_running_tests, self.runtime_threshold)
 
-    def _create_explore_query(self, explore: Explore, model_name: str) -> Query:
-        """Creates a single query with all dimensions of an explore"""
-        dimensions = [dimension.name for dimension in explore.dimensions]
-        query = self.client.create_query(
-            model_name, explore.name, dimensions, fields=["id", "share_url"]
-        )
-        return Query(query["id"], lookml_ref=explore, explore_url=query["share_url"])
+    def _get_running_query_tasks(self) -> List[str]:
+        running_query_tasks = [
+            test.query_task_id for test in self._running_tests if test.query_task_id
+        ]
+        return running_query_tasks
 
-    def _create_dimension_queries(
-        self, explore: Explore, model_name: str
-    ) -> List[Query]:
-        """Creates individual queries for each dimension in an explore"""
-        queries = []
-        for dimension in explore.dimensions:
-            query_response = self.client.create_query(
-                model_name, explore.name, [dimension.name], fields=["id", "share_url"]
-            )
-            query = Query(
-                query_response["id"],
-                lookml_ref=dimension,
-                explore_url=query_response["share_url"],
-            )
-            queries.append(query)
-        return queries
-
-    def _run_queries(self, queries: List[Query]) -> None:
-        """Creates and runs queries with a maximum concurrency defined by query slots"""
+    def _run_tests(self, tests: List[SqlTest]) -> None:
+        """Creates and runs tests with a maximum concurrency defined by query slots"""
         QUERY_TASK_LIMIT = 250
-
-        while queries or self._running_queries:
-            if queries:
-                logger.debug(f"Starting a new loop, {len(queries)} queries queued")
-                self._fill_query_slots(queries)
-            query_tasks = self.get_running_query_tasks()[:QUERY_TASK_LIMIT]
+        tests = tests.copy()
+        while tests or self._running_tests:
+            if tests:
+                logger.debug(f"Starting a new loop, {len(tests)} tests queued")
+                self._fill_query_slots(tests)
+            query_tasks = self._get_running_query_tasks()[:QUERY_TASK_LIMIT]
             logger.debug(f"Checking for results of {len(query_tasks)} query tasks")
             for query_result in self._get_query_results(query_tasks):
-                self._handle_query_result(query_result)
+                if query_result.status in ("complete", "error"):
+                    self._handle_query_result(query_result)
             time.sleep(0.5)
 
-    def _fill_query_slots(self, queries: List[Query]) -> None:
-        """Creates query tasks until all slots are used or all queries are running"""
-        while queries and self.query_slots > 0:
+    def _fill_query_slots(self, tests: List[SqlTest]) -> None:
+        """Creates query tasks until all slots are used or all tests are running"""
+        while tests and self.query_slots > 0:
             logger.debug(
                 f"{self.query_slots} available query slots, creating query task"
             )
-            query = queries.pop(0)
-            query_task_id = self.client.create_query_task(query.query_id)
+            test = tests.pop(0)
+            query_task_id = self.client.create_query_task(test.query_id)
             self.query_slots -= 1
-            query.query_task_id = query_task_id
-            self._query_by_task_id[query_task_id] = query
-            self._running_queries.append(query)
+            test.query_task_id = query_task_id
+            self._test_by_task_id[query_task_id] = test
+            self._running_tests.append(test)
 
     def _get_query_results(self, query_task_ids: List[str]) -> List[QueryResult]:
         """Returns ID, status, and error message for all query tasks"""
@@ -265,45 +296,37 @@ class SqlValidator(Validator):
             query_results.append(query_result)
         return query_results
 
-    def _handle_query_result(self, result: QueryResult) -> Optional[SqlError]:
-        query = self.get_query_by_task_id(result.query_task_id)
-        if result.status in ("complete", "error"):
-            self._running_queries.remove(query)
-            self.query_slots += 1
-            lookml_object = query.lookml_ref
-            lookml_object.queried = True
-            if result.runtime and result.runtime >= self.runtime_threshold:
-                self.long_running_queries.append(
-                    [
-                        lookml_object.__class__.__name__.lower(),
-                        lookml_object.name,
-                        result.runtime,
-                        query.query_id,
-                        query.explore_url,
-                    ]
-                )
+    def _handle_query_result(self, result: QueryResult) -> None:
+        test = self._test_by_task_id[result.query_task_id]
+        self._running_tests.remove(test)
+        self.query_slots += 1
+        test.status = result.status
+        test.runtime = result.runtime
+        lookml_object = test.lookml_ref
+        lookml_object.queried = True
 
-            if result.status == "error" and result.error:
-                model_name = lookml_object.model_name
-                dimension_name: Optional[str] = None
-                if isinstance(lookml_object, Dimension):
-                    explore_name = lookml_object.explore_name
-                    dimension_name = lookml_object.name
-                else:
-                    explore_name = lookml_object.name
+        if result.runtime and result.runtime >= self.runtime_threshold:
+            self._long_running_tests.append(test)
 
-                sql_error = SqlError(
-                    model=model_name,
-                    explore=explore_name,
-                    dimension=dimension_name,
-                    explore_url=query.explore_url,
-                    lookml_url=getattr(lookml_object, "url", None),
-                    **result.error,
-                )
-                lookml_object.errors.append(sql_error)
-                return sql_error
+        if result.status == "error" and result.error:
+            model_name = lookml_object.model_name
+            dimension_name: Optional[str] = None
+            if isinstance(lookml_object, Dimension):
+                explore_name = lookml_object.explore_name
+                dimension_name = lookml_object.name
+            else:
+                explore_name = lookml_object.name
 
-        return None
+            sql_error = SqlError(
+                model=model_name,
+                explore=explore_name,
+                dimension=dimension_name,
+                lookml_url=test.lookml_url,
+                explore_url=test.explore_url,
+                **result.error,
+            )
+            test.error = sql_error
+            lookml_object.errors.append(sql_error)
 
     @staticmethod
     def _extract_error_details(query_result: Dict) -> Optional[Dict]:

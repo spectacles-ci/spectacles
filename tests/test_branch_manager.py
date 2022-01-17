@@ -29,7 +29,7 @@ def test_should_return_to_initial_state_prod(
 
     manager = LookerBranchManager(looker_client, LOOKER_PROJECT)
     assert manager.init_state.workspace == "production"
-    with manager(branch="pytest"):
+    with manager(ref="pytest"):
         assert looker_client.get_workspace() == "dev"
     assert looker_client.get_workspace() == "production"
 
@@ -64,7 +64,7 @@ def test_manage_current_branch(mock_get_imports, looker_client: LookerClient):
 
     manager = LookerBranchManager(looker_client, LOOKER_PROJECT)
     assert manager.init_state.branch == branch
-    manager(branch=branch).__enter__()
+    manager(ref=branch).__enter__()
     assert looker_client.get_active_branch_name(LOOKER_PROJECT) == branch
     manager.__exit__()
     assert looker_client.get_active_branch_name(LOOKER_PROJECT) == branch
@@ -88,7 +88,7 @@ def test_manage_other_branch(mock_get_imports, looker_client: LookerClient):
     manager = LookerBranchManager(looker_client, LOOKER_PROJECT)
     assert manager.init_state.branch == starting_branch
 
-    manager(branch=new_branch).__enter__()
+    manager(ref=new_branch).__enter__()
     assert looker_client.get_active_branch_name(LOOKER_PROJECT) == new_branch
     manager.__exit__()
     assert looker_client.get_active_branch_name(LOOKER_PROJECT) == starting_branch
@@ -115,7 +115,7 @@ def test_manage_current_branch_with_ref(
     manager = LookerBranchManager(looker_client, LOOKER_PROJECT)
     assert manager.init_state.branch == starting_branch
 
-    manager(commit=commit).__enter__()
+    manager(ref=commit).__enter__()
     assert manager.is_temp_branch
     temp_branch = manager.branch
     branch_info = looker_client.get_active_branch(LOOKER_PROJECT)
@@ -179,7 +179,7 @@ def test_manage_other_branch_with_import_projects(
     manager = LookerBranchManager(looker_client, LOOKER_PROJECT)
     assert manager.init_state.branch == starting_branch
 
-    manager(branch=new_branch).__enter__()
+    manager(ref=new_branch).__enter__()
     assert not manager.is_temp_branch
     dependent_project_manager = manager.import_managers[0]
     assert dependent_project_manager.is_temp_branch
@@ -234,7 +234,7 @@ def test_manage_with_ref_import_projects(mock_time_hash, looker_client: LookerCl
     branch_info = looker_client.get_active_branch(LOOKER_PROJECT)
     assert branch_info["ref"][:6] != commit
 
-    with manager(commit=commit):
+    with manager(ref=commit):
         assert manager.is_temp_branch
         assert manager.commit and manager.commit[:6] == commit
         branch_info = looker_client.get_active_branch(manager.project)
@@ -277,7 +277,7 @@ def test_manage_with_ref_not_present_in_local_repo(
     commit = result["commit"].sha
 
     manager = LookerBranchManager(looker_client, LOOKER_PROJECT)
-    with manager(commit=commit):
+    with manager(ref=commit):
         assert manager.is_temp_branch
         assert manager.commit == commit
         branch_info = looker_client.get_active_branch(LOOKER_PROJECT)

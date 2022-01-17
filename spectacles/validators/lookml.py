@@ -1,5 +1,5 @@
 from typing import Dict, Any
-from spectacles.validators.validator import Validator
+from spectacles.client import LookerClient
 from spectacles.exceptions import LookMLError
 
 # Define constants for severity levels
@@ -9,7 +9,7 @@ ERROR = 30
 NAME_TO_LEVEL = {"info": INFO, "warning": WARNING, "error": ERROR}
 
 
-class LookMLValidator(Validator):
+class LookMLValidator:
     """Runs LookML validator for a given project.
 
     Args:
@@ -18,16 +18,19 @@ class LookMLValidator(Validator):
 
     """
 
-    def validate(self, severity: str = "warning") -> Dict[str, Any]:
+    def __init__(self, client: LookerClient):
+        self.client = client
+
+    def validate(self, project: str, severity: str = "warning") -> Dict[str, Any]:
         severity_level = NAME_TO_LEVEL[severity]
-        validation_results = self.client.lookml_validation(self.project.name)
+        validation_results = self.client.lookml_validation(project)
         errors = []
         for error in validation_results["errors"]:
             if error["file_path"]:
                 lookml_url = (
                     self.client.base_url
                     + "/projects/"
-                    + self.project.name
+                    + project
                     + "/files/"
                     + error["file_path"]
                 )

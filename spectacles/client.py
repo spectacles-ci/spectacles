@@ -575,7 +575,7 @@ class LookerClient:
 
         return response.json()
 
-    def get_lookml_models(self, fields: List = []) -> List[JsonDict]:
+    def get_lookml_models(self, fields: Optional[List] = None) -> List[JsonDict]:
         """Gets all models and explores from the LookmlModel endpoint.
 
         Returns:
@@ -583,6 +583,8 @@ class LookerClient:
 
         """
         logger.debug(f"Getting all models and explores from {self.base_url}")
+        if fields is None:
+            fields = []
 
         params = {}
         if fields:
@@ -640,7 +642,7 @@ class LookerClient:
         return response.json()["fields"]["dimensions"]
 
     def create_query(
-        self, model: str, explore: str, dimensions: List[str], fields: List = []
+        self, model: str, explore: str, dimensions: List[str], fields: List = None
     ) -> Dict:
         """Creates a Looker async query for one or more specified dimensions.
 
@@ -666,8 +668,10 @@ class LookerClient:
             "filter_expression": "1=2",
         }
 
-        params = {}
-        if fields:
+        params: Dict[str, list] = {}
+        if fields is None:
+            params["fields"] = []
+        else:
             params["fields"] = fields
 
         url = utils.compose_url(self.api_url, path=["queries"], params=params)
@@ -836,7 +840,7 @@ class LookerClient:
         result = response.json()
         return result
 
-    def all_folders(self, project: str) -> List[JsonDict]:
+    def all_folders(self) -> List[JsonDict]:
         logger.debug("Getting information about all folders")
         url = utils.compose_url(self.api_url, path=["folders"])
         response = self.get(url=url, timeout=TIMEOUT_SEC)
@@ -848,11 +852,45 @@ class LookerClient:
                 name="unable-to-get-folders",
                 title="Couldn't obtain project folders.",
                 status=response.status_code,
-                detail=(f"Failed to get all folders for project '{project}'."),
+                detail=("Failed to get all folders."),
                 response=response,
             )
 
         result = response.json()
+        return result
+
+    @backoff.on_exception(backoff.expo, (Timeout,), max_tries=2)
+    def run_query(self, query_id: int) -> str:
+        """Returns the compiled SQL for a given query ID.
+
+        The corresponding Looker API endpoint allows us to run queries with a variety
+        of result formats, however we only use the `sql` result format, which doesn't
+        run the query but does return its compiled SQL.
+
+        If a Timeout exception is received, attempts to retry.
+
+        """
+        # Using old-style string formatting so that strings are formatted lazily
+        logger.debug("Retrieving the SQL for query ID %s", query_id)
+
+        url = utils.compose_url(self.api_url, path=["queries", query_id, "run", "sql"])
+        response = self.get(url=url, timeout=TIMEOUT_SEC)
+        try:
+            response.raise_for_status()
+        except requests.exceptions.HTTPError:
+            raise LookerApiError(
+                name="unable-to-retrieve-compiled-sql",
+                title="Couldn't retrieve compiled SQL.",
+                status=response.status_code,
+                detail=(
+                    f"Failed to retrieve compiled SQL for query '{query_id}'. "
+                    "Please try again."
+                ),
+                response=response,
+            )
+
+        result = response.text
+
         return result
 
 

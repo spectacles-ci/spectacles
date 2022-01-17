@@ -1,0 +1,396 @@
+interactions:
+- request:
+    body: '{"model": "eye_exam", "view": "users__fail", "fields": ["users__fail.city"],
+      "limit": 0, "filter_expression": "1=2"}'
+    headers:
+      Content-Length:
+      - '116'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=59426826
+    method: POST
+    uri: https://spectacles.looker.com:19999/api/3.1/queries?fields=id%2Cshare_url
+  response:
+    body:
+      string: '{"id":1919,"share_url":"https://spectacles.looker.com/x/pPPjILaH6UzHnTH0sXJuJ3"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '80'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 28 Dec 2021 16:14:02 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 58cadc9df9f1adc4
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 58cadc9df9f1adc4
+      X-B3-TraceId:
+      - 61cb37cac96dd49358cadc9df9f1adc4
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=59426826
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/queries/1919/run/sql
+  response:
+    body:
+      string: "SELECT\n    users__fail.\"CITY\"  AS \"users__fail.city\"\nFROM \"PUBLIC\".\"USERS\"\n
+        \  AS users__fail\nWHERE (1 = 2)\nGROUP BY\n    1\nORDER BY\n    1\nFETCH
+        NEXT 0 ROWS ONLY"
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '159'
+      Content-Type:
+      - application/sql
+      Date:
+      - Tue, 28 Dec 2021 16:14:03 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - e2c21743fa9b87c8
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - e2c21743fa9b87c8
+      X-B3-TraceId:
+      - 61cb37cbe063ee60e2c21743fa9b87c8
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"model": "eye_exam", "view": "users__fail", "fields": ["users__fail.email"],
+      "limit": 0, "filter_expression": "1=2"}'
+    headers:
+      Content-Length:
+      - '117'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=59426826
+    method: POST
+    uri: https://spectacles.looker.com:19999/api/3.1/queries?fields=id%2Cshare_url
+  response:
+    body:
+      string: '{"id":1928,"share_url":"https://spectacles.looker.com/x/xrSOlmVVQNGXrO2UDua55N"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '80'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 28 Dec 2021 16:14:03 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 9778f6e3439f1b02
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 9778f6e3439f1b02
+      X-B3-TraceId:
+      - 61cb37cb145c30519778f6e3439f1b02
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=59426826
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/queries/1928/run/sql
+  response:
+    body:
+      string: "SELECT\n    users__fail.\"EMAIL_ADDRESS\"  AS \"users__fail.email\"\nFROM
+        \"PUBLIC\".\"USERS\"\n   AS users__fail\nWHERE (1 = 2)\nGROUP BY\n    1\nORDER
+        BY\n    1\nFETCH NEXT 0 ROWS ONLY"
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '169'
+      Content-Type:
+      - application/sql
+      Date:
+      - Tue, 28 Dec 2021 16:14:03 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 2a8d32e0256145cb
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 2a8d32e0256145cb
+      X-B3-TraceId:
+      - 61cb37cb3dcfb1262a8d32e0256145cb
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"model": "eye_exam", "view": "users__fail", "fields": ["users__fail.first_name"],
+      "limit": 0, "filter_expression": "1=2"}'
+    headers:
+      Content-Length:
+      - '122'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=59426826
+    method: POST
+    uri: https://spectacles.looker.com:19999/api/3.1/queries?fields=id%2Cshare_url
+  response:
+    body:
+      string: '{"id":1929,"share_url":"https://spectacles.looker.com/x/HHTcwq6vdIOtzAcahFCJ3H"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '80'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 28 Dec 2021 16:14:03 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - adf6fede4f6e9b25
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - adf6fede4f6e9b25
+      X-B3-TraceId:
+      - 61cb37cb72f3f24badf6fede4f6e9b25
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=59426826
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/queries/1929/run/sql
+  response:
+    body:
+      string: "SELECT\n    users__fail.\"FIRST_NAME\"  AS \"users__fail.first_name\"\nFROM
+        \"PUBLIC\".\"USERS\"\n   AS users__fail\nWHERE (1 = 2)\nGROUP BY\n    1\nORDER
+        BY\n    1\nFETCH NEXT 0 ROWS ONLY"
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '171'
+      Content-Type:
+      - application/sql
+      Date:
+      - Tue, 28 Dec 2021 16:14:03 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 679b9b2056a2205d
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 679b9b2056a2205d
+      X-B3-TraceId:
+      - 61cb37cb95a462f0679b9b2056a2205d
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"model": "eye_exam", "view": "users__fail", "fields": ["users__fail.id"],
+      "limit": 0, "filter_expression": "1=2"}'
+    headers:
+      Content-Length:
+      - '114'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=59426826
+    method: POST
+    uri: https://spectacles.looker.com:19999/api/3.1/queries?fields=id%2Cshare_url
+  response:
+    body:
+      string: '{"id":1931,"share_url":"https://spectacles.looker.com/x/BZHuziOJYnnDfHGpvMi6BJ"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '80'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 28 Dec 2021 16:14:03 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 8c3911e5c1b85cc9
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 8c3911e5c1b85cc9
+      X-B3-TraceId:
+      - 61cb37cbc987e2b08c3911e5c1b85cc9
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=59426826
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/queries/1931/run/sql
+  response:
+    body:
+      string: "SELECT\n    users__fail.\"ID\"  AS \"users__fail.id\"\nFROM \"PUBLIC\".\"USERS\"\n
+        \  AS users__fail\nWHERE (1 = 2)\nFETCH NEXT 0 ROWS ONLY"
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '125'
+      Content-Type:
+      - application/sql
+      Date:
+      - Tue, 28 Dec 2021 16:14:04 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - c0bf26d565b40266
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - c0bf26d565b40266
+      X-B3-TraceId:
+      - 61cb37cc82eeffcbc0bf26d565b40266
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"model": "eye_exam", "view": "users__fail", "fields": ["users__fail.last_name"],
+      "limit": 0, "filter_expression": "1=2"}'
+    headers:
+      Content-Length:
+      - '121'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=59426826
+    method: POST
+    uri: https://spectacles.looker.com:19999/api/3.1/queries?fields=id%2Cshare_url
+  response:
+    body:
+      string: '{"id":1932,"share_url":"https://spectacles.looker.com/x/AnH3ci978hOGDomjIRP90U"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '80'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 28 Dec 2021 16:14:04 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 08a78fd3b84617a7
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 08a78fd3b84617a7
+      X-B3-TraceId:
+      - 61cb37cc5adfc5a708a78fd3b84617a7
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=59426826
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/queries/1932/run/sql
+  response:
+    body:
+      string: "SELECT\n    users__fail.\"LAST_NAME\"  AS \"users__fail.last_name\"\nFROM
+        \"PUBLIC\".\"USERS\"\n   AS users__fail\nWHERE (1 = 2)\nGROUP BY\n    1\nORDER
+        BY\n    1\nFETCH NEXT 0 ROWS ONLY"
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '169'
+      Content-Type:
+      - application/sql
+      Date:
+      - Tue, 28 Dec 2021 16:14:04 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 81dd3a352f673895
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 81dd3a352f673895
+      X-B3-TraceId:
+      - 61cb37cc1f2cecde81dd3a352f673895
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+version: 1

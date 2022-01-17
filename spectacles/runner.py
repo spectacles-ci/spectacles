@@ -1,5 +1,6 @@
-from spectacles.exceptions import LookerApiError
-from typing import List, Dict, Any, Optional
+import re
+from spectacles.exceptions import LookerApiError, SqlError
+from typing import List, Optional, cast, Tuple
 from dataclasses import dataclass
 import itertools
 from spectacles.client import LookerClient
@@ -9,10 +10,13 @@ from spectacles.validators import (
     ContentValidator,
     LookMLValidator,
 )
+from spectacles.types import JsonDict
+from spectacles.validators.sql import SqlTest
+from spectacles.exceptions import SpectaclesException
 from spectacles.utils import time_hash
+from spectacles.lookml import build_project, Project, Explore
 from spectacles.logger import GLOBAL_LOGGER as logger
-from spectacles.printer import print_header
-from spectacles.types import QueryMode
+from spectacles.printer import print_header, LINE_WIDTH
 
 
 @dataclass
@@ -21,6 +25,11 @@ class ProjectState:
     workspace: str
     branch: str
     commit: str
+
+
+def is_commit(string: str) -> bool:
+    """Tests if a string is a SHA1 hash."""
+    return bool(re.match("[0-9a-f]{5,40}", string))
 
 
 class LookerBranchManager:
@@ -44,17 +53,36 @@ class LookerBranchManager:
         self.is_temp_branch: bool = False
         self.import_managers: List[LookerBranchManager] = []
 
-    def __call__(
-        self,
-        branch: Optional[str] = None,
-        commit: Optional[str] = None,
-        ephemeral: Optional[bool] = None,
-    ):
-        if branch and commit:
-            raise ValueError("Cannot call with both branch and commit.")
-        self.branch = branch
-        self.commit = commit
-        self.ephemeral = ephemeral or bool(commit)
+    def __call__(self, ref: Optional[str] = None, ephemeral: Optional[bool] = None):
+        logger.debug(
+            f"\nSetting Git state for project '{self.project}' "
+            f"@ {ref or 'production'}\n" + "-" * LINE_WIDTH
+        )
+        self.branch = None
+        self.commit = None
+
+        if ref is None:
+            pass
+        elif is_commit(ref):
+            self.commit = ref
+        else:
+            self.branch = ref
+
+        if ephemeral is None:
+            if self.commit:
+                self.ephemeral = True
+            else:
+                self.ephemeral = False
+        else:
+            if self.commit and ephemeral is False:
+                raise ValueError(
+                    "ephemeral = False is invalid for a commit reference because "
+                    "it's impossible to checkout a commit directly in Looker. "
+                    "You must use a temp branch."
+                )
+
+            self.ephemeral = ephemeral
+
         self.is_temp_branch = False
         self.import_managers = []
         return self
@@ -63,9 +91,12 @@ class LookerBranchManager:
         # A branch was passed, so we check it out in dev mode.
         if self.branch:
             self.update_workspace("dev")
-            self.client.checkout_branch(self.project, self.branch)
-            if self.remote_reset:
-                self.client.reset_to_remote(self.project)
+            if self.ephemeral:
+                self.branch = self.checkout_temp_branch(self.branch)
+            else:
+                self.client.checkout_branch(self.project, self.branch)
+                if self.remote_reset:
+                    self.client.reset_to_remote(self.project)
         # A commit was passed, so we non-destructively create a temporary branch we can
         # hard reset to the commit.
         elif self.commit:
@@ -194,147 +225,238 @@ class Runner:
 
     def __init__(
         self,
-        base_url: str,
+        client: LookerClient,
         project: str,
-        client_id: str,
-        client_secret: str,
-        port: int = 19999,
-        api_version: float = 3.1,
         remote_reset: bool = False,
     ):
         self.project = project
-        self.client = LookerClient(
-            base_url, client_id, client_secret, port, api_version
-        )
-        self.branch_manager = LookerBranchManager(self.client, project, remote_reset)
+        self.client = client
+        self.branch_manager = LookerBranchManager(client, project, remote_reset)
 
     def validate_sql(
         self,
-        branch: Optional[str],
-        commit: Optional[str],
-        selectors: List[str],
-        exclusions: List[str],
-        mode: QueryMode = "batch",
+        ref: Optional[str] = None,
+        filters: List[str] = None,
+        fail_fast: bool = True,
+        incremental: bool = False,
+        target: Optional[str] = None,
         concurrency: int = 10,
         profile: bool = False,
         runtime_threshold: int = 5,
-    ) -> Dict[str, Any]:
-        with self.branch_manager(branch, commit):
-            validator = SqlValidator(
-                self.client, self.project, concurrency, runtime_threshold
+    ) -> JsonDict:
+        if filters is None:
+            filters = ["*/*"]
+        validator = SqlValidator(self.client, concurrency, runtime_threshold)
+        tests: List[SqlTest] = []
+
+        # Create explore-level tests for the desired ref
+        with self.branch_manager(ref=ref, ephemeral=incremental):
+            base_ref = self.branch_manager.ref  # Resolve the full ref after checkout
+            logger.debug("Building explore tests for the desired ref")
+            project = build_project(
+                self.client, name=self.project, filters=filters, include_dimensions=True
             )
-            logger.info(
-                "Building LookML project hierarchy for project "
-                f"'{self.project}' @ {self.branch_manager.ref}"
+            base_tests = validator.create_tests(project, compile_sql=incremental)
+
+        if incremental:
+            unique_base_tests = set(base_tests)
+            # Create explore tests for the target
+            with self.branch_manager(ref=target, ephemeral=True):
+                target_ref = self.branch_manager.ref
+                if target_ref == base_ref:
+                    raise SpectaclesException(
+                        name="incremental-same-ref",
+                        title="Incremental comparison to the same Git state.",
+                        detail=(
+                            f"The base ref ({ref or 'production'}) and "
+                            f"target ref ({target or 'production'}) point to the "
+                            f"same commit ({base_ref}), "
+                            "so incremental comparison isn't possible."
+                        ),
+                    )
+                logger.debug("Building explore tests for the target ref")
+                target_project: Project = build_project(
+                    self.client,
+                    name=self.project,
+                    filters=filters,
+                    include_dimensions=True,
+                )
+                target_tests = validator.create_tests(target_project, compile_sql=True)
+                unique_target_tests = set(target_tests)
+
+            # Determine which explore tests are identical between target and base
+            # Iterate instead of set operations so we have control of which test, and
+            # corresponding which `lookml_ref` is used
+            tests = []
+            for test in unique_base_tests:
+                if test in unique_target_tests:
+                    # Mark explores with the same compiled SQL (test) as skipped
+                    explore = cast(Explore, test.lookml_ref)  # Appease mypy
+                    explore.skipped = True
+                else:
+                    # Test explores with unique SQL for base ref
+                    tests.append(test)
+
+            logger.debug(
+                f"Found {len(unique_base_tests - unique_target_tests)} "
+                "explore tests with unique SQL"
             )
-            validator.build_project(selectors, exclusions, build_dimensions=True)
-            explore_count = validator.project.count_explores()
-            print_header(
-                f"Testing {explore_count} "
-                f"{'explore' if explore_count == 1 else 'explores'} "
-                f"[{mode} mode] "
-                f"[concurrency = {validator.query_slots}]"
-            )
-            results = validator.validate(mode, profile)
+        else:
+            tests = base_tests
+
+        explore_count = project.count_explores()
+        print_header(
+            f"Testing {explore_count} "
+            f"{'explore' if explore_count == 1 else 'explores'} "
+            + ("[fail fast] " if fail_fast else "")
+            + f"[concurrency = {validator.query_slots}]"
+        )
+
+        with self.branch_manager(ref=ref):
+            validator.run_tests(tests, profile)
+
+        # Create dimension tests for the desired ref when explores errored
+        if not fail_fast:
+            with self.branch_manager(ref=ref, ephemeral=incremental):
+                base_ref = self.branch_manager.ref
+                logger.debug("Building dimension tests for the desired ref")
+                base_tests = validator.create_tests(project, at_dimension_level=True)
+                validator.run_tests(base_tests, profile)
+
+            # For errored dimensions, create dimension tests for the target ref
+            if incremental:
+                with self.branch_manager(ref=target, ephemeral=True):
+                    target_ref = self.branch_manager.ref
+                    logger.debug("Building dimension tests for the target ref")
+
+                    target_sql: List[Tuple[str, str]] = []
+                    for dimension in project.iter_dimensions(errored=True):
+                        test = validator._create_dimension_test(
+                            dimension, compile_sql=True
+                        )
+                        if test.sql:
+                            target_sql.append((test.lookml_ref.name, test.sql))
+
+                # Keep only the errors that don't exist on the target branch
+                logger.debug(
+                    "Removing errors that would exist in project "
+                    f"@ {target or 'production'}"
+                )
+
+                for dimension in project.iter_dimensions(errored=True):
+                    dimension.errors = [
+                        error
+                        for error in dimension.errors
+                        if not isinstance(error, SqlError)
+                        or (dimension.name, error.metadata["sql"]) not in target_sql
+                    ]
+
+        results = project.get_results(validator="sql", fail_fast=fail_fast)
         return results
 
     def validate_data_tests(
         self,
-        branch: Optional[str],
-        commit: Optional[str],
-        selectors: List[str],
-        exclusions: List[str],
-    ) -> Dict[str, Any]:
-        with self.branch_manager(branch, commit):
-            validator = DataTestValidator(self.client, self.project)
+        ref: Optional[str] = None,
+        filters: List[str] = None,
+    ) -> JsonDict:
+        if filters is None:
+            filters = ["*/*"]
+        with self.branch_manager(ref):
+            validator = DataTestValidator(self.client)
             logger.info(
                 "Building LookML project hierarchy for project "
                 f"'{self.project}' @ {self.branch_manager.ref}"
             )
-            validator.build_project(selectors, exclusions)
-            explore_count = validator.project.count_explores()
+            project = build_project(self.client, name=self.project, filters=filters)
+            explore_count = project.count_explores()
             print_header(
                 f"Running data tests based on {explore_count} "
                 f"{'explore' if explore_count == 1 else 'explores'}"
             )
-            results = validator.validate()
+            tests = validator.get_tests(project)
+            validator.validate(tests)
+
+        results = project.get_results(validator="data_test")
         return results
 
-    def validate_lookml(
-        self, branch: Optional[str], commit: Optional[str], severity: str
-    ) -> Dict[str, Any]:
-        with self.branch_manager(branch, commit):
-            validator = LookMLValidator(self.client, self.project)
+    def validate_lookml(self, ref: Optional[str], severity: str) -> JsonDict:
+        with self.branch_manager(ref=ref):
+            validator = LookMLValidator(self.client)
             print_header(f"Validating LookML in project {self.project} [{severity}]")
-            results = validator.validate(severity)
+            results = validator.validate(self.project, severity)
         return results
 
     def validate_content(
         self,
-        branch: Optional[str],
-        commit: Optional[str],
-        selectors: List[str],
-        exclusions: List[str],
+        ref: Optional[str] = None,
+        filters: List[str] = None,
         incremental: bool = False,
+        target: Optional[str] = None,
         exclude_personal: bool = False,
-        exclude_folders: List[int] = [],
-        include_folders: List[int] = [],
-    ) -> Dict[str, Any]:
-        with self.branch_manager(branch, commit):
+        folders: List[str] = None,
+    ) -> JsonDict:
+        if filters is None:
+            filters = ["*/*"]
+        if folders is None:
+            folders = []
+
+        with self.branch_manager(ref=ref):
             validator = ContentValidator(
                 self.client,
-                self.project,
                 exclude_personal,
-                exclude_folders,
-                include_folders,
+                folders,
             )
             logger.info(
                 "Building LookML project hierarchy for project "
                 f"'{self.project}' @ {self.branch_manager.ref}"
             )
-            validator.build_project(selectors, exclusions)
-            explore_count = validator.project.count_explores()
+            project = build_project(self.client, name=self.project, filters=filters)
+            explore_count = project.count_explores()
             print_header(
                 f"Validating content based on {explore_count} "
                 f"{'explore' if explore_count == 1 else 'explores'}"
                 + (" [incremental mode] " if incremental else "")
             )
-            results = validator.validate()
+            validator.validate(project)
+            results = project.get_results(validator="content")
+
         if incremental and (self.branch_manager.branch or self.branch_manager.commit):
-            logger.debug("Starting another content validation against production")
-            with self.branch_manager():
+            logger.debug("Starting another content validation against the target ref")
+            with self.branch_manager(ref=target):
                 logger.debug(
                     "Building LookML project hierarchy for project "
                     f"'{self.project}' @ {self.branch_manager.ref}"
                 )
-                validator.build_project(selectors, exclusions)
-                main_results = validator.validate()
-            return self._incremental_results(main=main_results, additional=results)
+                target_project = build_project(
+                    self.client, name=self.project, filters=filters
+                )
+                validator.validate(target_project)
+                target_results = project.get_results(validator="content")
+
+            return self._incremental_results(base=results, target=target_results)
         else:
             return results
 
     @staticmethod
-    def _incremental_results(
-        main: Dict[str, Any], additional: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def _incremental_results(base: JsonDict, target: JsonDict) -> JsonDict:
         """Returns a new result with only the additional errors in `additional`."""
-        incremental: Dict[str, Any] = {
+        diff: JsonDict = {
             "validator": "content",
-            # Start with models and explores we know passed in `additional`
-            "tested": [test for test in additional["tested"] if test["passed"]],
+            # Start with models and explores we know passed for the base ref
+            "tested": [test for test in base["tested"] if test["status"] != "failed"],
             "errors": [],
         }
 
         # Build a list of disputed tests where dupes by model and explore are allowed
         tests = []
-        for error in additional["errors"]:
-            if error in main["errors"]:
-                passed = True
+        for error in base["errors"]:
+            if error in target["errors"]:
+                status = "passed"
             else:
-                passed = False
-                incremental["errors"].append(error)
+                status = "failed"
+                diff["errors"].append(error)
 
-            test = dict(model=error["model"], explore=error["explore"], passed=passed)
+            test = dict(model=error["model"], explore=error["explore"], status=status)
             tests.append(test)
 
         def key_by(x):
@@ -343,16 +465,20 @@ class Runner:
         if tests:
             # Dedupe the list of tests, grouping by model and explore and taking the min
             # To do this, we group by model and explore and sort by `passed`
-            tests = sorted(tests, key=lambda x: (x["model"], x["explore"], x["passed"]))
-            for key, group in itertools.groupby(tests, key=key_by):
+            tests = sorted(
+                tests, key=lambda x: (x["model"], x["explore"], x["status"] != "failed")
+            )
+            for _, group in itertools.groupby(tests, key=key_by):
                 items = list(group)
-                incremental["tested"].append(items[0])
+                diff["tested"].append(items[0])
 
         # Re-sort the final list
-        incremental["tested"] = sorted(incremental["tested"], key=key_by)
+        diff["tested"] = sorted(diff["tested"], key=key_by)
 
         # Recompute the overall state of the test suite
-        passed = min((test["passed"] for test in incremental["tested"]), default=True)
-        incremental["status"] = "passed" if passed else "failed"
+        passed = min(
+            (test["status"] != "failed" for test in diff["tested"]), default=True
+        )
+        diff["status"] = "passed" if passed else "failed"
 
-        return incremental
+        return diff

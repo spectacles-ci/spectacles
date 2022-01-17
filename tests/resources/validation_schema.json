@@ -124,9 +124,6 @@
         "validator": {
             "type": "string"
         },
-        "passed": {
-            "type": "boolean"
-        },
         "status": {
             "type": "string"
         },
@@ -142,8 +139,8 @@
                     "explore": {
                         "type": "string"
                     },
-                    "passed": {
-                        "type": "boolean"
+                    "status": {
+                        "type": "string"
                     }
                 }
             },

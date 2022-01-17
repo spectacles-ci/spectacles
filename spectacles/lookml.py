@@ -1,7 +1,9 @@
 import re
-from typing import Dict, List, Sequence, Optional, Any
-from spectacles.exceptions import ValidationError
-from spectacles.types import QueryMode, JsonDict
+from typing import Dict, List, Sequence, Optional, Any, Iterable
+from spectacles.client import LookerClient
+from spectacles.exceptions import ValidationError, LookMlNotFound
+from spectacles.types import JsonDict
+from spectacles.select import is_selected
 
 
 class LookMlObject:
@@ -86,6 +88,7 @@ class Explore(LookMlObject):
         self.dimensions = [] if dimensions is None else dimensions
         self.errors: List[ValidationError] = []
         self.successes: List[JsonDict] = []
+        self.skipped = False
         self._queried: bool = False
 
     def __eq__(self, other):
@@ -168,7 +171,7 @@ class Model(LookMlObject):
         self.explores = explores
 
     def __repr__(self):
-        return f"{self.__class__.__name__}(name={self.name}, models={self.models})"
+        return f"{self.__class__.__name__}(name={self.name}, explores={self.explores})"
 
     def __eq__(self, other):
         if not isinstance(other, Model):
@@ -247,7 +250,34 @@ class Project(LookMlObject):
         return self.name == other.name and self.models == other.models
 
     def count_explores(self) -> int:
-        return sum(len(model.explores) for model in self.models)
+        """Returns the number of explores in the project, excluding skipped explores."""
+        return len([explore for explore in self.iter_explores() if not explore.skipped])
+
+    def iter_models(self, errored: bool = False) -> Iterable[Model]:
+        for model in self.models:
+            if errored:
+                if model.errored:
+                    yield model
+            else:
+                yield model
+
+    def iter_explores(self, errored: bool = False) -> Iterable[Explore]:
+        for model in self.iter_models():
+            for explore in model.explores:
+                if errored:
+                    if explore.errored:
+                        yield explore
+                else:
+                    yield explore
+
+    def iter_dimensions(self, errored: bool = False) -> Iterable[Dimension]:
+        for explore in self.iter_explores():
+            for dimension in explore.dimensions:
+                if errored:
+                    if dimension.errored:
+                        yield dimension
+                else:
+                    yield dimension
 
     @property
     def errored(self):
@@ -278,11 +308,6 @@ class Project(LookMlObject):
         for model in self.models:
             model.queried = value
 
-    def get_errored_models(self):
-        for model in self.models:
-            if model.errored:
-                yield model
-
     def get_model(self, name: str) -> Optional[Model]:
         return next((model for model in self.models if model.name == name), None)
 
@@ -294,37 +319,36 @@ class Project(LookMlObject):
             return model_object.get_explore(name)
 
     def get_results(
-        self, validator: str, mode: Optional[QueryMode] = None
+        self, validator: str, fail_fast: Optional[bool] = None
     ) -> Dict[str, Any]:
         errors: List[Dict[str, Any]] = []
         successes: List[Dict[str, Any]] = []
         tested = []
 
-        def parse_explore_errors(explore):
-            if validator != "sql" or mode == "batch":
-                errors.extend([error.__dict__ for error in explore.errors])
-            else:
-                for dimension in explore.dimensions:
-                    if dimension.errored:
-                        errors.extend([error.__dict__ for error in dimension.errors])
-
         for model in self.models:
             for explore in model.explores:
-                passed = True
-                if explore.errored:
-                    passed = False
-                    parse_explore_errors(explore)
+                status = "passed"
+                if explore.skipped:
+                    status = "skipped"
+                elif explore.errored and (validator != "sql" or fail_fast is True):
+                    status = "failed"
+                    errors.extend([e.__dict__ for e in explore.errors])
+                elif explore.errored:
+                    for dimension in explore.dimensions:
+                        if dimension.errored:
+                            status = "failed"
+                            errors.extend([e.__dict__ for e in dimension.errors])
                 test: Dict[str, Any] = {
                     "model": model.name,
                     "explore": explore.name,
-                    "passed": passed,
+                    "status": status,
                 }
                 if explore.successes:
                     successes.extend([success for success in explore.successes])
 
                 tested.append(test)
 
-        passed = min((test["passed"] for test in tested), default=True)
+        passed = min((test["status"] != "failed" for test in tested), default=True)
         return {
             "validator": validator,
             "status": "passed" if passed else "failed",
@@ -339,3 +363,62 @@ class Project(LookMlObject):
     @property
     def number_of_errors(self):
         return sum([model.number_of_errors for model in self.models if model.errored])
+
+
+def build_dimensions(
+    client: LookerClient,
+    model_name: str,
+    explore_name: str,
+) -> List[Dimension]:
+    """Creates Dimension objects for all dimensions in a given explore."""
+    dimensions_json = client.get_lookml_dimensions(model_name, explore_name)
+    dimensions: List[Dimension] = []
+    for dimension_json in dimensions_json:
+        dimension = Dimension.from_json(dimension_json, model_name, explore_name)
+        dimension.url = client.base_url + dimension.url
+        if not dimension.ignore:
+            dimensions.append(dimension)
+    return dimensions
+
+
+def build_project(
+    client: LookerClient,
+    name: str,
+    filters: Optional[List[str]] = None,
+    include_dimensions: bool = False,
+) -> Project:
+    """Creates an object (tree) representation of a LookML project."""
+    if filters is None:
+        filters = ["*/*"]
+
+    models = []
+    fields = ["name", "project_name", "explores"]
+    for lookmlmodel in client.get_lookml_models(fields=fields):
+        model = Model.from_json(lookmlmodel)
+        if model.project_name == name and model.explores:
+            models.append(model)
+
+    if not models:
+        raise LookMlNotFound(
+            name="project-models-not-found",
+            title="No configured models found for the specified project.",
+            detail=(
+                f"Go to {client.base_url}/projects and confirm "
+                "a) at least one model exists for the project and "
+                "b) it has an active configuration."
+            ),
+        )
+
+    for model in models:
+        model.explores = [
+            explore
+            for explore in model.explores
+            if is_selected(model.name, explore.name, filters)
+        ]
+
+        if include_dimensions:
+            for explore in model.explores:
+                explore.dimensions = build_dimensions(client, model.name, explore.name)
+
+    project = Project(name, [model for model in models if len(model.explores) > 0])
+    return project

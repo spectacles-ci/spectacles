@@ -1,0 +1,84 @@
+interactions:
+- request:
+    body: '{"model": "eye_exam", "view": "users", "fields": ["users.city", "users.email",
+      "users.first_name", "users.id", "users.last_name", "users.state"], "limit":
+      0, "filter_expression": "1=2"}'
+    headers:
+      Content-Length:
+      - '185'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=59426826
+    method: POST
+    uri: https://spectacles.looker.com:19999/api/3.1/queries?fields=id%2Cshare_url
+  response:
+    body:
+      string: '{"id":2216,"share_url":"https://spectacles.looker.com/x/XZAL69PohkzXTUbfYcq3V9"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '80'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 28 Dec 2021 16:14:05 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 8edabc343d841c8d
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 8edabc343d841c8d
+      X-B3-TraceId:
+      - 61cb37cdabea68888edabc343d841c8d
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=59426826
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/queries/2216/run/sql
+  response:
+    body:
+      string: "SELECT\n    users.\"CITY\"  AS \"users.city\",\n    users.\"EMAIL\"
+        \ AS \"users.email\",\n    users.\"FIRST_NAME\"  AS \"users.first_name\",\n
+        \   users.\"ID\"  AS \"users.id\",\n    users.\"LAST_NAME\"  AS \"users.last_name\",\n
+        \   users.\"STATE\"  AS \"users.state\"\nFROM \"PUBLIC\".\"USERS\"\n     AS
+        users\nWHERE (1 = 2)\nORDER BY\n    1\nFETCH NEXT 0 ROWS ONLY"
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '325'
+      Content-Type:
+      - application/sql
+      Date:
+      - Tue, 28 Dec 2021 16:14:05 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 367bdf9674bc3ae5
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 367bdf9674bc3ae5
+      X-B3-TraceId:
+      - 61cb37cdb39b9fde367bdf9674bc3ae5
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+version: 1

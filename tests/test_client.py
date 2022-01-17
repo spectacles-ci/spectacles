@@ -91,8 +91,9 @@ def client_kwargs():
         get_manifest={"project": "project_name"},
         get_all_branches={"project": "project_name"},
         content_validation={},
-        all_folders={"project": "project_name"},
         lookml_validation={"project": "project_name"},
+        all_folders={},
+        run_query={"query_id": 13041},
     )
 
 

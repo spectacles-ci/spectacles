@@ -132,10 +132,14 @@ def print_sql_error(
     logger.info("\n" + f"Test SQL: {file_path}")
 
 
-def print_validation_result(passed: bool, source: str):
-    bullet = "✓" if passed else "✗"
-    message = green(source) if passed else red(source)
-    status = "passed" if passed else "failed"
+def print_validation_result(status: str, source: str):
+    bullet = "✗" if status == "failed" else "✓"
+    if status == "passed":
+        message = green(source)
+    elif status == "failed":
+        message = red(source)
+    elif status == "skipped":
+        message = dim(source)
     logger.info(f"{bullet} {message} {status}")
 
 

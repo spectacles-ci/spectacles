@@ -1,0 +1,3251 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=3119792
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"production","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '83'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:18 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 0ed8b057b6e19da2
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 0ed8b057b6e19da2
+      X-B3-TraceId:
+      - 61e1d526c0c62e630ed8b057b6e19da2
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=3119792
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
+  response:
+    body:
+      string: '{"name":"master","remote":"origin","remote_name":"master","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":true,"ahead_count":0,"behind_count":0,"commit_at":1616610858,"ref":"e65f46cd514f9742c95458a7ef66400baefdf37f","remote_ref":"e65f46cd514f9742c95458a7ef66400baefdf37f","can":{}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '362'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:19 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - db6c33c56a0ee9d8
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - db6c33c56a0ee9d8
+      X-B3-TraceId:
+      - 61e1d527a7135e09db6c33c56a0ee9d8
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=3119792
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/manifest
+  response:
+    body:
+      string: '{"name":"eye_exam","imports":[{"name":"welcome_to_looker","url":null,"ref":null,"is_remote":false,"can":{}}],"localization_settings":null,"can":{}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '147'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:19 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - fe4250c42155bfe5
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - fe4250c42155bfe5
+      X-B3-TraceId:
+      - 61e1d5273e302048fe4250c42155bfe5
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"workspace_id": "dev"}'
+    headers:
+      Content-Length:
+      - '23'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=3119792
+    method: PATCH
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"dev","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '76'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:19 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 25c4c0e17d0dc1ce
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 25c4c0e17d0dc1ce
+      X-B3-TraceId:
+      - 61e1d5274bee9cfd25c4c0e17d0dc1ce
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"name": "pytest"}'
+    headers:
+      Content-Length:
+      - '18'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=3119792
+    method: PUT
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
+  response:
+    body:
+      string: '{"name":"pytest","remote":"origin","remote_name":"pytest","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1634603985,"ref":"ccdfc98fe6c067810f914c31a5c290e93b1f0366","remote_ref":"ccdfc98fe6c067810f914c31a5c290e93b1f0366","can":{}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '363'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:19 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 98886e27c360b51b
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 98886e27c360b51b
+      X-B3-TraceId:
+      - 61e1d527320bd02f98886e27c360b51b
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=3119792
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"dev","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '76'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:19 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - fe00e58bc30ecf02
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - fe00e58bc30ecf02
+      X-B3-TraceId:
+      - 61e1d5276770956ffe00e58bc30ecf02
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=3119792
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
+  response:
+    body:
+      string: '{"name":"benchmark/no-errors","remote":"origin","remote_name":"benchmark/no-errors","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1640119431,"ref":"382ad01406634a509a6685c42ae16c4f4dc1f7cc","remote_ref":"382ad01406634a509a6685c42ae16c4f4dc1f7cc","can":{}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '389'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:19 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - b11f1a0d1c93070f
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - b11f1a0d1c93070f
+      X-B3-TraceId:
+      - 61e1d527d66ce420b11f1a0d1c93070f
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=3119792
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/manifest
+  response:
+    body:
+      string: "<!DOCTYPE html>\n<html>\n<head>\n    <title>Looker Not Found (404)</title>\n
+        \   <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,600'
+        rel='stylesheet' type='text/css'>\n\n    <!-- @@@@@@@@@@@@@ FAVICONS @@@@@@@@@@@@@
+        -->\n\n    <link rel=\"apple-touch-icon-precomposed\" sizes=\"57x57\" href=\"https://wwwstatic-b.lookercdn.com/favicon/apple-touch-icon-57x57.png\"
+        />\n    <link rel=\"apple-touch-icon-precomposed\" sizes=\"114x114\" href=\"https://wwwstatic-c.lookercdn.com/favicon/apple-touch-icon-114x114.png\"
+        />\n    <link rel=\"apple-touch-icon-precomposed\" sizes=\"72x72\" href=\"https://wwwstatic-d.lookercdn.com/favicon/apple-touch-icon-72x72.png\"
+        />\n    <link rel=\"apple-touch-icon-precomposed\" sizes=\"144x144\" href=\"https://wwwstatic-a.lookercdn.com/favicon/apple-touch-icon-144x144.png\"
+        />\n    <link rel=\"apple-touch-icon-precomposed\" sizes=\"60x60\" href=\"https://wwwstatic-b.lookercdn.com/favicon/apple-touch-icon-60x60.png\"
+        />\n    <link rel=\"apple-touch-icon-precomposed\" sizes=\"120x120\" href=\"https://wwwstatic-c.lookercdn.com/favicon/apple-touch-icon-120x120.png\"
+        />\n    <link rel=\"apple-touch-icon-precomposed\" sizes=\"76x76\" href=\"https://wwwstatic-d.lookercdn.com/favicon/apple-touch-icon-76x76.png\"
+        />\n    <link rel=\"apple-touch-icon-precomposed\" sizes=\"152x152\" href=\"https://wwwstatic-a.lookercdn.com/favicon/apple-touch-icon-152x152.png\"
+        />\n    <link rel=\"icon\" type=\"image/png\" href=\"https://wwwstatic-b.lookercdn.com/favicon/favicon-196x196.png\"
+        sizes=\"196x196\" />\n    <link rel=\"icon\" type=\"image/png\" href=\"https://wwwstatic-c.lookercdn.com/favicon/favicon-96x96.png\"
+        sizes=\"96x96\" />\n    <link rel=\"icon\" type=\"image/png\" href=\"https://wwwstatic-d.lookercdn.com/favicon/favicon-32x32.png\"
+        sizes=\"32x32\" />\n    <link rel=\"icon\" type=\"image/png\" href=\"https://wwwstatic-a.lookercdn.com/favicon/favicon-16x16.png\"
+        sizes=\"16x16\" />\n    <link rel=\"icon\" type=\"image/png\" href=\"https://wwwstatic-b.lookercdn.com/favicon/favicon-128.png\"
+        sizes=\"128x128\" />\n    <meta name=\"application-name\" content=\"Looker\"/>\n
+        \   <meta name=\"msapplication-TileColor\" content=\"#FFFFFF\" />\n    <meta
+        name=\"msapplication-TileImage\" content=\"https://wwwstatic-c.lookercdn.com/favicon/mstile-144x144.png\"
+        />\n    <meta name=\"msapplication-square70x70logo\" content=\"https://wwwstatic-d.lookercdn.com/favicon/mstile-70x70.png\"
+        />\n    <meta name=\"msapplication-square150x150logo\" content=\"https://wwwstatic-a.lookercdn.com/favicon/mstile-150x150.png\"
+        />\n    <meta name=\"msapplication-wide310x150logo\" content=\"https://wwwstatic-b.lookercdn.com/favicon/mstile-310x150.png\"
+        />\n    <meta name=\"msapplication-square310x310logo\" content=\"https://wwwstatic-c.lookercdn.com/favicon/mstile-310x310.png\"
+        />\n\n    <style type=\"text/css\">\n        body {\n            background-color:
+        #2e343f;\n            color: white;\n            height: auto;\n            font-family:
+        Open Sans, Helvetica, Arial, sans-serif;\n        }\n        .message {\n
+        \           width: 100%;\n            max-width: 760px;\n            margin:
+        0 auto;\n            margin-top: 135px;\n            text-align: center;\n
+        \       }\n        h2, h3 {\n            font-weight: normal;\n        }\n
+        \       a {\n            color: white;\n        }\n    </style>\n</head>\n<body>\n\n
+        \   <div class=\"message\">\n\n        <img width=\"210\" height=\"84\" src=\"https://wwwstatic-a.lookercdn.com/logos/looker_all_white.svg\"
+        alt=\"Looker\">\n\n        <h1>Looker is unavailable.</h1>\n\n        <h2>If
+        you typed in a URL, double-check the spelling.</h2>\n        <h2>This may
+        also be due to a temporary condition such as an outage, <a href=\"https://docs.looker.com/relnotes/hosted-maintenance-hours\">scheduled
+        maintenance</a> or upgrade.</h2>\n        <br>\n        <h3>\n            If
+        this message persists or you have any concerns, <br> contact us from\n            <a
+        href=\"https://help.looker.com\">help.looker.com</a> and we'll respond promptly.\n
+        \       </h3>\n\n    </div>\n\n</body>\n</html>\n"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/html
+      Date:
+      - Fri, 14 Jan 2022 19:55:20 GMT
+      Vary:
+      - Accept-Encoding
+    status:
+      code: 404
+      message: Not Found
+- request:
+    body: '{"workspace_id": "production"}'
+    headers:
+      Content-Length:
+      - '30'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=3119792
+    method: PATCH
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"production","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '83'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:20 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 5c4a222c73022a38
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 5c4a222c73022a38
+      X-B3-TraceId:
+      - 61e1d52882a2cd885c4a222c73022a38
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=3119792
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"production","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '83'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:20 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - eda768242e320148
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - eda768242e320148
+      X-B3-TraceId:
+      - 61e1d52862300870eda768242e320148
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=3119792
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
+  response:
+    body:
+      string: '{"name":"master","remote":"origin","remote_name":"master","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":true,"ahead_count":0,"behind_count":0,"commit_at":1589215827,"ref":"71025770cf923f656ba2375436a1bd85ac00affc","remote_ref":"71025770cf923f656ba2375436a1bd85ac00affc","can":{}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '362'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:20 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 69ba1346940a2f79
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 69ba1346940a2f79
+      X-B3-TraceId:
+      - 61e1d528d115471369ba1346940a2f79
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"workspace_id": "dev"}'
+    headers:
+      Content-Length:
+      - '23'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=3119792
+    method: PATCH
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"dev","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '76'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:20 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 342577fe8567381a
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 342577fe8567381a
+      X-B3-TraceId:
+      - 61e1d5283dc66867342577fe8567381a
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=3119792
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"dev","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '76'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:20 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 30ffb11aacc4e755
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 30ffb11aacc4e755
+      X-B3-TraceId:
+      - 61e1d528c02a25b330ffb11aacc4e755
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=3119792
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
+  response:
+    body:
+      string: '{"name":"benchmark/no-errors","remote":"origin","remote_name":"benchmark/no-errors","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1640119431,"ref":"382ad01406634a509a6685c42ae16c4f4dc1f7cc","remote_ref":"382ad01406634a509a6685c42ae16c4f4dc1f7cc","can":{}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '389'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:20 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 3a06ba85572a8bbe
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 3a06ba85572a8bbe
+      X-B3-TraceId:
+      - 61e1d528dc9216c83a06ba85572a8bbe
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"name": "tmp_spectacles_a"}'
+    headers:
+      Content-Length:
+      - '28'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=3119792
+    method: POST
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
+  response:
+    body:
+      string: '{"name":"tmp_spectacles_a","remote":"origin","remote_name":"tmp_spectacles_a","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":false,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1640119431,"ref":"382ad01406634a509a6685c42ae16c4f4dc1f7cc","remote_ref":null,"can":{}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '352'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:21 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - a71522bbe5946b68
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - a71522bbe5946b68
+      X-B3-TraceId:
+      - 61e1d52848aeaf43a71522bbe5946b68
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"name": "tmp_spectacles_a", "ref": "71025770cf923f656ba2375436a1bd85ac00affc"}'
+    headers:
+      Content-Length:
+      - '79'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=3119792
+    method: PUT
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
+  response:
+    body:
+      string: '{"name":"tmp_spectacles_a","remote":"origin","remote_name":"tmp_spectacles_a","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":false,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1640119431,"ref":"382ad01406634a509a6685c42ae16c4f4dc1f7cc","remote_ref":null,"can":{}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '352'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:23 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 37b469a26f086714
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 37b469a26f086714
+      X-B3-TraceId:
+      - 61e1d5290d8188c337b469a26f086714
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=3119792
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/lookml_models?fields=name%2Cproject_name%2Cexplores
+  response:
+    body:
+      string: '[{"name":"thelook","project_name":"welcome_to_looker","explores":[{"description":null,"label":"Cohort
+        Data Tool","hidden":true,"group_label":"1) eCommerce with Event Data","name":"cohorts","can":{}},{"description":null,"label":"Web
+        Analytics Data Tool","hidden":true,"group_label":"1) eCommerce with Event
+        Data","name":"data_tool","can":{}},{"description":null,"label":"(1) Orders,
+        Items and Users","hidden":false,"group_label":"1) eCommerce with Event Data","name":"order_items","can":{}},{"description":null,"label":"(2)
+        Web Event Data","hidden":false,"group_label":"1) eCommerce with Event Data","name":"events","can":{}},{"description":null,"label":"(3)
+        Web Session Data","hidden":false,"group_label":"1) eCommerce with Event Data","name":"sessions","can":{}},{"description":null,"label":"(4)
+        Affinity Analysis","hidden":false,"group_label":"1) eCommerce with Event Data","name":"affinity","can":{}},{"description":null,"label":"(5)
+        Share of Wallet Analysis","hidden":false,"group_label":"1) eCommerce with
+        Event Data","name":"orders_with_share_of_wallet_application","can":{}},{"description":null,"label":"(6)
+        Customer Journey Mapping","hidden":false,"group_label":"1) eCommerce with
+        Event Data","name":"journey_mapping","can":{}},{"description":null,"label":"(7)
+        Stock Analysis","hidden":false,"group_label":"1) eCommerce with Event Data","name":"inventory_items","can":{}},{"description":null,"label":"(8)
+        Historical Stock Snapshot Analysis","hidden":false,"group_label":"1) eCommerce
+        with Event Data","name":"inventory_snapshot","can":{}},{"description":null,"label":"Order
+        Items (Kittens)","hidden":true,"group_label":"1) eCommerce with Event Data","name":"kitten_order_items","can":{}}]},{"name":"jaffle_shop","project_name":"jaffle_shop","explores":[{"description":null,"label":"Orders","hidden":false,"group_label":"Jaffle
+        Shop","name":"fct_orders","can":{}}]},{"name":"admin","project_name":"jaffle_shop","explores":[]},{"name":"eye_exam","project_name":"eye_exam","explores":[{"description":null,"label":"Users","hidden":false,"group_label":"Eye
+        Exam","name":"users","can":{}},{"description":null,"label":"Users Fail","hidden":false,"group_label":"Eye
+        Exam","name":"users__fail","can":{}},{"description":null,"label":"Users Fail
+        and Warn","hidden":false,"group_label":"Eye Exam","name":"users__fail_and_warn","can":{}},{"description":null,"label":"Users
+        Warn","hidden":false,"group_label":"Eye Exam","name":"users__warn","can":{}}]},{"name":"web_application","project_name":"spectacles","explores":[{"description":null,"label":"Runs","hidden":false,"group_label":"Web
+        Application","name":"runs","can":{}},{"description":null,"label":"Organisations","hidden":false,"group_label":"Web
+        Application","name":"organisations","can":{}},{"description":null,"label":"Credentials","hidden":false,"group_label":"Web
+        Application","name":"credentials","can":{}},{"description":null,"label":"Users","hidden":false,"group_label":"Web
+        Application","name":"users","can":{}},{"description":null,"label":"Hightouch
+        Reporting","hidden":false,"group_label":"Web Application","name":"hightouch__users","can":{}},{"description":null,"label":"Suites","hidden":false,"group_label":"Web
+        Application","name":"suites","can":{}},{"description":null,"label":"Revenue
+        Reporting","hidden":false,"group_label":"Web Application","name":"revenue_reporting","can":{}}]},{"name":"web_application_gitlab","project_name":"spectacles-gitlab","explores":[{"description":null,"label":"Runs","hidden":false,"group_label":"Web
+        Application Gitlab","name":"runs","can":{}},{"description":null,"label":"Organisations","hidden":false,"group_label":"Web
+        Application Gitlab","name":"organisations","can":{}},{"description":null,"label":"Credentials","hidden":false,"group_label":"Web
+        Application Gitlab","name":"credentials","can":{}}]},{"name":"open_source_gitlab","project_name":"spectacles-gitlab","explores":[{"description":null,"label":"Invocations
+        - this is a change","hidden":false,"group_label":"Open Source","name":"fct_invocations","can":{}}]},{"name":"open_source","project_name":"spectacles","explores":[{"description":null,"label":"Invocations","hidden":false,"group_label":"Open
+        Source","name":"fct_invocations","can":{}}]},{"name":"open_source_azure","project_name":"spectacles_azure","explores":[{"description":null,"label":"Invocations","hidden":false,"group_label":"Open
+        Source","name":"fct_invocations","can":{}}]},{"name":"web_application_azure","project_name":"spectacles_azure","explores":[{"description":null,"label":"Runs","hidden":false,"group_label":"Web
+        Application Azure","name":"runs","can":{}},{"description":null,"label":"Organisations","hidden":false,"group_label":"Web
+        Application Azure","name":"organisations","can":{}},{"description":null,"label":"Credentials","hidden":false,"group_label":"Web
+        Application Azure","name":"credentials","can":{}}]},{"name":"open_source_main","project_name":"spectacles-main-branch","explores":[{"description":null,"label":"Invocations","hidden":false,"group_label":"Open
+        Source (Main Branch Project)","name":"fct_invocations","can":{}}]},{"name":"web_application_main","project_name":"spectacles-main-branch","explores":[{"description":null,"label":"Runs","hidden":false,"group_label":"Web
+        Application (Main Branch Project)","name":"runs","can":{}},{"description":null,"label":"Organisations","hidden":false,"group_label":"Web
+        Application (Main Branch Project)","name":"organisations","can":{}},{"description":null,"label":"Credentials","hidden":false,"group_label":"Web
+        Application (Main Branch Project)","name":"credentials","can":{}}]},{"name":"open_source_advanced_deploy","project_name":"spectacles-advanced-deploy","explores":[{"description":null,"label":"Invocations","hidden":false,"group_label":"Open
+        Source (Advanced Deploy)","name":"fct_invocations","can":{}}]},{"name":"web_application_advanced_deploy","project_name":"spectacles-advanced-deploy","explores":[{"description":null,"label":"Runs","hidden":false,"group_label":"Web
+        Application (Advanced Deploy)","name":"runs","can":{}},{"description":null,"label":"Organisations","hidden":false,"group_label":"Web
+        Application (Advanced Deploy)","name":"organisations","can":{}},{"description":null,"label":"Credentials","hidden":false,"group_label":"Web
+        Application (Advanced Deploy)","name":"credentials","can":{}}]},{"name":"models","project_name":"import-advanced-deploy","explores":[{"description":null,"label":"Organisations
+        - Import Advanced Deploy","hidden":false,"group_label":"Models","name":"dim_organisations","can":{}}]},{"name":"extension-api-explorer","project_name":"marketplace_extension_api_explorer","explores":[]},{"name":"data-dictionary","project_name":"marketplace_extension_data_dictionary","explores":[]},{"name":"spectacles_strava","project_name":"spectacles_strava","explores":[{"description":null,"label":"Raw
+        Activities","hidden":false,"group_label":"Spectacles Strava","name":"raw_activities","can":{}},{"description":null,"label":"Stg
+        Activities","hidden":false,"group_label":"Spectacles Strava","name":"stg_activities","can":{}},{"description":null,"label":"Activity
+        Types","hidden":false,"group_label":"Spectacles Strava","name":"activity_types","can":{}}]},{"name":"spectacles_maps","project_name":"spectacles_maps","explores":[{"description":null,"label":"Fivetran
+        Audit","hidden":false,"group_label":"Spectacles Maps","name":"fivetran_audit","can":{}},{"description":null,"label":"Raw
+        Rpi Housing Index","hidden":false,"group_label":"Spectacles Maps","name":"raw_rpi_housing_index","can":{}},{"description":null,"label":"Raw
+        Rpi Housing Percent","hidden":false,"group_label":"Spectacles Maps","name":"raw_rpi_housing_percent","can":{}},{"description":null,"label":"Raw
+        House Sales","hidden":false,"group_label":"Spectacles Maps","name":"raw_house_sales","can":{}},{"description":null,"label":"Raw
+        Uk Postcodes","hidden":false,"group_label":"Spectacles Maps","name":"raw_uk_postcodes","can":{}},{"description":null,"label":"Raw
+        Cpih","hidden":false,"group_label":"Spectacles Maps","name":"raw_cpih","can":{}}]},{"name":"rpt_property_irr","project_name":"spectacles_maps","explores":[]}]'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '8110'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:23 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 30f6d2910f5ed47d
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 30f6d2910f5ed47d
+      X-B3-TraceId:
+      - 61e1d52b6a83844c30f6d2910f5ed47d
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=3119792
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/lookml_models/eye_exam/explores/users?fields=fields
+  response:
+    body:
+      string: '{"fields":{"dimensions":[{"align":"right","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":true,"label":"Users
+        Age","label_from_parameter":null,"label_short":"Age","map_layer":null,"name":"users.age","strict_value_format":false,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"number","user_attribute_filter_types":["number","advanced_filter_number"],"value_format":null,"view":"users","view_label":"Users","dynamic":false,"week_start_day":"monday","dimension_group":null,"error":null,"field_group_variant":"Age","measure":false,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users","suggest_dimension":"users.age","suggest_explore":"users","suggestable":false,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"lookml_link":"/projects/eye_exam/files/views%2Fusers.view.lkml?line=12","permanent":null,"source_file":"views/users.view.lkml","source_file_path":"eye_exam/views/users.view.lkml","sql":"--spectacles:
+        ignore\n         ${TABLE}.\"AGE\" ","sql_case":null,"filters":null},{"align":"left","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":false,"label":"Users
+        City","label_from_parameter":null,"label_short":"City","map_layer":null,"name":"users.city","strict_value_format":false,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"string","user_attribute_filter_types":["string","advanced_filter_string"],"value_format":null,"view":"users","view_label":"Users","dynamic":false,"week_start_day":"monday","dimension_group":null,"error":null,"field_group_variant":"City","measure":false,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users","suggest_dimension":"users.city","suggest_explore":"users","suggestable":true,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"lookml_link":"/projects/eye_exam/files/views%2Fusers.view.lkml?line=23","permanent":null,"source_file":"views/users.view.lkml","source_file_path":"eye_exam/views/users.view.lkml","sql":"${TABLE}.\"CITY\"
+        ","sql_case":null,"filters":null},{"align":"left","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":false,"label":"Users
+        Email","label_from_parameter":null,"label_short":"Email","map_layer":null,"name":"users.email","strict_value_format":false,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"string","user_attribute_filter_types":["string","advanced_filter_string"],"value_format":null,"view":"users","view_label":"Users","dynamic":false,"week_start_day":"monday","dimension_group":null,"error":null,"field_group_variant":"Email","measure":false,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users","suggest_dimension":"users.email","suggest_explore":"users","suggestable":true,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"lookml_link":"/projects/eye_exam/files/views%2Fusers.view.lkml?line=28","permanent":null,"source_file":"views/users.view.lkml","source_file_path":"eye_exam/views/users.view.lkml","sql":"${TABLE}.\"EMAIL\"
+        ","sql_case":null,"filters":null},{"align":"left","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":false,"label":"Users
+        First Name","label_from_parameter":null,"label_short":"First Name","map_layer":null,"name":"users.first_name","strict_value_format":false,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"string","user_attribute_filter_types":["string","advanced_filter_string"],"value_format":null,"view":"users","view_label":"Users","dynamic":false,"week_start_day":"monday","dimension_group":null,"error":null,"field_group_variant":"First
+        Name","measure":false,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users","suggest_dimension":"users.first_name","suggest_explore":"users","suggestable":true,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"lookml_link":"/projects/eye_exam/files/views%2Fusers.view.lkml?line=33","permanent":null,"source_file":"views/users.view.lkml","source_file_path":"eye_exam/views/users.view.lkml","sql":"${TABLE}.\"FIRST_NAME\"
+        ","sql_case":null,"filters":null},{"align":"right","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":true,"label":"Users
+        ID","label_from_parameter":null,"label_short":"ID","map_layer":null,"name":"users.id","strict_value_format":false,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"number","user_attribute_filter_types":["number","advanced_filter_number"],"value_format":null,"view":"users","view_label":"Users","dynamic":false,"week_start_day":"monday","dimension_group":null,"error":null,"field_group_variant":"ID","measure":false,"parameter":false,"primary_key":true,"project_name":"eye_exam","scope":"users","suggest_dimension":"users.id","suggest_explore":"users","suggestable":false,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"lookml_link":"/projects/eye_exam/files/views%2Fusers.view.lkml?line=6","permanent":null,"source_file":"views/users.view.lkml","source_file_path":"eye_exam/views/users.view.lkml","sql":"${TABLE}.\"ID\"
+        ","sql_case":null,"filters":null},{"align":"left","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":false,"label":"Users
+        Last Name","label_from_parameter":null,"label_short":"Last Name","map_layer":null,"name":"users.last_name","strict_value_format":false,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"string","user_attribute_filter_types":["string","advanced_filter_string"],"value_format":null,"view":"users","view_label":"Users","dynamic":false,"week_start_day":"monday","dimension_group":null,"error":null,"field_group_variant":"Last
+        Name","measure":false,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users","suggest_dimension":"users.last_name","suggest_explore":"users","suggestable":true,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"lookml_link":"/projects/eye_exam/files/views%2Fusers.view.lkml?line=38","permanent":null,"source_file":"views/users.view.lkml","source_file_path":"eye_exam/views/users.view.lkml","sql":"${TABLE}.\"LAST_NAME\"
+        ","sql_case":null,"filters":null},{"align":"left","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":false,"label":"Users
+        State","label_from_parameter":null,"label_short":"State","map_layer":{"url":"/data/us_states.topo-402e425f99.json","name":"us_states","feature_key":"usa","property_key":null,"property_label_key":null,"projection":"albersUsa","format":null,"extents_json_url":null,"max_zoom_level":null,"min_zoom_level":null},"name":"users.state","strict_value_format":false,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"string","user_attribute_filter_types":["string","advanced_filter_string"],"value_format":null,"view":"users","view_label":"Users","dynamic":false,"week_start_day":"monday","dimension_group":null,"error":null,"field_group_variant":"State","measure":false,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users","suggest_dimension":"users.state","suggest_explore":"users","suggestable":true,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"lookml_link":"/projects/eye_exam/files/views%2Fusers.view.lkml?line=18","permanent":null,"source_file":"views/users.view.lkml","source_file_path":"eye_exam/views/users.view.lkml","sql":"${TABLE}.\"STATE\"
+        ","sql_case":null,"filters":null}],"measures":[{"align":"right","can_filter":true,"category":"measure","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":true,"label":"Users
+        Count","label_from_parameter":null,"label_short":"Count","map_layer":null,"name":"users.count","strict_value_format":false,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"count","user_attribute_filter_types":["number","advanced_filter_number"],"value_format":null,"view":"users","view_label":"Users","dynamic":false,"week_start_day":"monday","dimension_group":null,"error":null,"field_group_variant":"Count","measure":true,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users","suggest_dimension":"users.count","suggest_explore":"users","suggestable":false,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"lookml_link":"/projects/eye_exam/files/views%2Fusers.view.lkml?line=43","permanent":null,"source_file":"views/users.view.lkml","source_file_path":"eye_exam/views/users.view.lkml","sql":null,"sql_case":null,"filters":null}],"filters":[],"parameters":[]}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '10180'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:23 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 48b350b20d641079
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 48b350b20d641079
+      X-B3-TraceId:
+      - 61e1d52bc788188a48b350b20d641079
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=3119792
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/lookml_models/eye_exam/explores/users__fail?fields=fields
+  response:
+    body:
+      string: '{"fields":{"dimensions":[{"align":"right","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":true,"label":"Users
+        Fail Age","label_from_parameter":null,"label_short":"Age","map_layer":null,"name":"users__fail.age","strict_value_format":false,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"number","user_attribute_filter_types":["number","advanced_filter_number"],"value_format":null,"view":"users__fail","view_label":"Users
+        Fail","dynamic":false,"week_start_day":"monday","dimension_group":null,"error":null,"field_group_variant":"Age","measure":false,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users__fail","suggest_dimension":"users__fail.age","suggest_explore":"users__fail","suggestable":false,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"lookml_link":"/projects/eye_exam/files/views%2Fusers__fail.view.lkml?line=14","permanent":null,"source_file":"views/users__fail.view.lkml","source_file_path":"eye_exam/views/users__fail.view.lkml","sql":"--spectacles:
+        ignore\n      ${TABLE}.\"AGE\" ","sql_case":null,"filters":null},{"align":"left","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":false,"label":"Users
+        Fail City","label_from_parameter":null,"label_short":"City","map_layer":null,"name":"users__fail.city","strict_value_format":false,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"string","user_attribute_filter_types":["string","advanced_filter_string"],"value_format":null,"view":"users__fail","view_label":"Users
+        Fail","dynamic":false,"week_start_day":"monday","dimension_group":null,"error":null,"field_group_variant":"City","measure":false,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users__fail","suggest_dimension":"users__fail.city","suggest_explore":"users__fail","suggestable":true,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"lookml_link":"/projects/eye_exam/files/views%2Fusers__fail.view.lkml?line=20","permanent":null,"source_file":"views/users__fail.view.lkml","source_file_path":"eye_exam/views/users__fail.view.lkml","sql":"${TABLE}.\"CITY\"
+        ","sql_case":null,"filters":null},{"align":"left","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":false,"label":"Users
+        Fail Email","label_from_parameter":null,"label_short":"Email","map_layer":null,"name":"users__fail.email","strict_value_format":false,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"string","user_attribute_filter_types":["string","advanced_filter_string"],"value_format":null,"view":"users__fail","view_label":"Users
+        Fail","dynamic":false,"week_start_day":"monday","dimension_group":null,"error":null,"field_group_variant":"Email","measure":false,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users__fail","suggest_dimension":"users__fail.email","suggest_explore":"users__fail","suggestable":true,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"lookml_link":"/projects/eye_exam/files/views%2Fusers__fail.view.lkml?line=26","permanent":null,"source_file":"views/users__fail.view.lkml","source_file_path":"eye_exam/views/users__fail.view.lkml","sql":"${TABLE}.\"EMAIL_ADDRESS\"
+        ","sql_case":null,"filters":null},{"align":"left","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":false,"label":"Users
+        Fail First Name","label_from_parameter":null,"label_short":"First Name","map_layer":null,"name":"users__fail.first_name","strict_value_format":false,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"string","user_attribute_filter_types":["string","advanced_filter_string"],"value_format":null,"view":"users__fail","view_label":"Users
+        Fail","dynamic":false,"week_start_day":"monday","dimension_group":null,"error":null,"field_group_variant":"First
+        Name","measure":false,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users__fail","suggest_dimension":"users__fail.first_name","suggest_explore":"users__fail","suggestable":true,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"lookml_link":"/projects/eye_exam/files/views%2Fusers__fail.view.lkml?line=32","permanent":null,"source_file":"views/users__fail.view.lkml","source_file_path":"eye_exam/views/users__fail.view.lkml","sql":"${TABLE}.\"FIRST\"
+        ","sql_case":null,"filters":null},{"align":"right","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":true,"label":"Users
+        Fail ID","label_from_parameter":null,"label_short":"ID","map_layer":null,"name":"users__fail.id","strict_value_format":false,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"number","user_attribute_filter_types":["number","advanced_filter_number"],"value_format":null,"view":"users__fail","view_label":"Users
+        Fail","dynamic":false,"week_start_day":"monday","dimension_group":null,"error":null,"field_group_variant":"ID","measure":false,"parameter":false,"primary_key":true,"project_name":"eye_exam","scope":"users__fail","suggest_dimension":"users__fail.id","suggest_explore":"users__fail","suggestable":false,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"lookml_link":"/projects/eye_exam/files/views%2Fusers__fail.view.lkml?line=8","permanent":null,"source_file":"views/users__fail.view.lkml","source_file_path":"eye_exam/views/users__fail.view.lkml","sql":"${TABLE}.\"ID\"
+        ","sql_case":null,"filters":null},{"align":"left","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":false,"label":"Users
+        Fail Last Name","label_from_parameter":null,"label_short":"Last Name","map_layer":null,"name":"users__fail.last_name","strict_value_format":false,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"string","user_attribute_filter_types":["string","advanced_filter_string"],"value_format":null,"view":"users__fail","view_label":"Users
+        Fail","dynamic":false,"week_start_day":"monday","dimension_group":null,"error":null,"field_group_variant":"Last
+        Name","measure":false,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users__fail","suggest_dimension":"users__fail.last_name","suggest_explore":"users__fail","suggestable":true,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"lookml_link":"/projects/eye_exam/files/views%2Fusers__fail.view.lkml?line=38","permanent":null,"source_file":"views/users__fail.view.lkml","source_file_path":"eye_exam/views/users__fail.view.lkml","sql":"${TABLE}.\"LAST\"
+        ","sql_case":null,"filters":null}],"measures":[{"align":"right","can_filter":true,"category":"measure","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":true,"label":"Users
+        Fail Count","label_from_parameter":null,"label_short":"Count","map_layer":null,"name":"users__fail.count","strict_value_format":false,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"count","user_attribute_filter_types":["number","advanced_filter_number"],"value_format":null,"view":"users__fail","view_label":"Users
+        Fail","dynamic":false,"week_start_day":"monday","dimension_group":null,"error":null,"field_group_variant":"Count","measure":true,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users__fail","suggest_dimension":"users__fail.count","suggest_explore":"users__fail","suggestable":false,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"lookml_link":"/projects/eye_exam/files/views%2Fusers__fail.view.lkml?line=43","permanent":null,"source_file":"views/users__fail.view.lkml","source_file_path":"eye_exam/views/users__fail.view.lkml","sql":null,"sql_case":null,"filters":null}],"filters":[],"parameters":[]}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '9116'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:23 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - b5f1e0ae5fa7aaa3
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - b5f1e0ae5fa7aaa3
+      X-B3-TraceId:
+      - 61e1d52b9b2b5949b5f1e0ae5fa7aaa3
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"model": "eye_exam", "view": "users", "fields": ["users.city", "users.email",
+      "users.first_name", "users.id", "users.last_name", "users.state"], "limit":
+      0, "filter_expression": "1=2"}'
+    headers:
+      Content-Length:
+      - '185'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=3119792
+    method: POST
+    uri: https://spectacles.looker.com:19999/api/3.1/queries?fields=id%2Cshare_url
+  response:
+    body:
+      string: '{"id":2216,"share_url":"https://spectacles.looker.com/x/XZAL69PohkzXTUbfYcq3V9"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '80'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:23 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - ecf533814754ab43
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - ecf533814754ab43
+      X-B3-TraceId:
+      - 61e1d52b4938b0abecf533814754ab43
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"model": "eye_exam", "view": "users__fail", "fields": ["users__fail.city",
+      "users__fail.email", "users__fail.first_name", "users__fail.id", "users__fail.last_name"],
+      "limit": 0, "filter_expression": "1=2"}'
+    headers:
+      Content-Length:
+      - '206'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=3119792
+    method: POST
+    uri: https://spectacles.looker.com:19999/api/3.1/queries?fields=id%2Cshare_url
+  response:
+    body:
+      string: '{"id":1944,"share_url":"https://spectacles.looker.com/x/qCJsoYAZ2Y22QZLbmD0Gvy"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '80'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:24 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - a61c5493792c1780
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - a61c5493792c1780
+      X-B3-TraceId:
+      - 61e1d52ccfa1a319a61c5493792c1780
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"name": "benchmark/no-errors"}'
+    headers:
+      Content-Length:
+      - '31'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=3119792
+    method: PUT
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
+  response:
+    body:
+      string: '{"name":"benchmark/no-errors","remote":"origin","remote_name":"benchmark/no-errors","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1640119431,"ref":"382ad01406634a509a6685c42ae16c4f4dc1f7cc","remote_ref":"382ad01406634a509a6685c42ae16c4f4dc1f7cc","can":{}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '389'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:24 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - aab2d4751de54c36
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - aab2d4751de54c36
+      X-B3-TraceId:
+      - 61e1d52ca20aee51aab2d4751de54c36
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Content-Length:
+      - '0'
+      Cookie:
+      - looker.browser=3119792
+    method: DELETE
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch/tmp_spectacles_a
+  response:
+    body:
+      string: ''
+    headers:
+      Connection:
+      - keep-alive
+      Date:
+      - Fri, 14 Jan 2022 19:55:25 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Origin
+      X-B3-ParentSpanId:
+      - 5209beecedcc243d
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 5209beecedcc243d
+      X-B3-TraceId:
+      - 61e1d52c2b975f6c5209beecedcc243d
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 204
+      message: No Content
+- request:
+    body: '{"name": "benchmark/no-errors"}'
+    headers:
+      Content-Length:
+      - '31'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=3119792
+    method: PUT
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
+  response:
+    body:
+      string: '{"name":"benchmark/no-errors","remote":"origin","remote_name":"benchmark/no-errors","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1640119431,"ref":"382ad01406634a509a6685c42ae16c4f4dc1f7cc","remote_ref":"382ad01406634a509a6685c42ae16c4f4dc1f7cc","can":{}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '389'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:25 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - e0c6eb6510051870
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - e0c6eb6510051870
+      X-B3-TraceId:
+      - 61e1d52df63cc90fe0c6eb6510051870
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"workspace_id": "production"}'
+    headers:
+      Content-Length:
+      - '30'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=3119792
+    method: PATCH
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"production","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '83'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:26 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 5e19aa51436939c0
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 5e19aa51436939c0
+      X-B3-TraceId:
+      - 61e1d52ed9b65aee5e19aa51436939c0
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"workspace_id": "dev"}'
+    headers:
+      Content-Length:
+      - '23'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=3119792
+    method: PATCH
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"dev","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '76'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:26 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 3087e373eeb08178
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 3087e373eeb08178
+      X-B3-TraceId:
+      - 61e1d52e763b7d233087e373eeb08178
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"name": "pytest"}'
+    headers:
+      Content-Length:
+      - '18'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=3119792
+    method: PUT
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
+  response:
+    body:
+      string: '{"name":"pytest","remote":"origin","remote_name":"pytest","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1634603985,"ref":"ccdfc98fe6c067810f914c31a5c290e93b1f0366","remote_ref":"ccdfc98fe6c067810f914c31a5c290e93b1f0366","can":{}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '363'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:26 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - f02d5137618a4513
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - f02d5137618a4513
+      X-B3-TraceId:
+      - 61e1d52e8d2c57c1f02d5137618a4513
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=3119792
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"dev","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '76'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:26 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - be01403ccfe2dfa1
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - be01403ccfe2dfa1
+      X-B3-TraceId:
+      - 61e1d52eddbc255fbe01403ccfe2dfa1
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=3119792
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
+  response:
+    body:
+      string: '{"name":"benchmark/no-errors","remote":"origin","remote_name":"benchmark/no-errors","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1640119431,"ref":"382ad01406634a509a6685c42ae16c4f4dc1f7cc","remote_ref":"382ad01406634a509a6685c42ae16c4f4dc1f7cc","can":{}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '389'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:26 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 39eed2f3638c7c0c
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 39eed2f3638c7c0c
+      X-B3-TraceId:
+      - 61e1d52e7aa405f639eed2f3638c7c0c
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=3119792
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/manifest
+  response:
+    body:
+      string: "<!DOCTYPE html>\n<html>\n<head>\n    <title>Looker Not Found (404)</title>\n
+        \   <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,600'
+        rel='stylesheet' type='text/css'>\n\n    <!-- @@@@@@@@@@@@@ FAVICONS @@@@@@@@@@@@@
+        -->\n\n    <link rel=\"apple-touch-icon-precomposed\" sizes=\"57x57\" href=\"https://wwwstatic-b.lookercdn.com/favicon/apple-touch-icon-57x57.png\"
+        />\n    <link rel=\"apple-touch-icon-precomposed\" sizes=\"114x114\" href=\"https://wwwstatic-c.lookercdn.com/favicon/apple-touch-icon-114x114.png\"
+        />\n    <link rel=\"apple-touch-icon-precomposed\" sizes=\"72x72\" href=\"https://wwwstatic-d.lookercdn.com/favicon/apple-touch-icon-72x72.png\"
+        />\n    <link rel=\"apple-touch-icon-precomposed\" sizes=\"144x144\" href=\"https://wwwstatic-a.lookercdn.com/favicon/apple-touch-icon-144x144.png\"
+        />\n    <link rel=\"apple-touch-icon-precomposed\" sizes=\"60x60\" href=\"https://wwwstatic-b.lookercdn.com/favicon/apple-touch-icon-60x60.png\"
+        />\n    <link rel=\"apple-touch-icon-precomposed\" sizes=\"120x120\" href=\"https://wwwstatic-c.lookercdn.com/favicon/apple-touch-icon-120x120.png\"
+        />\n    <link rel=\"apple-touch-icon-precomposed\" sizes=\"76x76\" href=\"https://wwwstatic-d.lookercdn.com/favicon/apple-touch-icon-76x76.png\"
+        />\n    <link rel=\"apple-touch-icon-precomposed\" sizes=\"152x152\" href=\"https://wwwstatic-a.lookercdn.com/favicon/apple-touch-icon-152x152.png\"
+        />\n    <link rel=\"icon\" type=\"image/png\" href=\"https://wwwstatic-b.lookercdn.com/favicon/favicon-196x196.png\"
+        sizes=\"196x196\" />\n    <link rel=\"icon\" type=\"image/png\" href=\"https://wwwstatic-c.lookercdn.com/favicon/favicon-96x96.png\"
+        sizes=\"96x96\" />\n    <link rel=\"icon\" type=\"image/png\" href=\"https://wwwstatic-d.lookercdn.com/favicon/favicon-32x32.png\"
+        sizes=\"32x32\" />\n    <link rel=\"icon\" type=\"image/png\" href=\"https://wwwstatic-a.lookercdn.com/favicon/favicon-16x16.png\"
+        sizes=\"16x16\" />\n    <link rel=\"icon\" type=\"image/png\" href=\"https://wwwstatic-b.lookercdn.com/favicon/favicon-128.png\"
+        sizes=\"128x128\" />\n    <meta name=\"application-name\" content=\"Looker\"/>\n
+        \   <meta name=\"msapplication-TileColor\" content=\"#FFFFFF\" />\n    <meta
+        name=\"msapplication-TileImage\" content=\"https://wwwstatic-c.lookercdn.com/favicon/mstile-144x144.png\"
+        />\n    <meta name=\"msapplication-square70x70logo\" content=\"https://wwwstatic-d.lookercdn.com/favicon/mstile-70x70.png\"
+        />\n    <meta name=\"msapplication-square150x150logo\" content=\"https://wwwstatic-a.lookercdn.com/favicon/mstile-150x150.png\"
+        />\n    <meta name=\"msapplication-wide310x150logo\" content=\"https://wwwstatic-b.lookercdn.com/favicon/mstile-310x150.png\"
+        />\n    <meta name=\"msapplication-square310x310logo\" content=\"https://wwwstatic-c.lookercdn.com/favicon/mstile-310x310.png\"
+        />\n\n    <style type=\"text/css\">\n        body {\n            background-color:
+        #2e343f;\n            color: white;\n            height: auto;\n            font-family:
+        Open Sans, Helvetica, Arial, sans-serif;\n        }\n        .message {\n
+        \           width: 100%;\n            max-width: 760px;\n            margin:
+        0 auto;\n            margin-top: 135px;\n            text-align: center;\n
+        \       }\n        h2, h3 {\n            font-weight: normal;\n        }\n
+        \       a {\n            color: white;\n        }\n    </style>\n</head>\n<body>\n\n
+        \   <div class=\"message\">\n\n        <img width=\"210\" height=\"84\" src=\"https://wwwstatic-a.lookercdn.com/logos/looker_all_white.svg\"
+        alt=\"Looker\">\n\n        <h1>Looker is unavailable.</h1>\n\n        <h2>If
+        you typed in a URL, double-check the spelling.</h2>\n        <h2>This may
+        also be due to a temporary condition such as an outage, <a href=\"https://docs.looker.com/relnotes/hosted-maintenance-hours\">scheduled
+        maintenance</a> or upgrade.</h2>\n        <br>\n        <h3>\n            If
+        this message persists or you have any concerns, <br> contact us from\n            <a
+        href=\"https://help.looker.com\">help.looker.com</a> and we'll respond promptly.\n
+        \       </h3>\n\n    </div>\n\n</body>\n</html>\n"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/html
+      Date:
+      - Fri, 14 Jan 2022 19:55:26 GMT
+      Vary:
+      - Accept-Encoding
+    status:
+      code: 404
+      message: Not Found
+- request:
+    body: '{"workspace_id": "production"}'
+    headers:
+      Content-Length:
+      - '30'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=3119792
+    method: PATCH
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"production","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '83'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:27 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - ca0dd455079249f1
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - ca0dd455079249f1
+      X-B3-TraceId:
+      - 61e1d52fc4d21e3bca0dd455079249f1
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=3119792
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"production","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '83'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:27 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 5edd4b35c005bb9b
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 5edd4b35c005bb9b
+      X-B3-TraceId:
+      - 61e1d52f2dca442e5edd4b35c005bb9b
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=3119792
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
+  response:
+    body:
+      string: '{"name":"master","remote":"origin","remote_name":"master","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":true,"ahead_count":0,"behind_count":0,"commit_at":1589215827,"ref":"71025770cf923f656ba2375436a1bd85ac00affc","remote_ref":"71025770cf923f656ba2375436a1bd85ac00affc","can":{}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '362'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:27 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 9f2c29f147c296e7
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 9f2c29f147c296e7
+      X-B3-TraceId:
+      - 61e1d52f21659ccd9f2c29f147c296e7
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"workspace_id": "dev"}'
+    headers:
+      Content-Length:
+      - '23'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=3119792
+    method: PATCH
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"dev","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '76'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:27 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 9e468adc5688ced2
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 9e468adc5688ced2
+      X-B3-TraceId:
+      - 61e1d52fbb59adf69e468adc5688ced2
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=3119792
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"dev","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '76'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:27 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 85da84302038ea04
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 85da84302038ea04
+      X-B3-TraceId:
+      - 61e1d52f4d64fef585da84302038ea04
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=3119792
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
+  response:
+    body:
+      string: '{"name":"benchmark/no-errors","remote":"origin","remote_name":"benchmark/no-errors","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1640119431,"ref":"382ad01406634a509a6685c42ae16c4f4dc1f7cc","remote_ref":"382ad01406634a509a6685c42ae16c4f4dc1f7cc","can":{}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '389'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:27 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 37a05aab8d382bdf
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 37a05aab8d382bdf
+      X-B3-TraceId:
+      - 61e1d52f9a4c521c37a05aab8d382bdf
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"name": "tmp_spectacles_b"}'
+    headers:
+      Content-Length:
+      - '28'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=3119792
+    method: POST
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
+  response:
+    body:
+      string: '{"name":"tmp_spectacles_b","remote":"origin","remote_name":"tmp_spectacles_b","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":false,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1640119431,"ref":"382ad01406634a509a6685c42ae16c4f4dc1f7cc","remote_ref":null,"can":{}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '352'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:28 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 191d820e608884af
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 191d820e608884af
+      X-B3-TraceId:
+      - 61e1d52f18a657df191d820e608884af
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"name": "tmp_spectacles_b", "ref": "71025770cf923f656ba2375436a1bd85ac00affc"}'
+    headers:
+      Content-Length:
+      - '79'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=3119792
+    method: PUT
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
+  response:
+    body:
+      string: '{"name":"tmp_spectacles_b","remote":"origin","remote_name":"tmp_spectacles_b","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":false,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1640119431,"ref":"382ad01406634a509a6685c42ae16c4f4dc1f7cc","remote_ref":null,"can":{}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '352'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:29 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 5557e3243320de69
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 5557e3243320de69
+      X-B3-TraceId:
+      - 61e1d5308ee391305557e3243320de69
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"query_id": 2216, "result_format": "json_detail"}'
+    headers:
+      Content-Length:
+      - '50'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=3119792
+    method: POST
+    uri: https://spectacles.looker.com:19999/api/3.1/query_tasks?fields=id&cache=false
+  response:
+    body:
+      string: '{"id":"9ed9eb3ac678ce7b9b0fe9849e263c34"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '41'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:30 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 42d7080fe4341f0c
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 42d7080fe4341f0c
+      X-B3-TraceId:
+      - 61e1d531ee57267042d7080fe4341f0c
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"query_id": 1944, "result_format": "json_detail"}'
+    headers:
+      Content-Length:
+      - '50'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=3119792
+    method: POST
+    uri: https://spectacles.looker.com:19999/api/3.1/query_tasks?fields=id&cache=false
+  response:
+    body:
+      string: '{"id":"8f1ecc9fd00b524f7511d0b22618497e"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '41'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:30 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 436314db9072c023
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 436314db9072c023
+      X-B3-TraceId:
+      - 61e1d532038a1cd6436314db9072c023
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=3119792
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/query_tasks/multi_results?query_task_ids=9ed9eb3ac678ce7b9b0fe9849e263c34%2C8f1ecc9fd00b524f7511d0b22618497e
+  response:
+    body:
+      string: '{"8f1ecc9fd00b524f7511d0b22618497e":{"status":"added"},"9ed9eb3ac678ce7b9b0fe9849e263c34":{"status":"added"}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '109'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:30 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 0744639d87cbc1be
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 0744639d87cbc1be
+      X-B3-TraceId:
+      - 61e1d53238834f090744639d87cbc1be
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=3119792
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/query_tasks/multi_results?query_task_ids=9ed9eb3ac678ce7b9b0fe9849e263c34%2C8f1ecc9fd00b524f7511d0b22618497e
+  response:
+    body:
+      string: '{"8f1ecc9fd00b524f7511d0b22618497e":{"status":"running"},"9ed9eb3ac678ce7b9b0fe9849e263c34":{"status":"running"}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '113'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:30 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 9bb14add2d1dd69d
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 9bb14add2d1dd69d
+      X-B3-TraceId:
+      - 61e1d532eb78495f9bb14add2d1dd69d
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=3119792
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/query_tasks/multi_results?query_task_ids=9ed9eb3ac678ce7b9b0fe9849e263c34%2C8f1ecc9fd00b524f7511d0b22618497e
+  response:
+    body:
+      string: '{"8f1ecc9fd00b524f7511d0b22618497e":{"status":"error","result_source":"query","data":{"from_cache":true,"id":"8f1ecc9fd00b524f7511d0b22618497e","supports_pivot_in_db":true,"null_sort_treatment":"high","expired":false,"ran_at":"2022-01-14T19:55:31+00:00","aggregate_table_used_info":null,"runtime":"0.991","added_params":{"sorts":["users__fail.city"]},"forecast_result":null,"sql":"SELECT\n    users__fail.\"CITY\"  AS
+        \"users__fail.city\",\n    users__fail.\"EMAIL_ADDRESS\"  AS \"users__fail.email\",\n    users__fail.\"FIRST\"  AS
+        \"users__fail.first_name\",\n    users__fail.\"ID\"  AS \"users__fail.id\",\n    users__fail.\"LAST\"  AS
+        \"users__fail.last_name\"\nFROM \"PUBLIC\".\"USERS\"\n   AS users__fail\nWHERE
+        (1 = 2)\nORDER BY\n    1\nFETCH NEXT 0 ROWS ONLY","sql_explain":"EXPLAIN SELECT\n    users__fail.\"CITY\"  AS
+        \"users__fail.city\",\n    users__fail.\"EMAIL_ADDRESS\"  AS \"users__fail.email\",\n    users__fail.\"FIRST\"  AS
+        \"users__fail.first_name\",\n    users__fail.\"ID\"  AS \"users__fail.id\",\n    users__fail.\"LAST\"  AS
+        \"users__fail.last_name\"\nFROM \"PUBLIC\".\"USERS\"\n   AS users__fail\nWHERE
+        (1 = 2)\nORDER BY\n    1\nFETCH NEXT 0 ROWS ONLY","fields":{"measures":[],"dimensions":[{"align":"left","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":false,"label":"Users
+        Fail City","label_from_parameter":null,"label_short":"City","map_layer":null,"name":"users__fail.city","strict_value_format":false,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"string","user_attribute_filter_types":["string","advanced_filter_string"],"value_format":null,"view":"users__fail","view_label":"Users
+        Fail","dynamic":false,"week_start_day":"monday","dimension_group":null,"error":null,"field_group_variant":"City","measure":false,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users__fail","suggest_dimension":"users__fail.city","suggest_explore":"users__fail","suggestable":true,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"lookml_link":"/projects/eye_exam/files/views%2Fusers__fail.view.lkml?line=20","permanent":null,"source_file":"views/users__fail.view.lkml","source_file_path":"eye_exam/views/users__fail.view.lkml","sql":"${TABLE}.\"CITY\"
+        ","sql_case":null,"filters":null,"sorted":{"sort_index":0,"desc":false}},{"align":"left","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":false,"label":"Users
+        Fail Email","label_from_parameter":null,"label_short":"Email","map_layer":null,"name":"users__fail.email","strict_value_format":false,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"string","user_attribute_filter_types":["string","advanced_filter_string"],"value_format":null,"view":"users__fail","view_label":"Users
+        Fail","dynamic":false,"week_start_day":"monday","dimension_group":null,"error":null,"field_group_variant":"Email","measure":false,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users__fail","suggest_dimension":"users__fail.email","suggest_explore":"users__fail","suggestable":true,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"lookml_link":"/projects/eye_exam/files/views%2Fusers__fail.view.lkml?line=26","permanent":null,"source_file":"views/users__fail.view.lkml","source_file_path":"eye_exam/views/users__fail.view.lkml","sql":"${TABLE}.\"EMAIL_ADDRESS\"
+        ","sql_case":null,"filters":null},{"align":"left","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":false,"label":"Users
+        Fail First Name","label_from_parameter":null,"label_short":"First Name","map_layer":null,"name":"users__fail.first_name","strict_value_format":false,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"string","user_attribute_filter_types":["string","advanced_filter_string"],"value_format":null,"view":"users__fail","view_label":"Users
+        Fail","dynamic":false,"week_start_day":"monday","dimension_group":null,"error":null,"field_group_variant":"First
+        Name","measure":false,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users__fail","suggest_dimension":"users__fail.first_name","suggest_explore":"users__fail","suggestable":true,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"lookml_link":"/projects/eye_exam/files/views%2Fusers__fail.view.lkml?line=32","permanent":null,"source_file":"views/users__fail.view.lkml","source_file_path":"eye_exam/views/users__fail.view.lkml","sql":"${TABLE}.\"FIRST\"
+        ","sql_case":null,"filters":null},{"align":"right","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":true,"label":"Users
+        Fail ID","label_from_parameter":null,"label_short":"ID","map_layer":null,"name":"users__fail.id","strict_value_format":false,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"number","user_attribute_filter_types":["number","advanced_filter_number"],"value_format":null,"view":"users__fail","view_label":"Users
+        Fail","dynamic":false,"week_start_day":"monday","dimension_group":null,"error":null,"field_group_variant":"ID","measure":false,"parameter":false,"primary_key":true,"project_name":"eye_exam","scope":"users__fail","suggest_dimension":"users__fail.id","suggest_explore":"users__fail","suggestable":false,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"lookml_link":"/projects/eye_exam/files/views%2Fusers__fail.view.lkml?line=8","permanent":null,"source_file":"views/users__fail.view.lkml","source_file_path":"eye_exam/views/users__fail.view.lkml","sql":"${TABLE}.\"ID\"
+        ","sql_case":null,"filters":null},{"align":"left","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":false,"label":"Users
+        Fail Last Name","label_from_parameter":null,"label_short":"Last Name","map_layer":null,"name":"users__fail.last_name","strict_value_format":false,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"string","user_attribute_filter_types":["string","advanced_filter_string"],"value_format":null,"view":"users__fail","view_label":"Users
+        Fail","dynamic":false,"week_start_day":"monday","dimension_group":null,"error":null,"field_group_variant":"Last
+        Name","measure":false,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users__fail","suggest_dimension":"users__fail.last_name","suggest_explore":"users__fail","suggestable":true,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"lookml_link":"/projects/eye_exam/files/views%2Fusers__fail.view.lkml?line=38","permanent":null,"source_file":"views/users__fail.view.lkml","source_file_path":"eye_exam/views/users__fail.view.lkml","sql":"${TABLE}.\"LAST\"
+        ","sql_case":null,"filters":null}],"table_calculations":[],"pivots":[]},"fill_fields":[],"has_totals":false,"has_row_totals":false,"applied_filters":{},"applied_filter_expression":"1=2","number_format":"1,234.56","explore":{"name":"users__fail","label":"Users
+        Fail","description":null},"timezone":"America/New_York","data":[],"errors":[{"message":"The
+        Snowflake database encountered an error while running this query.","message_details":"SQL
+        Syntax Error: SQL compilation error: error line 3 at position 4\ninvalid identifier
+        ''USERS__FAIL.EMAIL_ADDRESS''","params":"SELECT\n    users__fail.\"CITY\"  AS
+        \"users__fail.city\",\n    users__fail.\"EMAIL_ADDRESS\"  AS \"users__fail.email\",\n    users__fail.\"FIRST\"  AS
+        \"users__fail.first_name\",\n    users__fail.\"ID\"  AS \"users__fail.id\",\n    users__fail.\"LAST\"  AS
+        \"users__fail.last_name\"\nFROM \"PUBLIC\".\"USERS\"\n   AS users__fail\nWHERE
+        (1 = 2)\nORDER BY\n    1\nFETCH NEXT 0 ROWS ONLY","edit_url":null,"error_pos":null,"level":"error","sql_error_loc":{"line":3,"column":4}}],"drill_menu_build_time":0.033486,"has_subtotals":false}},"9ed9eb3ac678ce7b9b0fe9849e263c34":{"status":"complete","result_source":"query","data":{"from_cache":true,"id":"9ed9eb3ac678ce7b9b0fe9849e263c34","truncated":true,"supports_pivot_in_db":true,"null_sort_treatment":"high","expired":false,"ran_at":"2022-01-14T19:55:31+00:00","aggregate_table_used_info":null,"runtime":"0.903","added_params":{"sorts":["users.city"]},"forecast_result":null,"dialect_specific_metadata":{},"sql":"SELECT\n    users.\"CITY\"  AS
+        \"users.city\",\n    users.\"EMAIL\"  AS \"users.email\",\n    users.\"FIRST_NAME\"  AS
+        \"users.first_name\",\n    users.\"ID\"  AS \"users.id\",\n    users.\"LAST_NAME\"  AS
+        \"users.last_name\",\n    users.\"STATE\"  AS \"users.state\"\nFROM \"PUBLIC\".\"USERS\"\n     AS
+        users\nWHERE (1 = 2)\nORDER BY\n    1\nFETCH NEXT 0 ROWS ONLY","sql_explain":"EXPLAIN
+        SELECT\n    users.\"CITY\"  AS \"users.city\",\n    users.\"EMAIL\"  AS \"users.email\",\n    users.\"FIRST_NAME\"  AS
+        \"users.first_name\",\n    users.\"ID\"  AS \"users.id\",\n    users.\"LAST_NAME\"  AS
+        \"users.last_name\",\n    users.\"STATE\"  AS \"users.state\"\nFROM \"PUBLIC\".\"USERS\"\n     AS
+        users\nWHERE (1 = 2)\nORDER BY\n    1\nFETCH NEXT 0 ROWS ONLY","fields":{"measures":[],"dimensions":[{"align":"left","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":false,"label":"Users
+        City","label_from_parameter":null,"label_short":"City","map_layer":null,"name":"users.city","strict_value_format":false,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"string","user_attribute_filter_types":["string","advanced_filter_string"],"value_format":null,"view":"users","view_label":"Users","dynamic":false,"week_start_day":"monday","dimension_group":null,"error":null,"field_group_variant":"City","measure":false,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users","suggest_dimension":"users.city","suggest_explore":"users","suggestable":true,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"lookml_link":"/projects/eye_exam/files/views%2Fusers.view.lkml?line=23","permanent":null,"source_file":"views/users.view.lkml","source_file_path":"eye_exam/views/users.view.lkml","sql":"${TABLE}.\"CITY\"
+        ","sql_case":null,"filters":null,"sorted":{"sort_index":0,"desc":false}},{"align":"left","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":false,"label":"Users
+        Email","label_from_parameter":null,"label_short":"Email","map_layer":null,"name":"users.email","strict_value_format":false,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"string","user_attribute_filter_types":["string","advanced_filter_string"],"value_format":null,"view":"users","view_label":"Users","dynamic":false,"week_start_day":"monday","dimension_group":null,"error":null,"field_group_variant":"Email","measure":false,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users","suggest_dimension":"users.email","suggest_explore":"users","suggestable":true,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"lookml_link":"/projects/eye_exam/files/views%2Fusers.view.lkml?line=28","permanent":null,"source_file":"views/users.view.lkml","source_file_path":"eye_exam/views/users.view.lkml","sql":"${TABLE}.\"EMAIL\"
+        ","sql_case":null,"filters":null},{"align":"left","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":false,"label":"Users
+        First Name","label_from_parameter":null,"label_short":"First Name","map_layer":null,"name":"users.first_name","strict_value_format":false,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"string","user_attribute_filter_types":["string","advanced_filter_string"],"value_format":null,"view":"users","view_label":"Users","dynamic":false,"week_start_day":"monday","dimension_group":null,"error":null,"field_group_variant":"First
+        Name","measure":false,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users","suggest_dimension":"users.first_name","suggest_explore":"users","suggestable":true,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"lookml_link":"/projects/eye_exam/files/views%2Fusers.view.lkml?line=33","permanent":null,"source_file":"views/users.view.lkml","source_file_path":"eye_exam/views/users.view.lkml","sql":"${TABLE}.\"FIRST_NAME\"
+        ","sql_case":null,"filters":null},{"align":"right","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":true,"label":"Users
+        ID","label_from_parameter":null,"label_short":"ID","map_layer":null,"name":"users.id","strict_value_format":false,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"number","user_attribute_filter_types":["number","advanced_filter_number"],"value_format":null,"view":"users","view_label":"Users","dynamic":false,"week_start_day":"monday","dimension_group":null,"error":null,"field_group_variant":"ID","measure":false,"parameter":false,"primary_key":true,"project_name":"eye_exam","scope":"users","suggest_dimension":"users.id","suggest_explore":"users","suggestable":false,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"lookml_link":"/projects/eye_exam/files/views%2Fusers.view.lkml?line=6","permanent":null,"source_file":"views/users.view.lkml","source_file_path":"eye_exam/views/users.view.lkml","sql":"${TABLE}.\"ID\"
+        ","sql_case":null,"filters":null},{"align":"left","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":false,"label":"Users
+        Last Name","label_from_parameter":null,"label_short":"Last Name","map_layer":null,"name":"users.last_name","strict_value_format":false,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"string","user_attribute_filter_types":["string","advanced_filter_string"],"value_format":null,"view":"users","view_label":"Users","dynamic":false,"week_start_day":"monday","dimension_group":null,"error":null,"field_group_variant":"Last
+        Name","measure":false,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users","suggest_dimension":"users.last_name","suggest_explore":"users","suggestable":true,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"lookml_link":"/projects/eye_exam/files/views%2Fusers.view.lkml?line=38","permanent":null,"source_file":"views/users.view.lkml","source_file_path":"eye_exam/views/users.view.lkml","sql":"${TABLE}.\"LAST_NAME\"
+        ","sql_case":null,"filters":null},{"align":"left","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":false,"label":"Users
+        State","label_from_parameter":null,"label_short":"State","map_layer":{"url":"/data/us_states.topo-402e425f99.json","name":"us_states","feature_key":"usa","property_key":null,"property_label_key":null,"projection":"albersUsa","format":null,"extents_json_url":null,"max_zoom_level":null,"min_zoom_level":null},"name":"users.state","strict_value_format":false,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"string","user_attribute_filter_types":["string","advanced_filter_string"],"value_format":null,"view":"users","view_label":"Users","dynamic":false,"week_start_day":"monday","dimension_group":null,"error":null,"field_group_variant":"State","measure":false,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users","suggest_dimension":"users.state","suggest_explore":"users","suggestable":true,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"lookml_link":"/projects/eye_exam/files/views%2Fusers.view.lkml?line=18","permanent":null,"source_file":"views/users.view.lkml","source_file_path":"eye_exam/views/users.view.lkml","sql":"${TABLE}.\"STATE\"
+        ","sql_case":null,"filters":null}],"table_calculations":[],"pivots":[]},"fill_fields":[],"has_totals":false,"has_row_totals":false,"applied_filters":{},"applied_filter_expression":"1=2","number_format":"1,234.56","explore":{"name":"users","label":"Users","description":null},"timezone":"America/New_York","data":[],"drill_menu_build_time":0.042108999999999994,"has_subtotals":false}}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '18049'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:31 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 7d9704f4a9cf5d75
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 7d9704f4a9cf5d75
+      X-B3-TraceId:
+      - 61e1d53340098ddf7d9704f4a9cf5d75
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"name": "benchmark/no-errors"}'
+    headers:
+      Content-Length:
+      - '31'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=3119792
+    method: PUT
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
+  response:
+    body:
+      string: '{"name":"benchmark/no-errors","remote":"origin","remote_name":"benchmark/no-errors","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1640119431,"ref":"382ad01406634a509a6685c42ae16c4f4dc1f7cc","remote_ref":"382ad01406634a509a6685c42ae16c4f4dc1f7cc","can":{}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '389'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:32 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 2a1ce57dd3fc13e0
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 2a1ce57dd3fc13e0
+      X-B3-TraceId:
+      - 61e1d5336a7228712a1ce57dd3fc13e0
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Content-Length:
+      - '0'
+      Cookie:
+      - looker.browser=3119792
+    method: DELETE
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch/tmp_spectacles_b
+  response:
+    body:
+      string: ''
+    headers:
+      Connection:
+      - keep-alive
+      Date:
+      - Fri, 14 Jan 2022 19:55:33 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Origin
+      X-B3-ParentSpanId:
+      - cc87a455d3ad4da6
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - cc87a455d3ad4da6
+      X-B3-TraceId:
+      - 61e1d534d35b7e49cc87a455d3ad4da6
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 204
+      message: No Content
+- request:
+    body: '{"name": "benchmark/no-errors"}'
+    headers:
+      Content-Length:
+      - '31'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=3119792
+    method: PUT
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
+  response:
+    body:
+      string: '{"name":"benchmark/no-errors","remote":"origin","remote_name":"benchmark/no-errors","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1640119431,"ref":"382ad01406634a509a6685c42ae16c4f4dc1f7cc","remote_ref":"382ad01406634a509a6685c42ae16c4f4dc1f7cc","can":{}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '389'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:33 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 3db2c3f4bbce9d86
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 3db2c3f4bbce9d86
+      X-B3-TraceId:
+      - 61e1d5359d764a253db2c3f4bbce9d86
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"workspace_id": "production"}'
+    headers:
+      Content-Length:
+      - '30'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=3119792
+    method: PATCH
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"production","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '83'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:33 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 8fc6e06be5f21674
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 8fc6e06be5f21674
+      X-B3-TraceId:
+      - 61e1d5356cb39f358fc6e06be5f21674
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"workspace_id": "dev"}'
+    headers:
+      Content-Length:
+      - '23'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=3119792
+    method: PATCH
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"dev","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '76'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:33 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 96d6afda5561c24c
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 96d6afda5561c24c
+      X-B3-TraceId:
+      - 61e1d535094d200996d6afda5561c24c
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"name": "pytest"}'
+    headers:
+      Content-Length:
+      - '18'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=3119792
+    method: PUT
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
+  response:
+    body:
+      string: '{"name":"pytest","remote":"origin","remote_name":"pytest","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1634603985,"ref":"ccdfc98fe6c067810f914c31a5c290e93b1f0366","remote_ref":"ccdfc98fe6c067810f914c31a5c290e93b1f0366","can":{}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '363'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:34 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - cd669ac8af702221
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - cd669ac8af702221
+      X-B3-TraceId:
+      - 61e1d536b51d527ecd669ac8af702221
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=3119792
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"dev","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '76'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:34 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 55d1446e966eb0f5
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 55d1446e966eb0f5
+      X-B3-TraceId:
+      - 61e1d536fa4444ae55d1446e966eb0f5
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=3119792
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
+  response:
+    body:
+      string: '{"name":"benchmark/no-errors","remote":"origin","remote_name":"benchmark/no-errors","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1640119431,"ref":"382ad01406634a509a6685c42ae16c4f4dc1f7cc","remote_ref":"382ad01406634a509a6685c42ae16c4f4dc1f7cc","can":{}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '389'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:34 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 24605ba5e17c5603
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 24605ba5e17c5603
+      X-B3-TraceId:
+      - 61e1d536fc30cd3624605ba5e17c5603
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=3119792
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/manifest
+  response:
+    body:
+      string: "<!DOCTYPE html>\n<html>\n<head>\n    <title>Looker Not Found (404)</title>\n
+        \   <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,600'
+        rel='stylesheet' type='text/css'>\n\n    <!-- @@@@@@@@@@@@@ FAVICONS @@@@@@@@@@@@@
+        -->\n\n    <link rel=\"apple-touch-icon-precomposed\" sizes=\"57x57\" href=\"https://wwwstatic-b.lookercdn.com/favicon/apple-touch-icon-57x57.png\"
+        />\n    <link rel=\"apple-touch-icon-precomposed\" sizes=\"114x114\" href=\"https://wwwstatic-c.lookercdn.com/favicon/apple-touch-icon-114x114.png\"
+        />\n    <link rel=\"apple-touch-icon-precomposed\" sizes=\"72x72\" href=\"https://wwwstatic-d.lookercdn.com/favicon/apple-touch-icon-72x72.png\"
+        />\n    <link rel=\"apple-touch-icon-precomposed\" sizes=\"144x144\" href=\"https://wwwstatic-a.lookercdn.com/favicon/apple-touch-icon-144x144.png\"
+        />\n    <link rel=\"apple-touch-icon-precomposed\" sizes=\"60x60\" href=\"https://wwwstatic-b.lookercdn.com/favicon/apple-touch-icon-60x60.png\"
+        />\n    <link rel=\"apple-touch-icon-precomposed\" sizes=\"120x120\" href=\"https://wwwstatic-c.lookercdn.com/favicon/apple-touch-icon-120x120.png\"
+        />\n    <link rel=\"apple-touch-icon-precomposed\" sizes=\"76x76\" href=\"https://wwwstatic-d.lookercdn.com/favicon/apple-touch-icon-76x76.png\"
+        />\n    <link rel=\"apple-touch-icon-precomposed\" sizes=\"152x152\" href=\"https://wwwstatic-a.lookercdn.com/favicon/apple-touch-icon-152x152.png\"
+        />\n    <link rel=\"icon\" type=\"image/png\" href=\"https://wwwstatic-b.lookercdn.com/favicon/favicon-196x196.png\"
+        sizes=\"196x196\" />\n    <link rel=\"icon\" type=\"image/png\" href=\"https://wwwstatic-c.lookercdn.com/favicon/favicon-96x96.png\"
+        sizes=\"96x96\" />\n    <link rel=\"icon\" type=\"image/png\" href=\"https://wwwstatic-d.lookercdn.com/favicon/favicon-32x32.png\"
+        sizes=\"32x32\" />\n    <link rel=\"icon\" type=\"image/png\" href=\"https://wwwstatic-a.lookercdn.com/favicon/favicon-16x16.png\"
+        sizes=\"16x16\" />\n    <link rel=\"icon\" type=\"image/png\" href=\"https://wwwstatic-b.lookercdn.com/favicon/favicon-128.png\"
+        sizes=\"128x128\" />\n    <meta name=\"application-name\" content=\"Looker\"/>\n
+        \   <meta name=\"msapplication-TileColor\" content=\"#FFFFFF\" />\n    <meta
+        name=\"msapplication-TileImage\" content=\"https://wwwstatic-c.lookercdn.com/favicon/mstile-144x144.png\"
+        />\n    <meta name=\"msapplication-square70x70logo\" content=\"https://wwwstatic-d.lookercdn.com/favicon/mstile-70x70.png\"
+        />\n    <meta name=\"msapplication-square150x150logo\" content=\"https://wwwstatic-a.lookercdn.com/favicon/mstile-150x150.png\"
+        />\n    <meta name=\"msapplication-wide310x150logo\" content=\"https://wwwstatic-b.lookercdn.com/favicon/mstile-310x150.png\"
+        />\n    <meta name=\"msapplication-square310x310logo\" content=\"https://wwwstatic-c.lookercdn.com/favicon/mstile-310x310.png\"
+        />\n\n    <style type=\"text/css\">\n        body {\n            background-color:
+        #2e343f;\n            color: white;\n            height: auto;\n            font-family:
+        Open Sans, Helvetica, Arial, sans-serif;\n        }\n        .message {\n
+        \           width: 100%;\n            max-width: 760px;\n            margin:
+        0 auto;\n            margin-top: 135px;\n            text-align: center;\n
+        \       }\n        h2, h3 {\n            font-weight: normal;\n        }\n
+        \       a {\n            color: white;\n        }\n    </style>\n</head>\n<body>\n\n
+        \   <div class=\"message\">\n\n        <img width=\"210\" height=\"84\" src=\"https://wwwstatic-a.lookercdn.com/logos/looker_all_white.svg\"
+        alt=\"Looker\">\n\n        <h1>Looker is unavailable.</h1>\n\n        <h2>If
+        you typed in a URL, double-check the spelling.</h2>\n        <h2>This may
+        also be due to a temporary condition such as an outage, <a href=\"https://docs.looker.com/relnotes/hosted-maintenance-hours\">scheduled
+        maintenance</a> or upgrade.</h2>\n        <br>\n        <h3>\n            If
+        this message persists or you have any concerns, <br> contact us from\n            <a
+        href=\"https://help.looker.com\">help.looker.com</a> and we'll respond promptly.\n
+        \       </h3>\n\n    </div>\n\n</body>\n</html>\n"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/html
+      Date:
+      - Fri, 14 Jan 2022 19:55:34 GMT
+      Vary:
+      - Accept-Encoding
+    status:
+      code: 404
+      message: Not Found
+- request:
+    body: '{"workspace_id": "production"}'
+    headers:
+      Content-Length:
+      - '30'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=3119792
+    method: PATCH
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"production","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '83'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:35 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 43fb26dfbb00d091
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 43fb26dfbb00d091
+      X-B3-TraceId:
+      - 61e1d536c226535c43fb26dfbb00d091
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=3119792
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"production","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '83'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:35 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 02da39c034d9df57
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 02da39c034d9df57
+      X-B3-TraceId:
+      - 61e1d537e36f9cdf02da39c034d9df57
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=3119792
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
+  response:
+    body:
+      string: '{"name":"master","remote":"origin","remote_name":"master","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":true,"ahead_count":0,"behind_count":0,"commit_at":1589215827,"ref":"71025770cf923f656ba2375436a1bd85ac00affc","remote_ref":"71025770cf923f656ba2375436a1bd85ac00affc","can":{}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '362'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:35 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - cd970b004faeac81
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - cd970b004faeac81
+      X-B3-TraceId:
+      - 61e1d537feb01a07cd970b004faeac81
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"workspace_id": "dev"}'
+    headers:
+      Content-Length:
+      - '23'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=3119792
+    method: PATCH
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"dev","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '76'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:35 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 0cc7da76140841a0
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 0cc7da76140841a0
+      X-B3-TraceId:
+      - 61e1d53786beef650cc7da76140841a0
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=3119792
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"dev","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '76'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:35 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 44602bd7adc41649
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 44602bd7adc41649
+      X-B3-TraceId:
+      - 61e1d537c593441644602bd7adc41649
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=3119792
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
+  response:
+    body:
+      string: '{"name":"benchmark/no-errors","remote":"origin","remote_name":"benchmark/no-errors","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1640119431,"ref":"382ad01406634a509a6685c42ae16c4f4dc1f7cc","remote_ref":"382ad01406634a509a6685c42ae16c4f4dc1f7cc","can":{}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '389'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:35 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 628a2fa26a4b8bd5
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 628a2fa26a4b8bd5
+      X-B3-TraceId:
+      - 61e1d537f33e3b05628a2fa26a4b8bd5
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"name": "tmp_spectacles_c"}'
+    headers:
+      Content-Length:
+      - '28'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=3119792
+    method: POST
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
+  response:
+    body:
+      string: '{"name":"tmp_spectacles_c","remote":"origin","remote_name":"tmp_spectacles_c","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":false,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1640119431,"ref":"382ad01406634a509a6685c42ae16c4f4dc1f7cc","remote_ref":null,"can":{}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '352'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:35 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 5f077fa7592875c1
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 5f077fa7592875c1
+      X-B3-TraceId:
+      - 61e1d53768e723285f077fa7592875c1
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"name": "tmp_spectacles_c", "ref": "71025770cf923f656ba2375436a1bd85ac00affc"}'
+    headers:
+      Content-Length:
+      - '79'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=3119792
+    method: PUT
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
+  response:
+    body:
+      string: '{"name":"tmp_spectacles_c","remote":"origin","remote_name":"tmp_spectacles_c","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":false,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1640119431,"ref":"382ad01406634a509a6685c42ae16c4f4dc1f7cc","remote_ref":null,"can":{}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '352'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:37 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 570a81ebeec5dbce
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 570a81ebeec5dbce
+      X-B3-TraceId:
+      - 61e1d538e244c092570a81ebeec5dbce
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"model": "eye_exam", "view": "users__fail", "fields": ["users__fail.city"],
+      "limit": 0, "filter_expression": "1=2"}'
+    headers:
+      Content-Length:
+      - '116'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=3119792
+    method: POST
+    uri: https://spectacles.looker.com:19999/api/3.1/queries?fields=id%2Cshare_url
+  response:
+    body:
+      string: '{"id":1919,"share_url":"https://spectacles.looker.com/x/pPPjILaH6UzHnTH0sXJuJ3"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '80'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:37 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - e046d306da769961
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - e046d306da769961
+      X-B3-TraceId:
+      - 61e1d539eba8652ae046d306da769961
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"model": "eye_exam", "view": "users__fail", "fields": ["users__fail.email"],
+      "limit": 0, "filter_expression": "1=2"}'
+    headers:
+      Content-Length:
+      - '117'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=3119792
+    method: POST
+    uri: https://spectacles.looker.com:19999/api/3.1/queries?fields=id%2Cshare_url
+  response:
+    body:
+      string: '{"id":1928,"share_url":"https://spectacles.looker.com/x/xrSOlmVVQNGXrO2UDua55N"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '80'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:37 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 43f40c6aaf898ae4
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 43f40c6aaf898ae4
+      X-B3-TraceId:
+      - 61e1d539cb15b6a843f40c6aaf898ae4
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"model": "eye_exam", "view": "users__fail", "fields": ["users__fail.first_name"],
+      "limit": 0, "filter_expression": "1=2"}'
+    headers:
+      Content-Length:
+      - '122'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=3119792
+    method: POST
+    uri: https://spectacles.looker.com:19999/api/3.1/queries?fields=id%2Cshare_url
+  response:
+    body:
+      string: '{"id":1929,"share_url":"https://spectacles.looker.com/x/HHTcwq6vdIOtzAcahFCJ3H"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '80'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:38 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - f56aba6ec717834c
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - f56aba6ec717834c
+      X-B3-TraceId:
+      - 61e1d53a607398a1f56aba6ec717834c
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"model": "eye_exam", "view": "users__fail", "fields": ["users__fail.id"],
+      "limit": 0, "filter_expression": "1=2"}'
+    headers:
+      Content-Length:
+      - '114'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=3119792
+    method: POST
+    uri: https://spectacles.looker.com:19999/api/3.1/queries?fields=id%2Cshare_url
+  response:
+    body:
+      string: '{"id":1931,"share_url":"https://spectacles.looker.com/x/BZHuziOJYnnDfHGpvMi6BJ"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '80'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:38 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 65fe6cbb645ac6bf
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 65fe6cbb645ac6bf
+      X-B3-TraceId:
+      - 61e1d53a475fda1565fe6cbb645ac6bf
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"model": "eye_exam", "view": "users__fail", "fields": ["users__fail.last_name"],
+      "limit": 0, "filter_expression": "1=2"}'
+    headers:
+      Content-Length:
+      - '121'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=3119792
+    method: POST
+    uri: https://spectacles.looker.com:19999/api/3.1/queries?fields=id%2Cshare_url
+  response:
+    body:
+      string: '{"id":1932,"share_url":"https://spectacles.looker.com/x/AnH3ci978hOGDomjIRP90U"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '80'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:38 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - d3a98e1d879d2eae
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - d3a98e1d879d2eae
+      X-B3-TraceId:
+      - 61e1d53a483209f0d3a98e1d879d2eae
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"query_id": 1919, "result_format": "json_detail"}'
+    headers:
+      Content-Length:
+      - '50'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=3119792
+    method: POST
+    uri: https://spectacles.looker.com:19999/api/3.1/query_tasks?fields=id&cache=false
+  response:
+    body:
+      string: '{"id":"8e21f74466ccb5b13f6a9f54116bf9a1"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '41'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:38 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - d5478fe0aee588a5
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - d5478fe0aee588a5
+      X-B3-TraceId:
+      - 61e1d53a5e636363d5478fe0aee588a5
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"query_id": 1928, "result_format": "json_detail"}'
+    headers:
+      Content-Length:
+      - '50'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=3119792
+    method: POST
+    uri: https://spectacles.looker.com:19999/api/3.1/query_tasks?fields=id&cache=false
+  response:
+    body:
+      string: '{"id":"2afe99b0ab0a184e9b2620b1509d971d"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '41'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:38 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - aa27233b7f54609b
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - aa27233b7f54609b
+      X-B3-TraceId:
+      - 61e1d53a8087ccd4aa27233b7f54609b
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"query_id": 1929, "result_format": "json_detail"}'
+    headers:
+      Content-Length:
+      - '50'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=3119792
+    method: POST
+    uri: https://spectacles.looker.com:19999/api/3.1/query_tasks?fields=id&cache=false
+  response:
+    body:
+      string: '{"id":"1341c8504661f196ab3136a026abbe69"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '41'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:38 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 8f1b921a3e872cb5
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 8f1b921a3e872cb5
+      X-B3-TraceId:
+      - 61e1d53ae586e6588f1b921a3e872cb5
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"query_id": 1931, "result_format": "json_detail"}'
+    headers:
+      Content-Length:
+      - '50'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=3119792
+    method: POST
+    uri: https://spectacles.looker.com:19999/api/3.1/query_tasks?fields=id&cache=false
+  response:
+    body:
+      string: '{"id":"f5a2cf8e87a29173d9242675dd9df3a9"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '41'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:38 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - f7dbc7e476628dd7
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - f7dbc7e476628dd7
+      X-B3-TraceId:
+      - 61e1d53a470cc9d3f7dbc7e476628dd7
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"query_id": 1932, "result_format": "json_detail"}'
+    headers:
+      Content-Length:
+      - '50'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=3119792
+    method: POST
+    uri: https://spectacles.looker.com:19999/api/3.1/query_tasks?fields=id&cache=false
+  response:
+    body:
+      string: '{"id":"f636b0257269e6ac9fb8b38527e50205"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '41'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:38 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - a4d2dd65f7be8961
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - a4d2dd65f7be8961
+      X-B3-TraceId:
+      - 61e1d53a21ca1342a4d2dd65f7be8961
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=3119792
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/query_tasks/multi_results?query_task_ids=8e21f74466ccb5b13f6a9f54116bf9a1%2C2afe99b0ab0a184e9b2620b1509d971d%2C1341c8504661f196ab3136a026abbe69%2Cf5a2cf8e87a29173d9242675dd9df3a9%2Cf636b0257269e6ac9fb8b38527e50205
+  response:
+    body:
+      string: '{"1341c8504661f196ab3136a026abbe69":{"status":"added"},"2afe99b0ab0a184e9b2620b1509d971d":{"status":"running"},"8e21f74466ccb5b13f6a9f54116bf9a1":{"status":"running"},"f5a2cf8e87a29173d9242675dd9df3a9":{"status":"added"},"f636b0257269e6ac9fb8b38527e50205":{"status":"added"}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '275'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:39 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 0400498b7b70a754
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 0400498b7b70a754
+      X-B3-TraceId:
+      - 61e1d53bee61c5f70400498b7b70a754
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=3119792
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/query_tasks/multi_results?query_task_ids=8e21f74466ccb5b13f6a9f54116bf9a1%2C2afe99b0ab0a184e9b2620b1509d971d%2C1341c8504661f196ab3136a026abbe69%2Cf5a2cf8e87a29173d9242675dd9df3a9%2Cf636b0257269e6ac9fb8b38527e50205
+  response:
+    body:
+      string: '{"1341c8504661f196ab3136a026abbe69":{"status":"error","result_source":"query","data":{"from_cache":true,"id":"1341c8504661f196ab3136a026abbe69","supports_pivot_in_db":true,"null_sort_treatment":"high","expired":false,"ran_at":"2022-01-14T19:55:39+00:00","aggregate_table_used_info":null,"runtime":"0.690","added_params":{"sorts":["users__fail.first_name"]},"forecast_result":null,"sql":"SELECT\n    users__fail.\"FIRST\"  AS
+        \"users__fail.first_name\"\nFROM \"PUBLIC\".\"USERS\"\n   AS users__fail\nWHERE
+        (1 = 2)\nGROUP BY\n    1\nORDER BY\n    1\nFETCH NEXT 0 ROWS ONLY","sql_explain":"EXPLAIN
+        SELECT\n    users__fail.\"FIRST\"  AS \"users__fail.first_name\"\nFROM \"PUBLIC\".\"USERS\"\n   AS
+        users__fail\nWHERE (1 = 2)\nGROUP BY\n    1\nORDER BY\n    1\nFETCH NEXT 0
+        ROWS ONLY","fields":{"measures":[],"dimensions":[{"align":"left","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":false,"label":"Users
+        Fail First Name","label_from_parameter":null,"label_short":"First Name","map_layer":null,"name":"users__fail.first_name","strict_value_format":false,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"string","user_attribute_filter_types":["string","advanced_filter_string"],"value_format":null,"view":"users__fail","view_label":"Users
+        Fail","dynamic":false,"week_start_day":"monday","dimension_group":null,"error":null,"field_group_variant":"First
+        Name","measure":false,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users__fail","suggest_dimension":"users__fail.first_name","suggest_explore":"users__fail","suggestable":true,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"lookml_link":"/projects/eye_exam/files/views%2Fusers__fail.view.lkml?line=32","permanent":null,"source_file":"views/users__fail.view.lkml","source_file_path":"eye_exam/views/users__fail.view.lkml","sql":"${TABLE}.\"FIRST\"
+        ","sql_case":null,"filters":null,"sorted":{"sort_index":0,"desc":false}}],"table_calculations":[],"pivots":[]},"fill_fields":[],"has_totals":false,"has_row_totals":false,"applied_filters":{},"applied_filter_expression":"1=2","number_format":"1,234.56","explore":{"name":"users__fail","label":"Users
+        Fail","description":null},"timezone":"America/New_York","data":[],"errors":[{"message":"The
+        Snowflake database encountered an error while running this query.","message_details":"SQL
+        Syntax Error: SQL compilation error: error line 2 at position 4\ninvalid identifier
+        ''USERS__FAIL.FIRST''","params":"SELECT\n    users__fail.\"FIRST\"  AS \"users__fail.first_name\"\nFROM
+        \"PUBLIC\".\"USERS\"\n   AS users__fail\nWHERE (1 = 2)\nGROUP BY\n    1\nORDER
+        BY\n    1\nFETCH NEXT 0 ROWS ONLY","edit_url":null,"error_pos":null,"level":"error","sql_error_loc":{"line":2,"column":4}}],"drill_menu_build_time":0.033216,"has_subtotals":false}},"2afe99b0ab0a184e9b2620b1509d971d":{"status":"error","result_source":"query","data":{"from_cache":true,"id":"2afe99b0ab0a184e9b2620b1509d971d","supports_pivot_in_db":true,"null_sort_treatment":"high","expired":false,"ran_at":"2022-01-14T19:55:39+00:00","aggregate_table_used_info":null,"runtime":"0.854","added_params":{"sorts":["users__fail.email"]},"forecast_result":null,"sql":"SELECT\n    users__fail.\"EMAIL_ADDRESS\"  AS
+        \"users__fail.email\"\nFROM \"PUBLIC\".\"USERS\"\n   AS users__fail\nWHERE
+        (1 = 2)\nGROUP BY\n    1\nORDER BY\n    1\nFETCH NEXT 0 ROWS ONLY","sql_explain":"EXPLAIN
+        SELECT\n    users__fail.\"EMAIL_ADDRESS\"  AS \"users__fail.email\"\nFROM
+        \"PUBLIC\".\"USERS\"\n   AS users__fail\nWHERE (1 = 2)\nGROUP BY\n    1\nORDER
+        BY\n    1\nFETCH NEXT 0 ROWS ONLY","fields":{"measures":[],"dimensions":[{"align":"left","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":false,"label":"Users
+        Fail Email","label_from_parameter":null,"label_short":"Email","map_layer":null,"name":"users__fail.email","strict_value_format":false,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"string","user_attribute_filter_types":["string","advanced_filter_string"],"value_format":null,"view":"users__fail","view_label":"Users
+        Fail","dynamic":false,"week_start_day":"monday","dimension_group":null,"error":null,"field_group_variant":"Email","measure":false,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users__fail","suggest_dimension":"users__fail.email","suggest_explore":"users__fail","suggestable":true,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"lookml_link":"/projects/eye_exam/files/views%2Fusers__fail.view.lkml?line=26","permanent":null,"source_file":"views/users__fail.view.lkml","source_file_path":"eye_exam/views/users__fail.view.lkml","sql":"${TABLE}.\"EMAIL_ADDRESS\"
+        ","sql_case":null,"filters":null,"sorted":{"sort_index":0,"desc":false}}],"table_calculations":[],"pivots":[]},"fill_fields":[],"has_totals":false,"has_row_totals":false,"applied_filters":{},"applied_filter_expression":"1=2","number_format":"1,234.56","explore":{"name":"users__fail","label":"Users
+        Fail","description":null},"timezone":"America/New_York","data":[],"errors":[{"message":"The
+        Snowflake database encountered an error while running this query.","message_details":"SQL
+        Syntax Error: SQL compilation error: error line 2 at position 4\ninvalid identifier
+        ''USERS__FAIL.EMAIL_ADDRESS''","params":"SELECT\n    users__fail.\"EMAIL_ADDRESS\"  AS
+        \"users__fail.email\"\nFROM \"PUBLIC\".\"USERS\"\n   AS users__fail\nWHERE
+        (1 = 2)\nGROUP BY\n    1\nORDER BY\n    1\nFETCH NEXT 0 ROWS ONLY","edit_url":null,"error_pos":null,"level":"error","sql_error_loc":{"line":2,"column":4}}],"drill_menu_build_time":0.031515,"has_subtotals":false}},"8e21f74466ccb5b13f6a9f54116bf9a1":{"status":"complete","result_source":"query","data":{"from_cache":true,"id":"8e21f74466ccb5b13f6a9f54116bf9a1","truncated":true,"supports_pivot_in_db":true,"null_sort_treatment":"high","expired":false,"ran_at":"2022-01-14T19:55:39+00:00","aggregate_table_used_info":null,"runtime":"0.890","added_params":{"sorts":["users__fail.city"]},"forecast_result":null,"dialect_specific_metadata":{},"sql":"SELECT\n    users__fail.\"CITY\"  AS
+        \"users__fail.city\"\nFROM \"PUBLIC\".\"USERS\"\n   AS users__fail\nWHERE
+        (1 = 2)\nGROUP BY\n    1\nORDER BY\n    1\nFETCH NEXT 0 ROWS ONLY","sql_explain":"EXPLAIN
+        SELECT\n    users__fail.\"CITY\"  AS \"users__fail.city\"\nFROM \"PUBLIC\".\"USERS\"\n   AS
+        users__fail\nWHERE (1 = 2)\nGROUP BY\n    1\nORDER BY\n    1\nFETCH NEXT 0
+        ROWS ONLY","fields":{"measures":[],"dimensions":[{"align":"left","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":false,"label":"Users
+        Fail City","label_from_parameter":null,"label_short":"City","map_layer":null,"name":"users__fail.city","strict_value_format":false,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"string","user_attribute_filter_types":["string","advanced_filter_string"],"value_format":null,"view":"users__fail","view_label":"Users
+        Fail","dynamic":false,"week_start_day":"monday","dimension_group":null,"error":null,"field_group_variant":"City","measure":false,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users__fail","suggest_dimension":"users__fail.city","suggest_explore":"users__fail","suggestable":true,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"lookml_link":"/projects/eye_exam/files/views%2Fusers__fail.view.lkml?line=20","permanent":null,"source_file":"views/users__fail.view.lkml","source_file_path":"eye_exam/views/users__fail.view.lkml","sql":"${TABLE}.\"CITY\"
+        ","sql_case":null,"filters":null,"sorted":{"sort_index":0,"desc":false}}],"table_calculations":[],"pivots":[]},"fill_fields":[],"has_totals":false,"has_row_totals":false,"applied_filters":{},"applied_filter_expression":"1=2","number_format":"1,234.56","explore":{"name":"users__fail","label":"Users
+        Fail","description":null},"timezone":"America/New_York","data":[],"drill_menu_build_time":0.032474,"has_subtotals":false}},"f5a2cf8e87a29173d9242675dd9df3a9":{"status":"complete","result_source":"query","data":{"from_cache":true,"id":"f5a2cf8e87a29173d9242675dd9df3a9","truncated":true,"supports_pivot_in_db":true,"null_sort_treatment":"high","expired":false,"ran_at":"2022-01-14T19:55:39+00:00","aggregate_table_used_info":null,"runtime":"0.566","forecast_result":null,"dialect_specific_metadata":{},"sql":"SELECT\n    users__fail.\"ID\"  AS
+        \"users__fail.id\"\nFROM \"PUBLIC\".\"USERS\"\n   AS users__fail\nWHERE (1
+        = 2)\nFETCH NEXT 0 ROWS ONLY","sql_explain":"EXPLAIN SELECT\n    users__fail.\"ID\"  AS
+        \"users__fail.id\"\nFROM \"PUBLIC\".\"USERS\"\n   AS users__fail\nWHERE (1
+        = 2)\nFETCH NEXT 0 ROWS ONLY","fields":{"measures":[],"dimensions":[{"align":"right","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":true,"label":"Users
+        Fail ID","label_from_parameter":null,"label_short":"ID","map_layer":null,"name":"users__fail.id","strict_value_format":false,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"number","user_attribute_filter_types":["number","advanced_filter_number"],"value_format":null,"view":"users__fail","view_label":"Users
+        Fail","dynamic":false,"week_start_day":"monday","dimension_group":null,"error":null,"field_group_variant":"ID","measure":false,"parameter":false,"primary_key":true,"project_name":"eye_exam","scope":"users__fail","suggest_dimension":"users__fail.id","suggest_explore":"users__fail","suggestable":false,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"lookml_link":"/projects/eye_exam/files/views%2Fusers__fail.view.lkml?line=8","permanent":null,"source_file":"views/users__fail.view.lkml","source_file_path":"eye_exam/views/users__fail.view.lkml","sql":"${TABLE}.\"ID\"
+        ","sql_case":null,"filters":null}],"table_calculations":[],"pivots":[]},"fill_fields":[],"has_totals":false,"has_row_totals":false,"applied_filters":{},"applied_filter_expression":"1=2","number_format":"1,234.56","explore":{"name":"users__fail","label":"Users
+        Fail","description":null},"timezone":"America/New_York","data":[],"drill_menu_build_time":0.031714,"has_subtotals":false}},"f636b0257269e6ac9fb8b38527e50205":{"status":"running"}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '10964'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:39 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - a4de4a9693f880c3
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - a4de4a9693f880c3
+      X-B3-TraceId:
+      - 61e1d53bae98370aa4de4a9693f880c3
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=3119792
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/query_tasks/multi_results?query_task_ids=f636b0257269e6ac9fb8b38527e50205
+  response:
+    body:
+      string: '{"f636b0257269e6ac9fb8b38527e50205":{"status":"error","result_source":"query","data":{"from_cache":true,"id":"f636b0257269e6ac9fb8b38527e50205","supports_pivot_in_db":true,"null_sort_treatment":"high","expired":false,"ran_at":"2022-01-14T19:55:39+00:00","aggregate_table_used_info":null,"runtime":"0.856","added_params":{"sorts":["users__fail.last_name"]},"forecast_result":null,"sql":"SELECT\n    users__fail.\"LAST\"  AS
+        \"users__fail.last_name\"\nFROM \"PUBLIC\".\"USERS\"\n   AS users__fail\nWHERE
+        (1 = 2)\nGROUP BY\n    1\nORDER BY\n    1\nFETCH NEXT 0 ROWS ONLY","sql_explain":"EXPLAIN
+        SELECT\n    users__fail.\"LAST\"  AS \"users__fail.last_name\"\nFROM \"PUBLIC\".\"USERS\"\n   AS
+        users__fail\nWHERE (1 = 2)\nGROUP BY\n    1\nORDER BY\n    1\nFETCH NEXT 0
+        ROWS ONLY","fields":{"measures":[],"dimensions":[{"align":"left","can_filter":true,"category":"dimension","default_filter_value":null,"description":null,"enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":false,"label":"Users
+        Fail Last Name","label_from_parameter":null,"label_short":"Last Name","map_layer":null,"name":"users__fail.last_name","strict_value_format":false,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"string","user_attribute_filter_types":["string","advanced_filter_string"],"value_format":null,"view":"users__fail","view_label":"Users
+        Fail","dynamic":false,"week_start_day":"monday","dimension_group":null,"error":null,"field_group_variant":"Last
+        Name","measure":false,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users__fail","suggest_dimension":"users__fail.last_name","suggest_explore":"users__fail","suggestable":true,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"lookml_link":"/projects/eye_exam/files/views%2Fusers__fail.view.lkml?line=38","permanent":null,"source_file":"views/users__fail.view.lkml","source_file_path":"eye_exam/views/users__fail.view.lkml","sql":"${TABLE}.\"LAST\"
+        ","sql_case":null,"filters":null,"sorted":{"sort_index":0,"desc":false}}],"table_calculations":[],"pivots":[]},"fill_fields":[],"has_totals":false,"has_row_totals":false,"applied_filters":{},"applied_filter_expression":"1=2","number_format":"1,234.56","explore":{"name":"users__fail","label":"Users
+        Fail","description":null},"timezone":"America/New_York","data":[],"errors":[{"message":"The
+        Snowflake database encountered an error while running this query.","message_details":"SQL
+        Syntax Error: SQL compilation error: error line 2 at position 4\ninvalid identifier
+        ''USERS__FAIL.LAST''","params":"SELECT\n    users__fail.\"LAST\"  AS \"users__fail.last_name\"\nFROM
+        \"PUBLIC\".\"USERS\"\n   AS users__fail\nWHERE (1 = 2)\nGROUP BY\n    1\nORDER
+        BY\n    1\nFETCH NEXT 0 ROWS ONLY","edit_url":null,"error_pos":null,"level":"error","sql_error_loc":{"line":2,"column":4}}],"drill_menu_build_time":0.031259,"has_subtotals":false}}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '3011'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:40 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 522e7c4d771b97ef
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 522e7c4d771b97ef
+      X-B3-TraceId:
+      - 61e1d53c12cd3734522e7c4d771b97ef
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"name": "benchmark/no-errors"}'
+    headers:
+      Content-Length:
+      - '31'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=3119792
+    method: PUT
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
+  response:
+    body:
+      string: '{"name":"benchmark/no-errors","remote":"origin","remote_name":"benchmark/no-errors","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1640119431,"ref":"382ad01406634a509a6685c42ae16c4f4dc1f7cc","remote_ref":"382ad01406634a509a6685c42ae16c4f4dc1f7cc","can":{}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '389'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:41 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 3c3c5cbb58d3b27d
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 3c3c5cbb58d3b27d
+      X-B3-TraceId:
+      - 61e1d53c674f89173c3c5cbb58d3b27d
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Content-Length:
+      - '0'
+      Cookie:
+      - looker.browser=3119792
+    method: DELETE
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch/tmp_spectacles_c
+  response:
+    body:
+      string: ''
+    headers:
+      Connection:
+      - keep-alive
+      Date:
+      - Fri, 14 Jan 2022 19:55:42 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Origin
+      X-B3-ParentSpanId:
+      - 5c9453620431c6f2
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 5c9453620431c6f2
+      X-B3-TraceId:
+      - 61e1d53d42b539605c9453620431c6f2
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 204
+      message: No Content
+- request:
+    body: '{"name": "benchmark/no-errors"}'
+    headers:
+      Content-Length:
+      - '31'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=3119792
+    method: PUT
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
+  response:
+    body:
+      string: '{"name":"benchmark/no-errors","remote":"origin","remote_name":"benchmark/no-errors","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1640119431,"ref":"382ad01406634a509a6685c42ae16c4f4dc1f7cc","remote_ref":"382ad01406634a509a6685c42ae16c4f4dc1f7cc","can":{}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '389'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:42 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - c635ea9279539714
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - c635ea9279539714
+      X-B3-TraceId:
+      - 61e1d53eded99672c635ea9279539714
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"workspace_id": "production"}'
+    headers:
+      Content-Length:
+      - '30'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=3119792
+    method: PATCH
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"production","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '83'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 14 Jan 2022 19:55:42 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 9e8a24bbcf0b0ce2
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 9e8a24bbcf0b0ce2
+      X-B3-TraceId:
+      - 61e1d53edf9144249e8a24bbcf0b0ce2
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+version: 1

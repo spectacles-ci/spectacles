@@ -1,13 +1,11 @@
-from typing import Iterable, Tuple, Dict
+from typing import Iterable, List
 from unittest.mock import patch, create_autospec
 import pytest
-import jsonschema
 import vcr
 from spectacles.validators import SqlValidator
-from spectacles.validators.sql import Query, QueryResult
+from spectacles.validators.sql import SqlTest
 from spectacles.exceptions import SpectaclesException
-
-EXPECTED_QUERY_COUNTS = {"models": 1, "explores": 1, "dimensions": 6}
+from spectacles.lookml import Project, build_project
 
 
 @pytest.fixture(scope="class")
@@ -18,270 +16,225 @@ def validator(looker_client, record_mode) -> Iterable[SqlValidator]:
         filter_headers=["Authorization"],
         record_mode=record_mode,
     ):
-        validator = SqlValidator(looker_client, project="eye_exam")
+        validator = SqlValidator(looker_client)
         yield validator
 
 
-@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
-class TestBuildProject:
-    def test_model_explore_dimension_counts_should_match(self, validator):
-        validator.build_project(selectors=["eye_exam/users"])
-        assert len(validator.project.models) == EXPECTED_QUERY_COUNTS["models"]
-        assert (
-            len(validator.project.models[0].explores)
-            == EXPECTED_QUERY_COUNTS["explores"]
-        )
-        dimensions = validator.project.models[0].explores[0].dimensions
-        assert len(dimensions) == EXPECTED_QUERY_COUNTS["dimensions"]
-        assert "users.city" in [dim.name for dim in dimensions]
-        assert not validator.project.errored
-        assert validator.project.queried is False
-
-    def test_project_with_everything_excluded_should_not_have_models(self, validator):
-        validator.build_project(exclusions=["eye_exam/*"])
-        assert len(validator.project.models) == 0
-
-    def test_duplicate_selectors_should_be_deduplicated(self, validator):
-        validator.build_project(selectors=["eye_exam/users", "eye_exam/users"])
-        assert len(validator.project.models) == 1
-
-
-@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
-class TestBuildUnconfiguredProject:
-    """Test for a build error when building an unconfigured LookML project."""
-
-    def test_project_with_no_configured_models_should_raise_error(self, validator):
-        validator.project.name = "eye_exam_unconfigured"
-        validator.client.update_workspace(workspace="production")
-        with pytest.raises(SpectaclesException):
-            validator.build_project()
-
-
 class TestValidatePass:
-    """Test the eye_exam Looker project on master for an explore without errors.
-
-    Tests in this class often use `pytest.mark.parametrize` with the argument
-    `indirect=True`. This argument allows us to parameterize the validator fixture to
-    run in batch, hybrid, and/or single mode for each test. The parameters
-    are passed from `parametrize` to the `mode` argument of `validator.validate`
-    via a special built-in pytest fixture called `request`.
-
-    """
+    """Test the eye_exam Looker project on master for an explore without errors."""
 
     @pytest.fixture(scope="class")
-    def validator_pass(
-        self, request, record_mode, validator
-    ) -> Iterable[Tuple[SqlValidator, Dict]]:
-        mode = request.param
+    def project(self, looker_client, record_mode) -> Iterable[Project]:
         with vcr.use_cassette(
-            f"tests/cassettes/test_sql_validator/fixture_validator_pass[{mode}].yaml",
+            "tests/cassettes/test_sql_validator/fixture_project_pass.yaml",
             match_on=["uri", "method", "raw_body"],
             filter_headers=["Authorization"],
             record_mode=record_mode,
         ):
-            validator.build_project(selectors=["eye_exam/users"])
-            results = validator.validate(mode)
-            yield validator, results
+            project = build_project(
+                looker_client,
+                name="eye_exam",
+                filters=["eye_exam/users"],
+                include_dimensions=True,
+            )
+            yield project
 
-    @pytest.mark.parametrize(
-        "validator_pass", ["batch", "single", "hybrid"], indirect=True
-    )
-    def test_should_set_errored_and_queried(self, validator_pass):
-        validator = validator_pass[0]
-        assert validator.project.errored is False
-        assert validator.project.queried is True
+    @pytest.fixture(scope="class")
+    def explore_tests(self, validator, project, record_mode) -> Iterable[List[SqlTest]]:
+        with vcr.use_cassette(
+            "tests/cassettes/test_sql_validator/fixture_explore_tests_pass.yaml",
+            match_on=["uri", "method", "raw_body"],
+            filter_headers=["Authorization"],
+            record_mode=record_mode,
+        ):
+            yield validator.create_tests(project, compile_sql=True)
 
-    @pytest.mark.parametrize("validator_pass", ["batch"], indirect=True)
-    def test_in_batch_mode_should_run_one_query(self, validator_pass):
-        validator = validator_pass[0]
-        assert len(validator._query_by_task_id) == 1
+    @pytest.fixture(scope="class")
+    def validator_after_run(
+        self, validator, explore_tests, record_mode
+    ) -> Iterable[SqlValidator]:
+        with vcr.use_cassette(
+            "tests/cassettes/test_sql_validator/fixture_validator_pass.yaml",
+            match_on=["uri", "method", "raw_body"],
+            filter_headers=["Authorization"],
+            record_mode=record_mode,
+        ):
+            validator.run_tests(list(explore_tests))
+            yield validator
 
-    @pytest.mark.parametrize("validator_pass", ["single"], indirect=True)
-    def test_in_single_mode_should_run_n_queries(self, validator_pass):
-        validator = validator_pass[0]
-        assert len(validator._query_by_task_id) == EXPECTED_QUERY_COUNTS["dimensions"]
+    @pytest.fixture(scope="class")
+    def dimension_tests(
+        self, validator_after_run, project, record_mode
+    ) -> Iterable[List[SqlTest]]:
+        """Create dimension-level tests after the explore-level validation completes."""
+        with vcr.use_cassette(
+            "tests/cassettes/test_sql_validator/fixture_dimension_tests_pass.yaml",
+            match_on=["uri", "method", "raw_body"],
+            filter_headers=["Authorization"],
+            record_mode=record_mode,
+        ):
+            yield validator_after_run.create_tests(
+                project, compile_sql=True, at_dimension_level=True
+            )
 
-    @pytest.mark.parametrize("validator_pass", ["hybrid"], indirect=True)
-    def test_in_hybrid_mode_should_run_one_query(self, validator_pass):
-        validator = validator_pass[0]
-        assert len(validator._query_by_task_id) == 1
-
-    @pytest.mark.parametrize(
-        "validator_pass", ["batch", "single", "hybrid"], indirect=True
-    )
-    def test_running_queries_should_be_empty(self, validator_pass):
-        validator = validator_pass[0]
-        assert len(validator._running_queries) == 0
-
-    @pytest.mark.parametrize("validator_pass", ["hybrid", "single"], indirect=True)
-    def test_in_hybrid_or_single_mode_dimensions_should_be_queried(
-        self, validator_pass
+    def test_project_should_be_queried_but_not_have_errors(
+        self, validator_after_run, explore_tests, project
     ):
-        validator = validator_pass[0]
-        explore = validator.project.models[0].explores[0]
-        assert all(dim.queried for dim in explore.dimensions if dim.ignore is False)
+        assert project.errored is False
+        assert project.queried is True
+        assert all(test.status != "error" for test in explore_tests)
 
-    @pytest.mark.parametrize("validator_pass", ["batch", "single"], indirect=True)
-    def test_ignored_dimensions_are_not_queried(self, validator_pass):
-        validator = validator_pass[0]
-        explore = validator.project.models[0].explores[0]
+    def test_running_tests_should_be_empty(self, validator_after_run):
+        assert len(validator_after_run._running_tests) == 0
+
+    def test_ignored_dimensions_should_not_be_queried(
+        self, validator_after_run, project
+    ):
+        explore = project.models[0].explores[0]
         assert not any(dim.queried for dim in explore.dimensions if dim.ignore is True)
 
-    @pytest.mark.parametrize("validator_pass", ["batch"], indirect=True)
-    def test_count_explores(self, validator_pass):
-        validator = validator_pass[0]
-        assert validator.project.count_explores() == 1
+    def test_should_be_one_explore_test_per_explore(self, explore_tests, project):
+        assert project.count_explores() == len(explore_tests)
 
-    @pytest.mark.parametrize("validator_pass", ["batch", "single"], indirect=True)
-    def test_results_should_conform_to_schema(self, schema, validator_pass):
-        results = validator_pass[1]
-        jsonschema.validate(results, schema)
+    def test_should_not_be_any_dimension_tests(self, dimension_tests):
+        """We only generate dimension-level tests if the explores have errors."""
+        assert len(dimension_tests) == 0
+
+    def test_all_tests_should_be_unique(self, explore_tests):
+        assert len(set(explore_tests)) == len(explore_tests)
 
 
-@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
 class TestValidateFail:
+    """Test the eye_exam Looker project on master for an explore with errors."""
+
     @pytest.fixture(scope="class")
-    def validator_fail(
-        self, record_mode, validator
-    ) -> Iterable[Tuple[SqlValidator, Dict]]:
+    def project(self, looker_client, record_mode) -> Iterable[Project]:
+        with vcr.use_cassette(
+            "tests/cassettes/test_sql_validator/fixture_project_fail.yaml",
+            match_on=["uri", "method", "raw_body"],
+            filter_headers=["Authorization"],
+            record_mode=record_mode,
+        ):
+            project = build_project(
+                looker_client,
+                name="eye_exam",
+                filters=["eye_exam/users__fail"],
+                include_dimensions=True,
+            )
+            yield project
+
+    @pytest.fixture(scope="class")
+    def explore_tests(self, validator, project, record_mode) -> Iterable[List[SqlTest]]:
+        with vcr.use_cassette(
+            "tests/cassettes/test_sql_validator/fixture_explore_tests_fail.yaml",
+            match_on=["uri", "method", "raw_body"],
+            filter_headers=["Authorization"],
+            record_mode=record_mode,
+        ):
+            yield validator.create_tests(project, compile_sql=True)
+
+    @pytest.fixture(scope="class")
+    def validator_after_run(
+        self, validator, explore_tests, record_mode
+    ) -> Iterable[SqlValidator]:
         with vcr.use_cassette(
             "tests/cassettes/test_sql_validator/fixture_validator_fail.yaml",
             match_on=["uri", "method", "raw_body"],
             filter_headers=["Authorization"],
             record_mode=record_mode,
         ):
-            validator.build_project(selectors=["eye_exam/users__fail"])
-            results = validator.validate(mode="hybrid")
-            yield validator, results
+            validator.run_tests(list(explore_tests))
+            yield validator
 
-    def test_in_hybrid_mode_should_run_n_queries(self, validator_fail):
-        validator = validator_fail[0]
-        # The failing explore has one fewer dimension to induce content errors, so we
-        # add one for hybrid mode and subtract one for the removed dimension.
-        assert len(validator._query_by_task_id) == EXPECTED_QUERY_COUNTS["dimensions"]
-
-    def test_should_set_errored(self, validator_fail):
-        validator = validator_fail[0]
-        assert validator.project.errored is True
-
-    def test_running_queries_should_be_empty(self, validator_fail):
-        validator = validator_fail[0]
-        assert len(validator._running_queries) == 0
-
-    def test_results_should_conform_to_schema(self, schema, validator_fail):
-        results = validator_fail[1]
-        jsonschema.validate(results, schema)
-
-
-@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
-class TestValidateFailWithWarning:
     @pytest.fixture(scope="class")
-    def validator_fail_with_warning(
-        self, record_mode, validator
-    ) -> Iterable[Tuple[SqlValidator, Dict]]:
+    def dimension_tests(
+        self, validator_after_run, project, record_mode
+    ) -> Iterable[List[SqlTest]]:
+        """Create dimension-level tests after the explore-level validation completes."""
         with vcr.use_cassette(
-            "tests/cassettes/test_sql_validator/fixture_validator_fail_with_warning.yaml",
+            "tests/cassettes/test_sql_validator/fixture_dimension_tests_fail.yaml",
             match_on=["uri", "method", "raw_body"],
             filter_headers=["Authorization"],
             record_mode=record_mode,
         ):
-            # Move to dev mode to test conditional logic warning
-            validator.client.update_workspace("dev")
-            validator.client.checkout_branch("eye_exam", "pytest")
+            yield validator_after_run.create_tests(
+                project, compile_sql=True, at_dimension_level=True
+            )
 
-            validator.build_project(selectors=["eye_exam/users__fail_and_warn"])
-            results = validator.validate(mode="hybrid")
-            yield validator, results
-
-    def test_in_hybrid_mode_should_run_n_queries(self, validator_fail_with_warning):
-        validator = validator_fail_with_warning[0]
-        # The failing explore has one fewer dimension to induce content errors, so we
-        # add one for hybrid mode and subtract one for the removed dimension.
-        assert len(validator._query_by_task_id) == EXPECTED_QUERY_COUNTS["dimensions"]
-
-    def test_should_set_errored_and_queried(self, validator_fail_with_warning):
-        validator = validator_fail_with_warning[0]
-        assert validator.project.errored is True
-        assert validator.project.queried is True
-
-    def test_running_queries_should_be_empty(self, validator_fail_with_warning):
-        validator = validator_fail_with_warning[0]
-        assert len(validator._running_queries) == 0
-
-    def test_results_should_conform_to_schema(
-        self, schema, validator_fail_with_warning
+    def test_project_should_be_queried_and_have_at_least_one_error(
+        self, validator_after_run, explore_tests, project
     ):
-        results = validator_fail_with_warning[1]
-        jsonschema.validate(results, schema)
+        assert project.errored is True
+        assert project.queried is True
+        assert any(test.status == "error" for test in explore_tests)
 
+    def test_running_tests_should_be_empty(self, validator_after_run):
+        assert len(validator_after_run._running_tests) == 0
 
-@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
-class TestValidatePassWithWarning:
-    @pytest.fixture(scope="class")
-    def validator_warn(
-        self, record_mode, validator
-    ) -> Iterable[Tuple[SqlValidator, Dict]]:
-        with vcr.use_cassette(
-            "tests/cassettes/test_sql_validator/fixture_validator_pass_with_warning.yaml",
-            match_on=["uri", "method", "raw_body"],
-            filter_headers=["Authorization"],
-            record_mode=record_mode,
-        ):
-            # Move to dev mode to test conditional logic warning
-            validator.client.update_workspace("dev")
-            validator.client.checkout_branch("eye_exam", "pytest")
+    def test_ignored_dimensions_should_not_be_queried(
+        self, validator_after_run, project
+    ):
+        explore = project.models[0].explores[0]
+        assert not any(dim.queried for dim in explore.dimensions if dim.ignore is True)
 
-            validator.build_project(selectors=["eye_exam/users__warn"])
-            results = validator.validate(mode="hybrid")
-            yield validator, results
+    def test_should_be_one_explore_test_per_explore(self, explore_tests, project):
+        assert project.count_explores() == len(explore_tests)
 
-    def test_in_hybrid_mode_should_run_one_query(self, validator_warn):
-        validator = validator_warn[0]
-        assert len(validator._query_by_task_id) == 1
+    def test_should_be_one_dimension_test_per_dimension(self, dimension_tests, project):
+        explore = project.get_explore("eye_exam", "users__fail")
+        assert len(explore.dimensions) == len(dimension_tests)
 
-    def test_should_set_queried_and_not_errored(self, validator_warn):
-        validator = validator_warn[0]
-        assert validator.project.errored is False
-        assert validator.project.queried is True
+    def test_all_tests_should_be_unique(self, explore_tests, dimension_tests):
+        assert len(set(explore_tests)) == len(explore_tests)
+        assert len(set(dimension_tests)) == len(dimension_tests)
 
 
 def test_create_and_run_keyboard_interrupt_cancels_queries(validator):
-    validator._running_queries = [
-        Query(
+    validator._running_tests = [
+        SqlTest(
             query_id="12345",
             lookml_ref=None,
             query_task_id="abc",
             explore_url="https://example.looker.com/x/12345",
         )
     ]
-    mock_create_queries = create_autospec(validator._create_queries)
-    mock_create_queries.side_effect = KeyboardInterrupt()
-    validator._create_queries = mock_create_queries
+    mock__run_tests = create_autospec(validator._run_tests)
+    mock__run_tests.side_effect = KeyboardInterrupt()
+    validator._run_tests = mock__run_tests
     mock_cancel_queries = create_autospec(validator._cancel_queries)
     validator._cancel_queries = mock_cancel_queries
     try:
-        validator._create_and_run(mode="batch")
+        validator.run_tests(
+            [
+                SqlTest(
+                    query_id="56789",
+                    lookml_ref=None,
+                    query_task_id="def",
+                    explore_url="https://example.looker.com/x/56789",
+                )
+            ]
+        )
     except SpectaclesException:
         mock_cancel_queries.assert_called_once_with(query_task_ids=["abc"])
 
 
 def test_get_running_query_tasks(validator):
-    queries = [
-        Query(
+    tests = [
+        SqlTest(
             query_id="12345",
             lookml_ref=None,
             query_task_id="abc",
             explore_url="https://example.looker.com/x/12345",
         ),
-        Query(
+        SqlTest(
             query_id="67890",
             lookml_ref=None,
             query_task_id="def",
             explore_url="https://example.looker.com/x/67890",
         ),
     ]
-    validator._running_queries = queries
-    assert validator.get_running_query_tasks() == ["abc", "def"]
+    validator._running_tests = tests
+    assert validator._get_running_query_tasks() == ["abc", "def"]
 
 
 @patch("spectacles.validators.sql.LookerClient.cancel_query_task")
@@ -295,23 +248,6 @@ def test_cancel_queries(mock_client_cancel, validator):
     validator._cancel_queries(query_task_ids)
     for task_id in query_task_ids:
         mock_client_cancel.assert_any_call(task_id)
-
-
-def test_handle_running_query(validator, dimension):
-    query_task_id = "sakgwj392jfkajgjcks"
-    query = Query(
-        query_id="19428",
-        lookml_ref=dimension,
-        query_task_id=query_task_id,
-        explore_url="https://spectacles.looker.com/x/qCJsodAZ2Y22QZLbmD0Gvy",
-    )
-    query_result = QueryResult(query_task_id=query_task_id, status="running")
-    validator._running_queries = [query]
-    validator._query_by_task_id[query_task_id] = query
-    returned_sql_error = validator._handle_query_result(query_result)
-
-    assert validator._running_queries == [query]
-    assert not returned_sql_error
 
 
 def test_extract_error_details_error_dict(validator):
