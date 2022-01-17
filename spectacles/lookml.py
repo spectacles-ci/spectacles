@@ -20,6 +20,7 @@ class Dimension(LookMlObject):
         type: str,
         tags: List[str],
         sql: str,
+        is_hidden: bool,
         url: Optional[str] = None,
     ):
         self.name = name
@@ -29,6 +30,7 @@ class Dimension(LookMlObject):
         self.tags = tags
         self.sql = sql
         self.url = url
+        self.is_hidden = is_hidden
         self.queried: bool = False
         self.errors: List[ValidationError] = []
 
@@ -78,7 +80,8 @@ class Dimension(LookMlObject):
         tags = json_dict["tags"]
         sql = json_dict["sql"]
         url = json_dict["lookml_link"]
-        return cls(name, model_name, explore_name, type, tags, sql, url)
+        is_hidden = json_dict["hidden"]
+        return cls(name, model_name, explore_name, type, tags, sql, is_hidden, url)
 
 
 class Explore(LookMlObject):
@@ -396,6 +399,7 @@ def build_project(
     name: str,
     filters: Optional[List[str]] = None,
     include_dimensions: bool = False,
+    ignore_hidden_fields: bool = False,
 ) -> Project:
     """Creates an object (tree) representation of a LookML project."""
     if filters is None:
@@ -429,6 +433,10 @@ def build_project(
         if include_dimensions:
             for explore in model.explores:
                 explore.dimensions = build_dimensions(client, model.name, explore.name)
+                if ignore_hidden_fields:
+                    explore.dimensions = [
+                        dim for dim in explore.dimensions if not dim.is_hidden
+                    ]
 
     project = Project(name, [model for model in models if len(model.explores) > 0])
     return project
