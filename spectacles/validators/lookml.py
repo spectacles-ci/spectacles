@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from spectacles.client import LookerClient
 from spectacles.exceptions import LookMLError
 
@@ -25,6 +25,7 @@ class LookMLValidator:
         severity_level = NAME_TO_LEVEL[severity]
         validation_results = self.client.lookml_validation(project)
         errors = []
+        lookml_url: Optional[str] = None
         for error in validation_results["errors"]:
             if error["file_path"]:
                 lookml_url = (
@@ -36,8 +37,6 @@ class LookMLValidator:
                 )
                 if error["line_number"]:
                     lookml_url += "?line=" + str(error["line_number"])
-            else:
-                lookml_url = None
 
             lookml_error = LookMLError(
                 model=error["model_id"],

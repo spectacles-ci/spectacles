@@ -99,7 +99,7 @@ class LookMLError(ValidationError):
         field_name: str,
         message: str,
         severity: str,
-        lookml_url: str,
+        lookml_url: Optional[str],
         file_path: Optional[str],
         line_number: Optional[int] = None,
     ):
