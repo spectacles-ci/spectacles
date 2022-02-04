@@ -32,7 +32,7 @@ class LookMLValidator:
                     + "/projects/"
                     + project
                     + "/files/"
-                    + error["file_path"]
+                    + "/".join(error["file_path"].split("/")[1:])
                 )
                 if error["line_number"]:
                     lookml_url += "?line=" + str(error["line_number"])
