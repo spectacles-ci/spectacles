@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from tabulate import tabulate
 from typing import Union, Dict, Any, List, Optional
+import itertools
 import time
 from spectacles.utils import chunks
 from spectacles.client import LookerClient
@@ -13,7 +14,24 @@ CHUNK_SIZE = 10
 
 
 @dataclass
+class Query:
+    query_id: int
+    query_task_id: Optional[str] = None
+
+
+@dataclass
+class QueryResult:
+    """Stores ID, query status, and error details for a completed query task"""
+
+    query_task_id: str
+    status: str
+    runtime: Optional[float] = None
+    error: Optional[Dict[str, Any]] = None
+
+
+@dataclass
 class SqlTest:
+    queries: List[Query]
     lookml_ref: Union[Dimension, Explore]
     explore_url: str
     sql: Optional[str] = None
@@ -65,24 +83,6 @@ class SqlTest:
             self.query_id,
             self.explore_url,
         ]
-
-
-@dataclass
-class Query:
-    test: SqlTest
-    query_id: int
-    query_task_id: str
-    sql: Optional[str]
-
-
-@dataclass
-class QueryResult:
-    """Stores ID, query status, and error details for a completed query task"""
-
-    query_task_id: str
-    status: str
-    runtime: Optional[float] = None
-    error: Optional[Dict[str, Any]] = None
 
 
 def print_profile_results(tests: List[SqlTest], runtime_threshold: int) -> None:
@@ -140,7 +140,6 @@ class SqlValidator:
         self.client = client
         self.query_slots = concurrency
         self.runtime_threshold = runtime_threshold
-        self._running_tests: List[SqlTest] = []
         # Lookup used to retrieve the LookML object
         self._test_by_task_id: Dict[str, SqlTest] = {}
         self._long_running_tests: List[SqlTest] = []
@@ -181,11 +180,20 @@ class SqlValidator:
             query = self.client.create_query(
                 explore.model_name, explore.name, chunk, fields=["id", "share_url"]
             )
-            sql = self.client.run_query(query["id"]) if compile_sql else None
-            queries.append(Query(query["id"], sql))
+            queries.append(Query(query["id"]))
+
         test = SqlTest(
             queries=queries, lookml_ref=explore, explore_url=query["share_url"]
         )
+
+        # We don't compile SQL in chunks, we compile it all at once to make incremental
+        # comparisons doable
+        if compile_sql:
+            query = self.client.create_query(
+                explore.model_name, explore.name, dimensions, fields=["id", "share_url"]
+            )
+            test.sql = self.client.run_query(query["id"])
+
         return test
 
     def _create_dimension_test(
@@ -213,7 +221,7 @@ class SqlValidator:
             logger.info(
                 "\n\n" + "Please wait, asking Looker to cancel any running queries..."
             )
-            query_tasks = self._get_running_query_tasks()
+            query_tasks = list(self._test_by_task_id.keys())
             self._cancel_queries(query_tasks)
             if query_tasks:
                 message = (
@@ -233,39 +241,39 @@ class SqlValidator:
         if profile:
             print_profile_results(self._long_running_tests, self.runtime_threshold)
 
-    def _get_running_query_tasks(self) -> List[str]:
-        running_query_tasks = [
-            test.query_task_id for test in self._running_tests if test.query_task_id
-        ]
-        return running_query_tasks
-
     def _run_tests(self, tests: List[SqlTest]) -> None:
         """Creates and runs tests with a maximum concurrency defined by query slots"""
         QUERY_TASK_LIMIT = 250
-        tests = tests.copy()
-        while tests or self._running_tests:
-            if tests:
+        test_by_query_id: Dict[int, SqlTest] = {
+            query.query_id: test for test in tests for query in test.queries
+        }
+
+        def fill_query_slots(queries: List[Query]) -> None:
+            """Creates query tasks until slots are full or all queries are running"""
+            while queries and self.query_slots > 0:
+                logger.debug(
+                    f"{self.query_slots} available query slots, creating query task"
+                )
+                query = queries.pop(0)
+                query_task_id = self.client.create_query_task(query.query_id)
+                self.query_slots -= 1
+                query.query_task_id = query_task_id
+                # At query creation, we mapped tests by query ID, now we map to task ID
+                self._test_by_task_id[query_task_id] = test_by_query_id[query.query_id]
+
+        queries: List[Query] = list(
+            itertools.chain.from_iterable(test.queries for test in tests)
+        )
+        while queries or self._test_by_task_id:
+            if queries:
                 logger.debug(f"Starting a new loop, {len(tests)} tests queued")
-                self._fill_query_slots(tests)
-            query_tasks = self._get_running_query_tasks()[:QUERY_TASK_LIMIT]
+                fill_query_slots(queries)
+            query_tasks = list(self._test_by_task_id.keys())[:QUERY_TASK_LIMIT]
             logger.debug(f"Checking for results of {len(query_tasks)} query tasks")
             for query_result in self._get_query_results(query_tasks):
                 if query_result.status in ("complete", "error"):
                     self._handle_query_result(query_result)
             time.sleep(0.5)
-
-    def _fill_query_slots(self, tests: List[SqlTest]) -> None:
-        """Creates query tasks until all slots are used or all tests are running"""
-        while tests and self.query_slots > 0:
-            logger.debug(
-                f"{self.query_slots} available query slots, creating query task"
-            )
-            test = tests.pop(0)
-            query_task_id = self.client.create_query_task(test.query_id)
-            self.query_slots -= 1
-            test.query_task_id = query_task_id
-            self._test_by_task_id[query_task_id] = test
-            self._running_tests.append(test)
 
     def _get_query_results(self, query_task_ids: List[str]) -> List[QueryResult]:
         """Returns ID, status, and error message for all query tasks"""
@@ -308,8 +316,7 @@ class SqlValidator:
         return query_results
 
     def _handle_query_result(self, result: QueryResult) -> None:
-        test = self._test_by_task_id[result.query_task_id]
-        self._running_tests.remove(test)
+        test = self._test_by_task_id.pop(result.query_task_id)
         self.query_slots += 1
         test.status = result.status
         test.runtime = result.runtime
