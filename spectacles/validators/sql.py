@@ -208,14 +208,14 @@ class SqlValidator:
         )
         sql = self.client.run_query(query["id"]) if compile_sql else None
         test = SqlTest(
-            queries=[Query(query["id"], sql)],
+            queries=[Query(query["id"])],
             lookml_ref=dimension,
             explore_url=query["share_url"],
+            sql=sql,
         )
         return test
 
     def run_tests(self, tests: List[SqlTest], profile: bool = False):
-        self._test_by_task_id = {}
         try:
             self._run_tests(tests)
         except KeyboardInterrupt:
