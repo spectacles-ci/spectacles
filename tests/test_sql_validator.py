@@ -192,7 +192,7 @@ class TestValidateFail:
 def test_create_and_run_keyboard_interrupt_cancels_queries(validator):
     validator._test_by_task_id = {
         "abc": SqlTest(
-            queries=[Query("12345")],
+            queries=[Query(12345)],
             lookml_ref=None,
             query_task_id="abc",
             explore_url="https://example.looker.com/x/12345",
@@ -215,26 +215,7 @@ def test_create_and_run_keyboard_interrupt_cancels_queries(validator):
             ]
         )
     except SpectaclesException:
-        mock_cancel_queries.assert_called_once_with(query_task_ids=["abc"])
-
-
-def test_get_running_query_tasks(validator):
-    tests = [
-        SqlTest(
-            queries=[Query(query_id="12345")],
-            lookml_ref=None,
-            query_task_id="abc",
-            explore_url="https://example.looker.com/x/12345",
-        ),
-        SqlTest(
-            queries=[Query(query_id="67890")],
-            lookml_ref=None,
-            query_task_id="def",
-            explore_url="https://example.looker.com/x/67890",
-        ),
-    ]
-    validator._running_tests = tests
-    assert list(validator._test_by_task_id.keys()) == ["abc", "def"]
+        mock_cancel_queries.assert_called_once_with(["abc"])
 
 
 @patch("spectacles.validators.sql.LookerClient.cancel_query_task")
