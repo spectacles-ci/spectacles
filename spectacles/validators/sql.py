@@ -80,7 +80,7 @@ class SqlTest:
             self.lookml_ref.__class__.__name__.lower(),
             self.lookml_ref.name,
             self.runtime,
-            self.query_id,
+            ", ".join(str(query.query_id) for query in self.queries),
             self.explore_url,
         ]
 
@@ -101,8 +101,8 @@ def print_profile_results(tests: List[SqlTest], runtime_threshold: int) -> None:
             headers=[
                 "Type",
                 "Name",
-                "Runtime (s)",
-                "Query ID",
+                "Total Runtime (s)",
+                "Query IDs",
                 "Explore From Here",
             ],
             tablefmt="github",
@@ -175,25 +175,26 @@ class SqlValidator:
                 "when you built the project."
             )
         dimensions = [dimension.name for dimension in explore.dimensions]
-        queries: List[Query] = []
+        query = self.client.create_query(
+            explore.model_name, explore.name, dimensions, fields=["id", "share_url"]
+        )
+
+        # Create separate chunked queries for execution, we don't store compiled SQL
+        # or the Explore URL for these queries
+        chunk_queries: List[Query] = []
         for chunk in chunks(dimensions, size=CHUNK_SIZE):
             query = self.client.create_query(
                 explore.model_name, explore.name, chunk, fields=["id", "share_url"]
             )
-            queries.append(Query(query["id"]))
+            chunk_queries.append(Query(query["id"]))
 
+        sql = self.client.run_query(query["id"]) if compile_sql else None
         test = SqlTest(
-            queries=queries, lookml_ref=explore, explore_url=query["share_url"]
+            queries=chunk_queries,
+            lookml_ref=explore,
+            explore_url=query["share_url"],
+            sql=sql,
         )
-
-        # We don't compile SQL in chunks, we compile it all at once to make incremental
-        # comparisons doable
-        if compile_sql:
-            query = self.client.create_query(
-                explore.model_name, explore.name, dimensions, fields=["id", "share_url"]
-            )
-            test.sql = self.client.run_query(query["id"])
-
         return test
 
     def _create_dimension_test(
@@ -319,7 +320,7 @@ class SqlValidator:
         test = self._test_by_task_id.pop(result.query_task_id)
         self.query_slots += 1
         test.status = result.status
-        test.runtime = result.runtime
+        test.runtime = (test.runtime or 0.0) + (result.runtime or 0.0)
         lookml_object = test.lookml_ref
         lookml_object.queried = True
 
