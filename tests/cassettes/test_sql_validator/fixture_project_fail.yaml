@@ -3,7 +3,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=59426826
+      - looker.browser=84829180
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/lookml_models?fields=name%2Cproject_name%2Cexplores
   response:
@@ -56,29 +56,36 @@ interactions:
         - Import Advanced Deploy","hidden":true,"group_label":"Models","name":"dim_organisations","can":{}}]},{"name":"extension-api-explorer","project_name":"marketplace_extension_api_explorer","explores":[]},{"name":"data-dictionary","project_name":"marketplace_extension_data_dictionary","explores":[]},{"name":"spectacles_strava","project_name":"spectacles_strava","explores":[{"description":null,"label":"Raw
         Activities","hidden":false,"group_label":"Spectacles Strava","name":"raw_activities","can":{}},{"description":null,"label":"Stg
         Activities","hidden":false,"group_label":"Spectacles Strava","name":"stg_activities","can":{}},{"description":null,"label":"Activity
-        Types","hidden":false,"group_label":"Spectacles Strava","name":"activity_types","can":{}}]}]'
+        Types","hidden":false,"group_label":"Spectacles Strava","name":"activity_types","can":{}}]},{"name":"spectacles_maps","project_name":"spectacles_maps","explores":[{"description":null,"label":"Fivetran
+        Audit","hidden":false,"group_label":"Spectacles Maps","name":"fivetran_audit","can":{}},{"description":null,"label":"Rpt
+        Property Irr","hidden":false,"group_label":"Spectacles Maps","name":"rpt_property_irr","can":{}},{"description":null,"label":"Raw
+        Rpi Housing Index","hidden":false,"group_label":"Spectacles Maps","name":"raw_rpi_housing_index","can":{}},{"description":null,"label":"Raw
+        Rpi Housing Percent","hidden":false,"group_label":"Spectacles Maps","name":"raw_rpi_housing_percent","can":{}},{"description":null,"label":"Raw
+        House Sales","hidden":false,"group_label":"Spectacles Maps","name":"raw_house_sales","can":{}},{"description":null,"label":"Raw
+        Uk Postcodes","hidden":false,"group_label":"Spectacles Maps","name":"raw_uk_postcodes","can":{}},{"description":null,"label":"Raw
+        Cpih","hidden":false,"group_label":"Spectacles Maps","name":"raw_cpih","can":{}}]},{"name":"rpt_property_irr","project_name":"spectacles_maps","explores":[]}]'
     headers:
       Connection:
       - keep-alive
       Content-Length:
-      - '7163'
+      - '8223'
       Content-Type:
       - application/json
       Date:
-      - Tue, 28 Dec 2021 16:14:00 GMT
+      - Tue, 08 Feb 2022 01:33:09 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 6dd469d0483658e1
+      - 5d8155ff534e6b5a
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 6dd469d0483658e1
+      - 5d8155ff534e6b5a
       X-B3-TraceId:
-      - 61cb37c823c034446dd469d0483658e1
+      - 6201c8556349bc305d8155ff534e6b5a
       X-Content-Type-Options:
       - nosniff
     status:
@@ -88,7 +95,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=59426826
+      - looker.browser=84829180
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/lookml_models/eye_exam/explores/users__fail?fields=fields
   response:
@@ -124,20 +131,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 28 Dec 2021 16:14:00 GMT
+      - Tue, 08 Feb 2022 01:33:09 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 4f6fb057ef45e556
+      - 00a8417f4f7c1368
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 4f6fb057ef45e556
+      - 00a8417f4f7c1368
       X-B3-TraceId:
-      - 61cb37c80cadc2364f6fb057ef45e556
+      - 6201c8556ffae32e00a8417f4f7c1368
       X-Content-Type-Options:
       - nosniff
     status:
