@@ -76,7 +76,7 @@ def time_hash() -> str:
     return hash.hexdigest()[:10]
 
 
-def chunks(l: list, size: int) -> Iterable:
+def chunks(to_chunk: list, size: int) -> Iterable:
     """Yield successive n-sized chunks from the list."""
-    for i in range(0, len(l), size):
-        yield l[i : i + size]
+    for i in range(0, len(to_chunk), size):
+        yield to_chunk[i : i + size]
