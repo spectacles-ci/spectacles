@@ -278,6 +278,7 @@ def main():
             args.concurrency,
             args.profile,
             args.runtime_threshold,
+            args.chunk_size,
         )
     elif args.command == "assert":
         run_assert(
@@ -618,6 +619,12 @@ def _build_sql_subparser(
             "seconds."
         ),
     )
+    subparser.add_argument(
+        "--chunk-size",
+        type=int,
+        default=500,
+        help="Limit the size of explore-level queries by this number of dimensions.",
+    )
     _build_validator_subparser(subparser_action, subparser)
     _build_select_subparser(subparser_action, subparser)
 
@@ -856,6 +863,7 @@ def run_sql(
     concurrency,
     profile,
     runtime_threshold,
+    chunk_size,
 ) -> None:
     """Runs and validates the SQL for each selected LookML dimension."""
     client = LookerClient(base_url, client_id, client_secret, port, api_version)
@@ -870,6 +878,7 @@ def run_sql(
         concurrency,
         profile,
         runtime_threshold,
+        chunk_size,
     )
 
     for test in sorted(results["tested"], key=lambda x: (x["model"], x["explore"])):

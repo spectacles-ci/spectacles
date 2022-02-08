@@ -10,7 +10,7 @@ from spectacles.exceptions import SpectaclesException, SqlError
 from spectacles.logger import GLOBAL_LOGGER as logger
 from spectacles.printer import print_header
 
-CHUNK_SIZE = 10
+DEFAULT_CHUNK_SIZE = 500
 
 
 @dataclass
@@ -149,6 +149,7 @@ class SqlValidator:
         project: Project,
         compile_sql: bool = False,
         at_dimension_level: bool = False,
+        chunk_size: int = DEFAULT_CHUNK_SIZE,
     ) -> List[SqlTest]:
         tests: List[SqlTest] = []
         if at_dimension_level:
@@ -159,12 +160,15 @@ class SqlValidator:
                         tests.append(test)
         else:
             for explore in project.iter_explores():
-                test = self._create_explore_test(explore, compile_sql)
+                test = self._create_explore_test(explore, compile_sql, chunk_size)
                 tests.append(test)
         return tests
 
     def _create_explore_test(
-        self, explore: Explore, compile_sql: bool = False
+        self,
+        explore: Explore,
+        compile_sql: bool = False,
+        chunk_size: int = DEFAULT_CHUNK_SIZE,
     ) -> SqlTest:
         """Creates a SqlTest to query all dimensions in an explore"""
         if not explore.dimensions:
@@ -182,7 +186,7 @@ class SqlValidator:
         # Create separate chunked queries for execution, we don't store compiled SQL
         # or the Explore URL for these queries
         chunk_queries: List[Query] = []
-        for chunk in chunks(dimensions, size=CHUNK_SIZE):
+        for chunk in chunks(dimensions, size=chunk_size):
             query = self.client.create_query(
                 explore.model_name, explore.name, chunk, fields=["id", "share_url"]
             )
