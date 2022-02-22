@@ -142,6 +142,7 @@ class SqlValidator:
         self.runtime_threshold = runtime_threshold
         # Lookup used to retrieve the LookML object
         self._test_by_task_id: Dict[str, SqlTest] = {}
+        self._preemptive_cancellations: List[Query] = []
         self._long_running_tests: List[SqlTest] = []
 
     def create_tests(
@@ -246,7 +247,7 @@ class SqlValidator:
         if profile:
             print_profile_results(self._long_running_tests, self.runtime_threshold)
 
-    def _run_tests(self, tests: List[SqlTest]) -> None:
+    def _run_tests(self, tests: List[SqlTest], fail_fast: bool = True) -> None:
         """Creates and runs tests with a maximum concurrency defined by query slots"""
         QUERY_TASK_LIMIT = 250
         test_by_query_id: Dict[int, SqlTest] = {
@@ -260,6 +261,8 @@ class SqlValidator:
                     f"{self.query_slots} available query slots, creating query task"
                 )
                 query = queries.pop(0)
+                if query in self._preemptive_cancellations:
+                    continue
                 query_task_id = self.client.create_query_task(query.query_id)
                 self.query_slots -= 1
                 query.query_task_id = query_task_id
@@ -277,7 +280,7 @@ class SqlValidator:
             logger.debug(f"Checking for results of {len(query_tasks)} query tasks")
             for query_result in self._get_query_results(query_tasks):
                 if query_result.status in ("complete", "error"):
-                    self._handle_query_result(query_result)
+                    self._handle_query_result(query_result, fail_fast)
             time.sleep(0.5)
 
     def _get_query_results(self, query_task_ids: List[str]) -> List[QueryResult]:
@@ -320,7 +323,7 @@ class SqlValidator:
             query_results.append(query_result)
         return query_results
 
-    def _handle_query_result(self, result: QueryResult) -> None:
+    def _handle_query_result(self, result: QueryResult, fail_fast: bool = True) -> None:
         test = self._test_by_task_id.pop(result.query_task_id)
         self.query_slots += 1
         test.status = result.status
@@ -332,6 +335,11 @@ class SqlValidator:
             self._long_running_tests.append(test)
 
         if result.status == "error" and result.error:
+            if fail_fast:
+                # Once a test has an error, stop all other queries
+                for query in test.queries:
+                    self._preemptive_cancellations.append(query)
+
             model_name = lookml_object.model_name
             dimension_name: Optional[str] = None
             if isinstance(lookml_object, Dimension):
