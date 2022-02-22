@@ -330,9 +330,12 @@ class Project(LookMlObject):
                 status = "passed"
                 if explore.skipped:
                     status = "skipped"
-                elif explore.errored and (validator != "sql" or fail_fast is True):
+                elif explore.errored and validator != "sql":
                     status = "failed"
                     errors.extend([e.to_dict() for e in explore.errors])
+                elif explore.errored and fail_fast is True:
+                    status = "failed"
+                    errors.append(explore.errors[0].to_dict())
                 elif explore.errored:
                     dimension_errors = [e for d in explore.dimensions for e in d.errors]
                     # If an explore has explore-level errors but not dimension-level
