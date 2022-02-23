@@ -11,7 +11,7 @@ from spectacles.validators import (
     LookMLValidator,
 )
 from spectacles.types import JsonDict
-from spectacles.validators.sql import SqlTest
+from spectacles.validators.sql import SqlTest, DEFAULT_CHUNK_SIZE
 from spectacles.exceptions import SpectaclesException
 from spectacles.utils import time_hash
 from spectacles.lookml import build_project, Project, Explore
@@ -243,6 +243,7 @@ class Runner:
         concurrency: int = 10,
         profile: bool = False,
         runtime_threshold: int = 5,
+        chunk_size: int = DEFAULT_CHUNK_SIZE,
     ) -> JsonDict:
         if filters is None:
             filters = ["*/*"]
@@ -256,7 +257,9 @@ class Runner:
             project = build_project(
                 self.client, name=self.project, filters=filters, include_dimensions=True
             )
-            base_tests = validator.create_tests(project, compile_sql=incremental)
+            base_tests = validator.create_tests(
+                project, compile_sql=incremental, chunk_size=chunk_size
+            )
 
         if incremental:
             unique_base_tests = set(base_tests)
@@ -281,7 +284,9 @@ class Runner:
                     filters=filters,
                     include_dimensions=True,
                 )
-                target_tests = validator.create_tests(target_project, compile_sql=True)
+                target_tests = validator.create_tests(
+                    target_project, compile_sql=True, chunk_size=chunk_size
+                )
                 unique_target_tests = set(target_tests)
 
             # Determine which explore tests are identical between target and base
