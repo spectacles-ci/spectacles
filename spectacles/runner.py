@@ -349,12 +349,12 @@ class Runner:
                 )
 
                 for dimension in project.iter_dimensions(errored=True):
-                    dimension.errors = [
-                        error
-                        for error in dimension.errors
-                        if not isinstance(error, SqlError)
-                        or (dimension.name, error.metadata["sql"]) not in target_sql
-                    ]
+                    for error in dimension.errors:
+                        if (
+                            isinstance(error, SqlError)
+                            and (dimension.name, error.metadata["sql"]) in target_sql
+                        ):
+                            error.ignore = True
 
         results = project.get_results(validator="sql", fail_fast=fail_fast)
         return results

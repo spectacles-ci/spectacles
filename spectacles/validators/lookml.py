@@ -57,7 +57,7 @@ class LookMLValidator:
 
         result = {
             "validator": "lookml",
-            "errors": [error.__dict__ for error in errors],
+            "errors": [error.to_dict() for error in errors],
             "status": status,
         }
         return result
