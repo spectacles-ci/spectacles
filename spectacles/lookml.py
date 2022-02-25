@@ -332,12 +332,19 @@ class Project(LookMlObject):
                     status = "skipped"
                 elif explore.errored and (validator != "sql" or fail_fast is True):
                     status = "failed"
-                    errors.extend([e.__dict__ for e in explore.errors])
+                    errors.extend([e.to_dict() for e in explore.errors])
                 elif explore.errored:
-                    for dimension in explore.dimensions:
-                        if dimension.errored:
-                            status = "failed"
-                            errors.extend([e.__dict__ for e in dimension.errors])
+                    dimension_errors = [e for d in explore.dimensions for e in d.errors]
+                    # If an explore has explore-level errors but not dimension-level
+                    # errors, return those instead. Skip anything marked as ignored.
+                    relevant_errors = [
+                        e.to_dict()
+                        for e in (dimension_errors or explore.errors)
+                        if not e.ignore
+                    ]
+                    if relevant_errors:
+                        status = "failed"
+                        errors.extend(relevant_errors)
                 test: Dict[str, Any] = {
                     "model": model.name,
                     "explore": explore.name,
