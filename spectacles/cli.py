@@ -209,6 +209,10 @@ def preprocess_dashes(args: List[str]) -> List[str]:
     return processed
 
 
+def process_import_refs(input: List[str]) -> dict:
+    return {n.split(":")[0]: n.split(":")[1] for n in input}
+
+
 @handle_exceptions
 def main():
     """Runs main function. This is the entry point."""
@@ -228,6 +232,8 @@ def main():
     ref = branch or commit_ref
     target = getattr(args, "target", None)
     incremental = getattr(args, "incremental", None)
+
+    import_refs = process_import_refs(getattr(args, "import_refs", []))
 
     # Normally would be cleaner to handle this with an argparse mutually exclusive
     # group, but this doesn't work with --commit-ref and --remote-reset also needing
@@ -279,6 +285,7 @@ def main():
             args.profile,
             args.runtime_threshold,
             args.chunk_size,
+            import_refs,
         )
     elif args.command == "assert":
         run_assert(
@@ -291,6 +298,7 @@ def main():
             args.port,
             args.api_version,
             args.remote_reset,
+            import_refs,
         )
     elif args.command == "content":
         run_content(
@@ -307,6 +315,7 @@ def main():
             args.target,
             args.exclude_personal,
             args.folders,
+            import_refs,
         )
     elif args.command == "lookml":
         run_lookml(
@@ -319,6 +328,7 @@ def main():
             args.api_version,
             args.remote_reset,
             args.severity,
+            import_refs,
         )
 
     if not args.do_not_track:
@@ -488,6 +498,13 @@ def _build_validator_subparser(
         help="The commit of your project that Spectacles will test against. \
             In order to test a specific commit, Spectacles will create a new branch \
             for the tests and then delete the branch when it is finished.",
+    )
+    group.add_argument(
+        "--import-refs",
+        nargs="+",
+        default=[],
+        help="The git ref at which any locally imported Looker projects should be set to. \
+            List of strings in project_name:ref_name format. ",
     )
     return base_subparser
 
@@ -718,9 +735,10 @@ def run_lookml(
     api_version,
     remote_reset,
     severity,
+    import_refs,
 ) -> None:
     client = LookerClient(base_url, client_id, client_secret, port, api_version)
-    runner = Runner(client, project, remote_reset)
+    runner = Runner(client, project, remote_reset, import_refs)
     results = runner.validate_lookml(ref, severity)
     errors = sorted(results["errors"], key=lambda x: x["metadata"]["file_path"] or "a")
     unique_files = sorted(
@@ -766,9 +784,10 @@ def run_content(
     target,
     exclude_personal,
     folders,
+    import_refs,
 ) -> None:
     client = LookerClient(base_url, client_id, client_secret, port, api_version)
-    runner = Runner(client, project, remote_reset)
+    runner = Runner(client, project, remote_reset, import_refs)
     results = runner.validate_content(
         ref,
         filters,
@@ -816,9 +835,10 @@ def run_assert(
     port,
     api_version,
     remote_reset,
+    import_refs,
 ) -> None:
     client = LookerClient(base_url, client_id, client_secret, port, api_version)
-    runner = Runner(client, project, remote_reset)
+    runner = Runner(client, project, remote_reset, import_refs)
 
     results = runner.validate_data_tests(ref, filters)
 
@@ -864,10 +884,11 @@ def run_sql(
     profile,
     runtime_threshold,
     chunk_size,
+    import_refs,
 ) -> None:
     """Runs and validates the SQL for each selected LookML dimension."""
     client = LookerClient(base_url, client_id, client_secret, port, api_version)
-    runner = Runner(client, project, remote_reset)
+    runner = Runner(client, project, remote_reset, import_refs)
 
     results = runner.validate_sql(
         ref,
