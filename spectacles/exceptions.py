@@ -79,6 +79,7 @@ class ValidationError(GenericValidationError):
         self.model = model
         self.explore = explore
         self.metadata = metadata
+        self._ignore: bool = False
         super().__init__()
 
     def __eq__(self, other):
@@ -89,6 +90,19 @@ class ValidationError(GenericValidationError):
 
     def __repr__(self):
         return self.message
+
+    @property
+    def ignore(self) -> bool:
+        # Hide this in a property so we can skip it in `to_dict`
+        return self._ignore
+
+    @ignore.setter
+    def ignore(self, value: bool) -> None:
+        self._ignore = value
+
+    def to_dict(self) -> dict:
+        """Returns a dictionary representation, scrubbed of private attributes"""
+        return {k: v for k, v in self.__dict__.items() if not k.startswith("_")}
 
 
 class LookMLError(ValidationError):
