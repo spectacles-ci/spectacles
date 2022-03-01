@@ -33,12 +33,19 @@ def is_commit(string: str) -> bool:
 
 
 class LookerBranchManager:
-    def __init__(self, client: LookerClient, project: str, remote_reset: bool = False):
+    def __init__(
+        self,
+        client: LookerClient,
+        project: str,
+        remote_reset: bool = False,
+        import_refs: Dict[str, str] = {},
+    ):
         """Context manager for Git branch checkout, creation, and deletion."""
         logger.debug(f"Setting up branch manager in project '{project}'")
         self.client = client
         self.project = project
         self.remote_reset = remote_reset
+        self.import_refs = import_refs
 
         state: ProjectState = self.get_project_state()
         self.workspace: str = state.workspace
@@ -54,19 +61,13 @@ class LookerBranchManager:
         self.is_temp_branch: bool = False
         self.import_managers: List[LookerBranchManager] = []
 
-    def __call__(
-        self,
-        ref: Optional[str] = None,
-        ephemeral: Optional[bool] = None,
-        import_refs: Dict = {},
-    ):
+    def __call__(self, ref: Optional[str] = None, ephemeral: Optional[bool] = None):
         logger.debug(
             f"\nSetting Git state for project '{self.project}' "
             f"@ {ref or 'production'}\n" + "-" * LINE_WIDTH
         )
         self.branch = None
         self.commit = None
-        self.import_refs = import_refs
 
         if ref is None:
             pass
@@ -236,10 +237,13 @@ class Runner:
         client: LookerClient,
         project: str,
         remote_reset: bool = False,
+        import_refs: Dict[str, str] = {},
     ):
         self.project = project
         self.client = client
-        self.branch_manager = LookerBranchManager(client, project, remote_reset)
+        self.branch_manager = LookerBranchManager(
+            client, project, remote_reset, import_refs
+        )
 
     def validate_sql(
         self,
@@ -252,7 +256,6 @@ class Runner:
         profile: bool = False,
         runtime_threshold: int = 5,
         chunk_size: int = DEFAULT_CHUNK_SIZE,
-        import_refs: Dict[str, str] = {},
     ) -> JsonDict:
         if filters is None:
             filters = ["*/*"]
@@ -260,11 +263,7 @@ class Runner:
         tests: List[SqlTest] = []
 
         # Create explore-level tests for the desired ref
-        with self.branch_manager(
-            ref=ref,
-            ephemeral=incremental,
-            import_refs=import_refs,
-        ):
+        with self.branch_manager(ref=ref, ephemeral=incremental):
             base_ref = self.branch_manager.ref  # Resolve the full ref after checkout
             logger.debug("Building explore tests for the desired ref")
             project = build_project(
