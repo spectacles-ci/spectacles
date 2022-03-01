@@ -3,7 +3,7 @@ from unittest.mock import patch, create_autospec
 import pytest
 import vcr
 from spectacles.validators import SqlValidator
-from spectacles.validators.sql import SqlTest
+from spectacles.validators.sql import SqlTest, Query
 from spectacles.exceptions import SpectaclesException
 from spectacles.lookml import Project, build_project
 
@@ -85,7 +85,7 @@ class TestValidatePass:
         assert all(test.status != "error" for test in explore_tests)
 
     def test_running_tests_should_be_empty(self, validator_after_run):
-        assert len(validator_after_run._running_tests) == 0
+        assert len(validator_after_run._test_by_task_id) == 0
 
     def test_ignored_dimensions_should_not_be_queried(
         self, validator_after_run, project
@@ -169,7 +169,7 @@ class TestValidateFail:
         assert any(test.status == "error" for test in explore_tests)
 
     def test_running_tests_should_be_empty(self, validator_after_run):
-        assert len(validator_after_run._running_tests) == 0
+        assert len(validator_after_run._test_by_task_id) == 0
 
     def test_ignored_dimensions_should_not_be_queried(
         self, validator_after_run, project
@@ -190,14 +190,14 @@ class TestValidateFail:
 
 
 def test_create_and_run_keyboard_interrupt_cancels_queries(validator):
-    validator._running_tests = [
-        SqlTest(
-            query_id="12345",
+    validator._test_by_task_id = {
+        "abc": SqlTest(
+            queries=[Query(12345)],
             lookml_ref=None,
             query_task_id="abc",
             explore_url="https://example.looker.com/x/12345",
         )
-    ]
+    }
     mock__run_tests = create_autospec(validator._run_tests)
     mock__run_tests.side_effect = KeyboardInterrupt()
     validator._run_tests = mock__run_tests
@@ -207,7 +207,7 @@ def test_create_and_run_keyboard_interrupt_cancels_queries(validator):
         validator.run_tests(
             [
                 SqlTest(
-                    query_id="56789",
+                    queries=[Query(67890)],
                     lookml_ref=None,
                     query_task_id="def",
                     explore_url="https://example.looker.com/x/56789",
@@ -215,26 +215,7 @@ def test_create_and_run_keyboard_interrupt_cancels_queries(validator):
             ]
         )
     except SpectaclesException:
-        mock_cancel_queries.assert_called_once_with(query_task_ids=["abc"])
-
-
-def test_get_running_query_tasks(validator):
-    tests = [
-        SqlTest(
-            query_id="12345",
-            lookml_ref=None,
-            query_task_id="abc",
-            explore_url="https://example.looker.com/x/12345",
-        ),
-        SqlTest(
-            query_id="67890",
-            lookml_ref=None,
-            query_task_id="def",
-            explore_url="https://example.looker.com/x/67890",
-        ),
-    ]
-    validator._running_tests = tests
-    assert validator._get_running_query_tasks() == ["abc", "def"]
+        mock_cancel_queries.assert_called_once_with(["abc"])
 
 
 @patch("spectacles.validators.sql.LookerClient.cancel_query_task")
