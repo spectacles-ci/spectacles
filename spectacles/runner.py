@@ -1,6 +1,6 @@
 import re
 from spectacles.exceptions import LookerApiError, SqlError
-from typing import List, Optional, cast, Tuple
+from typing import Dict, List, Optional, cast, Tuple
 from dataclasses import dataclass
 import itertools
 from spectacles.client import LookerClient
@@ -43,6 +43,7 @@ class LookerBranchManager:
         state: ProjectState = self.get_project_state()
         self.workspace: str = state.workspace
         self.history: List[ProjectState] = [state]
+        # TODO: Should this call happen after we've checked out the correct state?
         self.imports: List[str] = self.get_project_imports()
         logger.debug(
             f"Project '{self.project}' imports the following projects: {self.imports}"
@@ -53,13 +54,19 @@ class LookerBranchManager:
         self.is_temp_branch: bool = False
         self.import_managers: List[LookerBranchManager] = []
 
-    def __call__(self, ref: Optional[str] = None, ephemeral: Optional[bool] = None):
+    def __call__(
+        self,
+        ref: Optional[str] = None,
+        ephemeral: Optional[bool] = None,
+        import_refs: Dict = {},
+    ):
         logger.debug(
             f"\nSetting Git state for project '{self.project}' "
             f"@ {ref or 'production'}\n" + "-" * LINE_WIDTH
         )
         self.branch = None
         self.commit = None
+        self.import_refs = import_refs
 
         if ref is None:
             pass
@@ -129,8 +136,9 @@ class LookerBranchManager:
         else:
             logger.debug("Creating temporary branches in imported projects")
             for project in self.imports:
+                import_ref = self.import_refs.get(project, None)
                 manager = LookerBranchManager(self.client, project)
-                manager(ephemeral=True).__enter__()
+                manager(ref=import_ref, ephemeral=True).__enter__()
                 self.import_managers.append(manager)
 
     def __exit__(self, *args):
@@ -244,6 +252,7 @@ class Runner:
         profile: bool = False,
         runtime_threshold: int = 5,
         chunk_size: int = DEFAULT_CHUNK_SIZE,
+        import_refs: Dict[str, str] = {},
     ) -> JsonDict:
         if filters is None:
             filters = ["*/*"]
@@ -251,7 +260,11 @@ class Runner:
         tests: List[SqlTest] = []
 
         # Create explore-level tests for the desired ref
-        with self.branch_manager(ref=ref, ephemeral=incremental):
+        with self.branch_manager(
+            ref=ref,
+            ephemeral=incremental,
+            import_refs=import_refs,
+        ):
             base_ref = self.branch_manager.ref  # Resolve the full ref after checkout
             logger.debug("Building explore tests for the desired ref")
             project = build_project(
