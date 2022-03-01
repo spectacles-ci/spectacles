@@ -4,7 +4,13 @@ import pytest
 import requests
 from constants import ENV_VARS
 from utils import build_validation
-from spectacles.cli import main, create_parser, handle_exceptions, preprocess_dashes
+from spectacles.cli import (
+    main,
+    create_parser,
+    handle_exceptions,
+    preprocess_dashes,
+    process_import_refs,
+)
 from spectacles.exceptions import (
     LookerApiError,
     SpectaclesException,
@@ -373,6 +379,23 @@ def test_main_with_do_not_track(mock_tracking, mock_run_connect, env):
         8080,  # port
         3.1,  # api_version
     )
+
+
+def test_process_import_refs_with_no_refs():
+    output = process_import_refs([])
+    assert output == {}
+
+
+def test_process_import_refs_with_one_ref():
+    output = process_import_refs(["welcome_to_looker:testing-imports"])
+    assert output == {"welcome_to_looker": "testing-imports"}
+
+
+def test_process_import_refs_with_multiple_refs():
+    output = process_import_refs(
+        ["welcome_to_looker:testing-imports", "eye_exam:123abc"]
+    )
+    assert output == {"welcome_to_looker": "testing-imports", "eye_exam": "123abc"}
 
 
 def test_preprocess_dashes_with_folder_ids_should_work():
