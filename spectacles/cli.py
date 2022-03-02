@@ -529,7 +529,7 @@ def _build_lookml_subparser(
     )
     subparser.add_argument(
         "--severity",
-        choices=["info", "warning", "error"],
+        choices=["success", "info", "warning", "error", "fatal"],
         default="warning",
         help=(
             "Specify a level of validation error severity to trigger test failure. "
