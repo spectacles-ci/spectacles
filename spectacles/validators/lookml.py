@@ -3,10 +3,19 @@ from spectacles.client import LookerClient
 from spectacles.exceptions import LookMLError
 
 # Define constants for severity levels
+SUCCESS = 0
 INFO = 10
 WARNING = 20
 ERROR = 30
-NAME_TO_LEVEL = {"info": INFO, "warning": WARNING, "error": ERROR}
+FATAL = 40
+
+NAME_TO_LEVEL = {
+    "success": SUCCESS,
+    "info": INFO,
+    "warning": WARNING,
+    "error": ERROR,
+    "fatal": FATAL,
+}
 
 
 class LookMLValidator:
@@ -22,7 +31,7 @@ class LookMLValidator:
         self.client = client
 
     def validate(self, project: str, severity: str = "warning") -> Dict[str, Any]:
-        severity_level = NAME_TO_LEVEL[severity]
+        severity_level: int = NAME_TO_LEVEL[severity]
         validation_results = self.client.lookml_validation(project)
         errors = []
         lookml_url: Optional[str] = None

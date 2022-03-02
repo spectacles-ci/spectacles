@@ -93,11 +93,11 @@ def print_lookml_error(
 ) -> None:
     if file_path is None:
         file_path = "[File name not given by Looker]"
-    header_color = yellow if severity == "warning" else red
+    header_color = red if severity in ("fatal", "error") else yellow
     print_header(
         header_color(f"{file_path}:{line_number}"), LINE_WIDTH + COLOR_CODE_LENGTH
     )
-    wrapped = textwrap.fill(f"{severity.title()}: {message}", LINE_WIDTH)
+    wrapped = textwrap.fill(f"[{severity.title()}] {message}", LINE_WIDTH)
     logger.info(wrapped)
     if lookml_url:
         logger.info("\n" + f"LookML: {lookml_url}")
