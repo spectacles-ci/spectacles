@@ -262,8 +262,9 @@ class Runner:
         validator = SqlValidator(self.client, concurrency, runtime_threshold)
         tests: List[SqlTest] = []
 
+        ephemeral = True if incremental else None
         # Create explore-level tests for the desired ref
-        with self.branch_manager(ref=ref, ephemeral=incremental):
+        with self.branch_manager(ref=ref, ephemeral=ephemeral):
             base_ref = self.branch_manager.ref  # Resolve the full ref after checkout
             logger.debug("Building explore tests for the desired ref")
             project = build_project(
@@ -334,7 +335,7 @@ class Runner:
 
         # Create dimension tests for the desired ref when explores errored
         if not fail_fast:
-            with self.branch_manager(ref=ref, ephemeral=incremental):
+            with self.branch_manager(ref=ref, ephemeral=ephemeral):
                 base_ref = self.branch_manager.ref
                 logger.debug("Building dimension tests for the desired ref")
                 base_tests = validator.create_tests(project, at_dimension_level=True)

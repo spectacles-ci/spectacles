@@ -522,15 +522,6 @@ def _build_select_subparser(
             The '*' wildcard selects all models or explores. For instance,\
             'model_name/*' would select all explores in the 'model_name' model.",
     )
-    base_subparser.add_argument(
-        "--exclude",
-        nargs="+",
-        default=[],
-        help="Specify the explores Spectacles should exclude when testing. \
-            List of strings in 'model_name/explore_name' format. \
-            The '*' wildcard excludes all models or explores. For instance,\
-            'model_name/*' would select all explores in the 'model_name' model.",
-    )
     return base_subparser
 
 
@@ -555,7 +546,7 @@ def _build_lookml_subparser(
     )
     subparser.add_argument(
         "--severity",
-        choices=["info", "warning", "error"],
+        choices=["success", "info", "warning", "error", "fatal"],
         default="warning",
         help=(
             "Specify a level of validation error severity to trigger test failure. "
@@ -693,13 +684,6 @@ def _build_content_subparser(
         "--exclude-personal",
         action="store_true",
         help="Exclude errors found in content in personal folders.",
-    )
-    subparser.add_argument(
-        "--exclude-folders",
-        type=int,
-        nargs="+",
-        help="Exclude errors found in folders specified by id.",
-        default=[],
     )
     subparser.add_argument(
         "--folders",
