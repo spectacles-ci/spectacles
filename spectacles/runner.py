@@ -50,12 +50,6 @@ class LookerBranchManager:
         state: ProjectState = self.get_project_state()
         self.workspace: str = state.workspace
         self.history: List[ProjectState] = [state]
-        # TODO: Should this call happen after we've checked out the correct state?
-        self.imports: List[str] = self.get_project_imports()
-        logger.debug(
-            f"Project '{self.project}' imports the following projects: {self.imports}"
-        )
-
         self.commit: Optional[str] = None
         self.branch: Optional[str] = None
         self.is_temp_branch: bool = False
@@ -125,6 +119,11 @@ class LookerBranchManager:
             f"Set project '{self.project}' to branch '{self.branch}' @ "
             f"{(self.commit or 'HEAD')[:6]} in {self.workspace} workspace "
             f"[ephemeral = {self.ephemeral}]"
+        )
+
+        self.imports: List[str] = self.get_project_imports()
+        logger.debug(
+            f"Project '{self.project}' imports the following projects: {self.imports}"
         )
 
         # Create temporary branches off production for manifest dependencies
