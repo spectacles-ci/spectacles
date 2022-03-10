@@ -437,7 +437,7 @@ class Runner:
                     self.client, name=self.project, filters=filters
                 )
                 validator.validate(target_project)
-                target_results = project.get_results(validator="content")
+                target_results = target_project.get_results(validator="content")
 
             return self._incremental_results(base=results, target=target_results)
         else:
