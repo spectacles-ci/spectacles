@@ -101,6 +101,17 @@ class DataTestValidator:
 
             if result["success"]:
                 test.passed = True
+                test.explore.successes.append(
+                    {
+                        "model": test.explore.model_name,
+                        "explore": test.explore.name,
+                        "metadata": {
+                            "test_name": result["test_name"],
+                            "lookml_url": test.lookml_url,
+                            "explore_url": test.explore_url,
+                        },
+                    }
+                )
             else:
                 test.passed = False
                 for error in result["errors"]:
