@@ -319,7 +319,7 @@ class Runner:
         )
 
         with self.branch_manager(ref=ref):
-            validator.run_tests(tests, profile)
+            validator.run_tests(tests, profile=profile if fail_fast else False)
 
         # Create dimension tests for the desired ref when explores errored
         if not fail_fast:
