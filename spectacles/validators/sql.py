@@ -120,7 +120,7 @@ def print_profile_results(
             headers=[
                 "Type",
                 "Name",
-                "Total Runtime (s)",
+                "Runtime (s)",
                 "Query IDs",
                 "Explore From Here",
             ],
