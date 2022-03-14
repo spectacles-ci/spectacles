@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from tabulate import tabulate
-from typing import Union, Dict, Any, List, Optional
+from typing import Union, Dict, Any, List, Optional, Tuple
 import itertools
 import time
 from spectacles.utils import chunks
@@ -11,11 +11,13 @@ from spectacles.logger import GLOBAL_LOGGER as logger
 from spectacles.printer import print_header
 
 DEFAULT_CHUNK_SIZE = 500
+ProfilerTableRow = Tuple[str, str, float, int, str]
 
 
 @dataclass
 class Query:
     query_id: int
+    explore_url: str
     query_task_id: Optional[str] = None
 
 
@@ -27,6 +29,25 @@ class QueryResult:
     status: str
     runtime: Optional[float] = None
     error: Optional[Dict[str, Any]] = None
+
+
+@dataclass(frozen=True)
+class ProfilerResult:
+    """Stores the data needed to display results for the query profiler."""
+
+    lookml_obj: Union[Dimension, Explore]
+    runtime: float
+    query: Query
+
+    def format(self) -> ProfilerTableRow:
+        """Return data in a format suitable for tabulate to print."""
+        return (
+            self.lookml_obj.__class__.__name__.lower(),
+            self.lookml_obj.name,
+            self.runtime,
+            self.query.query_id,
+            self.query.explore_url,
+        )
 
 
 @dataclass
@@ -75,29 +96,27 @@ class SqlTest:
             output["errors"] = [self.error.__dict__]
         return output
 
-    def get_profile_result(self) -> List:
-        return [
-            self.lookml_ref.__class__.__name__.lower(),
-            self.lookml_ref.name,
-            self.runtime,
-            ", ".join(str(query.query_id) for query in self.queries),
-            self.explore_url,
-        ]
+    def get_query_by_task_id(self, query_task_id: str) -> Query:
+        for query in self.queries:
+            if query.query_task_id == query_task_id:
+                return query
+        raise KeyError(f"Query with query_task_id '{query_task_id}' not found in test")
 
 
-def print_profile_results(tests: List[SqlTest], runtime_threshold: int) -> None:
+def print_profile_results(
+    results: List[ProfilerResult], runtime_threshold: int
+) -> None:
     """Defined here instead of in .printer to avoid circular type imports."""
     HEADER_CHAR = "."
     print_header("Query profiler results", char=HEADER_CHAR, leading_newline=False)
-    if tests:
-        tests_by_runtime = sorted(
-            tests,
+    if results:
+        results_by_runtime = sorted(
+            results,
             key=lambda x: x.runtime if x.runtime is not None else -1,
             reverse=True,
         )
-        profile_results = [test.get_profile_result() for test in tests_by_runtime]
         output = tabulate(
-            profile_results,
+            [result.format() for result in results_by_runtime],
             headers=[
                 "Type",
                 "Name",
@@ -143,7 +162,7 @@ class SqlValidator:
         # Lookup used to retrieve the LookML object
         self._test_by_task_id: Dict[str, SqlTest] = {}
         self._preemptive_cancellations: List[Query] = []
-        self._long_running_tests: List[SqlTest] = []
+        self._long_running_tests: List[ProfilerResult] = []
 
     def create_tests(
         self,
@@ -180,24 +199,25 @@ class SqlValidator:
                 "when you built the project."
             )
         dimensions = [dimension.name for dimension in explore.dimensions]
-        query = self.client.create_query(
+        # Create a query that includes all dimensions
+        main_query = self.client.create_query(
             explore.model_name, explore.name, dimensions, fields=["id", "share_url"]
         )
+        sql = self.client.run_query(main_query["id"]) if compile_sql else None
 
         # Create separate chunked queries for execution, we don't store compiled SQL
         # or the Explore URL for these queries
         chunk_queries: List[Query] = []
         for chunk in chunks(dimensions, size=chunk_size):
-            query = self.client.create_query(
+            chunk_query = self.client.create_query(
                 explore.model_name, explore.name, chunk, fields=["id", "share_url"]
             )
-            chunk_queries.append(Query(query["id"]))
+            chunk_queries.append(Query(chunk_query["id"], chunk_query["share_url"]))
 
-        sql = self.client.run_query(query["id"]) if compile_sql else None
         test = SqlTest(
             queries=chunk_queries,
             lookml_ref=explore,
-            explore_url=query["share_url"],
+            explore_url=main_query["share_url"],
             sql=sql,
         )
         return test
@@ -213,7 +233,7 @@ class SqlValidator:
         )
         sql = self.client.run_query(query["id"]) if compile_sql else None
         test = SqlTest(
-            queries=[Query(query["id"])],
+            queries=[Query(query["id"], query["share_url"])],
             lookml_ref=dimension,
             explore_url=query["share_url"],
             sql=sql,
@@ -332,7 +352,10 @@ class SqlValidator:
         lookml_object.queried = True
 
         if result.runtime and result.runtime >= self.runtime_threshold:
-            self._long_running_tests.append(test)
+            query: Query = test.get_query_by_task_id(result.query_task_id)
+            self._long_running_tests.append(
+                ProfilerResult(lookml_object, result.runtime, query)
+            )
 
         if result.status == "error" and result.error:
             if fail_fast:
