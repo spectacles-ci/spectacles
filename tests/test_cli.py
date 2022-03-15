@@ -4,7 +4,7 @@ import pytest
 import requests
 from constants import ENV_VARS
 from utils import build_validation
-from spectacles.cli import main, create_parser, handle_exceptions, preprocess_dashes
+from spectacles.cli import main, create_parser, handle_exceptions, preprocess_dash
 from spectacles.exceptions import (
     LookerApiError,
     SpectaclesException,
@@ -376,20 +376,24 @@ def test_main_with_do_not_track(mock_tracking, mock_run_connect, env):
 
 
 def test_preprocess_dashes_with_folder_ids_should_work():
-    args = preprocess_dashes(["--folders", "40", "25", "-41", "-1", "-344828", "3929"])
+    args = [
+        preprocess_dash(arg)
+        for arg in ["--folders", "40", "25", "-41", "-1", "-344828", "3929"]
+    ]
     assert args == ["--folders", "40", "25", "~41", "~1", "~344828", "3929"]
 
 
 def test_preprocess_dashes_with_model_explores_should_work():
-    args = preprocess_dashes(
-        [
+    args = [
+        preprocess_dash(arg)
+        for arg in [
             "--explores",
             "model_a/explore_a",
             "-model_b/explore_b",
             "model_c/explore_c",
             "-model_d/explore_d",
         ]
-    )
+    ]
     assert args == [
         "--explores",
         "model_a/explore_a",
@@ -400,19 +404,22 @@ def test_preprocess_dashes_with_model_explores_should_work():
 
 
 def test_preprocess_dashes_with_wildcards_should_work():
-    args = preprocess_dashes(
-        [
+    args = [
+        preprocess_dash(arg)
+        for arg in (
             "--explores",
             "*/explore_a",
             "-model_b/*",
+            "model-a/explore-a",
             "*/*",
             "-*/*",
-        ]
-    )
+        )
+    ]
     assert args == [
         "--explores",
         "*/explore_a",
         "~model_b/*",
+        "model-a/explore-a",
         "*/*",
         "~*/*",
     ]
