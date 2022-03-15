@@ -179,7 +179,7 @@ def test_config_file_explores_folders_processed_correctly(
     }
     with patch("sys.argv", ["spectacles", "sql", "--config-file", "config.yml"]):
         main()
-    assert mock_run_sql.call_args.kwargs["explores"] == [
+    assert mock_run_sql.call_args.kwargs["filters"] == [
         "model_a/*",
         "-model_a/explore_b",
     ]
@@ -206,7 +206,7 @@ def test_cli_explores_folders_processed_correctly(mock_run_sql, clean_env):
         ],
     ):
         main()
-    assert mock_run_sql.call_args.kwargs["explores"] == [
+    assert mock_run_sql.call_args.kwargs["filters"] == [
         "model_a/*",
         "-model_a/explore_b",
     ]
@@ -401,11 +401,11 @@ def test_main_with_connect(mock_tracking, mock_run_connect, env):
     )
     mock_tracking.track_invocation_end.assert_called_once()
     mock_run_connect.assert_called_once_with(
-        "BASE_URL_ENV_VAR",  # base_url
-        "CLIENT_ID_ENV_VAR",  # client_id
-        "CLIENT_SECRET_ENV_VAR",  # client_secret
-        8080,  # port
-        3.1,  # api_version
+        base_url="BASE_URL_ENV_VAR",
+        client_id="CLIENT_ID_ENV_VAR",
+        client_secret="CLIENT_SECRET_ENV_VAR",
+        port=8080,
+        api_version=3.1,
     )
 
 
@@ -417,11 +417,11 @@ def test_main_with_do_not_track(mock_tracking, mock_run_connect, env):
     mock_tracking.track_invocation_start.assert_not_called()
     mock_tracking.track_invocation_end.assert_not_called()
     mock_run_connect.assert_called_once_with(
-        "BASE_URL_ENV_VAR",  # base_url
-        "CLIENT_ID_ENV_VAR",  # client_id
-        "CLIENT_SECRET_ENV_VAR",  # client_secret
-        8080,  # port
-        3.1,  # api_version
+        base_url="BASE_URL_ENV_VAR",
+        client_id="CLIENT_ID_ENV_VAR",
+        client_secret="CLIENT_SECRET_ENV_VAR",
+        port=8080,
+        api_version=3.1,
     )
 
 
