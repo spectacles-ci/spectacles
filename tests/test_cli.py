@@ -142,11 +142,14 @@ def test_parse_args_with_only_config_file(mock_parse_config, clean_env):
         "base_url": "BASE_URL_CONFIG",
         "client_id": "CLIENT_ID_CONFIG",
         "client_secret": "CLIENT_SECRET_CONFIG",
+        "project": "spectacles",
+        "explores": ["model_a/*", "-model_a/explore_b"],
     }
-    args = parser.parse_args(["connect", "--config-file", "config.yml"])
+    args = parser.parse_args(["sql", "--config-file", "config.yml"])
     assert args.base_url == "BASE_URL_CONFIG"
     assert args.client_id == "CLIENT_ID_CONFIG"
     assert args.client_secret == "CLIENT_SECRET_CONFIG"
+    assert args.explores == ["model_a/*", "-model_a/explore_b"]
 
 
 @patch("spectacles.cli.YamlConfigAction.parse_config")
@@ -160,6 +163,24 @@ def test_parse_args_with_incomplete_config_file(mock_parse_config, clean_env, ca
         parser.parse_args(["connect", "--config-file", "config.yml"])
     captured = capsys.readouterr()
     assert "the following arguments are required: --client-secret" in captured.err
+
+
+@patch("spectacles.cli.run_sql")
+@patch("spectacles.cli.YamlConfigAction.parse_config")
+def test_config_file_explores_folders_processed_correctly(
+    mock_parse_config, mock_run_sql, clean_env
+):
+    parser = create_parser()
+    mock_parse_config.return_value = {
+        "base_url": "BASE_URL_CONFIG",
+        "client_id": "CLIENT_ID_CONFIG",
+        "client_secret": "CLIENT_SECRET_CONFIG",
+        "project": "spectacles",
+        "explores": ["model_a/*", "-model_a/explore_b"],
+    }
+    with patch("sys.argv", ["spectacles", "sql", "--config-file", "config.yml"]):
+        main()
+    assert ["model_a/*", "-model_a/explore_b"] in mock_run_sql.call_args.args
 
 
 def test_parse_args_with_only_env_vars(env):

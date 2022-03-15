@@ -202,8 +202,12 @@ def handle_exceptions(function: Callable) -> Callable:
 
 def preprocess_dash(arg: str) -> str:
     """Replace any dashes with tildes, otherwise argparse will assume they're options"""
-    pattern = re.compile(r"^-(?=([\w_\*]+/[\w_\*]+)|(\d+)$)")
-    return pattern.sub("~", arg)
+    return re.sub(r"^-(?=([\w_\*]+/[\w_\*]+)|(\d+)$)", "~", arg)
+
+
+def restore_dash(arg: str) -> str:
+    """Convert leading tildes back to dashes."""
+    return re.sub(r"^~", "-", arg)
 
 
 @handle_exceptions
@@ -220,9 +224,6 @@ def main():
     args = [preprocess_dash(arg) for arg in sys.argv[1:]]
     parser = create_parser()
     args = parser.parse_args(args)
-    # Convert leading `~` back to `-` after `parse_args`
-    args.explores = [re.sub(r"^~", "-", arg) for arg in args.explores]
-    args.folders = [re.sub(r"^~", "-", arg) for arg in args.explores]
 
     branch = getattr(args, "branch", None)
     commit_ref = getattr(args, "commit_ref", None)
@@ -266,7 +267,7 @@ def main():
             args.log_dir,
             args.project,
             ref,
-            args.explores,
+            [restore_dash(arg) for arg in args.explores],
             args.base_url,
             args.client_id,
             args.client_secret,
@@ -285,7 +286,7 @@ def main():
         run_assert(
             args.project,
             ref,
-            args.explores,
+            [restore_dash(arg) for arg in args.explores],
             args.base_url,
             args.client_id,
             args.client_secret,
@@ -297,7 +298,7 @@ def main():
         run_content(
             args.project,
             ref,
-            args.explores,
+            [restore_dash(arg) for arg in args.explores],
             args.base_url,
             args.client_id,
             args.client_secret,
@@ -307,7 +308,7 @@ def main():
             args.incremental,
             args.target,
             args.exclude_personal,
-            args.folders,
+            [restore_dash(arg) for arg in args.folders],
         )
     elif args.command == "lookml":
         run_lookml(
