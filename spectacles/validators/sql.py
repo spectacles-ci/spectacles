@@ -309,9 +309,9 @@ class SqlValidator:
             if status == "error":
                 try:
                     error_details = self._extract_error_details(result)
-                except (KeyError, TypeError, IndexError) as error:
+                except Exception as error:
                     logger.debug(
-                        f"Exiting because of unexpected query result format: {result}"
+                        f"Unable to parse unexpected query result format: {result}"
                     )
                     raise SpectaclesException(
                         name="unexpected-query-result-format",
