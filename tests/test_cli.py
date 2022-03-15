@@ -170,7 +170,6 @@ def test_parse_args_with_incomplete_config_file(mock_parse_config, clean_env, ca
 def test_config_file_explores_folders_processed_correctly(
     mock_parse_config, mock_run_sql, clean_env
 ):
-    parser = create_parser()
     mock_parse_config.return_value = {
         "base_url": "BASE_URL_CONFIG",
         "client_id": "CLIENT_ID_CONFIG",
@@ -180,7 +179,37 @@ def test_config_file_explores_folders_processed_correctly(
     }
     with patch("sys.argv", ["spectacles", "sql", "--config-file", "config.yml"]):
         main()
-    assert ["model_a/*", "-model_a/explore_b"] in mock_run_sql.call_args.args
+    assert mock_run_sql.call_args.kwargs["explores"] == [
+        "model_a/*",
+        "-model_a/explore_b",
+    ]
+
+
+@patch("spectacles.cli.run_sql")
+def test_cli_explores_folders_processed_correctly(mock_run_sql, clean_env):
+    with patch(
+        "sys.argv",
+        [
+            "spectacles",
+            "sql",
+            "--base-url",
+            "BASE_URL",
+            "--client-id",
+            "CLIENT_ID",
+            "--client-secret",
+            "CLIENT_SECRET",
+            "--project",
+            "spectacles",
+            "--explores",
+            "model_a/*",
+            "-model_a/explore_b",
+        ],
+    ):
+        main()
+    assert mock_run_sql.call_args.kwargs["explores"] == [
+        "model_a/*",
+        "-model_a/explore_b",
+    ]
 
 
 def test_parse_args_with_only_env_vars(env):
