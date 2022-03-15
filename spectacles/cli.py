@@ -264,7 +264,7 @@ def main():
         )
     elif args.command == "sql":
         run_sql(
-            logs_dir=args.log_dir,
+            log_dir=args.log_dir,
             project=args.project,
             ref=ref,
             explores=[restore_dash(arg) for arg in args.explores],
