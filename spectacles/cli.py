@@ -200,13 +200,10 @@ def handle_exceptions(function: Callable) -> Callable:
     return wrapper
 
 
-def preprocess_dashes(args: List[str]) -> List[str]:
+def preprocess_dash(arg: str) -> str:
     """Replace any dashes with tildes, otherwise argparse will assume they're options"""
     pattern = re.compile(r"^-(?=([\w_\*]+/[\w_\*]+)|(\d+)$)")
-    processed = []
-    for arg in args:
-        processed.append(pattern.sub("~", arg))
-    return processed
+    return pattern.sub("~", arg)
 
 
 @handle_exceptions
@@ -219,9 +216,13 @@ def main():
             detail="The current Python version is %s." % platform.python_version(),
         )
 
-    args = preprocess_dashes(sys.argv[1:])
+    # Convert leading `-` to `~` so they don't break `parse_args`
+    args = [preprocess_dash(arg) for arg in sys.argv[1:]]
     parser = create_parser()
     args = parser.parse_args(args)
+    # Convert leading `~` back to `-` after `parse_args`
+    args.explores = [re.sub(r"^~", "-", arg) for arg in args.explores]
+    args.folders = [re.sub(r"^~", "-", arg) for arg in args.explores]
 
     branch = getattr(args, "branch", None)
     commit_ref = getattr(args, "commit_ref", None)
