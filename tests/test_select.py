@@ -48,21 +48,21 @@ def test_select_wrong_explore_should_not_match():
     assert not is_selected("model_a", "explore_a", ["model_a/explore_b"])
 
 
-@pytest.mark.parametrize("filters", permutations(["*/*", "~*/*"]))
+@pytest.mark.parametrize("filters", permutations(["*/*", "-*/*"]))
 def test_exclude_wildcard_should_not_match(filters):
     assert not is_selected("model_a", "explore_a", filters)
 
 
-@pytest.mark.parametrize("filters", permutations(["*/*", "~model_a/*"]))
+@pytest.mark.parametrize("filters", permutations(["*/*", "-model_a/*"]))
 def test_exclude_model_wildcard_should_not_match(filters):
     assert not is_selected("model_a", "explore_a", filters)
 
 
-@pytest.mark.parametrize("filters", permutations(["*/*", "~*/explore_a"]))
+@pytest.mark.parametrize("filters", permutations(["*/*", "-*/explore_a"]))
 def test_exclude_explore_wildcard_should_not_match(filters):
     assert not is_selected("model_a", "explore_a", filters)
 
 
-@pytest.mark.parametrize("filters", permutations(["*/*", "~model_a/explore_a"]))
+@pytest.mark.parametrize("filters", permutations(["*/*", "-model_a/explore_a"]))
 def test_exclude_exact_model_and_explore_should_not_match(filters):
     assert not is_selected("model_a", "explore_a", filters)

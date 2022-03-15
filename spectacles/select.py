@@ -31,7 +31,7 @@ def is_selected(model: str, explore: str, filters: List[str]) -> bool:
     included = None
     for f in filters:
         # If it matches an exclude, stop immediately
-        if f[0] == "~":
+        if f[0] == "-":
             if re.match(selector_to_pattern(f[1:]), test_string):
                 return False
         elif included:
