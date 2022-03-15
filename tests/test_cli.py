@@ -179,7 +179,8 @@ def test_config_file_explores_folders_processed_correctly(
     }
     with patch("sys.argv", ["spectacles", "sql", "--config-file", "config.yml"]):
         main()
-    assert mock_run_sql.call_args.kwargs["filters"] == [
+
+    assert mock_run_sql.call_args[1]["filters"] == [
         "model_a/*",
         "-model_a/explore_b",
     ]
@@ -206,7 +207,7 @@ def test_cli_explores_folders_processed_correctly(mock_run_sql, clean_env):
         ],
     ):
         main()
-    assert mock_run_sql.call_args.kwargs["filters"] == [
+    assert mock_run_sql.call_args[1]["filters"] == [
         "model_a/*",
         "-model_a/explore_b",
     ]
