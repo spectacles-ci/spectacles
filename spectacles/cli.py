@@ -267,7 +267,7 @@ def main():
             log_dir=args.log_dir,
             project=args.project,
             ref=ref,
-            explores=[restore_dash(arg) for arg in args.explores],
+            filters=[restore_dash(arg) for arg in args.explores],
             base_url=args.base_url,
             client_id=args.client_id,
             client_secret=args.client_secret,
@@ -286,7 +286,7 @@ def main():
         run_assert(
             project=args.project,
             ref=ref,
-            explores=[restore_dash(arg) for arg in args.explores],
+            filters=[restore_dash(arg) for arg in args.explores],
             base_url=args.base_url,
             client_id=args.client_id,
             client_secret=args.client_secret,
@@ -298,7 +298,7 @@ def main():
         run_content(
             project=args.project,
             ref=ref,
-            explores=[restore_dash(arg) for arg in args.explores],
+            filters=[restore_dash(arg) for arg in args.explores],
             base_url=args.base_url,
             client_id=args.client_id,
             client_secret=args.client_secret,
