@@ -617,7 +617,7 @@ class LookerClient:
                 names are returned in the format 'explore_name.dimension_name'.
 
         """
-        logger.debug(f"Getting all dimensions from explore {explore}")
+        logger.debug(f"Getting all dimensions from explore {model}/{explore}")
         params = {"fields": ["fields"]}
         url = utils.compose_url(
             self.api_url,
