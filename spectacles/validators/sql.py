@@ -72,7 +72,7 @@ class SqlTest:
     def __eq__(self, other: Any) -> bool:
         if isinstance(other, self.__class__):
             if self.sql and other.sql:
-                return self.sql == other.sql
+                return self.sql == other.sql and self.lookml_ref == other.lookml_ref
             else:
                 return self.lookml_ref == other.lookml_ref
         else:
@@ -81,7 +81,7 @@ class SqlTest:
     def __hash__(self) -> int:
         if self.sql is None:
             raise ValueError("Test has no SQL defined")
-        return hash(self.lookml_ref.name + self.sql)
+        return hash(self.lookml_ref.model_name + self.lookml_ref.name + self.sql)
 
     def __dict__(self):
         metadata = {"explore_url": self.explore_url}
