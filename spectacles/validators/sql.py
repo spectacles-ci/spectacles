@@ -205,17 +205,22 @@ class SqlValidator:
         )
         sql = self.client.run_query(main_query["id"]) if compile_sql else None
 
-        # Create separate chunked queries for execution, we don't store compiled SQL
-        # or the Explore URL for these queries
-        chunk_queries: List[Query] = []
-        for chunk in chunks(dimensions, size=chunk_size):
-            chunk_query = self.client.create_query(
-                explore.model_name, explore.name, chunk, fields=["id", "share_url"]
-            )
-            chunk_queries.append(Query(chunk_query["id"], chunk_query["share_url"]))
+        execution_queries: List[Query] = []
+        if len(dimensions) > chunk_size:
+            # Create separate chunked queries for execution, we don't store compiled SQL
+            # or the Explore URL for these queries
+            for chunk in chunks(dimensions, size=chunk_size):
+                chunk_query = self.client.create_query(
+                    explore.model_name, explore.name, chunk, fields=["id", "share_url"]
+                )
+                execution_queries.append(
+                    Query(chunk_query["id"], chunk_query["share_url"])
+                )
+        else:
+            execution_queries = [Query(main_query["id"], main_query["share_url"])]
 
         test = SqlTest(
-            queries=chunk_queries,
+            queries=execution_queries,
             lookml_ref=explore,
             explore_url=main_query["share_url"],
             sql=sql,

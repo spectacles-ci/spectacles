@@ -102,3 +102,11 @@ class TestLogDurationDecorator(unittest.TestCase):
             decorated_func = utils.log_duration(func)
             decorated_func()
         self.assertIn("INFO:spectacles:Completed validation in", cm.output[0])
+
+
+def test_chunks_returns_expected_results():
+    to_chunk = list(range(10))  # has length of 10
+    assert len(list(utils.chunks(to_chunk, 5))) == 2
+    assert len(list(utils.chunks(to_chunk, 9))) == 2
+    assert len(list(utils.chunks(to_chunk, 10))) == 1
+    assert len(list(utils.chunks(to_chunk, 11))) == 1
