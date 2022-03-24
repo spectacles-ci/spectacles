@@ -96,7 +96,7 @@ class LookerBranchManager:
         if self.branch:
             self.update_workspace("dev")
             if self.ephemeral:
-                self.branch = self.checkout_temp_branch(self.branch)
+                self.branch = self.checkout_temp_branch("origin/" + self.branch)
             else:
                 self.client.checkout_branch(self.project, self.branch)
                 if self.remote_reset:
