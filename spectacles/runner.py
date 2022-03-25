@@ -330,7 +330,7 @@ class Runner:
         )
 
         with self.branch_manager(ref=ref):
-            validator.run_tests(tests, profile)
+            validator.run_tests(tests, profile=profile if fail_fast else False)
 
         # Create dimension tests for the desired ref when explores errored
         if not fail_fast:
@@ -448,7 +448,7 @@ class Runner:
                     self.client, name=self.project, filters=filters
                 )
                 validator.validate(target_project)
-                target_results = project.get_results(validator="content")
+                target_results = target_project.get_results(validator="content")
 
             return self._incremental_results(base=results, target=target_results)
         else:

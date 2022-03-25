@@ -8,7 +8,7 @@ from yaml.parser import ParserError
 import argparse
 import logging
 import os
-from typing import Callable, List
+from typing import Callable
 from spectacles import __version__
 from spectacles.runner import Runner
 from spectacles.client import LookerClient
@@ -200,13 +200,14 @@ def handle_exceptions(function: Callable) -> Callable:
     return wrapper
 
 
-def preprocess_dashes(args: List[str]) -> List[str]:
+def preprocess_dash(arg: str) -> str:
     """Replace any dashes with tildes, otherwise argparse will assume they're options"""
-    pattern = re.compile(r"^-(?=([\w_\*]+/[\w_\*]+)|(\d+)$)")
-    processed = []
-    for arg in args:
-        processed.append(pattern.sub("~", arg))
-    return processed
+    return re.sub(r"^-(?=([\w_\*]+/[\w_\*]+)|(\d+)$)", "~", arg)
+
+
+def restore_dash(arg: str) -> str:
+    """Convert leading tildes back to dashes."""
+    return re.sub(r"^~", "-", arg)
 
 
 def process_import_refs(input: List[str]) -> dict:
@@ -223,7 +224,8 @@ def main():
             detail="The current Python version is %s." % platform.python_version(),
         )
 
-    args = preprocess_dashes(sys.argv[1:])
+    # Convert leading `-` to `~` so they don't break `parse_args`
+    args = [preprocess_dash(arg) for arg in sys.argv[1:]]
     parser = create_parser()
     args = parser.parse_args(args)
 
@@ -260,75 +262,75 @@ def main():
 
     if args.command == "connect":
         run_connect(
-            args.base_url,
-            args.client_id,
-            args.client_secret,
-            args.port,
-            args.api_version,
+            base_url=args.base_url,
+            client_id=args.client_id,
+            client_secret=args.client_secret,
+            port=args.port,
+            api_version=args.api_version,
         )
     elif args.command == "sql":
         run_sql(
-            args.log_dir,
-            args.project,
-            ref,
-            args.explores,
-            args.base_url,
-            args.client_id,
-            args.client_secret,
-            args.port,
-            args.api_version,
-            args.fail_fast,
-            args.incremental,
-            args.target,
-            args.remote_reset,
-            args.concurrency,
-            args.profile,
-            args.runtime_threshold,
-            args.chunk_size,
-            import_refs,
+            log_dir=args.log_dir,
+            project=args.project,
+            ref=ref,
+            filters=[restore_dash(arg) for arg in args.explores],
+            base_url=args.base_url,
+            client_id=args.client_id,
+            client_secret=args.client_secret,
+            port=args.port,
+            api_version=args.api_version,
+            fail_fast=args.fail_fast,
+            incremental=args.incremental,
+            target=args.target,
+            remote_reset=args.remote_reset,
+            concurrency=args.concurrency,
+            profile=args.profile,
+            runtime_threshold=args.runtime_threshold,
+            chunk_size=args.chunk_size,
+            import_refs=import_refs,
         )
     elif args.command == "assert":
         run_assert(
-            args.project,
-            ref,
-            args.explores,
-            args.base_url,
-            args.client_id,
-            args.client_secret,
-            args.port,
-            args.api_version,
-            args.remote_reset,
-            import_refs,
+            project=args.project,
+            ref=ref,
+            filters=[restore_dash(arg) for arg in args.explores],
+            base_url=args.base_url,
+            client_id=args.client_id,
+            client_secret=args.client_secret,
+            port=args.port,
+            api_version=args.api_version,
+            remote_reset=args.remote_reset,
+            import_refs=import_refs,
         )
     elif args.command == "content":
         run_content(
-            args.project,
-            ref,
-            args.explores,
-            args.base_url,
-            args.client_id,
-            args.client_secret,
-            args.port,
-            args.api_version,
-            args.remote_reset,
-            args.incremental,
-            args.target,
-            args.exclude_personal,
-            args.folders,
-            import_refs,
+            project=args.project,
+            ref=ref,
+            filters=[restore_dash(arg) for arg in args.explores],
+            base_url=args.base_url,
+            client_id=args.client_id,
+            client_secret=args.client_secret,
+            port=args.port,
+            api_version=args.api_version,
+            remote_reset=args.remote_reset,
+            incremental=args.incremental,
+            target=args.target,
+            exclude_personal=args.exclude_personal,
+            folders=[restore_dash(arg) for arg in args.folders],
+            import_refs=import_refs,
         )
     elif args.command == "lookml":
         run_lookml(
-            args.project,
-            ref,
-            args.base_url,
-            args.client_id,
-            args.client_secret,
-            args.port,
-            args.api_version,
-            args.remote_reset,
-            args.severity,
-            import_refs,
+            project=args.project,
+            ref=ref,
+            base_url=args.base_url,
+            client_id=args.client_id,
+            client_secret=args.client_secret,
+            port=args.port,
+            api_version=args.api_version,
+            remote_reset=args.remote_reset,
+            severity=args.severity,
+            import_refs=import_refs,
         )
 
     if not args.do_not_track:

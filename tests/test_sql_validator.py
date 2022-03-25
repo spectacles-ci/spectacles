@@ -192,7 +192,7 @@ class TestValidateFail:
 def test_create_and_run_keyboard_interrupt_cancels_queries(validator):
     validator._test_by_task_id = {
         "abc": SqlTest(
-            queries=[Query(12345)],
+            queries=[Query(12345, "https://example.looker.com/x/12345")],
             lookml_ref=None,
             query_task_id="abc",
             explore_url="https://example.looker.com/x/12345",
@@ -207,7 +207,7 @@ def test_create_and_run_keyboard_interrupt_cancels_queries(validator):
         validator.run_tests(
             [
                 SqlTest(
-                    queries=[Query(67890)],
+                    queries=[Query(67890, "https://example.looker.com/x/56789")],
                     lookml_ref=None,
                     query_task_id="def",
                     explore_url="https://example.looker.com/x/56789",

@@ -8,7 +8,7 @@ from spectacles.cli import (
     main,
     create_parser,
     handle_exceptions,
-    preprocess_dashes,
+    preprocess_dash,
     process_import_refs,
 )
 from spectacles.exceptions import (
@@ -148,11 +148,14 @@ def test_parse_args_with_only_config_file(mock_parse_config, clean_env):
         "base_url": "BASE_URL_CONFIG",
         "client_id": "CLIENT_ID_CONFIG",
         "client_secret": "CLIENT_SECRET_CONFIG",
+        "project": "spectacles",
+        "explores": ["model_a/*", "-model_a/explore_b"],
     }
-    args = parser.parse_args(["connect", "--config-file", "config.yml"])
+    args = parser.parse_args(["sql", "--config-file", "config.yml"])
     assert args.base_url == "BASE_URL_CONFIG"
     assert args.client_id == "CLIENT_ID_CONFIG"
     assert args.client_secret == "CLIENT_SECRET_CONFIG"
+    assert args.explores == ["model_a/*", "-model_a/explore_b"]
 
 
 @patch("spectacles.cli.YamlConfigAction.parse_config")
@@ -166,6 +169,54 @@ def test_parse_args_with_incomplete_config_file(mock_parse_config, clean_env, ca
         parser.parse_args(["connect", "--config-file", "config.yml"])
     captured = capsys.readouterr()
     assert "the following arguments are required: --client-secret" in captured.err
+
+
+@patch("spectacles.cli.run_sql")
+@patch("spectacles.cli.YamlConfigAction.parse_config")
+def test_config_file_explores_folders_processed_correctly(
+    mock_parse_config, mock_run_sql, clean_env
+):
+    mock_parse_config.return_value = {
+        "base_url": "BASE_URL_CONFIG",
+        "client_id": "CLIENT_ID_CONFIG",
+        "client_secret": "CLIENT_SECRET_CONFIG",
+        "project": "spectacles",
+        "explores": ["model_a/*", "-model_a/explore_b"],
+    }
+    with patch("sys.argv", ["spectacles", "sql", "--config-file", "config.yml"]):
+        main()
+
+    assert mock_run_sql.call_args[1]["filters"] == [
+        "model_a/*",
+        "-model_a/explore_b",
+    ]
+
+
+@patch("spectacles.cli.run_sql")
+def test_cli_explores_folders_processed_correctly(mock_run_sql, clean_env):
+    with patch(
+        "sys.argv",
+        [
+            "spectacles",
+            "sql",
+            "--base-url",
+            "BASE_URL",
+            "--client-id",
+            "CLIENT_ID",
+            "--client-secret",
+            "CLIENT_SECRET",
+            "--project",
+            "spectacles",
+            "--explores",
+            "model_a/*",
+            "-model_a/explore_b",
+        ],
+    ):
+        main()
+    assert mock_run_sql.call_args[1]["filters"] == [
+        "model_a/*",
+        "-model_a/explore_b",
+    ]
 
 
 def test_parse_args_with_only_env_vars(env):
@@ -357,11 +408,11 @@ def test_main_with_connect(mock_tracking, mock_run_connect, env):
     )
     mock_tracking.track_invocation_end.assert_called_once()
     mock_run_connect.assert_called_once_with(
-        "BASE_URL_ENV_VAR",  # base_url
-        "CLIENT_ID_ENV_VAR",  # client_id
-        "CLIENT_SECRET_ENV_VAR",  # client_secret
-        8080,  # port
-        3.1,  # api_version
+        base_url="BASE_URL_ENV_VAR",
+        client_id="CLIENT_ID_ENV_VAR",
+        client_secret="CLIENT_SECRET_ENV_VAR",
+        port=8080,
+        api_version=3.1,
     )
 
 
@@ -373,11 +424,11 @@ def test_main_with_do_not_track(mock_tracking, mock_run_connect, env):
     mock_tracking.track_invocation_start.assert_not_called()
     mock_tracking.track_invocation_end.assert_not_called()
     mock_run_connect.assert_called_once_with(
-        "BASE_URL_ENV_VAR",  # base_url
-        "CLIENT_ID_ENV_VAR",  # client_id
-        "CLIENT_SECRET_ENV_VAR",  # client_secret
-        8080,  # port
-        3.1,  # api_version
+        base_url="BASE_URL_ENV_VAR",
+        client_id="CLIENT_ID_ENV_VAR",
+        client_secret="CLIENT_SECRET_ENV_VAR",
+        port=8080,
+        api_version=3.1,
     )
 
 
@@ -399,20 +450,24 @@ def test_process_import_refs_with_multiple_refs():
 
 
 def test_preprocess_dashes_with_folder_ids_should_work():
-    args = preprocess_dashes(["--folders", "40", "25", "-41", "-1", "-344828", "3929"])
+    args = [
+        preprocess_dash(arg)
+        for arg in ["--folders", "40", "25", "-41", "-1", "-344828", "3929"]
+    ]
     assert args == ["--folders", "40", "25", "~41", "~1", "~344828", "3929"]
 
 
 def test_preprocess_dashes_with_model_explores_should_work():
-    args = preprocess_dashes(
-        [
+    args = [
+        preprocess_dash(arg)
+        for arg in [
             "--explores",
             "model_a/explore_a",
             "-model_b/explore_b",
             "model_c/explore_c",
             "-model_d/explore_d",
         ]
-    )
+    ]
     assert args == [
         "--explores",
         "model_a/explore_a",
@@ -423,19 +478,22 @@ def test_preprocess_dashes_with_model_explores_should_work():
 
 
 def test_preprocess_dashes_with_wildcards_should_work():
-    args = preprocess_dashes(
-        [
+    args = [
+        preprocess_dash(arg)
+        for arg in (
             "--explores",
             "*/explore_a",
             "-model_b/*",
+            "model-a/explore-a",
             "*/*",
             "-*/*",
-        ]
-    )
+        )
+    ]
     assert args == [
         "--explores",
         "*/explore_a",
         "~model_b/*",
+        "model-a/explore-a",
         "*/*",
         "~*/*",
     ]
