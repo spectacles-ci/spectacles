@@ -8,7 +8,7 @@ from yaml.parser import ParserError
 import argparse
 import logging
 import os
-from typing import Callable
+from typing import Callable, List
 from spectacles import __version__
 from spectacles.runner import Runner
 from spectacles.client import LookerClient
