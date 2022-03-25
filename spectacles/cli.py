@@ -505,8 +505,8 @@ def _build_validator_subparser(
         "--import-refs",
         nargs="+",
         default=[],
-        help="The git ref at which any locally imported Looker projects should be set to. \
-            List of strings in project_name:ref_name format. ",
+        help="Pin locally imported Looker projects to a specific ref (Git branch or commit) during validation. \
+            Provide these arguments in project_name:ref format.",
     )
     return base_subparser
 
