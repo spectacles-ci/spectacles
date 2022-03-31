@@ -17,8 +17,6 @@ interactions:
     method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/login
   response:
-    body:
-      string: '{"access_token":"73BfRBBDGhaaannWn8jDYGf4zbhQfbSPPPJjD8Mn","token_type":"Bearer","expires_in":3600}'
     headers:
       Connection:
       - keep-alive
