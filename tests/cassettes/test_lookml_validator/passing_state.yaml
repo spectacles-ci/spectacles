@@ -7,7 +7,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39774474
+      - looker.browser=75224764
     method: PATCH
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -21,19 +21,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 05 Jan 2022 08:45:20 GMT
+      - Thu, 31 Mar 2022 09:01:12 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 4839c1978f10dc21
+      - 73a7b8cf6bd88f13
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 4839c1978f10dc21
+      - 73a7b8cf6bd88f13
       X-B3-TraceId:
-      - 61d55aa0fc1d9b6a4839c1978f10dc21
+      - 62456dd7b1fc2b6473a7b8cf6bd88f13
       X-Content-Type-Options:
       - nosniff
     status:
@@ -45,12 +45,12 @@ interactions:
       Content-Length:
       - '0'
       Cookie:
-      - looker.browser=39774474
-    method: POST
+      - looker.browser=75224764
+    method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/validate
   response:
     body:
-      string: '{"errors":[],"models_not_validated":[],"computation_time":0.3703641891479492,"project_digest":"9f98f2e3c467f7278687abe04020082a4d15d3cd"}'
+      string: '{"errors":[],"models_not_validated":[],"computation_time":null,"stale":false,"project_digest":"2d12d8b37ef1c4aa1b20bb0d13c895eeeef7f064"}'
     headers:
       Connection:
       - keep-alive
@@ -59,19 +59,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 05 Jan 2022 08:45:21 GMT
+      - Thu, 31 Mar 2022 09:01:12 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - d881ca51182be849
+      - 6b2b5267d88e7e6f
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - d881ca51182be849
+      - 6b2b5267d88e7e6f
       X-B3-TraceId:
-      - 61d55aa0fe967bd6d881ca51182be849
+      - 62456dd87ed8d40a6b2b5267d88e7e6f
       X-Content-Type-Options:
       - nosniff
     status:

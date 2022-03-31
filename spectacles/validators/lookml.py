@@ -33,7 +33,7 @@ class LookMLValidator:
     def validate(self, project: str, severity: str = "warning") -> Dict[str, Any]:
         severity_level: int = NAME_TO_LEVEL[severity]
         validation_results = self.client.cached_lookml_validation(project)
-        if validation_results["stale"]:
+        if not validation_results or validation_results.get("stale"):
             validation_results = self.client.lookml_validation(project)
         errors = []
         lookml_url: Optional[str] = None

@@ -7,7 +7,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39774474
+      - looker.browser=75224764
     method: PATCH
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -21,19 +21,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 05 Jan 2022 08:45:21 GMT
+      - Thu, 31 Mar 2022 09:01:10 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 2c86b72bb1604e63
+      - b6f77d964c07b2d0
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 2c86b72bb1604e63
+      - b6f77d964c07b2d0
       X-B3-TraceId:
-      - 61d55aa1bb7317112c86b72bb1604e63
+      - 62456dd69302253fb6f77d964c07b2d0
       X-Content-Type-Options:
       - nosniff
     status:
@@ -47,12 +47,12 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39774474
+      - looker.browser=75224764
     method: PUT
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
   response:
     body:
-      string: '{"name":"pytest-fail-lookml","remote":"origin","remote_name":"pytest-fail-lookml","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1641313431,"ref":"7e33408a177f8c5f8bde99d9cfc79ca2b810b96b","remote_ref":"7e33408a177f8c5f8bde99d9cfc79ca2b810b96b","can":{}}'
+      string: '{"name":"pytest-fail-lookml","remote":"origin","remote_name":"pytest-fail-lookml","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1641461156,"ref":"463f2e21ae52ba1f2713df5fa95349689ffd9dd4","remote_ref":"463f2e21ae52ba1f2713df5fa95349689ffd9dd4","can":{}}'
     headers:
       Connection:
       - keep-alive
@@ -61,20 +61,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 05 Jan 2022 08:45:22 GMT
+      - Thu, 31 Mar 2022 09:01:11 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 520bdafddaef89a8
+      - 0611a879033823dc
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 520bdafddaef89a8
+      - 0611a879033823dc
       X-B3-TraceId:
-      - 61d55aa10e3617cf520bdafddaef89a8
+      - 62456dd6317d3d890611a879033823dc
       X-Content-Type-Options:
       - nosniff
     status:
@@ -86,8 +86,8 @@ interactions:
       Content-Length:
       - '0'
       Cookie:
-      - looker.browser=39774474
-    method: POST
+      - looker.browser=75224764
+    method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/validate
   response:
     body:
@@ -110,29 +110,33 @@ interactions:
         not find a view named \"users__fail\" to extend, possible missing include
         in view file.","field_name":null,"file_path":"eye_exam/views/users__fail_and_warn.view.lkml","line_number":4,"model_id":null,"explore":null,"help_url":null,"params":{"level":"error"},"sanitized_message":"Could
         not find a view named \"users__fail\" to extend, possible missing include
-        in view file."}],"models_not_validated":[{"name":"eye_exam","project_file_id":"eye_exam.model.lkml"}],"computation_time":0.2382199764251709,"project_digest":"f80e4a16cd6761c72bc8e388cba261be2e3689a2"}'
+        in view file."},{"code":null,"severity":"warning","kind":"error","message":"Using
+        \"use_aragonite\" in manifest.lkml without \"LookML New Runtime (Aragonite)\"
+        enabled is not supported. Param ignored.","field_name":null,"file_path":null,"line_number":null,"model_id":null,"explore":null,"help_url":null,"params":{"level":"warning","scope":"phase_zero"},"sanitized_message":"Using
+        \"use_aragonite\" in manifest.lkml without \"(?)\" enabled is not supported.
+        Param ignored."}],"models_not_validated":[{"name":"eye_exam","project_file_id":"eye_exam.model.lkml"}],"computation_time":null,"stale":false,"project_digest":"8b16595841286ec860e5003271cc204a57f7ff5c"}'
     headers:
       Connection:
       - keep-alive
       Content-Length:
-      - '2990'
+      - '3448'
       Content-Type:
       - application/json
       Date:
-      - Wed, 05 Jan 2022 08:45:23 GMT
+      - Thu, 31 Mar 2022 09:01:11 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 03c0b1b26e84d632
+      - e32e14eb2e2ee285
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 03c0b1b26e84d632
+      - e32e14eb2e2ee285
       X-B3-TraceId:
-      - 61d55aa261bee6db03c0b1b26e84d632
+      - 62456dd7a2d87a67e32e14eb2e2ee285
       X-Content-Type-Options:
       - nosniff
     status:

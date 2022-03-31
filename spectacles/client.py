@@ -840,7 +840,7 @@ class LookerClient:
         result = response.json()
         return result
 
-    def cached_lookml_validation(self, project) -> JsonDict:
+    def cached_lookml_validation(self, project) -> Optional[JsonDict]:
         logger.debug(f"Getting cached LookML validation results for '{project}'")
         url = utils.compose_url(self.api_url, path=["projects", project, "validate"])
         response = self.get(url=url, timeout=TIMEOUT_SEC)
@@ -857,6 +857,8 @@ class LookerClient:
                 ),
                 response=response,
             )
+        if response.status_code == 204:
+            return None
 
         result = response.json()
         return result
