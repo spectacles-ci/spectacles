@@ -67,7 +67,7 @@ It's good practice to check any modified or new cassettes for sensitive data bef
 grep -ir "sj29djaxks01jgi1xkaa0" tests/cassettes
 ```
 
-To avoid recording sensitive data, you'll need to provide filter args to `pytest.mark.vcr` or `vcr.use_cassette`.
+To avoid recording sensitive data, you'll need to provide filter args to `pytest.mark.vcr`.
 
 Here's an example. In this example, we use three arguments to `vcr.use_cassette`. We specify `filter_post_data_parameters` (filters POST request params to remove the client ID and secret), `filter_headers` (removes the access token from subsequent requests), and `before_record_response` (removes the access token from the response).
 
