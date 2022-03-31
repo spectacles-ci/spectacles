@@ -840,6 +840,27 @@ class LookerClient:
         result = response.json()
         return result
 
+    def cached_lookml_validation(self, project) -> JsonDict:
+        logger.debug(f"Getting cached LookML validation results for '{project}'")
+        url = utils.compose_url(self.api_url, path=["projects", project, "validate"])
+        response = self.get(url=url, timeout=TIMEOUT_SEC)
+
+        try:
+            response.raise_for_status()
+        except requests.exceptions.HTTPError:
+            raise LookerApiError(
+                name="unable-to-get-cached-lookml-validation",
+                title=f"Couldn't get cached LookML validation results in project {project}.",
+                status=response.status_code,
+                detail=(
+                    "Failed to get cached LookML valiation results. Please try again."
+                ),
+                response=response,
+            )
+
+        result = response.json()
+        return result
+
     def all_folders(self) -> List[JsonDict]:
         logger.debug("Getting information about all folders")
         url = utils.compose_url(self.api_url, path=["folders"])
