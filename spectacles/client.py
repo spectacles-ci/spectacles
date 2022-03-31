@@ -857,6 +857,9 @@ class LookerClient:
                 ),
                 response=response,
             )
+
+        # If no cached validation results are available, Looker returns a 204 No Content.
+        # The response has no payload. We should return None in this case and handle accordingly.
         if response.status_code == 204:
             return None
 
