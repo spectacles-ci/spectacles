@@ -23,29 +23,29 @@ def vcr_config():
     return {"filter_headers": ["Authorization"]}
 
 
+@pytest.mark.default_cassette("init_client.yaml")
+@pytest.mark.vcr(
+    filter_post_data_parameters=["client_id", "client_secret"],
+    record_mode="all",
+    before_record_response=filter_access_token,
+    decode_compressed_response=True,
+)
 @pytest.fixture(scope="session")
 def looker_client() -> Iterable[LookerClient]:
-    with vcr.use_cassette(
-        "tests/cassettes/init_client.yaml",
-        filter_post_data_parameters=["client_id", "client_secret"],
-        filter_headers=["Authorization"],
-        record_mode="all",
-        before_record_response=filter_access_token,
-        decode_compressed_response=True,
-    ):
-        client = LookerClient(
-            base_url="https://spectacles.looker.com",
-            client_id=os.environ.get("LOOKER_CLIENT_ID", ""),
-            client_secret=os.environ.get("LOOKER_CLIENT_SECRET", ""),
-        )
-        client.update_workspace("production")
-        yield client
+    client = LookerClient(
+        base_url="https://spectacles.looker.com",
+        client_id=os.environ.get("LOOKER_CLIENT_ID", ""),
+        client_secret=os.environ.get("LOOKER_CLIENT_SECRET", ""),
+    )
+    client.update_workspace("production")
+    yield client
 
 
 @pytest.fixture(scope="session")
 def remote_repo() -> Repository:
     access_token = os.environ.get("GITHUB_ACCESS_TOKEN")
     client = GitHub(access_token)
+    # Use VCR explicitly here instead of pytest.mark.vcr so we can use context manager
     with vcr.use_cassette(
         "tests/cassettes/init_github.yaml",
         filter_headers=["Authorization"],

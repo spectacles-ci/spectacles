@@ -1,51 +1,38 @@
 from typing import Iterable, List
 import pytest
-import vcr
 from spectacles.validators import DataTestValidator
 from spectacles.validators.data_test import DataTest
 from spectacles.exceptions import DataTestError, SpectaclesException
 from spectacles.lookml import build_project
 
 
+@pytest.mark.default_cassette("fixture_validator_init.yaml")
+@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
 @pytest.fixture(scope="class")
-def validator(looker_client, record_mode) -> Iterable[DataTestValidator]:
-    with vcr.use_cassette(
-        "tests/cassettes/test_data_test_validator/fixture_validator_init.yaml",
-        match_on=["uri", "method", "raw_body"],
-        filter_headers=["Authorization"],
-        record_mode=record_mode,
-    ):
-        validator = DataTestValidator(looker_client)
-        yield validator
+def validator(looker_client) -> Iterable[DataTestValidator]:
+    validator = DataTestValidator(looker_client)
+    yield validator
 
 
 class TestValidatePass:
     """Test the eye_exam Looker project on master for an explore without errors."""
 
+    @pytest.mark.default_cassette("fixture_validator_pass.yaml")
+    @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
     @pytest.fixture(scope="class")
-    def tests(self, validator, record_mode) -> Iterable[List[DataTest]]:
-        with vcr.use_cassette(
-            "tests/cassettes/test_data_test_validator/fixture_validator_pass.yaml",
-            match_on=["uri", "method", "raw_body", "query"],
-            filter_headers=["Authorization"],
-            record_mode=record_mode,
-        ):
-            project = build_project(
-                validator.client, name="eye_exam", filters=["eye_exam/users"]
-            )
-            tests: List[DataTest] = validator.get_tests(project)
-            yield tests
+    def tests(self, validator) -> Iterable[List[DataTest]]:
+        project = build_project(
+            validator.client, name="eye_exam", filters=["eye_exam/users"]
+        )
+        tests: List[DataTest] = validator.get_tests(project)
+        yield tests
 
+    @pytest.mark.default_cassette("fixture_validator_pass.yaml")
+    @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
     @pytest.fixture(scope="class")
-    def validator_errors(self, validator, tests, record_mode):
-        with vcr.use_cassette(
-            "tests/cassettes/test_data_test_validator/fixture_validator_pass.yaml",
-            match_on=["uri", "method", "raw_body", "query"],
-            filter_headers=["Authorization"],
-            record_mode=record_mode,
-        ):
-            errors: List[DataTestError] = validator.validate(tests)
-            yield errors
+    def validator_errors(self, validator, tests):
+        errors: List[DataTestError] = validator.validate(tests)
+        yield errors
 
     def test_results_have_correct_number_of_elements(self, validator_errors, tests):
         assert len(validator_errors) == 0
@@ -55,30 +42,22 @@ class TestValidatePass:
 class TestValidateFail:
     """Test the eye_exam Looker project on master for an explore without errors."""
 
+    @pytest.mark.default_cassette("fixture_validator_fail.yaml")
+    @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
     @pytest.fixture(scope="class")
-    def tests(self, validator, record_mode) -> Iterable[List[DataTest]]:
-        with vcr.use_cassette(
-            "tests/cassettes/test_data_test_validator/fixture_validator_fail.yaml",
-            match_on=["uri", "method", "raw_body", "query"],
-            filter_headers=["Authorization"],
-            record_mode=record_mode,
-        ):
-            project = build_project(
-                validator.client, name="eye_exam", filters=["eye_exam/users__fail"]
-            )
-            tests: List[DataTest] = validator.get_tests(project)
-            yield tests
+    def tests(self, validator) -> Iterable[List[DataTest]]:
+        project = build_project(
+            validator.client, name="eye_exam", filters=["eye_exam/users__fail"]
+        )
+        tests: List[DataTest] = validator.get_tests(project)
+        yield tests
 
+    @pytest.mark.default_cassette("fixture_validator_fail.yaml")
+    @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
     @pytest.fixture(scope="class")
-    def validator_errors(self, validator, tests, record_mode):
-        with vcr.use_cassette(
-            "tests/cassettes/test_data_test_validator/fixture_validator_fail.yaml",
-            match_on=["uri", "method", "raw_body", "query"],
-            filter_headers=["Authorization"],
-            record_mode=record_mode,
-        ):
-            errors: List[DataTestError] = validator.validate(tests)
-            yield errors
+    def validator_errors(self, validator, tests):
+        errors: List[DataTestError] = validator.validate(tests)
+        yield errors
 
     def test_results_have_correct_number_of_elements(self, validator_errors, tests):
         assert len(validator_errors) == 2
