@@ -850,7 +850,7 @@ class LookerClient:
         except requests.exceptions.HTTPError:
             raise LookerApiError(
                 name="unable-to-get-cached-lookml-validation",
-                title=f"Couldn't get cached LookML validation results in project {project}.",
+                title=f"Couldn't get cached LookML validation results in project '{project}'.",
                 status=response.status_code,
                 detail=(
                     "Failed to get cached LookML valiation results. Please try again."
