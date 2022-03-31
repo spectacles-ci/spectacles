@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/bash
 
 if grep -nriE "token .+|access_token" "$@"; then
     exit 1

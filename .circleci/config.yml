@@ -36,7 +36,7 @@ jobs:
 
       - run:
           name: Check for secrets in cassettes
-          command: scripts/detect_cassette_secrets tests/cassettes/**/*.yaml
+          command: scripts/detect_cassette_secrets.bash tests/cassettes/**/*.yaml
 
       - run:
           name: mypy
