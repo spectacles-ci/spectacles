@@ -7,7 +7,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=65590306
+      - looker.browser=29676601
     method: PATCH
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -21,19 +21,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 31 Mar 2022 13:58:17 GMT
+      - Fri, 01 Apr 2022 20:25:57 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 4371b7b3016ec855
+      - 4769fb70375964ee
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 4371b7b3016ec855
+      - 4769fb70375964ee
       X-B3-TraceId:
-      - 6245b379bcc8d4b74371b7b3016ec855
+      - 62475fd579e4d3fa4769fb70375964ee
       X-Content-Type-Options:
       - nosniff
     status:
@@ -47,12 +47,12 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=65590306
+      - looker.browser=29676601
     method: PUT
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
   response:
     body:
-      string: '{"name":"pytest-fail-lookml","remote":"origin","remote_name":"pytest-fail-lookml","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":1,"commit_at":1641461156,"ref":"7e33408a177f8c5f8bde99d9cfc79ca2b810b96b","remote_ref":"463f2e21ae52ba1f2713df5fa95349689ffd9dd4","can":{}}'
+      string: '{"name":"pytest-fail-lookml","remote":"origin","remote_name":"pytest-fail-lookml","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1648842609,"ref":"067426a7d80ca00cdd982b2373ae8757756ff799","remote_ref":"067426a7d80ca00cdd982b2373ae8757756ff799","can":{}}'
     headers:
       Connection:
       - keep-alive
@@ -61,20 +61,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 31 Mar 2022 13:58:18 GMT
+      - Fri, 01 Apr 2022 20:25:58 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 3cc56cfa21b6b368
+      - ead3692251ce45c7
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 3cc56cfa21b6b368
+      - ead3692251ce45c7
       X-B3-TraceId:
-      - 6245b379a5e265333cc56cfa21b6b368
+      - 62475fd59394fc2fead3692251ce45c7
       X-Content-Type-Options:
       - nosniff
     status:
@@ -84,53 +84,58 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=65590306
+      - looker.browser=29676601
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/validate
   response:
     body:
-      string: '{"errors":[{"code":null,"severity":"error","kind":"error","message":"Invalid
-        lookml syntax near line 44","field_name":null,"file_path":null,"line_number":44,"model_id":null,"explore":null,"help_url":"http://www.looker.com/kb/analyst/parse-error","params":{},"sanitized_message":null},{"code":null,"severity":"error","kind":"error","message":"Invalid
+      string: '{"errors":[{"code":null,"severity":"warning","kind":"error","message":"Using
+        \"use_aragonite\" in manifest.lkml without \"LookML New Runtime (Aragonite)\"
+        enabled is not supported. Param ignored.","field_name":null,"file_path":null,"line_number":null,"model_id":"eye_exam","explore":"users","help_url":null,"params":{"level":"warning","scope":"phase_zero","from_dictionary":true},"sanitized_message":"Using
+        \"use_aragonite\" in manifest.lkml without \"(?)\" enabled is not supported.
+        Param ignored."},{"code":null,"severity":"warning","kind":"error","message":"Using
+        \"use_aragonite\" in manifest.lkml without \"LookML New Runtime (Aragonite)\"
+        enabled is not supported. Param ignored.","field_name":null,"file_path":null,"line_number":null,"model_id":"eye_exam","explore":"users__fail","help_url":null,"params":{"level":"warning","scope":"phase_zero","from_dictionary":true},"sanitized_message":"Using
+        \"use_aragonite\" in manifest.lkml without \"(?)\" enabled is not supported.
+        Param ignored."},{"code":null,"severity":"warning","kind":"error","message":"Using
+        \"use_aragonite\" in manifest.lkml without \"LookML New Runtime (Aragonite)\"
+        enabled is not supported. Param ignored.","field_name":null,"file_path":null,"line_number":null,"model_id":"eye_exam","explore":"users__fail_and_warn","help_url":null,"params":{"level":"warning","scope":"phase_zero","from_dictionary":true},"sanitized_message":"Using
+        \"use_aragonite\" in manifest.lkml without \"(?)\" enabled is not supported.
+        Param ignored."},{"code":null,"severity":"warning","kind":"error","message":"Using
+        \"use_aragonite\" in manifest.lkml without \"LookML New Runtime (Aragonite)\"
+        enabled is not supported. Param ignored.","field_name":null,"file_path":null,"line_number":null,"model_id":"eye_exam","explore":"users__warn","help_url":null,"params":{"level":"warning","scope":"phase_zero","from_dictionary":true},"sanitized_message":"Using
+        \"use_aragonite\" in manifest.lkml without \"(?)\" enabled is not supported.
+        Param ignored."},{"code":null,"severity":"error","kind":"error","message":"Invalid
         property for \"test\": asser","field_name":null,"file_path":"eye_exam/eye_exam.model.lkml","line_number":13,"model_id":null,"explore":null,"help_url":null,"params":{"level":"error"},"sanitized_message":"Invalid
         property for \"test\": asser"},{"code":null,"severity":"error","kind":"error","message":"Could
         not find a field named \"users.age\"","field_name":null,"file_path":"eye_exam/eye_exam.model.lkml","line_number":10,"model_id":null,"explore":null,"help_url":null,"params":{"level":"error"},"sanitized_message":"Could
-        not find a field named \"users.age\""},{"code":null,"severity":"error","kind":"error","message":"Explore
-        name must match a view name, or the explore must provide a ''from:'' or ''view_name:''
-        property","field_name":null,"file_path":"eye_exam/eye_exam.model.lkml","line_number":38,"model_id":null,"explore":null,"help_url":null,"params":{"level":"error"},"sanitized_message":"Explore
-        name must match a view name, or the explore must provide a ''from:'' or ''view_name:''
-        property"},{"code":null,"severity":"error","kind":"error","message":"Could
-        not find a field named \"users__fail.age\"","field_name":null,"file_path":"eye_exam/eye_exam.model.lkml","line_number":43,"model_id":null,"explore":null,"help_url":null,"params":{"level":"error"},"sanitized_message":"Could
-        not find a field named \"users__fail.age\""},{"code":null,"severity":"error","kind":"error","message":"Could
-        not find a field named \"users__fail.first_name\"","field_name":null,"file_path":"eye_exam/eye_exam.model.lkml","line_number":57,"model_id":null,"explore":null,"help_url":null,"params":{"level":"error"},"sanitized_message":"Could
-        not find a field named \"users__fail.first_name\""},{"code":null,"severity":"error","kind":"error","message":"Could
-        not find a field named \"users__fail.last_name\"","field_name":null,"file_path":"eye_exam/eye_exam.model.lkml","line_number":60,"model_id":null,"explore":null,"help_url":null,"params":{"level":"error"},"sanitized_message":"Could
-        not find a field named \"users__fail.last_name\""},{"code":null,"severity":"error","kind":"error","message":"Could
-        not find a view named \"users__fail\" to extend, possible missing include
-        in view file.","field_name":null,"file_path":"eye_exam/views/users__fail_and_warn.view.lkml","line_number":4,"model_id":null,"explore":null,"help_url":null,"params":{"level":"error"},"sanitized_message":"Could
-        not find a view named \"users__fail\" to extend, possible missing include
-        in view file."}],"models_not_validated":[{"name":"eye_exam","project_file_id":"eye_exam.model.lkml"}],"computation_time":null,"stale":false,"project_digest":"b31ce55d0ab44b4a4cb34c9b35cc16ca0d21efbd"}'
+        not find a field named \"users.age\""},{"code":null,"severity":"warning","kind":"error","message":"Using
+        \"use_aragonite\" in manifest.lkml without \"LookML New Runtime (Aragonite)\"
+        enabled is not supported. Param ignored.","field_name":null,"file_path":null,"line_number":null,"model_id":null,"explore":null,"help_url":null,"params":{"level":"warning","scope":"phase_zero"},"sanitized_message":"Using
+        \"use_aragonite\" in manifest.lkml without \"(?)\" enabled is not supported.
+        Param ignored."}],"models_not_validated":[],"computation_time":null,"stale":false,"project_digest":"273c17de4cd2c421a149c4e1df4d0ba5ce29b47a"}'
     headers:
       Connection:
       - keep-alive
       Content-Length:
-      - '2990'
+      - '3209'
       Content-Type:
       - application/json
       Date:
-      - Thu, 31 Mar 2022 13:58:18 GMT
+      - Fri, 01 Apr 2022 20:25:58 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 7769cabbf72306cc
+      - 5ccb8351a35e5738
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 7769cabbf72306cc
+      - 5ccb8351a35e5738
       X-B3-TraceId:
-      - 6245b37a1999e1077769cabbf72306cc
+      - 62475fd6b1d7e8cf5ccb8351a35e5738
       X-Content-Type-Options:
       - nosniff
     status:

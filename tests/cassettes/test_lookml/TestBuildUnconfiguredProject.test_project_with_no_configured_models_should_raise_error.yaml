@@ -7,7 +7,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=59426826
+      - looker.browser=29676601
     method: PATCH
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -21,19 +21,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 28 Dec 2021 16:14:09 GMT
+      - Fri, 01 Apr 2022 20:26:32 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - e3aaf7e43d056313
+      - 74dca549695172f1
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - e3aaf7e43d056313
+      - 74dca549695172f1
       X-B3-TraceId:
-      - 61cb37d02246e075e3aaf7e43d056313
+      - 62475ff8e9204e9e74dca549695172f1
       X-Content-Type-Options:
       - nosniff
     status:
@@ -43,7 +43,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=59426826
+      - looker.browser=29676601
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/lookml_models?fields=name%2Cproject_name%2Cexplores
   response:
@@ -75,12 +75,14 @@ interactions:
         Application","name":"users","can":{}},{"description":null,"label":"Hightouch
         Reporting","hidden":false,"group_label":"Web Application","name":"hightouch__users","can":{}},{"description":null,"label":"Suites","hidden":false,"group_label":"Web
         Application","name":"suites","can":{}},{"description":null,"label":"Revenue
-        Reporting","hidden":false,"group_label":"Web Application","name":"revenue_reporting","can":{}}]},{"name":"web_application_gitlab","project_name":"spectacles-gitlab","explores":[{"description":null,"label":"Runs","hidden":true,"group_label":"Web
+        Reporting","hidden":false,"group_label":"Web Application","name":"revenue_reporting","can":{}},{"description":null,"label":"Projects","hidden":false,"group_label":"Web
+        Application","name":"dim_projects","can":{}}]},{"name":"web_application_gitlab","project_name":"spectacles-gitlab","explores":[{"description":null,"label":"Runs","hidden":true,"group_label":"Web
         Application Gitlab","name":"runs","can":{}},{"description":null,"label":"Organisations","hidden":true,"group_label":"Web
         Application Gitlab","name":"organisations","can":{}},{"description":null,"label":"Credentials","hidden":true,"group_label":"Web
         Application Gitlab","name":"credentials","can":{}}]},{"name":"open_source_gitlab","project_name":"spectacles-gitlab","explores":[{"description":null,"label":"Invocations
         - this is a change","hidden":true,"group_label":"Open Source","name":"fct_invocations","can":{}}]},{"name":"open_source","project_name":"spectacles","explores":[{"description":null,"label":"Invocations","hidden":false,"group_label":"Open
-        Source","name":"fct_invocations","can":{}}]},{"name":"open_source_azure","project_name":"spectacles_azure","explores":[{"description":null,"label":"Invocations","hidden":true,"group_label":"Open
+        Source","name":"fct_invocations","can":{}},{"description":null,"label":"Recent
+        Invocations (Last 2 Weeks)","hidden":false,"group_label":"Open Source","name":"recent_invocations","can":{}}]},{"name":"open_source_azure","project_name":"spectacles_azure","explores":[{"description":null,"label":"Invocations","hidden":true,"group_label":"Open
         Source","name":"fct_invocations","can":{}}]},{"name":"web_application_azure","project_name":"spectacles_azure","explores":[{"description":null,"label":"Runs","hidden":true,"group_label":"Web
         Application Azure","name":"runs","can":{}},{"description":null,"label":"Organisations","hidden":true,"group_label":"Web
         Application Azure","name":"organisations","can":{}},{"description":null,"label":"Credentials","hidden":true,"group_label":"Web
@@ -96,29 +98,49 @@ interactions:
         - Import Advanced Deploy","hidden":true,"group_label":"Models","name":"dim_organisations","can":{}}]},{"name":"extension-api-explorer","project_name":"marketplace_extension_api_explorer","explores":[]},{"name":"data-dictionary","project_name":"marketplace_extension_data_dictionary","explores":[]},{"name":"spectacles_strava","project_name":"spectacles_strava","explores":[{"description":null,"label":"Raw
         Activities","hidden":false,"group_label":"Spectacles Strava","name":"raw_activities","can":{}},{"description":null,"label":"Stg
         Activities","hidden":false,"group_label":"Spectacles Strava","name":"stg_activities","can":{}},{"description":null,"label":"Activity
-        Types","hidden":false,"group_label":"Spectacles Strava","name":"activity_types","can":{}}]}]'
+        Types","hidden":false,"group_label":"Spectacles Strava","name":"activity_types","can":{}}]},{"name":"spectacles_maps","project_name":"spectacles_maps","explores":[{"description":null,"label":"Fivetran
+        Audit","hidden":false,"group_label":"Spectacles Maps","name":"fivetran_audit","can":{}},{"description":null,"label":"Rpt
+        Property Irr","hidden":false,"group_label":"Spectacles Maps","name":"rpt_property_irr","can":{}},{"description":null,"label":"Raw
+        Rpi Housing Index","hidden":false,"group_label":"Spectacles Maps","name":"raw_rpi_housing_index","can":{}},{"description":null,"label":"Raw
+        Rpi Housing Percent","hidden":false,"group_label":"Spectacles Maps","name":"raw_rpi_housing_percent","can":{}},{"description":null,"label":"Raw
+        House Sales","hidden":false,"group_label":"Spectacles Maps","name":"raw_house_sales","can":{}},{"description":null,"label":"Raw
+        Uk Postcodes","hidden":false,"group_label":"Spectacles Maps","name":"raw_uk_postcodes","can":{}},{"description":null,"label":"Raw
+        Cpih","hidden":false,"group_label":"Spectacles Maps","name":"raw_cpih","can":{}}]},{"name":"rpt_property_irr","project_name":"spectacles_maps","explores":[]},{"name":"thelook_partner","project_name":"looker_partner_demo","explores":[{"description":null,"label":"Cohort
+        Data Tool","hidden":true,"group_label":" eCommerce","name":"cohorts","can":{}},{"description":null,"label":"Web
+        Analytics Data Tool","hidden":true,"group_label":" eCommerce","name":"data_tool","can":{}},{"description":null,"label":"(1)
+        Orders, Items and Users","hidden":false,"group_label":" eCommerce","name":"order_items","can":{}},{"description":null,"label":"(2)
+        Web Event Data","hidden":false,"group_label":" eCommerce","name":"events","can":{}},{"description":null,"label":"(3)
+        Web Session Data","hidden":false,"group_label":" eCommerce","name":"sessions","can":{}},{"description":null,"label":"(4)
+        Affinity Analysis","hidden":false,"group_label":" eCommerce","name":"affinity","can":{}},{"description":null,"label":"(5)
+        Share of Wallet Analysis","hidden":false,"group_label":" eCommerce","name":"orders_with_share_of_wallet_application","can":{}},{"description":null,"label":"(6)
+        Customer Journey Mapping","hidden":false,"group_label":" eCommerce","name":"journey_mapping","can":{}},{"description":null,"label":"(7)
+        Historical Stock Snapshot Analysis","hidden":false,"group_label":" eCommerce","name":"inventory_snapshot","can":{}},{"description":null,"label":"Order
+        Items (Kittens)","hidden":true,"group_label":" eCommerce","name":"kitten_order_items","can":{}},{"description":null,"label":"E-Comm
+        Cohort Analysis Training","hidden":false,"group_label":" eCommerce","name":"ecomm_training_info","can":{}},{"description":null,"label":"Kmeans
+        Model5","hidden":false,"group_label":" eCommerce","name":"kmeans_model5","can":{}},{"description":null,"label":"(8)
+        Cohort Analysis","hidden":false,"group_label":" eCommerce","name":"ecomm_predict","can":{}}]},{"name":"square","project_name":"square_demo","explores":[{"description":null,"label":"Payments","hidden":false,"group_label":"Square","name":"payments","can":{}},{"description":null,"label":"Sellers","hidden":false,"group_label":"Square","name":"sellers","can":{}}]}]'
     headers:
       Connection:
       - keep-alive
       Content-Length:
-      - '7163'
+      - '10524'
       Content-Type:
       - application/json
       Date:
-      - Tue, 28 Dec 2021 16:14:09 GMT
+      - Fri, 01 Apr 2022 20:26:32 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 937cab6def98c688
+      - 5f20eedb9bfdb42d
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 937cab6def98c688
+      - 5f20eedb9bfdb42d
       X-B3-TraceId:
-      - 61cb37d170b019b0937cab6def98c688
+      - 62475ff836744b7f5f20eedb9bfdb42d
       X-Content-Type-Options:
       - nosniff
     status:
