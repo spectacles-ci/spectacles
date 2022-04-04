@@ -12,7 +12,7 @@ from utils import build_validation
 @pytest.mark.parametrize("fail_fast", [True, False])
 @patch("spectacles.runner.time_hash", side_effect=tuple(string.ascii_lowercase))
 def test_validate_sql_should_work(mock_time_hash, looker_client, fail_fast):
-    runner = Runner(looker_client, "eye_exam")
+    runner = Runner(looker_client, "eye_exam", remote_reset=True)
     result = runner.validate_sql(
         ref="pytest",
         filters=["eye_exam/users", "eye_exam/users__fail"],
@@ -156,7 +156,7 @@ def test_incremental_sql_with_equal_explores_should_not_error(
 
     We expect all explores to be skipped, returning no errors.
     """
-    runner = Runner(looker_client, "eye_exam")
+    runner = Runner(looker_client, "eye_exam", remote_reset=True)
     result = runner.validate_sql(
         incremental=True,
         ref="pytest-incremental-equal",
@@ -176,7 +176,7 @@ def test_incremental_sql_with_diff_explores_and_valid_sql_should_not_error(
 
     We expect the differing explore to be tested and return no errors.
     """
-    runner = Runner(looker_client, "eye_exam")
+    runner = Runner(looker_client, "eye_exam", remote_reset=True)
     result = runner.validate_sql(
         incremental=True,
         ref="pytest-incremental-valid-diff",
@@ -200,7 +200,7 @@ def test_incremental_sql_with_diff_explores_and_invalid_sql_should_error(
 
     We expect the differing explore to be tested and return one error.
     """
-    runner = Runner(looker_client, "eye_exam")
+    runner = Runner(looker_client, "eye_exam", remote_reset=True)
     result = runner.validate_sql(
         incremental=True,
         ref="pytest-incremental-invalid-diff",
@@ -225,7 +225,7 @@ def test_incremental_sql_with_diff_explores_and_invalid_diff_sql_should_error(
 
     We expect the differing explore to be tested and return one error.
     """
-    runner = Runner(looker_client, "eye_exam")
+    runner = Runner(looker_client, "eye_exam", remote_reset=True)
     result = runner.validate_sql(
         incremental=True,
         ref="pytest-incremental-invalid-equal",
@@ -251,7 +251,7 @@ def test_incremental_sql_with_diff_explores_and_invalid_existing_sql_should_erro
     We expect the differing explore to be tested and return no errors, since the
     remaining errors already exist for the target.
     """
-    runner = Runner(looker_client, "eye_exam")
+    runner = Runner(looker_client, "eye_exam", remote_reset=True)
     result = runner.validate_sql(
         incremental=True,
         target="pytest-incremental-dirty-prod",
