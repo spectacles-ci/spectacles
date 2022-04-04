@@ -814,7 +814,11 @@ def run_assert(
 
     errors = sorted(
         results["errors"],
-        key=lambda x: (x["model"], x["explore"], x["metadata"]["test_name"]),
+        key=lambda x: (
+            x["model"] or "",
+            x["explore"] or "",
+            x["metadata"]["test_name"] or "",
+        ),
     )
     if errors:
         for error in errors:

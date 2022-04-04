@@ -79,9 +79,19 @@ def print_content_error(
 
 
 def print_data_test_error(
-    model: str, explore: str, test_name: str, message: str, lookml_url: str
+    model: Optional[str],
+    explore: Optional[str],
+    test_name: Optional[str],
+    message: str,
+    lookml_url: str,
 ) -> None:
-    path = f"{model}/{explore}/{test_name}"
+    path = "/".join(filter(None, (model, explore, test_name)))
+
+    if not path:
+        raise ValueError(
+            "Can't construct path. model, explore, and test_name are all None"
+        )
+
     print_header(red(path), LINE_WIDTH + COLOR_CODE_LENGTH)
     wrapped = textwrap.fill(message, LINE_WIDTH)
     logger.info(wrapped)
