@@ -7,7 +7,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=65590306
+      - looker.browser=29676601
     method: PATCH
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -21,19 +21,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 31 Mar 2022 13:58:18 GMT
+      - Fri, 01 Apr 2022 20:25:57 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 953acf8eb92a42b2
+      - 92c2dc874305fd13
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 953acf8eb92a42b2
+      - 92c2dc874305fd13
       X-B3-TraceId:
-      - 6245b37af078c0d7953acf8eb92a42b2
+      - 62475fd595f52fbf92c2dc874305fd13
       X-Content-Type-Options:
       - nosniff
     status:
@@ -43,12 +43,12 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=65590306
+      - looker.browser=29676601
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/validate
   response:
     body:
-      string: '{"errors":[],"models_not_validated":[],"computation_time":null,"stale":false,"project_digest":"2d12d8b37ef1c4aa1b20bb0d13c895eeeef7f064"}'
+      string: '{"errors":[],"models_not_validated":[],"computation_time":null,"stale":false,"project_digest":"821c1bb5e893d2957d15e2b0781124fd29742bd6"}'
     headers:
       Connection:
       - keep-alive
@@ -57,19 +57,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 31 Mar 2022 13:58:18 GMT
+      - Fri, 01 Apr 2022 20:25:57 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 58b35b3e1f5cabba
+      - f6f1e8c5d50f7832
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 58b35b3e1f5cabba
+      - f6f1e8c5d50f7832
       X-B3-TraceId:
-      - 6245b37a9ca46cf658b35b3e1f5cabba
+      - 62475fd5b5735dfff6f1e8c5d50f7832
       X-Content-Type-Options:
       - nosniff
     status:

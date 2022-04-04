@@ -7,7 +7,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=9851
+      - looker.browser=48118604
     method: PATCH
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -21,19 +21,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Mon, 12 Apr 2021 22:27:46 GMT
-      Server:
-      - nginx
+      - Mon, 04 Apr 2022 15:04:06 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - b810be07ec30e730
+      - 3c4d98480570c087
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - b810be07ec30e730
+      - 3c4d98480570c087
       X-B3-TraceId:
-      - 6074c962b6dcba91b810be07ec30e730
+      - 624b08e5df1d55503c4d98480570c087
       X-Content-Type-Options:
       - nosniff
     status:
@@ -47,12 +47,12 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=9851
+      - looker.browser=48118604
     method: PUT
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
   response:
     body:
-      string: '{"name":"pytest","remote":"origin","remote_name":"pytest","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1616610837,"ref":"853ff9f77a5c96bf36ec709ea34c1aa0bf0803ea","remote_ref":"853ff9f77a5c96bf36ec709ea34c1aa0bf0803ea","can":{}}'
+      string: '{"name":"pytest","remote":"origin","remote_name":"pytest","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1648832027,"ref":"742b118d314d2478a215aa02016c09e173deec7e","remote_ref":"742b118d314d2478a215aa02016c09e173deec7e","can":{}}'
     headers:
       Connection:
       - keep-alive
@@ -61,19 +61,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Mon, 12 Apr 2021 22:27:46 GMT
-      Server:
-      - nginx
+      - Mon, 04 Apr 2022 15:04:06 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
       Vary:
+      - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 93c086b069d7bda0
+      - d7872263c8b08982
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 93c086b069d7bda0
+      - d7872263c8b08982
       X-B3-TraceId:
-      - 6074c962098e03fb93c086b069d7bda0
+      - 624b08e6098f9536d7872263c8b08982
       X-Content-Type-Options:
       - nosniff
     status:
@@ -83,7 +84,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=9851
+      - looker.browser=48118604
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -97,19 +98,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Mon, 12 Apr 2021 22:27:46 GMT
-      Server:
-      - nginx
+      - Mon, 04 Apr 2022 15:04:06 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 64e0e1a9b04b924a
+      - 85f89700b37b8a3d
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 64e0e1a9b04b924a
+      - 85f89700b37b8a3d
       X-B3-TraceId:
-      - 6074c9625ed1577e64e0e1a9b04b924a
+      - 624b08e6d794de7885f89700b37b8a3d
       X-Content-Type-Options:
       - nosniff
     status:
@@ -119,12 +120,12 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=9851
+      - looker.browser=48118604
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
   response:
     body:
-      string: '{"name":"pytest","remote":"origin","remote_name":"pytest","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1616610837,"ref":"853ff9f77a5c96bf36ec709ea34c1aa0bf0803ea","remote_ref":"853ff9f77a5c96bf36ec709ea34c1aa0bf0803ea","can":{}}'
+      string: '{"name":"pytest","remote":"origin","remote_name":"pytest","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1648832027,"ref":"742b118d314d2478a215aa02016c09e173deec7e","remote_ref":"742b118d314d2478a215aa02016c09e173deec7e","can":{}}'
     headers:
       Connection:
       - keep-alive
@@ -133,19 +134,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Mon, 12 Apr 2021 22:27:46 GMT
-      Server:
-      - nginx
+      - Mon, 04 Apr 2022 15:04:06 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
       Vary:
+      - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 12d5b25c9558be8d
+      - 3a0b4fefc81276b6
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 12d5b25c9558be8d
+      - 3a0b4fefc81276b6
       X-B3-TraceId:
-      - 6074c9626f79fd6112d5b25c9558be8d
+      - 624b08e6a81d60bc3a0b4fefc81276b6
       X-Content-Type-Options:
       - nosniff
     status:
@@ -155,7 +157,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=9851
+      - looker.browser=48118604
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -169,19 +171,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Mon, 12 Apr 2021 22:27:47 GMT
-      Server:
-      - nginx
+      - Mon, 04 Apr 2022 15:04:06 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 8e962236aa420758
+      - b935ea932c1ded52
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 8e962236aa420758
+      - b935ea932c1ded52
       X-B3-TraceId:
-      - 6074c963ad60f1dd8e962236aa420758
+      - 624b08e6c17e1ba7b935ea932c1ded52
       X-Content-Type-Options:
       - nosniff
     status:
@@ -191,12 +193,12 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=9851
+      - looker.browser=48118604
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
   response:
     body:
-      string: '{"name":"pytest","remote":"origin","remote_name":"pytest","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1616610837,"ref":"853ff9f77a5c96bf36ec709ea34c1aa0bf0803ea","remote_ref":"853ff9f77a5c96bf36ec709ea34c1aa0bf0803ea","can":{}}'
+      string: '{"name":"pytest","remote":"origin","remote_name":"pytest","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1648832027,"ref":"742b118d314d2478a215aa02016c09e173deec7e","remote_ref":"742b118d314d2478a215aa02016c09e173deec7e","can":{}}'
     headers:
       Connection:
       - keep-alive
@@ -205,19 +207,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Mon, 12 Apr 2021 22:27:47 GMT
-      Server:
-      - nginx
+      - Mon, 04 Apr 2022 15:04:06 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
       Vary:
+      - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 0ae09f17b9122b52
+      - acd44ac46ce1f05d
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 0ae09f17b9122b52
+      - acd44ac46ce1f05d
       X-B3-TraceId:
-      - 6074c963802468a60ae09f17b9122b52
+      - 624b08e67aa016e5acd44ac46ce1f05d
       X-Content-Type-Options:
       - nosniff
     status:
@@ -231,12 +234,12 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=9851
+      - looker.browser=48118604
     method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
   response:
     body:
-      string: '{"name":"tmp_spectacles_abc123","remote":"origin","remote_name":"tmp_spectacles_abc123","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":false,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1616610837,"ref":"853ff9f77a5c96bf36ec709ea34c1aa0bf0803ea","remote_ref":null,"can":{}}'
+      string: '{"name":"tmp_spectacles_abc123","remote":"origin","remote_name":"tmp_spectacles_abc123","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":false,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1648832027,"ref":"742b118d314d2478a215aa02016c09e173deec7e","remote_ref":null,"can":{}}'
     headers:
       Connection:
       - keep-alive
@@ -245,19 +248,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Mon, 12 Apr 2021 22:27:47 GMT
-      Server:
-      - nginx
+      - Mon, 04 Apr 2022 15:04:07 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
       Vary:
+      - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 3253163e68762bce
+      - f4a8fc6953c53727
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 3253163e68762bce
+      - f4a8fc6953c53727
       X-B3-TraceId:
-      - 6074c96331f2709a3253163e68762bce
+      - 624b08e68178cc9af4a8fc6953c53727
       X-Content-Type-Options:
       - nosniff
     status:
@@ -271,12 +275,12 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=9851
+      - looker.browser=48118604
     method: PUT
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
   response:
     body:
-      string: '{"name":"tmp_spectacles_abc123","remote":"origin","remote_name":"tmp_spectacles_abc123","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":false,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1616610837,"ref":"853ff9f77a5c96bf36ec709ea34c1aa0bf0803ea","remote_ref":null,"can":{}}'
+      string: '{"name":"tmp_spectacles_abc123","remote":"origin","remote_name":"tmp_spectacles_abc123","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":false,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1648832027,"ref":"742b118d314d2478a215aa02016c09e173deec7e","remote_ref":null,"can":{}}'
     headers:
       Connection:
       - keep-alive
@@ -285,19 +289,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Mon, 12 Apr 2021 22:27:49 GMT
-      Server:
-      - nginx
+      - Mon, 04 Apr 2022 15:04:09 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
       Vary:
+      - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 6120045992dbaeb5
+      - a8997cae1ab5e71d
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 6120045992dbaeb5
+      - a8997cae1ab5e71d
       X-B3-TraceId:
-      - 6074c963e92a63ec6120045992dbaeb5
+      - 624b08e7ac7e4e64a8997cae1ab5e71d
       X-Content-Type-Options:
       - nosniff
     status:
@@ -307,7 +312,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=9851
+      - looker.browser=48118604
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
   response:
@@ -321,19 +326,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Mon, 12 Apr 2021 22:27:49 GMT
-      Server:
-      - nginx
+      - Mon, 04 Apr 2022 15:04:09 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
       Vary:
+      - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - cdcb81909fe1dc0c
+      - 6fdf8b4308752bb8
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - cdcb81909fe1dc0c
+      - 6fdf8b4308752bb8
       X-B3-TraceId:
-      - 6074c965706403fccdcb81909fe1dc0c
+      - 624b08e95d86c8b46fdf8b4308752bb8
       X-Content-Type-Options:
       - nosniff
     status:
@@ -347,12 +353,12 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=9851
+      - looker.browser=48118604
     method: PUT
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
   response:
     body:
-      string: '{"name":"pytest","remote":"origin","remote_name":"pytest","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1616610837,"ref":"853ff9f77a5c96bf36ec709ea34c1aa0bf0803ea","remote_ref":"853ff9f77a5c96bf36ec709ea34c1aa0bf0803ea","can":{}}'
+      string: '{"name":"pytest","remote":"origin","remote_name":"pytest","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1648832027,"ref":"742b118d314d2478a215aa02016c09e173deec7e","remote_ref":"742b118d314d2478a215aa02016c09e173deec7e","can":{}}'
     headers:
       Connection:
       - keep-alive
@@ -361,19 +367,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Mon, 12 Apr 2021 22:27:50 GMT
-      Server:
-      - nginx
+      - Mon, 04 Apr 2022 15:04:10 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
       Vary:
+      - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - d7dbb974df87a42a
+      - 66cbee509ff2b7d2
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - d7dbb974df87a42a
+      - 66cbee509ff2b7d2
       X-B3-TraceId:
-      - 6074c9651438bb74d7dbb974df87a42a
+      - 624b08e9310bc23d66cbee509ff2b7d2
       X-Content-Type-Options:
       - nosniff
     status:
@@ -385,7 +392,7 @@ interactions:
       Content-Length:
       - '0'
       Cookie:
-      - looker.browser=9851
+      - looker.browser=48118604
     method: DELETE
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch/tmp_spectacles_abc123
   response:
@@ -395,19 +402,19 @@ interactions:
       Connection:
       - keep-alive
       Date:
-      - Mon, 12 Apr 2021 22:27:51 GMT
-      Server:
-      - nginx
+      - Mon, 04 Apr 2022 15:04:11 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
       Vary:
       - Origin
       X-B3-ParentSpanId:
-      - fd9b435c39db1324
+      - 6e4eb018ce169424
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - fd9b435c39db1324
+      - 6e4eb018ce169424
       X-B3-TraceId:
-      - 6074c9667d886f3cfd9b435c39db1324
+      - 624b08ea3a7a5f536e4eb018ce169424
       X-Content-Type-Options:
       - nosniff
     status:
@@ -421,12 +428,12 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=9851
+      - looker.browser=48118604
     method: PUT
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
   response:
     body:
-      string: '{"name":"pytest","remote":"origin","remote_name":"pytest","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1616610837,"ref":"853ff9f77a5c96bf36ec709ea34c1aa0bf0803ea","remote_ref":"853ff9f77a5c96bf36ec709ea34c1aa0bf0803ea","can":{}}'
+      string: '{"name":"pytest","remote":"origin","remote_name":"pytest","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1648832027,"ref":"742b118d314d2478a215aa02016c09e173deec7e","remote_ref":"742b118d314d2478a215aa02016c09e173deec7e","can":{}}'
     headers:
       Connection:
       - keep-alive
@@ -435,92 +442,94 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Mon, 12 Apr 2021 22:27:52 GMT
-      Server:
-      - nginx
-      Vary:
-      - Accept-Encoding, Origin
-      X-B3-ParentSpanId:
-      - b4282d1a225177e6
-      X-B3-Sampled:
-      - '0'
-      X-B3-SpanId:
-      - b4282d1a225177e6
-      X-B3-TraceId:
-      - 6074c9674a516266b4282d1a225177e6
-      X-Content-Type-Options:
-      - nosniff
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Cookie:
-      - looker.browser=9851
-    method: GET
-    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
-  response:
-    body:
-      string: '{"name":"pytest","remote":"origin","remote_name":"pytest","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1616610837,"ref":"853ff9f77a5c96bf36ec709ea34c1aa0bf0803ea","remote_ref":"853ff9f77a5c96bf36ec709ea34c1aa0bf0803ea","can":{}}'
-    headers:
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '363'
-      Content-Type:
-      - application/json
-      Date:
-      - Mon, 12 Apr 2021 22:27:52 GMT
-      Server:
-      - nginx
-      Vary:
-      - Accept-Encoding, Origin
-      X-B3-ParentSpanId:
-      - 75f3630625d314bb
-      X-B3-Sampled:
-      - '0'
-      X-B3-SpanId:
-      - 75f3630625d314bb
-      X-B3-TraceId:
-      - 6074c968b7f8da9575f3630625d314bb
-      X-Content-Type-Options:
-      - nosniff
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Cookie:
-      - looker.browser=9851
-    method: GET
-    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branches
-  response:
-    body:
-      string: "[{\"name\":\"casper-demo\",\"remote\":\"origin\",\"remote_name\":\"casper-demo\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":true,\"is_remote\":true,\"is_production\":false,\"ahead_count\":0,\"behind_count\":0,\"commit_at\":1591897826,\"ref\":\"75f44757dfa80e1f29b1822ffe3206de6297a727\",\"remote_ref\":\"75f44757dfa80e1f29b1822ffe3206de6297a727\",\"can\":{}},{\"name\":\"dev-josh-temple-8m75\",\"remote\":\"origin\",\"remote_name\":\"dev-josh-temple-8m75\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":true,\"is_local\":true,\"is_remote\":true,\"is_production\":false,\"ahead_count\":0,\"behind_count\":0,\"commit_at\":1616598600,\"ref\":\"afc95bfacdc11e6f26344a988d16dd6a72883d64\",\"remote_ref\":\"afc95bfacdc11e6f26344a988d16dd6a72883d64\",\"can\":{}},{\"name\":\"feature/vcr\",\"remote\":\"origin\",\"remote_name\":\"feature/vcr\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":true,\"is_remote\":true,\"is_production\":false,\"ahead_count\":0,\"behind_count\":0,\"commit_at\":1588340597,\"ref\":\"176721285e47e0adac1b3ff55a26ca0346d5bfc7\",\"remote_ref\":\"176721285e47e0adac1b3ff55a26ca0346d5bfc7\",\"can\":{}},{\"name\":\"izzy-demo\",\"remote\":\"origin\",\"remote_name\":\"izzy-demo\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":true,\"is_remote\":true,\"is_production\":false,\"ahead_count\":0,\"behind_count\":0,\"commit_at\":1591301083,\"ref\":\"7cb2d2cb8cad16a776fb6a3eecc128992728d85e\",\"remote_ref\":\"7cb2d2cb8cad16a776fb6a3eecc128992728d85e\",\"can\":{}},{\"name\":\"joshtemple-patch-3\",\"remote\":\"origin\",\"remote_name\":\"joshtemple-patch-3\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":true,\"is_remote\":true,\"is_production\":false,\"ahead_count\":0,\"behind_count\":0,\"commit_at\":1594771418,\"ref\":\"dbd2bdb734d5405ad9f4eb529ea94c3a1f0438f8\",\"remote_ref\":\"dbd2bdb734d5405ad9f4eb529ea94c3a1f0438f8\",\"can\":{}},{\"name\":\"looker-demo\",\"remote\":\"origin\",\"remote_name\":\"looker-demo\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":true,\"is_remote\":true,\"is_production\":false,\"ahead_count\":0,\"behind_count\":0,\"commit_at\":1596211612,\"ref\":\"37c3e402c8618ed8a07f0c1210cad7b2b0564d7a\",\"remote_ref\":\"37c3e402c8618ed8a07f0c1210cad7b2b0564d7a\",\"can\":{}},{\"name\":\"master\",\"remote\":\"origin\",\"remote_name\":\"master\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":true,\"personal\":false,\"is_local\":true,\"is_remote\":true,\"is_production\":true,\"ahead_count\":0,\"behind_count\":55,\"commit_at\":1616610858,\"ref\":\"0c2356e8a4f51bc1175c65fcbed1bad51ba8a864\",\"remote_ref\":\"e65f46cd514f9742c95458a7ef66400baefdf37f\",\"can\":{}},{\"name\":\"pytest\",\"remote\":\"origin\",\"remote_name\":\"pytest\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":true,\"is_remote\":true,\"is_production\":false,\"ahead_count\":0,\"behind_count\":0,\"commit_at\":1616610837,\"ref\":\"853ff9f77a5c96bf36ec709ea34c1aa0bf0803ea\",\"remote_ref\":\"853ff9f77a5c96bf36ec709ea34c1aa0bf0803ea\",\"can\":{}},{\"name\":\"pytest-additional\",\"remote\":\"origin\",\"remote_name\":\"pytest-additional\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":true,\"is_remote\":false,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1592667063,\"ref\":\"e2b75a3d5a146302c9847dfd14fc6fbb0ee68a87\",\"remote_ref\":null,\"can\":{}},{\"name\":\"pytest-branches\",\"remote\":\"origin\",\"remote_name\":\"pytest-branches\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":true,\"is_remote\":false,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1615585634,\"ref\":\"203fc61835574adb7edb81ffdbdf02efd72bd73b\",\"remote_ref\":null,\"can\":{}},{\"name\":\"pytest-tmp\",\"remote\":\"origin\",\"remote_name\":\"pytest-tmp\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":true,\"is_remote\":false,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1616598611,\"ref\":\"7fc8bc61690279420969e24d5d89199c4a683334\",\"remote_ref\":null,\"can\":{}},{\"name\":\"tmp-josh-temple\",\"remote\":\"origin\",\"remote_name\":\"tmp-josh-temple\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":true,\"is_remote\":true,\"is_production\":false,\"ahead_count\":0,\"behind_count\":0,\"commit_at\":1616599770,\"ref\":\"66e8a5eb2a5e324329c5be39fa7b265587e5dc0d\",\"remote_ref\":\"66e8a5eb2a5e324329c5be39fa7b265587e5dc0d\",\"can\":{}},{\"name\":\"tmp-pytest\",\"remote\":\"origin\",\"remote_name\":\"tmp-pytest\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":true,\"is_remote\":true,\"is_production\":false,\"ahead_count\":0,\"behind_count\":0,\"commit_at\":1592667116,\"ref\":\"e00ca1bdf104a73159b01485426c6ce2b84c1183\",\"remote_ref\":\"e00ca1bdf104a73159b01485426c6ce2b84c1183\",\"can\":{}},{\"name\":\"tmp_spectacles_0780853b22\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_0780853b22\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":true,\"is_remote\":false,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1592667116,\"ref\":\"e00ca1bdf104a73159b01485426c6ce2b84c1183\",\"remote_ref\":null,\"can\":{}},{\"name\":\"tmp_spectacles_1f3c2a9187\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_1f3c2a9187\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":true,\"is_remote\":true,\"is_production\":false,\"ahead_count\":0,\"behind_count\":0,\"commit_at\":1599696519,\"ref\":\"c2c2c154913bdf55e350c326146c2833a048c4ab\",\"remote_ref\":\"c2c2c154913bdf55e350c326146c2833a048c4ab\",\"can\":{}},{\"name\":\"tmp_spectacles_41e3e89cca\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_41e3e89cca\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":true,\"is_remote\":false,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1590101388,\"ref\":\"a3c2c616ab9e13ebadcb2dc8de0f5b86a3151644\",\"remote_ref\":null,\"can\":{}},{\"name\":\"tmp_spectacles_4a3cd18dd0\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_4a3cd18dd0\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":true,\"is_remote\":false,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1601372088,\"ref\":\"2a59af476b124cb7249fff07add7c7222dc66986\",\"remote_ref\":null,\"can\":{}},{\"name\":\"tmp_spectacles_4cce917331\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_4cce917331\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":true,\"is_remote\":true,\"is_production\":false,\"ahead_count\":0,\"behind_count\":0,\"commit_at\":1599720938,\"ref\":\"885170c84b27ecd96989a3f2f9cbda2e242425de\",\"remote_ref\":\"885170c84b27ecd96989a3f2f9cbda2e242425de\",\"can\":{}},{\"name\":\"tmp_spectacles_4f670d9756\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_4f670d9756\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":true,\"is_remote\":false,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1589480855,\"ref\":\"09493e3834e5c0bf65fc0916182d9ed9850ed554\",\"remote_ref\":null,\"can\":{}},{\"name\":\"tmp_spectacles_5804b51dcd\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_5804b51dcd\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":true,\"is_remote\":true,\"is_production\":false,\"ahead_count\":0,\"behind_count\":0,\"commit_at\":1599696519,\"ref\":\"c2c2c154913bdf55e350c326146c2833a048c4ab\",\"remote_ref\":\"c2c2c154913bdf55e350c326146c2833a048c4ab\",\"can\":{}},{\"name\":\"tmp_spectacles_6211e6283c\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_6211e6283c\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":true,\"is_remote\":true,\"is_production\":false,\"ahead_count\":0,\"behind_count\":0,\"commit_at\":1599719822,\"ref\":\"25ac39aa6a802537bcb3bcb662b816b2c2f3477d\",\"remote_ref\":\"25ac39aa6a802537bcb3bcb662b816b2c2f3477d\",\"can\":{}},{\"name\":\"tmp_spectacles_6509e14925\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_6509e14925\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":true,\"is_remote\":true,\"is_production\":false,\"ahead_count\":0,\"behind_count\":0,\"commit_at\":1599719822,\"ref\":\"25ac39aa6a802537bcb3bcb662b816b2c2f3477d\",\"remote_ref\":\"25ac39aa6a802537bcb3bcb662b816b2c2f3477d\",\"can\":{}},{\"name\":\"tmp_spectacles_67033ff5b3\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_67033ff5b3\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":true,\"is_remote\":false,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1590101265,\"ref\":\"101cdea2d43f642aba61a7bd0cd7bfa0d850eff7\",\"remote_ref\":null,\"can\":{}},{\"name\":\"tmp_spectacles_879a47a61a\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_879a47a61a\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":true,\"is_remote\":true,\"is_production\":false,\"ahead_count\":0,\"behind_count\":0,\"commit_at\":1599697406,\"ref\":\"93588750f927a53c2b3f79e3d7dca0edfec05e9c\",\"remote_ref\":\"93588750f927a53c2b3f79e3d7dca0edfec05e9c\",\"can\":{}},{\"name\":\"tmp_spectacles_8cb99200a8\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_8cb99200a8\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":true,\"is_remote\":false,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1592667116,\"ref\":\"e00ca1bdf104a73159b01485426c6ce2b84c1183\",\"remote_ref\":null,\"can\":{}},{\"name\":\"tmp_spectacles_9b28b80f65\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_9b28b80f65\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":true,\"is_remote\":true,\"is_production\":false,\"ahead_count\":0,\"behind_count\":0,\"commit_at\":1601367978,\"ref\":\"9cfe814067c9ce1df885c1eacfc409885c4a49ac\",\"remote_ref\":\"9cfe814067c9ce1df885c1eacfc409885c4a49ac\",\"can\":{}},{\"name\":\"tmp_spectacles_aa9f33a5cd\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_aa9f33a5cd\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":true,\"is_remote\":true,\"is_production\":false,\"ahead_count\":0,\"behind_count\":0,\"commit_at\":1601374369,\"ref\":\"5fef827bf83bcef9db8d5038b08ec5f3b0e18eed\",\"remote_ref\":\"5fef827bf83bcef9db8d5038b08ec5f3b0e18eed\",\"can\":{}},{\"name\":\"tmp_spectacles_aaae3cf897\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_aaae3cf897\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":true,\"is_remote\":true,\"is_production\":false,\"ahead_count\":0,\"behind_count\":0,\"commit_at\":1599720938,\"ref\":\"885170c84b27ecd96989a3f2f9cbda2e242425de\",\"remote_ref\":\"885170c84b27ecd96989a3f2f9cbda2e242425de\",\"can\":{}},{\"name\":\"tmp_spectacles_d6a28e6a07\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_d6a28e6a07\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":true,\"is_remote\":true,\"is_production\":false,\"ahead_count\":0,\"behind_count\":0,\"commit_at\":1600160406,\"ref\":\"03c1fc90e479797ff2b4c567865c1539fc087250\",\"remote_ref\":\"03c1fc90e479797ff2b4c567865c1539fc087250\",\"can\":{}},{\"name\":\"tmp_spectacles_ed760e77cd\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_ed760e77cd\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":true,\"is_remote\":true,\"is_production\":false,\"ahead_count\":0,\"behind_count\":0,\"commit_at\":1599719822,\"ref\":\"25ac39aa6a802537bcb3bcb662b816b2c2f3477d\",\"remote_ref\":\"25ac39aa6a802537bcb3bcb662b816b2c2f3477d\",\"can\":{}},{\"name\":\"DylanBaker-patch-1\",\"remote\":\"origin\",\"remote_name\":\"DylanBaker-patch-1\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1600176326,\"ref\":null,\"remote_ref\":\"182bc6f9d9e83175b26426d726a3fa078b6f79db\",\"can\":{}},{\"name\":\"DylanBaker-patch-2\",\"remote\":\"origin\",\"remote_name\":\"DylanBaker-patch-2\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1600179988,\"ref\":null,\"remote_ref\":\"a5e4e8c2c8ab5238815bb09d197f83801aead9ee\",\"can\":{}},{\"name\":\"TEST\",\"remote\":\"origin\",\"remote_name\":\"TEST\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1605683754,\"ref\":null,\"remote_ref\":\"ea286ee01bd6388121b7fe8ff3e053e4ad47f004\",\"can\":{}},{\"name\":\"break-it-real-good\",\"remote\":\"origin\",\"remote_name\":\"break-it-real-good\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1599697406,\"ref\":null,\"remote_ref\":\"93588750f927a53c2b3f79e3d7dca0edfec05e9c\",\"can\":{}},{\"name\":\"dev-dylan-baker-kpjr\",\"remote\":\"origin\",\"remote_name\":\"dev-dylan-baker-kpjr\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":true,\"personal\":true,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1587506570,\"ref\":null,\"remote_ref\":\"741a80dcede95434a39ec9cb380ceba084ddac3c\",\"can\":{}},{\"name\":\"dev-spectacles-bot-7kqt\",\"remote\":\"origin\",\"remote_name\":\"dev-spectacles-bot-7kqt\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":true,\"personal\":true,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1577817599,\"ref\":null,\"remote_ref\":\"3c43bb7e612169f95ab05de73f8474127d01122e\",\"can\":{}},{\"name\":\"dev-spectacles-cloud-bot-2vyr\",\"remote\":\"origin\",\"remote_name\":\"dev-spectacles-cloud-bot-2vyr\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":true,\"personal\":true,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1588640002,\"ref\":null,\"remote_ref\":\"e2d21d3ad978765991ae0a4d57b8d3111c1a8430\",\"can\":{}},{\"name\":\"dev-tom-miller-gwb5\",\"remote\":\"origin\",\"remote_name\":\"dev-tom-miller-gwb5\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":true,\"personal\":true,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1591616181,\"ref\":null,\"remote_ref\":\"0b713dd727fa2d46c2c3ac5d2a046ad9d6541060\",\"can\":{}},{\"name\":\"dev-user-2wc6\",\"remote\":\"origin\",\"remote_name\":\"dev-user-2wc6\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":true,\"personal\":true,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1592667116,\"ref\":null,\"remote_ref\":\"e00ca1bdf104a73159b01485426c6ce2b84c1183\",\"can\":{}},{\"name\":\"dev-user-gpvs\",\"remote\":\"origin\",\"remote_name\":\"dev-user-gpvs\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":true,\"personal\":true,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1592667116,\"ref\":null,\"remote_ref\":\"e00ca1bdf104a73159b01485426c6ce2b84c1183\",\"can\":{}},{\"name\":\"dev-user-wccg\",\"remote\":\"origin\",\"remote_name\":\"dev-user-wccg\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":true,\"personal\":true,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1592667116,\"ref\":null,\"remote_ref\":\"e00ca1bdf104a73159b01485426c6ce2b84c1183\",\"can\":{}},{\"name\":\"dev-user-znvr\",\"remote\":\"origin\",\"remote_name\":\"dev-user-znvr\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":true,\"personal\":true,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1615928980,\"ref\":null,\"remote_ref\":\"ca285055ff1762cd2aa9b29c8a44a171d9ecd73b\",\"can\":{}},{\"name\":\"feature/imports-and-conditional\",\"remote\":\"origin\",\"remote_name\":\"feature/imports-and-conditional\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1589399922,\"ref\":null,\"remote_ref\":\"015bc6abc47b475ee55a30b3f0fc5993099293ab\",\"can\":{}},{\"name\":\"github_qa\",\"remote\":\"origin\",\"remote_name\":\"github_qa\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1612696779,\"ref\":null,\"remote_ref\":\"41c2873633e4e810b3ff88a74534ea63c6147569\",\"can\":{}},{\"name\":\"hotfix/world-burning\",\"remote\":\"origin\",\"remote_name\":\"hotfix/world-burning\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1616594327,\"ref\":null,\"remote_ref\":\"456e32fbaf6774efe09c2869b1c4e4e23a817bec\",\"can\":{}},{\"name\":\"joshtemple-patch-1\",\"remote\":\"origin\",\"remote_name\":\"joshtemple-patch-1\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1589817939,\"ref\":null,\"remote_ref\":\"5f78ceeab9b56ce162a0ffb38238c4f2aad3a596\",\"can\":{}},{\"name\":\"joshtemple-patch-2\",\"remote\":\"origin\",\"remote_name\":\"joshtemple-patch-2\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1591286970,\"ref\":null,\"remote_ref\":\"b7199a649ad42d0ffbc5aa934893f755524df3ee\",\"can\":{}},{\"name\":\"manifest-tests\",\"remote\":\"origin\",\"remote_name\":\"manifest-tests\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1591300818,\"ref\":null,\"remote_ref\":\"a90b8775033a80aceb67bab822b2dd1966e53006\",\"can\":{}},{\"name\":\"push_me\",\"remote\":\"origin\",\"remote_name\":\"push_me\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1601367978,\"ref\":null,\"remote_ref\":\"9cfe814067c9ce1df885c1eacfc409885c4a49ac\",\"can\":{}},{\"name\":\"stephen-demo\",\"remote\":\"origin\",\"remote_name\":\"stephen-demo\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1592666898,\"ref\":null,\"remote_ref\":\"b956abf56f24bd5bb508e441b7ddd67ed11a56ea\",\"can\":{}},{\"name\":\"test-model-unique\",\"remote\":\"origin\",\"remote_name\":\"test-model-unique\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1592667116,\"ref\":null,\"remote_ref\":\"e00ca1bdf104a73159b01485426c6ce2b84c1183\",\"can\":{}},{\"name\":\"testing-new-branch\",\"remote\":\"origin\",\"remote_name\":\"testing-new-branch\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1589222280,\"ref\":null,\"remote_ref\":\"c3ac158afe6ab41ab4d202eefedd777526ee382d\",\"can\":{}},{\"name\":\"testing-unique-models\",\"remote\":\"origin\",\"remote_name\":\"testing-unique-models\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1592666898,\"ref\":null,\"remote_ref\":\"b956abf56f24bd5bb508e441b7ddd67ed11a56ea\",\"can\":{}},{\"name\":\"tmp_spectacles_12d6b083f3\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_12d6b083f3\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1599719822,\"ref\":null,\"remote_ref\":\"25ac39aa6a802537bcb3bcb662b816b2c2f3477d\",\"can\":{}},{\"name\":\"tmp_spectacles_214e292015\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_214e292015\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1601372088,\"ref\":null,\"remote_ref\":\"2a59af476b124cb7249fff07add7c7222dc66986\",\"can\":{}},{\"name\":\"tmp_spectacles_292e8b3462\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_292e8b3462\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1601374369,\"ref\":null,\"remote_ref\":\"5fef827bf83bcef9db8d5038b08ec5f3b0e18eed\",\"can\":{}},{\"name\":\"tmp_spectacles_2b8ade6a2b\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_2b8ade6a2b\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1601374369,\"ref\":null,\"remote_ref\":\"5fef827bf83bcef9db8d5038b08ec5f3b0e18eed\",\"can\":{}},{\"name\":\"tmp_spectacles_2e139bb5c6\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_2e139bb5c6\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1601372088,\"ref\":null,\"remote_ref\":\"2a59af476b124cb7249fff07add7c7222dc66986\",\"can\":{}},{\"name\":\"tmp_spectacles_3333112279\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_3333112279\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1599696519,\"ref\":null,\"remote_ref\":\"c2c2c154913bdf55e350c326146c2833a048c4ab\",\"can\":{}},{\"name\":\"tmp_spectacles_36a46dfce3\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_36a46dfce3\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1601374369,\"ref\":null,\"remote_ref\":\"5fef827bf83bcef9db8d5038b08ec5f3b0e18eed\",\"can\":{}},{\"name\":\"tmp_spectacles_3b398c4eda\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_3b398c4eda\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1599140416,\"ref\":null,\"remote_ref\":\"bb0c5be7e63ebfb9eafc601451505b52aac2bd0d\",\"can\":{}},{\"name\":\"tmp_spectacles_5e8e543fbc\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_5e8e543fbc\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1601374369,\"ref\":null,\"remote_ref\":\"5fef827bf83bcef9db8d5038b08ec5f3b0e18eed\",\"can\":{}},{\"name\":\"tmp_spectacles_6264add950\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_6264add950\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1601367978,\"ref\":null,\"remote_ref\":\"9cfe814067c9ce1df885c1eacfc409885c4a49ac\",\"can\":{}},{\"name\":\"tmp_spectacles_69553045bf\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_69553045bf\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1600160406,\"ref\":null,\"remote_ref\":\"03c1fc90e479797ff2b4c567865c1539fc087250\",\"can\":{}},{\"name\":\"tmp_spectacles_6ac78d6fb7\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_6ac78d6fb7\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1601367978,\"ref\":null,\"remote_ref\":\"9cfe814067c9ce1df885c1eacfc409885c4a49ac\",\"can\":{}},{\"name\":\"tmp_spectacles_6dcfe5f48a\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_6dcfe5f48a\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1599696519,\"ref\":null,\"remote_ref\":\"c2c2c154913bdf55e350c326146c2833a048c4ab\",\"can\":{}},{\"name\":\"tmp_spectacles_736e4296bd\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_736e4296bd\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1591616181,\"ref\":null,\"remote_ref\":\"0b713dd727fa2d46c2c3ac5d2a046ad9d6541060\",\"can\":{}},{\"name\":\"tmp_spectacles_7a168d7746\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_7a168d7746\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1600160406,\"ref\":null,\"remote_ref\":\"03c1fc90e479797ff2b4c567865c1539fc087250\",\"can\":{}},{\"name\":\"tmp_spectacles_7dcee54a39\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_7dcee54a39\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1599720938,\"ref\":null,\"remote_ref\":\"885170c84b27ecd96989a3f2f9cbda2e242425de\",\"can\":{}},{\"name\":\"tmp_spectacles_82a0979d8b\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_82a0979d8b\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1590101265,\"ref\":null,\"remote_ref\":\"101cdea2d43f642aba61a7bd0cd7bfa0d850eff7\",\"can\":{}},{\"name\":\"tmp_spectacles_896781d3c4\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_896781d3c4\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1601374369,\"ref\":null,\"remote_ref\":\"5fef827bf83bcef9db8d5038b08ec5f3b0e18eed\",\"can\":{}},{\"name\":\"tmp_spectacles_8b77e20a05\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_8b77e20a05\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1599720938,\"ref\":null,\"remote_ref\":\"885170c84b27ecd96989a3f2f9cbda2e242425de\",\"can\":{}},{\"name\":\"tmp_spectacles_a3a011b4f7\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_a3a011b4f7\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1599124056,\"ref\":null,\"remote_ref\":\"c4ede52a056c700121c4bfc5e40a62da8c63f3a2\",\"can\":{}},{\"name\":\"tmp_spectacles_b0a0465027\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_b0a0465027\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1599720938,\"ref\":null,\"remote_ref\":\"885170c84b27ecd96989a3f2f9cbda2e242425de\",\"can\":{}},{\"name\":\"tmp_spectacles_b4961b6432\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_b4961b6432\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1590102118,\"ref\":null,\"remote_ref\":\"fcd64241cb8a8ec19e56d57b521665a12fc59dd7\",\"can\":{}},{\"name\":\"tmp_spectacles_c06aa655c3\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_c06aa655c3\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1599719822,\"ref\":null,\"remote_ref\":\"25ac39aa6a802537bcb3bcb662b816b2c2f3477d\",\"can\":{}},{\"name\":\"tmp_spectacles_c2cabbed56\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_c2cabbed56\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1601374369,\"ref\":null,\"remote_ref\":\"5fef827bf83bcef9db8d5038b08ec5f3b0e18eed\",\"can\":{}},{\"name\":\"tmp_spectacles_d5a3ba687e\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_d5a3ba687e\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1599697406,\"ref\":null,\"remote_ref\":\"93588750f927a53c2b3f79e3d7dca0edfec05e9c\",\"can\":{}},{\"name\":\"tmp_spectacles_dc29efb45c\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_dc29efb45c\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1599124056,\"ref\":null,\"remote_ref\":\"c4ede52a056c700121c4bfc5e40a62da8c63f3a2\",\"can\":{}},{\"name\":\"tmp_spectacles_e06ed871b2\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_e06ed871b2\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1596371118,\"ref\":null,\"remote_ref\":\"f0204506586565ffcb6af0b127adab9e0bdedc66\",\"can\":{}},{\"name\":\"tmp_spectacles_e09e8c2d8c\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_e09e8c2d8c\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1601374369,\"ref\":null,\"remote_ref\":\"5fef827bf83bcef9db8d5038b08ec5f3b0e18eed\",\"can\":{}},{\"name\":\"tmp_spectacles_e3e85f3512\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_e3e85f3512\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1601372088,\"ref\":null,\"remote_ref\":\"2a59af476b124cb7249fff07add7c7222dc66986\",\"can\":{}},{\"name\":\"tmp_spectacles_e6ced6f92c\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_e6ced6f92c\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1601374369,\"ref\":null,\"remote_ref\":\"5fef827bf83bcef9db8d5038b08ec5f3b0e18eed\",\"can\":{}},{\"name\":\"tmp_spectacles_e6ebae6cb3\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_e6ebae6cb3\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1601374369,\"ref\":null,\"remote_ref\":\"5fef827bf83bcef9db8d5038b08ec5f3b0e18eed\",\"can\":{}},{\"name\":\"tmp_spectacles_eb28cff71d\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_eb28cff71d\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1600178311,\"ref\":null,\"remote_ref\":\"ec50a7789ac4d08dc248c234ced9a31c2717f97d\",\"can\":{}},{\"name\":\"tmp_spectacles_efca718c01\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_efca718c01\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1601372088,\"ref\":null,\"remote_ref\":\"2a59af476b124cb7249fff07add7c7222dc66986\",\"can\":{}},{\"name\":\"tmp_spectacles_fdef8f80cc\",\"remote\":\"origin\",\"remote_name\":\"tmp_spectacles_fdef8f80cc\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1601372088,\"ref\":null,\"remote_ref\":\"2a59af476b124cb7249fff07add7c7222dc66986\",\"can\":{}},{\"name\":\"tom-pr-test\",\"remote\":\"origin\",\"remote_name\":\"tom-pr-test\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1599720938,\"ref\":null,\"remote_ref\":\"885170c84b27ecd96989a3f2f9cbda2e242425de\",\"can\":{}},{\"name\":\"tom_pr_test\",\"remote\":\"origin\",\"remote_name\":\"tom_pr_test\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1599140416,\"ref\":null,\"remote_ref\":\"bb0c5be7e63ebfb9eafc601451505b52aac2bd0d\",\"can\":{}},{\"name\":\"tom_test_\U0001F916\",\"remote\":\"origin\",\"remote_name\":\"tom_test_\U0001F916\",\"error\":null,\"message\":null,\"owner_name\":null,\"readonly\":false,\"personal\":false,\"is_local\":false,\"is_remote\":true,\"is_production\":false,\"ahead_count\":null,\"behind_count\":null,\"commit_at\":1601374369,\"ref\":null,\"remote_ref\":\"5fef827bf83bcef9db8d5038b08ec5f3b0e18eed\",\"can\":{}}]"
-    headers:
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '33234'
-      Content-Type:
-      - application/json
-      Date:
-      - Mon, 12 Apr 2021 22:27:53 GMT
-      Server:
-      - nginx
+      - Mon, 04 Apr 2022 15:04:11 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 011c2e01199733e6
+      - df3c1dbec860a285
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 011c2e01199733e6
+      - df3c1dbec860a285
       X-B3-TraceId:
-      - 6074c968b753d4a8011c2e01199733e6
+      - 624b08eb9670b409df3c1dbec860a285
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=48118604
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
+  response:
+    body:
+      string: '{"name":"pytest","remote":"origin","remote_name":"pytest","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1648832027,"ref":"742b118d314d2478a215aa02016c09e173deec7e","remote_ref":"742b118d314d2478a215aa02016c09e173deec7e","can":{}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '363'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 04 Apr 2022 15:04:11 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - fe3605c8263fd5c9
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - fe3605c8263fd5c9
+      X-B3-TraceId:
+      - 624b08ebdbabf573fe3605c8263fd5c9
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=48118604
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branches
+  response:
+    body:
+      string: '[{"name":"casper-demo","remote":"origin","remote_name":"casper-demo","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1591897826,"ref":"75f44757dfa80e1f29b1822ffe3206de6297a727","remote_ref":"75f44757dfa80e1f29b1822ffe3206de6297a727","can":{}},{"name":"dev-josh-temple-8m75","remote":"origin","remote_name":"dev-josh-temple-8m75","error":null,"message":null,"owner_name":null,"readonly":false,"personal":true,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1616610858,"ref":"e65f46cd514f9742c95458a7ef66400baefdf37f","remote_ref":"e65f46cd514f9742c95458a7ef66400baefdf37f","can":{}},{"name":"feature/vcr","remote":"origin","remote_name":"feature/vcr","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1588340597,"ref":"176721285e47e0adac1b3ff55a26ca0346d5bfc7","remote_ref":"176721285e47e0adac1b3ff55a26ca0346d5bfc7","can":{}},{"name":"izzy-demo","remote":"origin","remote_name":"izzy-demo","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1591301083,"ref":"7cb2d2cb8cad16a776fb6a3eecc128992728d85e","remote_ref":"7cb2d2cb8cad16a776fb6a3eecc128992728d85e","can":{}},{"name":"joshtemple-patch-3","remote":"origin","remote_name":"joshtemple-patch-3","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1594771418,"ref":"dbd2bdb734d5405ad9f4eb529ea94c3a1f0438f8","remote_ref":"dbd2bdb734d5405ad9f4eb529ea94c3a1f0438f8","can":{}},{"name":"looker-demo","remote":"origin","remote_name":"looker-demo","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1596211612,"ref":"37c3e402c8618ed8a07f0c1210cad7b2b0564d7a","remote_ref":"37c3e402c8618ed8a07f0c1210cad7b2b0564d7a","can":{}},{"name":"master","remote":"origin","remote_name":"master","error":null,"message":null,"owner_name":null,"readonly":true,"personal":false,"is_local":true,"is_remote":true,"is_production":true,"ahead_count":0,"behind_count":60,"commit_at":1648823366,"ref":"0c2356e8a4f51bc1175c65fcbed1bad51ba8a864","remote_ref":"b0823dad6abb07bf26e468bf91e7c6531c758e32","can":{}},{"name":"pytest","remote":"origin","remote_name":"pytest","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1648832027,"ref":"742b118d314d2478a215aa02016c09e173deec7e","remote_ref":"742b118d314d2478a215aa02016c09e173deec7e","can":{}},{"name":"pytest-additional","remote":"origin","remote_name":"pytest-additional","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":false,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1592667063,"ref":"e2b75a3d5a146302c9847dfd14fc6fbb0ee68a87","remote_ref":null,"can":{}},{"name":"pytest-ambiguous-columns","remote":"origin","remote_name":"pytest-ambiguous-columns","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":false,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1634603985,"ref":"ccdfc98fe6c067810f914c31a5c290e93b1f0366","remote_ref":null,"can":{}},{"name":"pytest-branches","remote":"origin","remote_name":"pytest-branches","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":false,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1615585634,"ref":"203fc61835574adb7edb81ffdbdf02efd72bd73b","remote_ref":null,"can":{}},{"name":"pytest-fail-lookml","remote":"origin","remote_name":"pytest-fail-lookml","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1648842609,"ref":"067426a7d80ca00cdd982b2373ae8757756ff799","remote_ref":"067426a7d80ca00cdd982b2373ae8757756ff799","can":{}},{"name":"pytest-incremental-dirty-prod","remote":"origin","remote_name":"pytest-incremental-dirty-prod","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":4,"behind_count":3,"commit_at":1648842635,"ref":"8e04ecdb3bf0cfe6f796bb573108284fadb20bc1","remote_ref":"1f98e2995dd7b28eee23e3bbc163fa5bbca9079a","can":{}},{"name":"pytest-incremental-equal","remote":"origin","remote_name":"pytest-incremental-equal","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1648832027,"ref":"742b118d314d2478a215aa02016c09e173deec7e","remote_ref":"742b118d314d2478a215aa02016c09e173deec7e","can":{}},{"name":"pytest-incremental-fix-prod","remote":"origin","remote_name":"pytest-incremental-fix-prod","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1648842776,"ref":"1172557d86a21f99522c87fb8b9811fef51b3265","remote_ref":"1172557d86a21f99522c87fb8b9811fef51b3265","can":{}},{"name":"pytest-incremental-invalid-diff","remote":"origin","remote_name":"pytest-incremental-invalid-diff","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1648842807,"ref":"1ddde0b0dbf09b486b13669171528fd299fbb903","remote_ref":"1ddde0b0dbf09b486b13669171528fd299fbb903","can":{}},{"name":"pytest-incremental-invalid-equal","remote":"origin","remote_name":"pytest-incremental-invalid-equal","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1648842827,"ref":"f6fded2b439e4b28d54056fd8d0620da3decc546","remote_ref":"f6fded2b439e4b28d54056fd8d0620da3decc546","can":{}},{"name":"pytest-incremental-valid-diff","remote":"origin","remote_name":"pytest-incremental-valid-diff","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1648832098,"ref":"01d3dbcde86812672aa807fb524ab9643c9126b3","remote_ref":"01d3dbcde86812672aa807fb524ab9643c9126b3","can":{}},{"name":"pytest-tmp","remote":"origin","remote_name":"pytest-tmp","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":false,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1618326412,"ref":"568b0f8e4915b3aa9c771106c028db5de7fc10f5","remote_ref":null,"can":{}},{"name":"tmp-josh-temple","remote":"origin","remote_name":"tmp-josh-temple","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1616599770,"ref":"66e8a5eb2a5e324329c5be39fa7b265587e5dc0d","remote_ref":"66e8a5eb2a5e324329c5be39fa7b265587e5dc0d","can":{}},{"name":"tmp-pytest","remote":"origin","remote_name":"tmp-pytest","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1592667116,"ref":"e00ca1bdf104a73159b01485426c6ce2b84c1183","remote_ref":"e00ca1bdf104a73159b01485426c6ce2b84c1183","can":{}},{"name":"tmp_spectacles_0694b3113c","remote":"origin","remote_name":"tmp_spectacles_0694b3113c","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":false,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1648832098,"ref":"01d3dbcde86812672aa807fb524ab9643c9126b3","remote_ref":null,"can":{}},{"name":"tmp_spectacles_0780853b22","remote":"origin","remote_name":"tmp_spectacles_0780853b22","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":false,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1592667116,"ref":"e00ca1bdf104a73159b01485426c6ce2b84c1183","remote_ref":null,"can":{}},{"name":"tmp_spectacles_162e766c39","remote":"origin","remote_name":"tmp_spectacles_162e766c39","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":false,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1648832098,"ref":"01d3dbcde86812672aa807fb524ab9643c9126b3","remote_ref":null,"can":{}},{"name":"tmp_spectacles_1e1cfb77c3","remote":"origin","remote_name":"tmp_spectacles_1e1cfb77c3","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1648823366,"ref":"b0823dad6abb07bf26e468bf91e7c6531c758e32","remote_ref":"b0823dad6abb07bf26e468bf91e7c6531c758e32","can":{}},{"name":"tmp_spectacles_1f3c2a9187","remote":"origin","remote_name":"tmp_spectacles_1f3c2a9187","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":false,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1599696519,"ref":"c2c2c154913bdf55e350c326146c2833a048c4ab","remote_ref":null,"can":{}},{"name":"tmp_spectacles_41e3e89cca","remote":"origin","remote_name":"tmp_spectacles_41e3e89cca","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":false,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1590101388,"ref":"a3c2c616ab9e13ebadcb2dc8de0f5b86a3151644","remote_ref":null,"can":{}},{"name":"tmp_spectacles_42e84d3c9f","remote":"origin","remote_name":"tmp_spectacles_42e84d3c9f","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1648823366,"ref":"b0823dad6abb07bf26e468bf91e7c6531c758e32","remote_ref":"b0823dad6abb07bf26e468bf91e7c6531c758e32","can":{}},{"name":"tmp_spectacles_4a3cd18dd0","remote":"origin","remote_name":"tmp_spectacles_4a3cd18dd0","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":false,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1601372088,"ref":"2a59af476b124cb7249fff07add7c7222dc66986","remote_ref":null,"can":{}},{"name":"tmp_spectacles_4cce917331","remote":"origin","remote_name":"tmp_spectacles_4cce917331","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":false,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1599720938,"ref":"885170c84b27ecd96989a3f2f9cbda2e242425de","remote_ref":null,"can":{}},{"name":"tmp_spectacles_4f670d9756","remote":"origin","remote_name":"tmp_spectacles_4f670d9756","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":false,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1589480855,"ref":"09493e3834e5c0bf65fc0916182d9ed9850ed554","remote_ref":null,"can":{}},{"name":"tmp_spectacles_5804b51dcd","remote":"origin","remote_name":"tmp_spectacles_5804b51dcd","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":false,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1599696519,"ref":"c2c2c154913bdf55e350c326146c2833a048c4ab","remote_ref":null,"can":{}},{"name":"tmp_spectacles_6211e6283c","remote":"origin","remote_name":"tmp_spectacles_6211e6283c","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":false,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1599719822,"ref":"25ac39aa6a802537bcb3bcb662b816b2c2f3477d","remote_ref":null,"can":{}},{"name":"tmp_spectacles_6433444938","remote":"origin","remote_name":"tmp_spectacles_6433444938","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":false,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1648832098,"ref":"01d3dbcde86812672aa807fb524ab9643c9126b3","remote_ref":null,"can":{}},{"name":"tmp_spectacles_6509e14925","remote":"origin","remote_name":"tmp_spectacles_6509e14925","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":false,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1599719822,"ref":"25ac39aa6a802537bcb3bcb662b816b2c2f3477d","remote_ref":null,"can":{}},{"name":"tmp_spectacles_67033ff5b3","remote":"origin","remote_name":"tmp_spectacles_67033ff5b3","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":false,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1590101265,"ref":"101cdea2d43f642aba61a7bd0cd7bfa0d850eff7","remote_ref":null,"can":{}},{"name":"tmp_spectacles_69962eaba3","remote":"origin","remote_name":"tmp_spectacles_69962eaba3","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1648823366,"ref":"b0823dad6abb07bf26e468bf91e7c6531c758e32","remote_ref":"b0823dad6abb07bf26e468bf91e7c6531c758e32","can":{}},{"name":"tmp_spectacles_86cd886442","remote":"origin","remote_name":"tmp_spectacles_86cd886442","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":false,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1648832098,"ref":"01d3dbcde86812672aa807fb524ab9643c9126b3","remote_ref":null,"can":{}},{"name":"tmp_spectacles_879a47a61a","remote":"origin","remote_name":"tmp_spectacles_879a47a61a","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":false,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1599697406,"ref":"93588750f927a53c2b3f79e3d7dca0edfec05e9c","remote_ref":null,"can":{}},{"name":"tmp_spectacles_8cb99200a8","remote":"origin","remote_name":"tmp_spectacles_8cb99200a8","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":false,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1592667116,"ref":"e00ca1bdf104a73159b01485426c6ce2b84c1183","remote_ref":null,"can":{}},{"name":"tmp_spectacles_9b28b80f65","remote":"origin","remote_name":"tmp_spectacles_9b28b80f65","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":false,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1601367978,"ref":"9cfe814067c9ce1df885c1eacfc409885c4a49ac","remote_ref":null,"can":{}},{"name":"tmp_spectacles_aa9f33a5cd","remote":"origin","remote_name":"tmp_spectacles_aa9f33a5cd","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":false,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1601374369,"ref":"5fef827bf83bcef9db8d5038b08ec5f3b0e18eed","remote_ref":null,"can":{}},{"name":"tmp_spectacles_aaae3cf897","remote":"origin","remote_name":"tmp_spectacles_aaae3cf897","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":false,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1599720938,"ref":"885170c84b27ecd96989a3f2f9cbda2e242425de","remote_ref":null,"can":{}},{"name":"tmp_spectacles_b9af3642cf","remote":"origin","remote_name":"tmp_spectacles_b9af3642cf","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":false,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1634603985,"ref":"ccdfc98fe6c067810f914c31a5c290e93b1f0366","remote_ref":null,"can":{}},{"name":"tmp_spectacles_c54cbe90d8","remote":"origin","remote_name":"tmp_spectacles_c54cbe90d8","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":false,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1648832098,"ref":"01d3dbcde86812672aa807fb524ab9643c9126b3","remote_ref":null,"can":{}},{"name":"tmp_spectacles_c8233ce9ac","remote":"origin","remote_name":"tmp_spectacles_c8233ce9ac","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":false,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1616610858,"ref":"e65f46cd514f9742c95458a7ef66400baefdf37f","remote_ref":null,"can":{}},{"name":"tmp_spectacles_d0d9b070f7","remote":"origin","remote_name":"tmp_spectacles_d0d9b070f7","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1648832098,"ref":"01d3dbcde86812672aa807fb524ab9643c9126b3","remote_ref":"01d3dbcde86812672aa807fb524ab9643c9126b3","can":{}},{"name":"tmp_spectacles_d6a28e6a07","remote":"origin","remote_name":"tmp_spectacles_d6a28e6a07","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":false,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1600160406,"ref":"03c1fc90e479797ff2b4c567865c1539fc087250","remote_ref":null,"can":{}},{"name":"tmp_spectacles_e61a892aa4","remote":"origin","remote_name":"tmp_spectacles_e61a892aa4","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1648823366,"ref":"b0823dad6abb07bf26e468bf91e7c6531c758e32","remote_ref":"b0823dad6abb07bf26e468bf91e7c6531c758e32","can":{}},{"name":"tmp_spectacles_ec3c1b0db5","remote":"origin","remote_name":"tmp_spectacles_ec3c1b0db5","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1648823366,"ref":"b0823dad6abb07bf26e468bf91e7c6531c758e32","remote_ref":"b0823dad6abb07bf26e468bf91e7c6531c758e32","can":{}},{"name":"tmp_spectacles_ecdacb6bb8","remote":"origin","remote_name":"tmp_spectacles_ecdacb6bb8","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":false,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1642088172,"ref":"5e95e3fa90df0de4cd18dc6c77e54429ba01fc8e","remote_ref":null,"can":{}},{"name":"tmp_spectacles_ed760e77cd","remote":"origin","remote_name":"tmp_spectacles_ed760e77cd","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":false,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1599719822,"ref":"25ac39aa6a802537bcb3bcb662b816b2c2f3477d","remote_ref":null,"can":{}},{"name":"DylanBaker-patch-1","remote":"origin","remote_name":"DylanBaker-patch-1","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":false,"is_remote":true,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1600176326,"ref":null,"remote_ref":"182bc6f9d9e83175b26426d726a3fa078b6f79db","can":{}},{"name":"DylanBaker-patch-2","remote":"origin","remote_name":"DylanBaker-patch-2","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":false,"is_remote":true,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1633257052,"ref":null,"remote_ref":"876831ea37b20d1cd254e63c638c005b4a5d46a4","can":{}},{"name":"TEST","remote":"origin","remote_name":"TEST","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":false,"is_remote":true,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1605683754,"ref":null,"remote_ref":"ea286ee01bd6388121b7fe8ff3e053e4ad47f004","can":{}},{"name":"Tom","remote":"origin","remote_name":"Tom","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":false,"is_remote":true,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1622105106,"ref":null,"remote_ref":"064b535f61abcd9fd2e05643848e1f8dff231f37","can":{}},{"name":"break-it-real-good","remote":"origin","remote_name":"break-it-real-good","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":false,"is_remote":true,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1599697406,"ref":null,"remote_ref":"93588750f927a53c2b3f79e3d7dca0edfec05e9c","can":{}},{"name":"dev-circleci-service-account-bhh9","remote":"origin","remote_name":"dev-circleci-service-account-bhh9","error":null,"message":null,"owner_name":null,"readonly":true,"personal":true,"is_local":false,"is_remote":true,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1616610858,"ref":null,"remote_ref":"e65f46cd514f9742c95458a7ef66400baefdf37f","can":{}},{"name":"dev-dylan-baker-kpjr","remote":"origin","remote_name":"dev-dylan-baker-kpjr","error":null,"message":null,"owner_name":null,"readonly":true,"personal":true,"is_local":false,"is_remote":true,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1646816658,"ref":null,"remote_ref":"a89b42646b939db804b192f6aab748aa722bc57c","can":{}},{"name":"dev-dylan-baker-ybny","remote":"origin","remote_name":"dev-dylan-baker-ybny","error":null,"message":null,"owner_name":null,"readonly":true,"personal":true,"is_local":false,"is_remote":true,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1616610858,"ref":null,"remote_ref":"e65f46cd514f9742c95458a7ef66400baefdf37f","can":{}},{"name":"dev-matt-leal-ywp7","remote":"origin","remote_name":"dev-matt-leal-ywp7","error":null,"message":null,"owner_name":null,"readonly":true,"personal":true,"is_local":false,"is_remote":true,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1646831836,"ref":null,"remote_ref":"3f82027f93b8f1a74c217961d9a123ae700f5529","can":{}},{"name":"dev-spectacles-bot-7kqt","remote":"origin","remote_name":"dev-spectacles-bot-7kqt","error":null,"message":null,"owner_name":null,"readonly":true,"personal":true,"is_local":false,"is_remote":true,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1577817599,"ref":null,"remote_ref":"3c43bb7e612169f95ab05de73f8474127d01122e","can":{}},{"name":"dev-spectacles-cloud-bot-2vyr","remote":"origin","remote_name":"dev-spectacles-cloud-bot-2vyr","error":null,"message":null,"owner_name":null,"readonly":true,"personal":true,"is_local":false,"is_remote":true,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1588640002,"ref":null,"remote_ref":"e2d21d3ad978765991ae0a4d57b8d3111c1a8430","can":{}},{"name":"dev-testing-self-service-8qjh","remote":"origin","remote_name":"dev-testing-self-service-8qjh","error":null,"message":null,"owner_name":null,"readonly":true,"personal":true,"is_local":false,"is_remote":true,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1616610858,"ref":null,"remote_ref":"e65f46cd514f9742c95458a7ef66400baefdf37f","can":{}},{"name":"dev-tom-miller-gwb5","remote":"origin","remote_name":"dev-tom-miller-gwb5","error":null,"message":null,"owner_name":null,"readonly":true,"personal":true,"is_local":false,"is_remote":true,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1633257132,"ref":null,"remote_ref":"0d09ab65f07c4883c1fe2d08fdcf77a3759b740d","can":{}},{"name":"dev-user-2wc6","remote":"origin","remote_name":"dev-user-2wc6","error":null,"message":null,"owner_name":null,"readonly":true,"personal":true,"is_local":false,"is_remote":true,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1592667116,"ref":null,"remote_ref":"e00ca1bdf104a73159b01485426c6ce2b84c1183","can":{}},{"name":"dev-user-gpvs","remote":"origin","remote_name":"dev-user-gpvs","error":null,"message":null,"owner_name":null,"readonly":true,"personal":true,"is_local":false,"is_remote":true,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1592667116,"ref":null,"remote_ref":"e00ca1bdf104a73159b01485426c6ce2b84c1183","can":{}},{"name":"dev-user-wccg","remote":"origin","remote_name":"dev-user-wccg","error":null,"message":null,"owner_name":null,"readonly":true,"personal":true,"is_local":false,"is_remote":true,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1592667116,"ref":null,"remote_ref":"e00ca1bdf104a73159b01485426c6ce2b84c1183","can":{}},{"name":"dev-user-znvr","remote":"origin","remote_name":"dev-user-znvr","error":null,"message":null,"owner_name":null,"readonly":true,"personal":true,"is_local":false,"is_remote":true,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1615928980,"ref":null,"remote_ref":"ca285055ff1762cd2aa9b29c8a44a171d9ecd73b","can":{}},{"name":"feature/imports-and-conditional","remote":"origin","remote_name":"feature/imports-and-conditional","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":false,"is_remote":true,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1589399922,"ref":null,"remote_ref":"015bc6abc47b475ee55a30b3f0fc5993099293ab","can":{}},{"name":"github_qa","remote":"origin","remote_name":"github_qa","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":false,"is_remote":true,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1612696779,"ref":null,"remote_ref":"41c2873633e4e810b3ff88a74534ea63c6147569","can":{}},{"name":"hotfix/world-burning","remote":"origin","remote_name":"hotfix/world-burning","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":false,"is_remote":true,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1616610858,"ref":null,"remote_ref":"e65f46cd514f9742c95458a7ef66400baefdf37f","can":{}},{"name":"joshtemple-patch-1","remote":"origin","remote_name":"joshtemple-patch-1","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":false,"is_remote":true,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1589817939,"ref":null,"remote_ref":"5f78ceeab9b56ce162a0ffb38238c4f2aad3a596","can":{}},{"name":"joshtemple-patch-2","remote":"origin","remote_name":"joshtemple-patch-2","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":false,"is_remote":true,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1591286970,"ref":null,"remote_ref":"b7199a649ad42d0ffbc5aa934893f755524df3ee","can":{}},{"name":"lookml-validator","remote":"origin","remote_name":"lookml-validator","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":false,"is_remote":true,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1642438057,"ref":null,"remote_ref":"8ce70d2e2afe87722c665f6139719eb7987d92a9","can":{}},{"name":"manifest-tests","remote":"origin","remote_name":"manifest-tests","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":false,"is_remote":true,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1591300818,"ref":null,"remote_ref":"a90b8775033a80aceb67bab822b2dd1966e53006","can":{}},{"name":"one","remote":"origin","remote_name":"one","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":false,"is_remote":true,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1627625530,"ref":null,"remote_ref":"8418e7c0a05f57432074adea74191251d0c7fd16","can":{}},{"name":"push_me","remote":"origin","remote_name":"push_me","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":false,"is_remote":true,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1601367978,"ref":null,"remote_ref":"9cfe814067c9ce1df885c1eacfc409885c4a49ac","can":{}},{"name":"stephen-demo","remote":"origin","remote_name":"stephen-demo","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":false,"is_remote":true,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1592666898,"ref":null,"remote_ref":"b956abf56f24bd5bb508e441b7ddd67ed11a56ea","can":{}},{"name":"test-model-unique","remote":"origin","remote_name":"test-model-unique","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":false,"is_remote":true,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1592667116,"ref":null,"remote_ref":"e00ca1bdf104a73159b01485426c6ce2b84c1183","can":{}},{"name":"testing-imports","remote":"origin","remote_name":"testing-imports","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":false,"is_remote":true,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1616610858,"ref":null,"remote_ref":"e65f46cd514f9742c95458a7ef66400baefdf37f","can":{}},{"name":"testing-lookml","remote":"origin","remote_name":"testing-lookml","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":false,"is_remote":true,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1616610858,"ref":null,"remote_ref":"e65f46cd514f9742c95458a7ef66400baefdf37f","can":{}},{"name":"testing-new-branch","remote":"origin","remote_name":"testing-new-branch","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":false,"is_remote":true,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1589222280,"ref":null,"remote_ref":"c3ac158afe6ab41ab4d202eefedd777526ee382d","can":{}},{"name":"testing-unique-models","remote":"origin","remote_name":"testing-unique-models","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":false,"is_remote":true,"is_production":false,"ahead_count":null,"behind_count":null,"commit_at":1592666898,"ref":null,"remote_ref":"b956abf56f24bd5bb508e441b7ddd67ed11a56ea","can":{}}]'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '31022'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 04 Apr 2022 15:04:13 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 413344e71f6263dd
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 413344e71f6263dd
+      X-B3-TraceId:
+      - 624b08ebfb415c36413344e71f6263dd
       X-Content-Type-Options:
       - nosniff
     status:
