@@ -1,6 +1,5 @@
 from typing import Iterable
 import os
-import vcr
 import json
 from github import Github as GitHub, Repository
 import pytest
@@ -41,17 +40,13 @@ def looker_client() -> Iterable[LookerClient]:
     yield client
 
 
+@pytest.mark.default_cassette("init_github.yaml")
+@pytest.mark.vcr(decode_compressed_response=True)
 @pytest.fixture(scope="session")
 def remote_repo() -> Repository:
     access_token = os.environ.get("GITHUB_ACCESS_TOKEN")
     client = GitHub(access_token)
-    # Use VCR explicitly here instead of pytest.mark.vcr so we can use context manager
-    with vcr.use_cassette(
-        "tests/cassettes/init_github.yaml",
-        filter_headers=["Authorization"],
-        decode_compressed_response=True,
-    ):
-        repo = client.get_repo("spectacles-ci/eye-exam")
+    repo = client.get_repo("spectacles-ci/eye-exam")
     return repo
 
 
