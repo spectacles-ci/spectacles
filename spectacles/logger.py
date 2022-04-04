@@ -33,13 +33,18 @@ class IndentedFormatter(logging.Formatter):
 
     def format(self, record) -> str:
         message = super().format(record=record)
-        wrapped = textwrap.wrap(
-            self._indent_string + message,
-            width=88,
-            replace_whitespace=False,
-            subsequent_indent=" " + "  " * (self._indent + 1),
-        )
-        return "\n".join(wrapped)
+        # Only wrap for debug logs, info+ logs can be wrapped in the record itself
+        if record.levelno == logging.DEBUG and not record.exc_info:
+            return "\n".join(
+                textwrap.wrap(
+                    self._indent_string + message,
+                    width=88,
+                    replace_whitespace=False,
+                    subsequent_indent=" " + "  " * (self._indent + 1),
+                )
+            )
+        else:
+            return message
 
 
 class FileFormatter(IndentedFormatter):
