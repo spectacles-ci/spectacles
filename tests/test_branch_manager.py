@@ -255,7 +255,9 @@ def test_manage_with_ref_import_projects(mock_time_hash, looker_client: LookerCl
     assert temp_branches.isdisjoint(all_branches)
 
 
-@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
+@pytest.mark.vcr(
+    match_on=["uri", "method", "raw_body"], decode_compressed_response=True
+)
 @patch("spectacles.runner.LookerBranchManager.get_project_imports", return_value=[])
 @patch("spectacles.runner.time_hash", return_value="abc123")
 def test_manage_with_ref_not_present_in_local_repo(
