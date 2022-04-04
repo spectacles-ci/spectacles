@@ -101,7 +101,7 @@ def client_kwargs():
 @pytest.mark.vcr
 def test_get_looker_release_version_should_return_correct_version(looker_client):
     version = looker_client.get_looker_release_version()
-    assert version == "7.6.17"
+    assert version == "22.4.29"
 
 
 @pytest.mark.vcr(filter_post_data_parameters=["client_id", "client_secret"])
