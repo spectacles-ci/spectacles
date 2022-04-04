@@ -60,9 +60,9 @@ class TestValidateFail:
         yield errors
 
     def test_results_have_correct_number_of_elements(self, validator_errors, tests):
-        assert len(validator_errors) == 2
+        assert len(validator_errors) == 3
         assert len(tests) == 2
-        assert len(list(test for test in tests if test.passed)) == 1
+        assert len(list(test for test in tests if test.passed)) == 0
 
 
 def test_no_data_tests_should_raise_error(validator):

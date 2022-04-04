@@ -28,4 +28,4 @@ def test_lookml_validator_fails_with_errors(validator):
     results = validator.validate(project="eye_exam")
 
     assert results["status"] == "failed"
-    assert len(results["errors"]) == 9
+    assert len(results["errors"]) == 7
