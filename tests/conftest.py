@@ -40,14 +40,14 @@ def looker_client() -> Iterable[LookerClient]:
     yield client
 
 
-@pytest.mark.default_cassette("init_github.yaml")
 @pytest.mark.vcr(decode_compressed_response=True)
-@pytest.fixture(scope="session")
+@pytest.mark.default_cassette("init_github.yaml")
+@pytest.fixture
 def remote_repo() -> Repository:
     access_token = os.environ.get("GITHUB_ACCESS_TOKEN")
     client = GitHub(access_token)
     repo = client.get_repo("spectacles-ci/eye-exam")
-    return repo
+    yield repo
 
 
 @pytest.fixture
