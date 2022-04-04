@@ -39,15 +39,15 @@ Some of the tests in Spectacles use [VCR.py](https://vcrpy.readthedocs.io/en/lat
 
 When developing new Spectacles tests, we can record requests and responses to cassettes and commit them. In CI, we run without the option to make new requests and only use the committed, serialized (YAML) responses in the cassettes. This means tests will be nice and speedy (sometimes up to 10x faster) and won't make external requests.
 
-**We can configure the mode VCR.py runs in with the `--record-mode` option to pytest. Unless you are developing new tests that make external HTTP requests, you should use `--record-mode=none`, which will only use the existing pre-recorded cassettes.**
+**We can configure the mode VCR.py runs in with the `--record-mode` option to pytest. Unless you are developing new tests that make external HTTP requests, you should use `--record-mode none`, which will only use the existing pre-recorded cassettes.**
 
 If you want to add new tests that make VCR requests, here's a summary of the steps you should take:
 
 1. Export your API credentials in environment variables
 1. Write tests or fixtures that make new API calls (see below for some caveats)
-1. Run pytest with `--record-mode=new_episodes` to populate or modify cassettes
+1. Run pytest with `--record-mode new_episodes` to populate or modify cassettes
 1. You may need to retry the previous step after deleting your cassettes folder if there are conflicts
-1. Try unsetting your credentials environment variables and running pytest with `--record-mode=none`
+1. Try unsetting your credentials environment variables and running pytest with `--record-mode none`
 1. If all tests pass, commit any additions or changes to the cassettes
 
 You'll also want to be aware of some dos and don'ts for working with VCR.py in our test setup:
@@ -61,15 +61,17 @@ Then you can use that fixture or any fixtures that use it to make requests to Lo
 ### Don't commit sensitive data in cassettes
 All requests and responses that are recorded are saved to YAML cassettes in `tests/cassettes`. This means that it's possible to commit sensitive data like Looker client secret or an access token (less sensitive because they expire in one hour).
 
-It's good practice to check any modified or new cassettes for sensitive data before you commit. For example, you can run a command like this to check for your client secret:
+You should install our pre-commit hooks, one of which will check for tokens in cassettes before you commit.
 
 ```bash
-grep -ir "sj29djaxks01jgi1xkaa0" tests/cassettes
+pre-commit install
 ```
 
-To avoid recording sensitive data, you'll need to provide filter args to `pytest.mark.vcr`.
+These checks will run before every commit.
 
-Here's an example. In this example, we use three arguments to `vcr.use_cassette`. We specify `filter_post_data_parameters` (filters POST request params to remove the client ID and secret), `filter_headers` (removes the access token from subsequent requests), and `before_record_response` (removes the access token from the response).
+By default, any test marked with `pytest.mark.vcr` will have `Authorization` headers filtered out from the cassettes.
+
+Here's an example of how you might need to do some additional filtering. In this example, we use two arguments to `pytest.mark.vcr`. We specify `filter_post_data_parameters` (filters POST request params to remove the client ID and secret) and `before_record_response` (removes the access token from the response).
 
 ```python
 def scrub_access_token(response):
@@ -78,58 +80,36 @@ def scrub_access_token(response):
     response["body"]["string"] = json.dumps(body).encode()
     return response
 
+@pytest.mark.default_cassette("init_client.yaml")
+@pytest.mark.vcr(
+    filter_post_data_parameters=["client_id", "client_secret"],
+    before_record_response=scrub_access_token,
+)
 @pytest.fixture(scope="session")
 def looker_client(record_mode) -> Iterable[LookerClient]:
-    with vcr.use_cassette(
-        "tests/cassettes/init_client.yaml",
-        filter_post_data_parameters=["client_id", "client_secret"],
-        filter_headers=["Authorization"],
-        before_record_response=scrub_access_token,
-        record_mode=record_mode,
-    ):
-        client = LookerClient(
-            base_url="https://spectacles.looker.com",
-            client_id=os.environ.get("LOOKER_CLIENT_ID", ""),
-            client_secret=os.environ.get("LOOKER_CLIENT_SECRET", ""),
-        )
-        yield client
+    client = LookerClient(
+        base_url="https://spectacles.looker.com",
+        client_id=os.environ.get("LOOKER_CLIENT_ID", ""),
+        client_secret=os.environ.get("LOOKER_CLIENT_SECRET", ""),
+    )
+    yield client
 ```
 
 For other options, the documentation for VCR.py has some [good examples](https://vcrpy.readthedocs.io/en/latest/advanced.html#filter-sensitive-data-from-the-request).
-
-### Don't use pytest-recording for recording requests in pytest fixtures
-
-Generally, it's sufficient to mark any tests with external requests with `pytest.mark.vcr`. However, sometimes you want to record and replay every time a fixture is called. `pytest-recording` doesn't play nicely with fixtures, so we've resorted to using VCR.py directly within fixtures. Here's an example:
-
-```python
-@pytest.fixture(scope="class")
-def validator(looker_client, record_mode) -> Iterable[SqlValidator]:
-    with vcr.use_cassette(
-        f"tests/cassettes/test_sql_validator/fixture_validator_init.yaml",
-        match_on=["uri", "method", "raw_body"],
-        filter_headers=["Authorization"],
-        record_mode=record_mode,
-    ):
-        validator = SqlValidator(looker_client, project="eye_exam")
-        validator.client.update_session(
-            project="eye_exam", branch="master", remote_reset=False
-        )
-        yield validator
-```
 
 ### Do refresh your cassettes before pushing
 
 When developing new tests and cassettes, it's good practice to delete the cassettes directory and refresh it with new calls (specifying `new_episodes` for record mode so requests are re-recorded). Here's an example:
 
 ```
-rm -r tests/cassettes && pytest --record-mode=new_episodes tests
+rm -r tests/cassettes && pytest tests --record-mode new_episodes
 ```
 
-### Do test in `--record-mode=none` before pushing
+### Do test in `--record-mode none` before pushing
 
-Once you've developed some tests and recorded them to cassetes (by running with `--record-mode=new_episodes`), you'll want to confirm that tests can run offline and independently of API credentials. If your tests can't run that way, they will fail in CI. To confirm your tests work offline, unset your environment variables and run pytest with `--record-mode=none`.
+Once you've developed some tests and recorded them to cassetes (by running with `--record-mode new_episodes`), you'll want to confirm that tests can run offline and independently of API credentials. If your tests can't run that way, they will fail in CI. To confirm your tests work offline, unset your environment variables and run pytest with `--record-mode none`.
 
 ### Do be aware of default matching behavior
 When VCR.py detects a request, it checks to see if there is a matching request in the designated request that it can use instead. By default, it matches requests on URL and method (GET, POST, etc.). For many API requests, this is not sufficient, because they are differentiated by JSON body.
 
-For most of the tests in Spectacles, we provide `match_on` to `pytest.mark.vcr` or `vcr.use_cassette` and specify `raw_body` as an additional matching parameter so requests are only matched if they also have the same body.
+For most of the tests in Spectacles, we provide `match_on` to `pytest.mark.vcr` and specify `raw_body` as an additional matching parameter so requests are only matched if they also have the same body.
