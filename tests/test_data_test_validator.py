@@ -65,6 +65,7 @@ class TestValidateFail:
         assert len(list(test for test in tests if test.passed)) == 0
 
 
+@pytest.mark.vcr
 def test_no_data_tests_should_raise_error(validator):
     with pytest.raises(SpectaclesException):
         project = build_project(validator.client, name="eye_exam", filters=["-*/*"])
