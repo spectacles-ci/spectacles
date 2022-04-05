@@ -8,7 +8,7 @@ from yaml.parser import ParserError
 import argparse
 import logging
 import os
-from typing import Callable
+from typing import Callable, List
 from spectacles import __version__
 from spectacles.runner import Runner
 from spectacles.client import LookerClient
@@ -210,6 +210,10 @@ def restore_dash(arg: str) -> str:
     return re.sub(r"^~", "-", arg)
 
 
+def process_pin_imports(input: List[str]) -> dict:
+    return dict(arg.split(":") for arg in input)
+
+
 @handle_exceptions
 def main():
     """Runs main function. This is the entry point."""
@@ -230,6 +234,8 @@ def main():
     ref = branch or commit_ref
     target = getattr(args, "target", None)
     incremental = getattr(args, "incremental", None)
+
+    pin_imports = process_pin_imports(getattr(args, "pin_imports", []))
 
     # Normally would be cleaner to handle this with an argparse mutually exclusive
     # group, but this doesn't work with --commit-ref and --remote-reset also needing
@@ -281,6 +287,7 @@ def main():
             profile=args.profile,
             runtime_threshold=args.runtime_threshold,
             chunk_size=args.chunk_size,
+            pin_imports=pin_imports,
         )
     elif args.command == "assert":
         run_assert(
@@ -293,6 +300,7 @@ def main():
             port=args.port,
             api_version=args.api_version,
             remote_reset=args.remote_reset,
+            pin_imports=pin_imports,
         )
     elif args.command == "content":
         run_content(
@@ -309,6 +317,7 @@ def main():
             target=args.target,
             exclude_personal=args.exclude_personal,
             folders=[restore_dash(arg) for arg in args.folders],
+            pin_imports=pin_imports,
         )
     elif args.command == "lookml":
         run_lookml(
@@ -321,6 +330,7 @@ def main():
             api_version=args.api_version,
             remote_reset=args.remote_reset,
             severity=args.severity,
+            pin_imports=pin_imports,
         )
 
     if not args.do_not_track:
@@ -490,6 +500,13 @@ def _build_validator_subparser(
         help="The commit of your project that Spectacles will test against. \
             In order to test a specific commit, Spectacles will create a new branch \
             for the tests and then delete the branch when it is finished.",
+    )
+    group.add_argument(
+        "--pin-imports",
+        nargs="+",
+        default=[],
+        help="Pin locally imported Looker projects to a specific ref (Git branch or commit) during validation. \
+            Provide these arguments in project_name:ref format.",
     )
     return base_subparser
 
@@ -704,9 +721,10 @@ def run_lookml(
     api_version,
     remote_reset,
     severity,
+    pin_imports,
 ) -> None:
     client = LookerClient(base_url, client_id, client_secret, port, api_version)
-    runner = Runner(client, project, remote_reset)
+    runner = Runner(client, project, remote_reset, pin_imports)
     results = runner.validate_lookml(ref, severity)
     errors = sorted(results["errors"], key=lambda x: x["metadata"]["file_path"] or "a")
     unique_files = sorted(
@@ -752,9 +770,10 @@ def run_content(
     target,
     exclude_personal,
     folders,
+    pin_imports,
 ) -> None:
     client = LookerClient(base_url, client_id, client_secret, port, api_version)
-    runner = Runner(client, project, remote_reset)
+    runner = Runner(client, project, remote_reset, pin_imports)
     results = runner.validate_content(
         ref,
         filters,
@@ -802,9 +821,10 @@ def run_assert(
     port,
     api_version,
     remote_reset,
+    pin_imports,
 ) -> None:
     client = LookerClient(base_url, client_id, client_secret, port, api_version)
-    runner = Runner(client, project, remote_reset)
+    runner = Runner(client, project, remote_reset, pin_imports)
 
     results = runner.validate_data_tests(ref, filters)
 
@@ -854,10 +874,11 @@ def run_sql(
     profile,
     runtime_threshold,
     chunk_size,
+    pin_imports,
 ) -> None:
     """Runs and validates the SQL for each selected LookML dimension."""
     client = LookerClient(base_url, client_id, client_secret, port, api_version)
-    runner = Runner(client, project, remote_reset)
+    runner = Runner(client, project, remote_reset, pin_imports)
 
     results = runner.validate_sql(
         ref,
