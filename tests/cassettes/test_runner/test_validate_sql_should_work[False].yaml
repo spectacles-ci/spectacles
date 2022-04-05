@@ -3272,40 +3272,4 @@ interactions:
     status:
       code: 200
       message: OK
-- request:
-    body: null
-    headers:
-      Cookie:
-      - looker.browser=16124178
-    method: GET
-    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/manifest
-  response:
-    body:
-      string: '{"name":"eye_exam","imports":[{"name":"welcome_to_looker","url":null,"ref":null,"is_remote":false,"can":{}}],"localization_settings":null,"can":{}}'
-    headers:
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '147'
-      Content-Type:
-      - application/json
-      Date:
-      - Thu, 03 Mar 2022 12:58:02 GMT
-      Strict-Transport-Security:
-      - max-age=15724800; includeSubDomains
-      Vary:
-      - Accept-Encoding, Origin
-      X-B3-ParentSpanId:
-      - 7799db3c22f9b85b
-      X-B3-Sampled:
-      - '0'
-      X-B3-SpanId:
-      - 7799db3c22f9b85b
-      X-B3-TraceId:
-      - 6220bb5afbd6cf127799db3c22f9b85b
-      X-Content-Type-Options:
-      - nosniff
-    status:
-      code: 200
-      message: OK
 version: 1

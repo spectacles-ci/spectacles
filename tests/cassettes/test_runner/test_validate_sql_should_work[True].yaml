@@ -926,12 +926,10 @@ interactions:
       code: 200
       message: OK
 - request:
-    body: '{"model": "eye_exam", "view": "users__fail", "fields": ["users__fail.city",
-      "users__fail.email", "users__fail.first_name", "users__fail.id", "users__fail.last_name"],
-      "limit": 0, "filter_expression": "1=2"}'
+    body: '{"name": "tmp_spectacles_5e52c0302c"}'
     headers:
       Content-Length:
-      - '206'
+      - '37'
       Content-Type:
       - application/json
       Cookie:
@@ -2029,42 +2027,6 @@ interactions:
       - 0d49d486abedd18c
       X-B3-TraceId:
       - 62475a879fe3d3cb0d49d486abedd18c
-      X-Content-Type-Options:
-      - nosniff
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Cookie:
-      - looker.browser=16124178
-    method: GET
-    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/manifest
-  response:
-    body:
-      string: '{"name":"eye_exam","imports":[{"name":"welcome_to_looker","url":null,"ref":null,"is_remote":false,"can":{}}],"localization_settings":null,"can":{}}'
-    headers:
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '147'
-      Content-Type:
-      - application/json
-      Date:
-      - Thu, 03 Mar 2022 12:58:07 GMT
-      Strict-Transport-Security:
-      - max-age=15724800; includeSubDomains
-      Vary:
-      - Accept-Encoding, Origin
-      X-B3-ParentSpanId:
-      - 18c64ffb27eb11d3
-      X-B3-Sampled:
-      - '0'
-      X-B3-SpanId:
-      - 18c64ffb27eb11d3
-      X-B3-TraceId:
-      - 6220bb5f67c2c82518c64ffb27eb11d3
       X-Content-Type-Options:
       - nosniff
     status:
