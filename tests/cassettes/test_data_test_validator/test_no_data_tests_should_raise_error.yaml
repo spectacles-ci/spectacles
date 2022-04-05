@@ -3,7 +3,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=29231319
+      - looker.browser=89961667
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/lookml_models?fields=name%2Cproject_name%2Cexplores
   response:
@@ -35,12 +35,14 @@ interactions:
         Application","name":"users","can":{}},{"description":null,"label":"Hightouch
         Reporting","hidden":false,"group_label":"Web Application","name":"hightouch__users","can":{}},{"description":null,"label":"Suites","hidden":false,"group_label":"Web
         Application","name":"suites","can":{}},{"description":null,"label":"Revenue
-        Reporting","hidden":false,"group_label":"Web Application","name":"revenue_reporting","can":{}}]},{"name":"web_application_gitlab","project_name":"spectacles-gitlab","explores":[{"description":null,"label":"Runs","hidden":true,"group_label":"Web
+        Reporting","hidden":false,"group_label":"Web Application","name":"revenue_reporting","can":{}},{"description":null,"label":"Projects","hidden":false,"group_label":"Web
+        Application","name":"dim_projects","can":{}}]},{"name":"web_application_gitlab","project_name":"spectacles-gitlab","explores":[{"description":null,"label":"Runs","hidden":true,"group_label":"Web
         Application Gitlab","name":"runs","can":{}},{"description":null,"label":"Organisations","hidden":true,"group_label":"Web
         Application Gitlab","name":"organisations","can":{}},{"description":null,"label":"Credentials","hidden":true,"group_label":"Web
         Application Gitlab","name":"credentials","can":{}}]},{"name":"open_source_gitlab","project_name":"spectacles-gitlab","explores":[{"description":null,"label":"Invocations
         - this is a change","hidden":true,"group_label":"Open Source","name":"fct_invocations","can":{}}]},{"name":"open_source","project_name":"spectacles","explores":[{"description":null,"label":"Invocations","hidden":false,"group_label":"Open
-        Source","name":"fct_invocations","can":{}}]},{"name":"open_source_azure","project_name":"spectacles_azure","explores":[{"description":null,"label":"Invocations","hidden":true,"group_label":"Open
+        Source","name":"fct_invocations","can":{}},{"description":null,"label":"Recent
+        Invocations (Last 2 Weeks)","hidden":false,"group_label":"Open Source","name":"recent_invocations","can":{}}]},{"name":"open_source_azure","project_name":"spectacles_azure","explores":[{"description":null,"label":"Invocations","hidden":true,"group_label":"Open
         Source","name":"fct_invocations","can":{}}]},{"name":"web_application_azure","project_name":"spectacles_azure","explores":[{"description":null,"label":"Runs","hidden":true,"group_label":"Web
         Application Azure","name":"runs","can":{}},{"description":null,"label":"Organisations","hidden":true,"group_label":"Web
         Application Azure","name":"organisations","can":{}},{"description":null,"label":"Credentials","hidden":true,"group_label":"Web
@@ -56,29 +58,49 @@ interactions:
         - Import Advanced Deploy","hidden":true,"group_label":"Models","name":"dim_organisations","can":{}}]},{"name":"extension-api-explorer","project_name":"marketplace_extension_api_explorer","explores":[]},{"name":"data-dictionary","project_name":"marketplace_extension_data_dictionary","explores":[]},{"name":"spectacles_strava","project_name":"spectacles_strava","explores":[{"description":null,"label":"Raw
         Activities","hidden":false,"group_label":"Spectacles Strava","name":"raw_activities","can":{}},{"description":null,"label":"Stg
         Activities","hidden":false,"group_label":"Spectacles Strava","name":"stg_activities","can":{}},{"description":null,"label":"Activity
-        Types","hidden":false,"group_label":"Spectacles Strava","name":"activity_types","can":{}}]}]'
+        Types","hidden":false,"group_label":"Spectacles Strava","name":"activity_types","can":{}}]},{"name":"spectacles_maps","project_name":"spectacles_maps","explores":[{"description":null,"label":"Fivetran
+        Audit","hidden":false,"group_label":"Spectacles Maps","name":"fivetran_audit","can":{}},{"description":null,"label":"Rpt
+        Property Irr","hidden":false,"group_label":"Spectacles Maps","name":"rpt_property_irr","can":{}},{"description":null,"label":"Raw
+        Rpi Housing Index","hidden":false,"group_label":"Spectacles Maps","name":"raw_rpi_housing_index","can":{}},{"description":null,"label":"Raw
+        Rpi Housing Percent","hidden":false,"group_label":"Spectacles Maps","name":"raw_rpi_housing_percent","can":{}},{"description":null,"label":"Raw
+        House Sales","hidden":false,"group_label":"Spectacles Maps","name":"raw_house_sales","can":{}},{"description":null,"label":"Raw
+        Uk Postcodes","hidden":false,"group_label":"Spectacles Maps","name":"raw_uk_postcodes","can":{}},{"description":null,"label":"Raw
+        Cpih","hidden":false,"group_label":"Spectacles Maps","name":"raw_cpih","can":{}}]},{"name":"rpt_property_irr","project_name":"spectacles_maps","explores":[]},{"name":"thelook_partner","project_name":"looker_partner_demo","explores":[{"description":null,"label":"Cohort
+        Data Tool","hidden":true,"group_label":" eCommerce","name":"cohorts","can":{}},{"description":null,"label":"Web
+        Analytics Data Tool","hidden":true,"group_label":" eCommerce","name":"data_tool","can":{}},{"description":null,"label":"(1)
+        Orders, Items and Users","hidden":false,"group_label":" eCommerce","name":"order_items","can":{}},{"description":null,"label":"(2)
+        Web Event Data","hidden":false,"group_label":" eCommerce","name":"events","can":{}},{"description":null,"label":"(3)
+        Web Session Data","hidden":false,"group_label":" eCommerce","name":"sessions","can":{}},{"description":null,"label":"(4)
+        Affinity Analysis","hidden":false,"group_label":" eCommerce","name":"affinity","can":{}},{"description":null,"label":"(5)
+        Share of Wallet Analysis","hidden":false,"group_label":" eCommerce","name":"orders_with_share_of_wallet_application","can":{}},{"description":null,"label":"(6)
+        Customer Journey Mapping","hidden":false,"group_label":" eCommerce","name":"journey_mapping","can":{}},{"description":null,"label":"(7)
+        Historical Stock Snapshot Analysis","hidden":false,"group_label":" eCommerce","name":"inventory_snapshot","can":{}},{"description":null,"label":"Order
+        Items (Kittens)","hidden":true,"group_label":" eCommerce","name":"kitten_order_items","can":{}},{"description":null,"label":"E-Comm
+        Cohort Analysis Training","hidden":false,"group_label":" eCommerce","name":"ecomm_training_info","can":{}},{"description":null,"label":"Kmeans
+        Model5","hidden":false,"group_label":" eCommerce","name":"kmeans_model5","can":{}},{"description":null,"label":"(8)
+        Cohort Analysis","hidden":false,"group_label":" eCommerce","name":"ecomm_predict","can":{}}]},{"name":"square","project_name":"square_demo","explores":[{"description":null,"label":"Payments","hidden":false,"group_label":"Square","name":"payments","can":{}},{"description":null,"label":"Sellers","hidden":false,"group_label":"Square","name":"sellers","can":{}}]}]'
     headers:
       Connection:
       - keep-alive
       Content-Length:
-      - '7163'
+      - '10524'
       Content-Type:
       - application/json
       Date:
-      - Tue, 28 Dec 2021 16:11:44 GMT
+      - Mon, 04 Apr 2022 17:24:15 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - b06a0fa2ec6b0c88
+      - c0a7efd2c4c53901
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - b06a0fa2ec6b0c88
+      - c0a7efd2c4c53901
       X-B3-TraceId:
-      - 61cb3740a8c81473b06a0fa2ec6b0c88
+      - 624b29bf477a4970c0a7efd2c4c53901
       X-Content-Type-Options:
       - nosniff
     status:
@@ -88,62 +110,34 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=29231319
+      - looker.browser=89961667
     method: GET
-    uri: https://spectacles.looker.com:19999/api/3.1/content_validation
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/lookml_tests
   response:
     body:
-      string: '{"content_with_errors":[{"look":null,"dashboard":{"description":"","title":"Business
-        Pulse","space":{"name":"Shared","id":1},"folder":{"name":"Shared","id":1},"id":1},"dashboard_element":{"body_text":null,"dashboard_id":1,"id":2,"look_id":null,"note_display":"below","note_state":"collapsed","note_text":"","note_text_as_html":"","query_id":null,"subtitle_text":null,"title":"Average
-        Order Sale Price","title_hidden":false,"title_text":null,"type":"vis"},"dashboard_filter":null,"scheduled_plan":null,"alert":null,"lookml_dashboard":null,"lookml_dashboard_element":null,"errors":[{"message":"Unknown
-        field \"orders.average_profit\".","field_name":"orders.average_profit","model_name":"thelook","explore_name":"order_items","removable":true}],"id":0},{"look":null,"dashboard":{"description":"","title":"Business
-        Pulse","space":{"name":"Shared","id":1},"folder":{"name":"Shared","id":1},"id":1},"dashboard_element":{"body_text":null,"dashboard_id":1,"id":12,"look_id":null,"note_display":"hover","note_state":"collapsed","note_text":"What
-        percent of orders are followed by a repeat purchase by the same user within
-        30 days?","note_text_as_html":"What percent of orders are followed by a repeat
-        purchase by the same user within 30 days?","query_id":null,"subtitle_text":null,"title":"30
-        Day Repeat Purchase Rate","title_hidden":false,"title_text":null,"type":"vis"},"dashboard_filter":null,"scheduled_plan":null,"alert":null,"lookml_dashboard":null,"lookml_dashboard_element":null,"errors":[{"message":"Unknown
-        field \"repeat_purchase_facts.30_day_repeat_purchase_rate\".","field_name":"repeat_purchase_facts.30_day_repeat_purchase_rate","model_name":"thelook","explore_name":"order_items","removable":true}],"id":1},{"look":null,"dashboard":{"description":null,"title":"Brand
-        Analytics, Web \u0026 Transactional","space":{"name":"Shared","id":1},"folder":{"name":"Shared","id":1},"id":2},"dashboard_element":{"body_text":null,"dashboard_id":2,"id":24,"look_id":null,"note_display":null,"note_state":null,"note_text":null,"note_text_as_html":null,"query_id":null,"subtitle_text":null,"title":"Brand
-        Share of Wallet over Customer Lifetime","title_hidden":false,"title_text":null,"type":"vis"},"dashboard_filter":null,"scheduled_plan":null,"alert":null,"lookml_dashboard":null,"lookml_dashboard_element":null,"errors":[{"message":"Unknown
-        field \"order_items.share_of_wallet_brand_within_company\".","field_name":"order_items.share_of_wallet_brand_within_company","model_name":"thelook","explore_name":"orders_with_share_of_wallet_application","removable":true},{"message":"Unknown
-        field \"order_items.item_comparison\".","field_name":"order_items.item_comparison","model_name":"thelook","explore_name":"orders_with_share_of_wallet_application","removable":true}],"id":2},{"look":null,"dashboard":{"description":null,"title":"testing","space":{"name":"Dylan
-        Baker","id":6},"folder":{"name":"Dylan Baker","id":6},"id":9},"dashboard_element":{"body_text":null,"dashboard_id":9,"id":60,"look_id":null,"note_display":null,"note_state":null,"note_text":null,"note_text_as_html":null,"query_id":null,"subtitle_text":null,"title":"Brand
-        Share of Wallet over Customer Lifetime","title_hidden":false,"title_text":null,"type":"vis"},"dashboard_filter":null,"scheduled_plan":null,"alert":null,"lookml_dashboard":null,"lookml_dashboard_element":null,"errors":[{"message":"Unknown
-        field \"order_items.share_of_wallet_brand_within_company\".","field_name":"order_items.share_of_wallet_brand_within_company","model_name":"thelook","explore_name":"orders_with_share_of_wallet_application","removable":true},{"message":"Unknown
-        field \"order_items.item_comparison\".","field_name":"order_items.item_comparison","model_name":"thelook","explore_name":"orders_with_share_of_wallet_application","removable":true}],"id":3},{"look":{"id":7,"title":"Top
-        10 Users by State [fail] [personal]","short_url":"/looks/7","space":{"name":"pytest","id":25},"folder":{"name":"pytest","id":25}},"dashboard":null,"dashboard_element":null,"dashboard_filter":null,"scheduled_plan":null,"alert":null,"lookml_dashboard":null,"lookml_dashboard_element":null,"errors":[{"message":"Unknown
-        field \"users__fail.state\".","field_name":"users__fail.state","model_name":"eye_exam","explore_name":"users__fail","removable":true}],"id":4},{"look":{"id":8,"title":"Top
-        10 Users by State [fail] [personal]","short_url":"/looks/8","space":{"name":"Josh
-        Temple","id":8},"folder":{"name":"Josh Temple","id":8}},"dashboard":null,"dashboard_element":null,"dashboard_filter":null,"scheduled_plan":null,"alert":null,"lookml_dashboard":null,"lookml_dashboard_element":null,"errors":[{"message":"Unknown
-        field \"users__fail.state\".","field_name":"users__fail.state","model_name":"eye_exam","explore_name":"users__fail","removable":true}],"id":5},{"look":{"id":9,"title":"Top
-        10 Users by State [fail]","short_url":"/looks/9","space":{"name":"pytest","id":26},"folder":{"name":"pytest","id":26}},"dashboard":null,"dashboard_element":null,"dashboard_filter":null,"scheduled_plan":null,"alert":null,"lookml_dashboard":null,"lookml_dashboard_element":null,"errors":[{"message":"Unknown
-        field \"users__fail.state\".","field_name":"users__fail.state","model_name":"eye_exam","explore_name":"users__fail","removable":true}],"id":6},{"look":null,"dashboard":{"description":null,"title":"Customer
-        Snapshot","space":{"name":"Web Application","id":27},"folder":{"name":"Web
-        Application","id":27},"id":7},"dashboard_element":{"body_text":null,"dashboard_id":7,"id":98,"look_id":null,"note_display":null,"note_state":null,"note_text":null,"note_text_as_html":null,"query_id":8759,"subtitle_text":null,"title":"Median
-        Runtime","title_hidden":false,"title_text":null,"type":"vis"},"dashboard_filter":null,"scheduled_plan":null,"alert":null,"lookml_dashboard":null,"lookml_dashboard_element":null,"errors":[{"message":"Calculation
-        references field \"runs.median_queued_time\" not in query.","field_name":"runs.median_queued_time","model_name":"web_application","explore_name":"runs","removable":null}],"id":7}],"computation_time":0.29235099999999997,"total_looks_validated":28,"total_dashboard_elements_validated":72,"total_dashboard_filters_validated":10,"total_scheduled_plans_validated":6,"total_alerts_validated":0,"total_explores_validated":17}'
+      string: '[{"model_name":"eye_exam","name":"users_age_should_be_in_expected_range","explore_name":"users","query_url_params":"fields=users.age\u0026limit=500\u0026dynamic_fields=%5B%7B%22table_calculation%22%3A%22looker_assert_age_should_be_greater_than_zero%22%2C%22label%22%3A%22Age+Should+Be+Greater+Than+Zero%22%2C%22expression%22%3A%22%24%7Busers.age%7D+%5Cu003e+0+%22%7D%2C%7B%22table_calculation%22%3A%22looker_assert_age_should_be_less_than_130%22%2C%22label%22%3A%22Age+Should+Be+Less+Than+130%22%2C%22expression%22%3A%22%24%7Busers.age%7D+%5Cu003c+130+%22%7D%5D","file":"eye_exam/eye_exam.model.lkml","line":7,"can":{}},{"model_name":"eye_exam","name":"users_name_should_be_in_caps","explore_name":"users","query_url_params":"fields=users.first_name,users.last_name\u0026limit=500\u0026dynamic_fields=%5B%7B%22table_calculation%22%3A%22looker_assert_users_first_name_should_be_in_caps%22%2C%22label%22%3A%22Users+First+Name+Should+Be+In+Caps%22%2C%22expression%22%3A%22%24%7Busers.first_name%7D+%3D+upper%28%24%7Busers.first_name%7D%29+%22%7D%2C%7B%22table_calculation%22%3A%22looker_assert_users_last_name_should_be_in_caps%22%2C%22label%22%3A%22Users+Last+Name+Should+Be+In+Caps%22%2C%22expression%22%3A%22%24%7Busers.last_name%7D+%3D+upper%28%24%7Busers.last_name%7D%29+%22%7D%5D","file":"eye_exam/eye_exam.model.lkml","line":21,"can":{}},{"model_name":"eye_exam","name":"users__fail_age_should_be_in_expected_range","explore_name":"users__fail","query_url_params":"fields=users__fail.age\u0026limit=500\u0026dynamic_fields=%5B%7B%22table_calculation%22%3A%22looker_assert_age_should_be_greater_than_zero%22%2C%22label%22%3A%22Age+Should+Be+Greater+Than+Zero%22%2C%22expression%22%3A%22%24%7Busers__fail.age%7D+%5Cu003e+130+%22%7D%2C%7B%22table_calculation%22%3A%22looker_assert_age_should_be_less_than_130%22%2C%22label%22%3A%22Age+Should+Be+Less+Than+130%22%2C%22expression%22%3A%22%24%7Busers__fail.age%7D+%5Cu003c+0+%22%7D%5D","file":"eye_exam/eye_exam.model.lkml","line":40,"can":{}},{"model_name":"eye_exam","name":"users__fail_name_should_be_in_caps","explore_name":"users__fail","query_url_params":"fields=users__fail.first_name,users__fail.last_name\u0026limit=500\u0026dynamic_fields=%5B%7B%22table_calculation%22%3A%22looker_assert_users__fail_first_name_should_be_in_caps%22%2C%22label%22%3A%22Users+Fail+First+Name+Should+Be+In+Caps%22%2C%22expression%22%3A%22%24%7Busers__fail.first_name%7D+%3D+upper%28%24%7Busers__fail.first_name%7D%29+%22%7D%2C%7B%22table_calculation%22%3A%22looker_assert_users__fail_last_name_should_be_in_caps%22%2C%22label%22%3A%22Users+Fail+Last+Name+Should+Be+In+Caps%22%2C%22expression%22%3A%22%24%7Busers__fail.last_name%7D+%3D+upper%28%24%7Busers__fail.last_name%7D%29+%22%7D%5D","file":"eye_exam/eye_exam.model.lkml","line":54,"can":{}}]'
     headers:
       Connection:
       - keep-alive
       Content-Length:
-      - '6268'
+      - '2784'
       Content-Type:
       - application/json
       Date:
-      - Tue, 28 Dec 2021 16:11:44 GMT
+      - Mon, 04 Apr 2022 17:24:15 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - ce0baace383e8e38
+      - 4955ade58d21143d
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - ce0baace383e8e38
+      - 4955ade58d21143d
       X-B3-TraceId:
-      - 61cb3740cd7262d5ce0baace383e8e38
+      - 624b29bfaab5cfe14955ade58d21143d
       X-Content-Type-Options:
       - nosniff
     status:

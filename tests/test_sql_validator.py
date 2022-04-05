@@ -1,81 +1,56 @@
 from typing import Iterable, List
 from unittest.mock import patch, create_autospec
 import pytest
-import vcr
 from spectacles.validators import SqlValidator
 from spectacles.validators.sql import SqlTest, Query
 from spectacles.exceptions import SpectaclesException
 from spectacles.lookml import Project, build_project
 
 
+@pytest.mark.default_cassette("fixture_validator_init.yaml")
+@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
 @pytest.fixture(scope="class")
-def validator(looker_client, record_mode) -> Iterable[SqlValidator]:
-    with vcr.use_cassette(
-        "tests/cassettes/test_sql_validator/fixture_validator_init.yaml",
-        match_on=["uri", "method", "raw_body"],
-        filter_headers=["Authorization"],
-        record_mode=record_mode,
-    ):
-        validator = SqlValidator(looker_client)
-        yield validator
+def validator(looker_client) -> Iterable[SqlValidator]:
+    validator = SqlValidator(looker_client)
+    yield validator
 
 
 class TestValidatePass:
     """Test the eye_exam Looker project on master for an explore without errors."""
 
+    @pytest.mark.default_cassette("fixture_project_pass.yaml")
+    @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
     @pytest.fixture(scope="class")
-    def project(self, looker_client, record_mode) -> Iterable[Project]:
-        with vcr.use_cassette(
-            "tests/cassettes/test_sql_validator/fixture_project_pass.yaml",
-            match_on=["uri", "method", "raw_body"],
-            filter_headers=["Authorization"],
-            record_mode=record_mode,
-        ):
-            project = build_project(
-                looker_client,
-                name="eye_exam",
-                filters=["eye_exam/users"],
-                include_dimensions=True,
-            )
-            yield project
+    def project(self, looker_client) -> Iterable[Project]:
+        project = build_project(
+            looker_client,
+            name="eye_exam",
+            filters=["eye_exam/users"],
+            include_dimensions=True,
+        )
+        yield project
 
+    @pytest.mark.default_cassette("fixture_explore_tests_pass.yaml")
+    @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
     @pytest.fixture(scope="class")
-    def explore_tests(self, validator, project, record_mode) -> Iterable[List[SqlTest]]:
-        with vcr.use_cassette(
-            "tests/cassettes/test_sql_validator/fixture_explore_tests_pass.yaml",
-            match_on=["uri", "method", "raw_body"],
-            filter_headers=["Authorization"],
-            record_mode=record_mode,
-        ):
-            yield validator.create_tests(project, compile_sql=True)
+    def explore_tests(self, validator, project) -> Iterable[List[SqlTest]]:
+        yield validator.create_tests(project, compile_sql=True)
 
+    @pytest.mark.default_cassette("fixture_validator_pass.yaml")
+    @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
     @pytest.fixture(scope="class")
-    def validator_after_run(
-        self, validator, explore_tests, record_mode
-    ) -> Iterable[SqlValidator]:
-        with vcr.use_cassette(
-            "tests/cassettes/test_sql_validator/fixture_validator_pass.yaml",
-            match_on=["uri", "method", "raw_body"],
-            filter_headers=["Authorization"],
-            record_mode=record_mode,
-        ):
-            validator.run_tests(list(explore_tests))
-            yield validator
+    def validator_after_run(self, validator, explore_tests) -> Iterable[SqlValidator]:
+        validator.run_tests(list(explore_tests))
+        yield validator
 
+    @pytest.mark.default_cassette("fixture_dimension_tests_pass.yaml")
+    @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
     @pytest.fixture(scope="class")
-    def dimension_tests(
-        self, validator_after_run, project, record_mode
-    ) -> Iterable[List[SqlTest]]:
+    def dimension_tests(self, validator_after_run, project) -> Iterable[List[SqlTest]]:
         """Create dimension-level tests after the explore-level validation completes."""
-        with vcr.use_cassette(
-            "tests/cassettes/test_sql_validator/fixture_dimension_tests_pass.yaml",
-            match_on=["uri", "method", "raw_body"],
-            filter_headers=["Authorization"],
-            record_mode=record_mode,
-        ):
-            yield validator_after_run.create_tests(
-                project, compile_sql=True, at_dimension_level=True
-            )
+        yield validator_after_run.create_tests(
+            project, compile_sql=True, at_dimension_level=True
+        )
 
     def test_project_should_be_queried_but_not_have_errors(
         self, validator_after_run, explore_tests, project
@@ -107,59 +82,39 @@ class TestValidatePass:
 class TestValidateFail:
     """Test the eye_exam Looker project on master for an explore with errors."""
 
+    @pytest.mark.default_cassette("fixture_project_fail.yaml")
+    @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
     @pytest.fixture(scope="class")
-    def project(self, looker_client, record_mode) -> Iterable[Project]:
-        with vcr.use_cassette(
-            "tests/cassettes/test_sql_validator/fixture_project_fail.yaml",
-            match_on=["uri", "method", "raw_body"],
-            filter_headers=["Authorization"],
-            record_mode=record_mode,
-        ):
-            project = build_project(
-                looker_client,
-                name="eye_exam",
-                filters=["eye_exam/users__fail"],
-                include_dimensions=True,
-            )
-            yield project
+    def project(self, looker_client) -> Iterable[Project]:
+        project = build_project(
+            looker_client,
+            name="eye_exam",
+            filters=["eye_exam/users__fail"],
+            include_dimensions=True,
+        )
+        yield project
 
+    @pytest.mark.default_cassette("fixture_explore_tests_fail.yaml")
+    @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
     @pytest.fixture(scope="class")
-    def explore_tests(self, validator, project, record_mode) -> Iterable[List[SqlTest]]:
-        with vcr.use_cassette(
-            "tests/cassettes/test_sql_validator/fixture_explore_tests_fail.yaml",
-            match_on=["uri", "method", "raw_body"],
-            filter_headers=["Authorization"],
-            record_mode=record_mode,
-        ):
-            yield validator.create_tests(project, compile_sql=True)
+    def explore_tests(self, validator, project) -> Iterable[List[SqlTest]]:
+        yield validator.create_tests(project, compile_sql=True)
 
+    @pytest.mark.default_cassette("fixture_validator_fail.yaml")
+    @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
     @pytest.fixture(scope="class")
-    def validator_after_run(
-        self, validator, explore_tests, record_mode
-    ) -> Iterable[SqlValidator]:
-        with vcr.use_cassette(
-            "tests/cassettes/test_sql_validator/fixture_validator_fail.yaml",
-            match_on=["uri", "method", "raw_body"],
-            filter_headers=["Authorization"],
-            record_mode=record_mode,
-        ):
-            validator.run_tests(list(explore_tests))
-            yield validator
+    def validator_after_run(self, validator, explore_tests) -> Iterable[SqlValidator]:
+        validator.run_tests(list(explore_tests))
+        yield validator
 
+    @pytest.mark.default_cassette("fixture_dimension_tests_fail.yaml")
+    @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
     @pytest.fixture(scope="class")
-    def dimension_tests(
-        self, validator_after_run, project, record_mode
-    ) -> Iterable[List[SqlTest]]:
+    def dimension_tests(self, validator_after_run, project) -> Iterable[List[SqlTest]]:
         """Create dimension-level tests after the explore-level validation completes."""
-        with vcr.use_cassette(
-            "tests/cassettes/test_sql_validator/fixture_dimension_tests_fail.yaml",
-            match_on=["uri", "method", "raw_body"],
-            filter_headers=["Authorization"],
-            record_mode=record_mode,
-        ):
-            yield validator_after_run.create_tests(
-                project, compile_sql=True, at_dimension_level=True
-            )
+        yield validator_after_run.create_tests(
+            project, compile_sql=True, at_dimension_level=True
+        )
 
     def test_project_should_be_queried_and_have_at_least_one_error(
         self, validator_after_run, explore_tests, project

@@ -35,6 +35,10 @@ jobs:
           key: v1-dependencies-{{ checksum "requirements-dev.txt" }}
 
       - run:
+          name: Check for secrets in cassettes
+          command: scripts/detect_cassette_secrets.bash tests/cassettes/**/*.yaml
+
+      - run:
           name: mypy
           command: |
             . venv/bin/activate
@@ -62,7 +66,7 @@ jobs:
           name: pytest and coverage
           command: |
             . venv/bin/activate
-            coverage run --source spectacles -m pytest --record-mode=none
+            coverage run --source spectacles -m pytest --record-mode none --block-network
             coverage report
 
 workflows:

@@ -8,68 +8,34 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=4560
-    method: POST
-    uri: https://spectacles.looker.com:19999/api/3.1/queries
-  response:
-    body:
-      string: '{"id":1945,"view":"users","fields":null,"pivots":null,"fill_fields":null,"filters":null,"filter_expression":"1=2","sorts":null,"limit":"0","column_limit":null,"total":null,"row_total":null,"subtotals":null,"vis_config":null,"filter_config":null,"visible_ui_sections":null,"slug":"64n322h","dynamic_fields":null,"client_id":"DIXL8LS20QeCUNhDRkywY3","share_url":"https://spectacles.looker.com/x/DIXL8LS20QeCUNhDRkywY3","expanded_share_url":"https://spectacles.looker.com/explore/eye_exam/users?filter_expression=1%3D2\u0026limit=0\u0026origin=share-expanded","url":"/explore/eye_exam/users?filter_expression=1%3D2\u0026limit=0","query_timezone":null,"runtime":null,"has_table_calculations":false,"model":"eye_exam","can":{"run":true,"see_results":true,"explore":true,"create":true,"show":true,"cost_estimate":true,"index":true,"see_lookml":true,"see_aggregate_table_lookml":false,"see_derived_table_lookml":true,"see_sql":true,"generate_drill_links":true,"download":true,"download_unlimited":true,"schedule":true,"render":true}}'
-    headers:
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '1026'
-      Content-Type:
-      - application/json
-      Date:
-      - Wed, 13 May 2020 23:41:51 GMT
-      Server:
-      - nginx
-      Vary:
-      - Accept-Encoding
-      - Accept-Encoding
-      X-Content-Type-Options:
-      - nosniff
-    status:
-      code: 200
-      message: OK
-- request:
-    body: '{"model": "eye_exam", "view": "users", "fields": [], "limit": 0, "filter_expression":
-      "1=2"}'
-    headers:
-      Content-Length:
-      - '92'
-      Content-Type:
-      - application/json
-      Cookie:
-      - looker.browser=59426826
+      - looker.browser=29676601
     method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/queries?fields=
   response:
     body:
-      string: '{"id":1945,"view":"users","fields":null,"pivots":null,"fill_fields":null,"filters":null,"filter_expression":"1=2","sorts":null,"limit":"0","column_limit":null,"total":null,"row_total":null,"subtotals":null,"vis_config":null,"filter_config":null,"visible_ui_sections":null,"slug":"64n322h","client_id":"DIXL8LS20QeCUNhDRkywY3","share_url":"https://spectacles.looker.com/x/DIXL8LS20QeCUNhDRkywY3","expanded_share_url":"https://spectacles.looker.com/explore/eye_exam/users?filter_expression=1%3D2\u0026limit=0\u0026origin=share-expanded","url":"/explore/eye_exam/users?filter_expression=1%3D2\u0026limit=0","runtime":null,"has_table_calculations":false,"model":"eye_exam","dynamic_fields":null,"query_timezone":null,"quick_calcs":null,"analysis_config":null,"can":{"run":true,"see_results":true,"explore":true,"create":true,"show":true,"cost_estimate":true,"index":true,"see_lookml":true,"see_aggregate_table_lookml":true,"see_derived_table_lookml":true,"see_sql":true,"save":true,"generate_drill_links":true,"download":true,"download_unlimited":true,"use_custom_fields":true,"schedule":true,"render":true}}'
+      string: '{"id":1945,"view":"users","fields":null,"pivots":null,"fill_fields":null,"filters":null,"filter_expression":"1=2","sorts":null,"limit":"0","column_limit":null,"total":null,"row_total":null,"subtotals":null,"vis_config":null,"filter_config":null,"visible_ui_sections":null,"slug":"64n322h","client_id":"DIXL8LS20QeCUNhDRkywY3","share_url":"https://spectacles.looker.com/x/DIXL8LS20QeCUNhDRkywY3","expanded_share_url":"https://spectacles.looker.com/explore/eye_exam/users?filter_expression=1%3D2\u0026limit=0\u0026origin=share-expanded","url":"/explore/eye_exam/users?filter_expression=1%3D2\u0026limit=0","runtime":null,"has_table_calculations":false,"model":"eye_exam","dynamic_fields":null,"query_timezone":null,"quick_calcs":null,"analysis_config":null,"can":{"run":true,"see_results":true,"explore":true,"create":true,"show":true,"cost_estimate":true,"index":true,"see_lookml":true,"see_aggregate_table_lookml":true,"see_derived_table_lookml":true,"see_sql":true,"save":true,"generate_drill_links":true,"download":true,"download_unlimited":true,"use_custom_fields":true,"edit_custom_fields":true,"edit_table_calculations":true,"schedule":true,"render":true}}'
     headers:
       Connection:
       - keep-alive
       Content-Length:
-      - '1104'
+      - '1161'
       Content-Type:
       - application/json
       Date:
-      - Tue, 28 Dec 2021 16:14:09 GMT
+      - Fri, 01 Apr 2022 20:25:59 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - d85e654477c26da5
+      - c82803e4c9f79d2c
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - d85e654477c26da5
+      - c82803e4c9f79d2c
       X-B3-TraceId:
-      - 61cb37d15b1945a2d85e654477c26da5
+      - 62475fd782f54abdc82803e4c9f79d2c
       X-Content-Type-Options:
       - nosniff
     status:

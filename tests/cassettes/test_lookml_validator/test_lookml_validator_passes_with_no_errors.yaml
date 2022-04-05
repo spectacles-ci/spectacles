@@ -2,14 +2,12 @@ interactions:
 - request:
     body: '{"workspace_id": "production"}'
     headers:
-      Authorization:
-      - token qfcZvnknJn5xsNnbywKvP48sqJFtG3SbVqg25ykc
       Content-Length:
       - '30'
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39774474
+      - looker.browser=29676601
     method: PATCH
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -23,19 +21,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 05 Jan 2022 08:45:20 GMT
+      - Fri, 01 Apr 2022 20:25:57 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 4839c1978f10dc21
+      - 92c2dc874305fd13
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 4839c1978f10dc21
+      - 92c2dc874305fd13
       X-B3-TraceId:
-      - 61d55aa0fc1d9b6a4839c1978f10dc21
+      - 62475fd595f52fbf92c2dc874305fd13
       X-Content-Type-Options:
       - nosniff
     status:
@@ -44,17 +42,13 @@ interactions:
 - request:
     body: null
     headers:
-      Authorization:
-      - token qfcZvnknJn5xsNnbywKvP48sqJFtG3SbVqg25ykc
-      Content-Length:
-      - '0'
       Cookie:
-      - looker.browser=39774474
-    method: POST
+      - looker.browser=29676601
+    method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/validate
   response:
     body:
-      string: '{"errors":[],"models_not_validated":[],"computation_time":0.3703641891479492,"project_digest":"9f98f2e3c467f7278687abe04020082a4d15d3cd"}'
+      string: '{"errors":[],"models_not_validated":[],"computation_time":null,"stale":false,"project_digest":"821c1bb5e893d2957d15e2b0781124fd29742bd6"}'
     headers:
       Connection:
       - keep-alive
@@ -63,19 +57,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 05 Jan 2022 08:45:21 GMT
+      - Fri, 01 Apr 2022 20:25:57 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - d881ca51182be849
+      - f6f1e8c5d50f7832
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - d881ca51182be849
+      - f6f1e8c5d50f7832
       X-B3-TraceId:
-      - 61d55aa0fe967bd6d881ca51182be849
+      - 62475fd5b5735dfff6f1e8c5d50f7832
       X-Content-Type-Options:
       - nosniff
     status:

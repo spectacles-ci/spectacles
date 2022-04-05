@@ -50,16 +50,27 @@ class ProfilerResult:
         )
 
 
-@dataclass
 class SqlTest:
-    queries: List[Query]
-    lookml_ref: Union[Dimension, Explore]
-    explore_url: str
-    sql: Optional[str] = None
-    query_task_id: Optional[str] = None
-    status: Optional[str] = None
-    runtime: Optional[float] = None
-    error: Optional[SqlError] = None
+    def __init__(
+        self,
+        queries: List[Query],
+        lookml_ref: Union[Dimension, Explore],
+        explore_url: str,
+        sql: Optional[str] = None,
+        query_task_id: Optional[str] = None,
+        status: Optional[str] = None,
+        runtime: Optional[float] = None,
+        error: Optional[SqlError] = None,
+    ):
+        self.queries = queries
+        self.explore_url = explore_url
+        self.query_task_id = query_task_id
+        self.status = status
+        self.runtime = runtime
+        self.error = error
+
+        self._lookml_ref = lookml_ref
+        self._sql = sql
 
     @property
     def failed(self) -> bool:
@@ -69,19 +80,32 @@ class SqlTest:
     def lookml_url(self) -> Optional[str]:
         return getattr(self.lookml_ref, "url", None)
 
+    @property
+    def lookml_ref(self) -> Union[Dimension, Explore]:
+        return self._lookml_ref
+
+    @property
+    def sql(self) -> Optional[str]:
+        return self._sql
+
+    # Reminder: __eq__ is used for set equality
     def __eq__(self, other: Any) -> bool:
         if isinstance(other, self.__class__):
             if self.sql and other.sql:
-                return self.sql == other.sql and self.lookml_ref == other.lookml_ref
+                return (
+                    self.lookml_ref.model_name == other.lookml_ref.model_name
+                    and self.lookml_ref.name == other.lookml_ref.name
+                    and self.sql == other.sql
+                )
             else:
                 return self.lookml_ref == other.lookml_ref
         else:
-            return False
+            raise NotImplementedError
 
     def __hash__(self) -> int:
         if self.sql is None:
             raise ValueError("Test has no SQL defined")
-        return hash(self.lookml_ref.model_name + self.lookml_ref.name + self.sql)
+        return hash((self.lookml_ref.model_name, self.lookml_ref.name, self.sql))
 
     def __dict__(self):
         metadata = {"explore_url": self.explore_url}

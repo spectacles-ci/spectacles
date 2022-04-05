@@ -1,0 +1,144 @@
+interactions:
+- request:
+    body: '{"workspace_id": "dev"}'
+    headers:
+      Content-Length:
+      - '23'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=29676601
+    method: PATCH
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"dev","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '76'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 01 Apr 2022 20:25:57 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 4769fb70375964ee
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 4769fb70375964ee
+      X-B3-TraceId:
+      - 62475fd579e4d3fa4769fb70375964ee
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"name": "pytest-fail-lookml"}'
+    headers:
+      Content-Length:
+      - '30'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=29676601
+    method: PUT
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
+  response:
+    body:
+      string: '{"name":"pytest-fail-lookml","remote":"origin","remote_name":"pytest-fail-lookml","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1648842609,"ref":"067426a7d80ca00cdd982b2373ae8757756ff799","remote_ref":"067426a7d80ca00cdd982b2373ae8757756ff799","can":{}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '387'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 01 Apr 2022 20:25:58 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - ead3692251ce45c7
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - ead3692251ce45c7
+      X-B3-TraceId:
+      - 62475fd59394fc2fead3692251ce45c7
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=29676601
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/validate
+  response:
+    body:
+      string: '{"errors":[{"code":null,"severity":"warning","kind":"error","message":"Using
+        \"use_aragonite\" in manifest.lkml without \"LookML New Runtime (Aragonite)\"
+        enabled is not supported. Param ignored.","field_name":null,"file_path":null,"line_number":null,"model_id":"eye_exam","explore":"users","help_url":null,"params":{"level":"warning","scope":"phase_zero","from_dictionary":true},"sanitized_message":"Using
+        \"use_aragonite\" in manifest.lkml without \"(?)\" enabled is not supported.
+        Param ignored."},{"code":null,"severity":"warning","kind":"error","message":"Using
+        \"use_aragonite\" in manifest.lkml without \"LookML New Runtime (Aragonite)\"
+        enabled is not supported. Param ignored.","field_name":null,"file_path":null,"line_number":null,"model_id":"eye_exam","explore":"users__fail","help_url":null,"params":{"level":"warning","scope":"phase_zero","from_dictionary":true},"sanitized_message":"Using
+        \"use_aragonite\" in manifest.lkml without \"(?)\" enabled is not supported.
+        Param ignored."},{"code":null,"severity":"warning","kind":"error","message":"Using
+        \"use_aragonite\" in manifest.lkml without \"LookML New Runtime (Aragonite)\"
+        enabled is not supported. Param ignored.","field_name":null,"file_path":null,"line_number":null,"model_id":"eye_exam","explore":"users__fail_and_warn","help_url":null,"params":{"level":"warning","scope":"phase_zero","from_dictionary":true},"sanitized_message":"Using
+        \"use_aragonite\" in manifest.lkml without \"(?)\" enabled is not supported.
+        Param ignored."},{"code":null,"severity":"warning","kind":"error","message":"Using
+        \"use_aragonite\" in manifest.lkml without \"LookML New Runtime (Aragonite)\"
+        enabled is not supported. Param ignored.","field_name":null,"file_path":null,"line_number":null,"model_id":"eye_exam","explore":"users__warn","help_url":null,"params":{"level":"warning","scope":"phase_zero","from_dictionary":true},"sanitized_message":"Using
+        \"use_aragonite\" in manifest.lkml without \"(?)\" enabled is not supported.
+        Param ignored."},{"code":null,"severity":"error","kind":"error","message":"Invalid
+        property for \"test\": asser","field_name":null,"file_path":"eye_exam/eye_exam.model.lkml","line_number":13,"model_id":null,"explore":null,"help_url":null,"params":{"level":"error"},"sanitized_message":"Invalid
+        property for \"test\": asser"},{"code":null,"severity":"error","kind":"error","message":"Could
+        not find a field named \"users.age\"","field_name":null,"file_path":"eye_exam/eye_exam.model.lkml","line_number":10,"model_id":null,"explore":null,"help_url":null,"params":{"level":"error"},"sanitized_message":"Could
+        not find a field named \"users.age\""},{"code":null,"severity":"warning","kind":"error","message":"Using
+        \"use_aragonite\" in manifest.lkml without \"LookML New Runtime (Aragonite)\"
+        enabled is not supported. Param ignored.","field_name":null,"file_path":null,"line_number":null,"model_id":null,"explore":null,"help_url":null,"params":{"level":"warning","scope":"phase_zero"},"sanitized_message":"Using
+        \"use_aragonite\" in manifest.lkml without \"(?)\" enabled is not supported.
+        Param ignored."}],"models_not_validated":[],"computation_time":null,"stale":false,"project_digest":"273c17de4cd2c421a149c4e1df4d0ba5ce29b47a"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '3209'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 01 Apr 2022 20:25:58 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 5ccb8351a35e5738
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 5ccb8351a35e5738
+      X-B3-TraceId:
+      - 62475fd6b1d7e8cf5ccb8351a35e5738
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+version: 1

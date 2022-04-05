@@ -1,21 +1,16 @@
 from typing import Iterable, List
 import pytest
-import vcr
 from spectacles.lookml import build_project
 from spectacles.validators import ContentValidator
 from spectacles.exceptions import ContentError, SpectaclesException
 
 
+@pytest.mark.default_cassette("fixture_validator_init.yaml")
+@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
 @pytest.fixture(scope="class")
-def validator(looker_client, record_mode) -> Iterable[ContentValidator]:
-    with vcr.use_cassette(
-        "tests/cassettes/test_content_validator/fixture_validator_init.yaml",
-        match_on=["uri", "method", "raw_body"],
-        filter_headers=["Authorization"],
-        record_mode=record_mode,
-    ):
-        validator = ContentValidator(looker_client, exclude_personal=True)
-        yield validator
+def validator(looker_client) -> Iterable[ContentValidator]:
+    validator = ContentValidator(looker_client, exclude_personal=True)
+    yield validator
 
 
 def test_get_content_type_with_bad_keys_should_raise_key_error(validator):
@@ -33,19 +28,15 @@ def test_get_tile_type_with_bad_keys_should_raise_key_error(validator):
 class TestValidatePass:
     """Test the eye_exam Looker project on master for an explore without errors."""
 
+    @pytest.mark.default_cassette("fixture_validator_pass.yaml")
+    @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
     @pytest.fixture(scope="class")
-    def validator_errors(self, validator, record_mode) -> Iterable[List[ContentError]]:
-        with vcr.use_cassette(
-            "tests/cassettes/test_content_validator/fixture_validator_pass.yaml",
-            match_on=["uri", "method", "raw_body"],
-            filter_headers=["Authorization"],
-            record_mode=record_mode,
-        ):
-            project = build_project(
-                validator.client, name="eye_exam", filters=["eye_exam/users"]
-            )
-            errors: List[ContentError] = validator.validate(project)
-            yield errors
+    def validator_errors(self, validator) -> Iterable[List[ContentError]]:
+        project = build_project(
+            validator.client, name="eye_exam", filters=["eye_exam/users"]
+        )
+        errors: List[ContentError] = validator.validate(project)
+        yield errors
 
     def test_should_not_return_errors(self, validator_errors):
         assert len(validator_errors) == 0
@@ -54,19 +45,15 @@ class TestValidatePass:
 class TestValidateFail:
     """Test the eye_exam Looker project on master for an explore without errors."""
 
+    @pytest.mark.default_cassette("fixture_validator_fail.yaml")
+    @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
     @pytest.fixture(scope="class")
-    def validator_errors(self, validator, record_mode) -> Iterable[List[ContentError]]:
-        with vcr.use_cassette(
-            "tests/cassettes/test_content_validator/fixture_validator_fail.yaml",
-            match_on=["uri", "method", "raw_body"],
-            filter_headers=["Authorization"],
-            record_mode=record_mode,
-        ):
-            project = build_project(
-                validator.client, name="eye_exam", filters=["eye_exam/users__fail"]
-            )
-            errors: List[ContentError] = validator.validate(project)
-            yield errors
+    def validator_errors(self, validator) -> Iterable[List[ContentError]]:
+        project = build_project(
+            validator.client, name="eye_exam", filters=["eye_exam/users__fail"]
+        )
+        errors: List[ContentError] = validator.validate(project)
+        yield errors
 
     def test_should_return_errors(self, validator_errors):
         assert len(validator_errors) == 1
@@ -80,20 +67,16 @@ class TestValidateFail:
 class TestValidateFailExcludeFolder:
     """Test the eye_exam Looker project on master for an explore without errors."""
 
+    @pytest.mark.default_cassette("fixture_validator_fail_excl.yaml")
+    @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
     @pytest.fixture(scope="class")
-    def validator_errors(self, validator, record_mode) -> Iterable[List[ContentError]]:
-        with vcr.use_cassette(
-            "tests/cassettes/test_content_validator/fixture_validator_fail_excl.yaml",
-            match_on=["uri", "method", "raw_body"],
-            filter_headers=["Authorization"],
-            record_mode=record_mode,
-        ):
-            project = build_project(
-                validator.client, name="eye_exam", filters=["eye_exam/users__fail"]
-            )
-            validator.excluded_folders.append(26)
-            errors: List[ContentError] = validator.validate(project)
-            yield errors
+    def validator_errors(self, validator) -> Iterable[List[ContentError]]:
+        project = build_project(
+            validator.client, name="eye_exam", filters=["eye_exam/users__fail"]
+        )
+        validator.excluded_folders.append(26)
+        errors: List[ContentError] = validator.validate(project)
+        yield errors
 
     def test_error_from_excluded_folder_should_be_ignored(self, validator_errors):
         assert len(validator_errors) == 0
@@ -102,20 +85,16 @@ class TestValidateFailExcludeFolder:
 class TestValidateFailIncludeFolder:
     """Test the eye_exam Looker project on master for an explore without errors."""
 
+    @pytest.mark.default_cassette("fixture_validator_fail_incl.yaml")
+    @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
     @pytest.fixture(scope="class")
-    def validator_errors(self, validator, record_mode) -> Iterable[List[ContentError]]:
-        with vcr.use_cassette(
-            "tests/cassettes/test_content_validator/fixture_validator_fail_incl.yaml",
-            match_on=["uri", "method", "raw_body"],
-            filter_headers=["Authorization"],
-            record_mode=record_mode,
-        ):
-            project = build_project(
-                validator.client, name="eye_exam", filters=["eye_exam/users__fail"]
-            )
-            validator.included_folders.append(26)
-            errors: List[ContentError] = validator.validate(project)
-            yield errors
+    def validator_errors(self, validator) -> Iterable[List[ContentError]]:
+        project = build_project(
+            validator.client, name="eye_exam", filters=["eye_exam/users__fail"]
+        )
+        validator.included_folders.append(26)
+        errors: List[ContentError] = validator.validate(project)
+        yield errors
 
     def test_error_from_included_folder_should_be_returned(self, validator_errors):
         assert len(validator_errors) == 1
@@ -124,24 +103,17 @@ class TestValidateFailIncludeFolder:
 class TestValidateFailIncludeExcludeFolder:
     """Test the eye_exam Looker project on master for an explore without errors."""
 
+    @pytest.mark.default_cassette("fixture_validator_fail_incl_excl.yaml")
+    @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
     @pytest.fixture(scope="class")
-    def validator_errors(self, validator, record_mode) -> Iterable[List[ContentError]]:
-        with vcr.use_cassette(
-            (
-                "tests/cassettes/test_content_validator/"
-                "fixture_validator_fail_incl_excl.yaml"
-            ),
-            match_on=["uri", "method", "raw_body"],
-            filter_headers=["Authorization"],
-            record_mode=record_mode,
-        ):
-            project = build_project(
-                validator.client, name="eye_exam", filters=["eye_exam/users__fail"]
-            )
-            validator.included_folders.append(26)
-            validator.excluded_folders.append(26)
-            errors: List[ContentError] = validator.validate(project)
-            yield errors
+    def validator_errors(self, validator) -> Iterable[List[ContentError]]:
+        project = build_project(
+            validator.client, name="eye_exam", filters=["eye_exam/users__fail"]
+        )
+        validator.included_folders.append(26)
+        validator.excluded_folders.append(26)
+        errors: List[ContentError] = validator.validate(project)
+        yield errors
 
     def test_excluded_folder_should_take_priority_over_included_folder(
         self, validator_errors

@@ -1,5 +1,6 @@
 from typing import Optional
 from pathlib import Path
+import textwrap
 import logging
 import colorama  # type: ignore
 
@@ -14,10 +15,58 @@ COLORS = {
     "reset": colorama.Style.RESET_ALL,
 }
 
+
+class IndentedFormatter(logging.Formatter):
+    def __init__(self, fmt: Optional[str] = None):
+        super().__init__(fmt)
+        self._indent = 0
+
+    def indent(self, amount: int) -> None:
+        self._indent += amount
+
+    @property
+    def _indent_string(self) -> str:
+        if self._indent > 0:
+            return (".." * self._indent) + " "
+        else:
+            return ""
+
+    def format(self, record) -> str:
+        message = super().format(record=record)
+        # Only wrap for debug logs, info+ logs can be wrapped in the record itself
+        if record.levelno == logging.DEBUG and not record.exc_info:
+            return "\n".join(
+                textwrap.wrap(
+                    self._indent_string + message,
+                    width=88,
+                    replace_whitespace=False,
+                    subsequent_indent=" " + "  " * (self._indent + 1),
+                )
+            )
+        else:
+            return message
+
+
+class FileFormatter(IndentedFormatter):
+    def format(self, record):
+        message = super().format(record=record)
+        formatted = delete_color_codes(message)
+        return formatted
+
+
+class IndentedLogger(logging.Logger):
+    def indent(self, amount: int) -> None:
+        for handler in self.handlers:
+            if isinstance(handler.formatter, IndentedFormatter):
+                handler.formatter.indent(amount)
+
+
+logging.setLoggerClass(IndentedLogger)
 logger = logging.getLogger("spectacles")
 logger.setLevel(logging.DEBUG)
 
 ch = logging.StreamHandler()
+ch.setFormatter(IndentedFormatter())
 ch.setLevel(logging.INFO)
 
 logger.addHandler(ch)
@@ -46,13 +95,6 @@ def delete_color_codes(text: str) -> str:
     for escape_sequence in COLORS.values():
         text = text.replace(escape_sequence, "")
     return text
-
-
-class FileFormatter(logging.Formatter):
-    def format(self, record):
-        message = super().format(record=record)
-        formatted = delete_color_codes(message)
-        return formatted
 
 
 def log_sql_error(

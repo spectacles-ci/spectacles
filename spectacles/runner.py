@@ -16,7 +16,7 @@ from spectacles.exceptions import SpectaclesException
 from spectacles.utils import time_hash
 from spectacles.lookml import build_project, Project, Explore
 from spectacles.logger import GLOBAL_LOGGER as logger
-from spectacles.printer import print_header, LINE_WIDTH
+from spectacles.printer import print_header
 
 
 @dataclass
@@ -56,9 +56,10 @@ class LookerBranchManager:
         self.import_managers: List[LookerBranchManager] = []
 
     def __call__(self, ref: Optional[str] = None, ephemeral: Optional[bool] = None):
+        logger.debug("")
         logger.debug(
-            f"\nSetting Git state for project '{self.project}' "
-            f"@ {ref or 'production'}\n" + "-" * LINE_WIDTH
+            f"Setting Git state for project '{self.project}' "
+            f"@ {ref or 'production'}:\n"
         )
         self.branch = None
         self.commit = None
@@ -90,6 +91,7 @@ class LookerBranchManager:
         return self
 
     def __enter__(self):
+        logger.indent(1)
         # A branch was passed, so we check it out in dev mode.
         if self.branch:
             self.update_workspace("dev")
@@ -141,7 +143,13 @@ class LookerBranchManager:
                 manager(ref=import_ref, ephemeral=True).__enter__()
                 self.import_managers.append(manager)
 
+        logger.indent(-1)
+        logger.debug("")
+
     def __exit__(self, *args):
+        logger.debug("")
+        logger.debug(f"Cleaning up Git state in '{self.project}'")
+        logger.indent(1)
         message = (
             f"Restoring project '{self.project}' to branch '{self.init_state.branch}'"
         )
@@ -162,6 +170,9 @@ class LookerBranchManager:
         else:
             self.update_workspace("dev")
             self.client.checkout_branch(self.project, self.init_state.branch)
+
+        logger.indent(-1)
+        logger.debug("")
 
     @property
     def init_state(self) -> ProjectState:
