@@ -1,10 +1,14 @@
 interactions:
 - request:
-    body: null
+    body: '{"workspace_id": "production"}'
     headers:
+      Content-Length:
+      - '30'
+      Content-Type:
+      - application/json
       Cookie:
       - looker.browser=13521405
-    method: GET
+    method: PATCH
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
     body:
@@ -17,92 +21,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 06 Apr 2022 18:11:43 GMT
+      - Wed, 06 Apr 2022 18:11:44 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - f8ea5fb2fa62080f
+      - 78ed4f49f6204b03
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - f8ea5fb2fa62080f
+      - 78ed4f49f6204b03
       X-B3-TraceId:
-      - 624dd7dfde9948d5f8ea5fb2fa62080f
-      X-Content-Type-Options:
-      - nosniff
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Cookie:
-      - looker.browser=13521405
-    method: GET
-    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
-  response:
-    body:
-      string: '{"name":"master","remote":"origin","remote_name":"master","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":true,"ahead_count":0,"behind_count":0,"commit_at":1648823366,"ref":"b0823dad6abb07bf26e468bf91e7c6531c758e32","remote_ref":"b0823dad6abb07bf26e468bf91e7c6531c758e32","can":{}}'
-    headers:
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '362'
-      Content-Type:
-      - application/json
-      Date:
-      - Wed, 06 Apr 2022 18:11:43 GMT
-      Strict-Transport-Security:
-      - max-age=15724800; includeSubDomains
-      Vary:
-      - Accept-Encoding
-      - Accept-Encoding, Origin
-      X-B3-ParentSpanId:
-      - 3574cdb4bfb0a03e
-      X-B3-Sampled:
-      - '0'
-      X-B3-SpanId:
-      - 3574cdb4bfb0a03e
-      X-B3-TraceId:
-      - 624dd7df9f0069663574cdb4bfb0a03e
-      X-Content-Type-Options:
-      - nosniff
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Cookie:
-      - looker.browser=13521405
-    method: GET
-    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/manifest
-  response:
-    body:
-      string: '{"name":"eye_exam","imports":[{"name":"welcome_to_looker","url":null,"ref":null,"is_remote":false,"can":{}}],"localization_settings":null,"can":{}}'
-    headers:
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '147'
-      Content-Type:
-      - application/json
-      Date:
-      - Wed, 06 Apr 2022 18:11:43 GMT
-      Strict-Transport-Security:
-      - max-age=15724800; includeSubDomains
-      Vary:
-      - Accept-Encoding, Origin
-      X-B3-ParentSpanId:
-      - bb9d924d96fa10fc
-      X-B3-Sampled:
-      - '0'
-      X-B3-SpanId:
-      - bb9d924d96fa10fc
-      X-B3-TraceId:
-      - 624dd7df932819a7bb9d924d96fa10fc
+      - 624dd7e0a834879678ed4f49f6204b03
       X-Content-Type-Options:
       - nosniff
     status:
@@ -197,82 +128,6 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 06 Apr 2022 18:11:43 GMT
-      Strict-Transport-Security:
-      - max-age=15724800; includeSubDomains
-      Vary:
-      - Accept-Encoding
-      - Accept-Encoding, Origin
-      X-B3-ParentSpanId:
-      - cf5aede56a1ed8d4
-      X-B3-Sampled:
-      - '0'
-      X-B3-SpanId:
-      - cf5aede56a1ed8d4
-      X-B3-TraceId:
-      - 624dd7df1ba28b45cf5aede56a1ed8d4
-      X-Content-Type-Options:
-      - nosniff
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Cookie:
-      - looker.browser=13521405
-    method: GET
-    uri: https://spectacles.looker.com:19999/api/3.1/content_validation
-  response:
-    body:
-      string: '{"content_with_errors":[{"look":null,"dashboard":{"description":"","title":"Business
-        Pulse","space":{"name":"Shared","id":1},"folder":{"name":"Shared","id":1},"id":1},"dashboard_element":{"body_text":null,"dashboard_id":1,"id":2,"look_id":null,"note_display":"below","note_state":"collapsed","note_text":"","note_text_as_html":"","query_id":null,"subtitle_text":null,"title":"Average
-        Order Sale Price","title_hidden":false,"title_text":null,"type":"vis","rich_content_json":null},"dashboard_filter":null,"scheduled_plan":null,"alert":null,"lookml_dashboard":null,"lookml_dashboard_element":null,"errors":[{"message":"Unknown
-        field \"orders.average_profit\".","field_name":"orders.average_profit","model_name":"thelook","explore_name":"order_items","removable":true}],"id":0},{"look":null,"dashboard":{"description":"","title":"Business
-        Pulse","space":{"name":"Shared","id":1},"folder":{"name":"Shared","id":1},"id":1},"dashboard_element":{"body_text":null,"dashboard_id":1,"id":12,"look_id":null,"note_display":"hover","note_state":"collapsed","note_text":"What
-        percent of orders are followed by a repeat purchase by the same user within
-        30 days?","note_text_as_html":"What percent of orders are followed by a repeat
-        purchase by the same user within 30 days?","query_id":null,"subtitle_text":null,"title":"30
-        Day Repeat Purchase Rate","title_hidden":false,"title_text":null,"type":"vis","rich_content_json":null},"dashboard_filter":null,"scheduled_plan":null,"alert":null,"lookml_dashboard":null,"lookml_dashboard_element":null,"errors":[{"message":"Unknown
-        field \"repeat_purchase_facts.30_day_repeat_purchase_rate\".","field_name":"repeat_purchase_facts.30_day_repeat_purchase_rate","model_name":"thelook","explore_name":"order_items","removable":true}],"id":1},{"look":null,"dashboard":{"description":null,"title":"Brand
-        Analytics, Web \u0026 Transactional","space":{"name":"Shared","id":1},"folder":{"name":"Shared","id":1},"id":2},"dashboard_element":{"body_text":null,"dashboard_id":2,"id":24,"look_id":null,"note_display":null,"note_state":null,"note_text":null,"note_text_as_html":null,"query_id":null,"subtitle_text":null,"title":"Brand
-        Share of Wallet over Customer Lifetime","title_hidden":false,"title_text":null,"type":"vis","rich_content_json":null},"dashboard_filter":null,"scheduled_plan":null,"alert":null,"lookml_dashboard":null,"lookml_dashboard_element":null,"errors":[{"message":"Unknown
-        field \"order_items.share_of_wallet_brand_within_company\".","field_name":"order_items.share_of_wallet_brand_within_company","model_name":"thelook","explore_name":"orders_with_share_of_wallet_application","removable":true},{"message":"Unknown
-        field \"order_items.item_comparison\".","field_name":"order_items.item_comparison","model_name":"thelook","explore_name":"orders_with_share_of_wallet_application","removable":true}],"id":2},{"look":null,"dashboard":{"description":null,"title":"testing","space":{"name":"Dylan
-        Baker","id":6},"folder":{"name":"Dylan Baker","id":6},"id":9},"dashboard_element":{"body_text":null,"dashboard_id":9,"id":60,"look_id":null,"note_display":null,"note_state":null,"note_text":null,"note_text_as_html":null,"query_id":null,"subtitle_text":null,"title":"Brand
-        Share of Wallet over Customer Lifetime","title_hidden":false,"title_text":null,"type":"vis","rich_content_json":null},"dashboard_filter":null,"scheduled_plan":null,"alert":null,"lookml_dashboard":null,"lookml_dashboard_element":null,"errors":[{"message":"Unknown
-        field \"order_items.share_of_wallet_brand_within_company\".","field_name":"order_items.share_of_wallet_brand_within_company","model_name":"thelook","explore_name":"orders_with_share_of_wallet_application","removable":true},{"message":"Unknown
-        field \"order_items.item_comparison\".","field_name":"order_items.item_comparison","model_name":"thelook","explore_name":"orders_with_share_of_wallet_application","removable":true}],"id":3},{"look":{"id":7,"title":"Top
-        10 Users by State [fail] [personal]","short_url":"/looks/7","space":{"name":"pytest","id":25},"folder":{"name":"pytest","id":25}},"dashboard":null,"dashboard_element":null,"dashboard_filter":null,"scheduled_plan":null,"alert":null,"lookml_dashboard":null,"lookml_dashboard_element":null,"errors":[{"message":"Unknown
-        field \"users__fail.state\".","field_name":"users__fail.state","model_name":"eye_exam","explore_name":"users__fail","removable":true}],"id":4},{"look":{"id":8,"title":"Top
-        10 Users by State [fail] [personal]","short_url":"/looks/8","space":{"name":"Josh
-        Temple","id":8},"folder":{"name":"Josh Temple","id":8}},"dashboard":null,"dashboard_element":null,"dashboard_filter":null,"scheduled_plan":null,"alert":null,"lookml_dashboard":null,"lookml_dashboard_element":null,"errors":[{"message":"Unknown
-        field \"users__fail.state\".","field_name":"users__fail.state","model_name":"eye_exam","explore_name":"users__fail","removable":true}],"id":5},{"look":{"id":9,"title":"Top
-        10 Users by State [fail]","short_url":"/looks/9","space":{"name":"pytest","id":26},"folder":{"name":"pytest","id":26}},"dashboard":null,"dashboard_element":null,"dashboard_filter":null,"scheduled_plan":null,"alert":null,"lookml_dashboard":null,"lookml_dashboard_element":null,"errors":[{"message":"Unknown
-        field \"users__fail.state\".","field_name":"users__fail.state","model_name":"eye_exam","explore_name":"users__fail","removable":true}],"id":6},{"look":null,"dashboard":{"description":"","title":"Business
-        Pulse","space":{"name":"Looker eCommerce","id":47},"folder":{"name":"Looker
-        eCommerce","id":47},"id":16},"dashboard_element":{"body_text":null,"dashboard_id":16,"id":117,"look_id":null,"note_display":"below","note_state":"expanded","note_text":"","note_text_as_html":"","query_id":null,"subtitle_text":null,"title":"Average
-        Order Sale Price","title_hidden":false,"title_text":null,"type":"vis","rich_content_json":null},"dashboard_filter":null,"scheduled_plan":null,"alert":null,"lookml_dashboard":null,"lookml_dashboard_element":null,"errors":[{"message":"Unknown
-        field \"orders.average_profit\".","field_name":"orders.average_profit","model_name":"thelook_partner","explore_name":"order_items","removable":true}],"id":7},{"look":null,"dashboard":{"description":"","title":"Business
-        Pulse","space":{"name":"Looker eCommerce","id":47},"folder":{"name":"Looker
-        eCommerce","id":47},"id":16},"dashboard_element":{"body_text":null,"dashboard_id":16,"id":125,"look_id":null,"note_display":"hover","note_state":"collapsed","note_text":"What
-        percent of orders are followed by a repeat purchase by the same user within
-        30 days?","note_text_as_html":"What percent of orders are followed by a repeat
-        purchase by the same user within 30 days?","query_id":null,"subtitle_text":null,"title":"30
-        Day Repeat Purchase Rate","title_hidden":false,"title_text":null,"type":"vis","rich_content_json":null},"dashboard_filter":null,"scheduled_plan":null,"alert":null,"lookml_dashboard":null,"lookml_dashboard_element":null,"errors":[{"message":"Unknown
-        field \"repeat_purchase_facts.30_day_repeat_purchase_rate\".","field_name":"repeat_purchase_facts.30_day_repeat_purchase_rate","model_name":"thelook_partner","explore_name":"order_items","removable":true}],"id":8},{"look":null,"dashboard":{"description":null,"title":"Web
-        Analytics Overview","space":{"name":"Looker eCommerce","id":47},"folder":{"name":"Looker
-        eCommerce","id":47},"id":24},"dashboard_element":{"body_text":null,"dashboard_id":24,"id":203,"look_id":null,"note_display":"below","note_state":"expanded","note_text":"","note_text_as_html":"","query_id":null,"subtitle_text":null,"title":"Total
-        Profit","title_hidden":false,"title_text":null,"type":"vis","rich_content_json":null},"dashboard_filter":null,"scheduled_plan":null,"alert":null,"lookml_dashboard":null,"lookml_dashboard_element":null,"errors":[{"message":"Unknown
-        field \"orders.total_profit_k\".","field_name":"orders.total_profit_k","model_name":"thelook_partner","explore_name":"order_items","removable":true}],"id":9}],"computation_time":0.6636350000000001,"total_looks_validated":31,"total_dashboard_elements_validated":167,"total_dashboard_filters_validated":29,"total_scheduled_plans_validated":9,"total_alerts_validated":0,"total_explores_validated":26}'
-    headers:
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '8187'
-      Content-Type:
-      - application/json
-      Date:
       - Wed, 06 Apr 2022 18:11:44 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
@@ -280,13 +135,13 @@ interactions:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 5294a7b80d408ba7
+      - 152d042fdd0f6615
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 5294a7b80d408ba7
+      - 152d042fdd0f6615
       X-B3-TraceId:
-      - 624dd7df12d0aa245294a7b80d408ba7
+      - 624dd7e0e3bcd4fe152d042fdd0f6615
       X-Content-Type-Options:
       - nosniff
     status:

@@ -1,0 +1,112 @@
+interactions:
+- request:
+    body: '{"workspace_id": "production"}'
+    headers:
+      Content-Length:
+      - '30'
+      Content-Type:
+      - application/json
+      Cookie:
+      - looker.browser=13521405
+    method: PATCH
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    body:
+      string: '{"workspace_id":"production","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '83'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 06 Apr 2022 18:11:58 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 80241cb0fed2fc59
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 80241cb0fed2fc59
+      X-B3-TraceId:
+      - 624dd7eed15ae59c80241cb0fed2fc59
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Cookie:
+      - looker.browser=13521405
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/validate
+  response:
+    body:
+      string: ''
+    headers:
+      Connection:
+      - keep-alive
+      Date:
+      - Wed, 06 Apr 2022 18:11:58 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Origin
+      X-B3-ParentSpanId:
+      - 6baeabb9b923a43e
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 6baeabb9b923a43e
+      X-B3-TraceId:
+      - 624dd7ee9056ccbb6baeabb9b923a43e
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 204
+      message: No Content
+- request:
+    body: null
+    headers:
+      Content-Length:
+      - '0'
+      Cookie:
+      - looker.browser=13521405
+    method: POST
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/validate
+  response:
+    body:
+      string: '{"errors":[],"models_not_validated":[],"computation_time":0.15073609352111816,"project_digest":"821c1bb5e893d2957d15e2b0781124fd29742bd6"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '138'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 06 Apr 2022 18:11:58 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 11068b5c512a872f
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 11068b5c512a872f
+      X-B3-TraceId:
+      - 624dd7ee0a5f207911068b5c512a872f
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+version: 1
