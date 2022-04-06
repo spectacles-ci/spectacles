@@ -3,7 +3,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -17,19 +17,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:13 GMT
+      - Wed, 06 Apr 2022 18:30:04 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - c4f28c66f86d77a1
+      - 05cc1848aae24d18
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - c4f28c66f86d77a1
+      - 05cc1848aae24d18
       X-B3-TraceId:
-      - 624c4b315cb634cac4f28c66f86d77a1
+      - 624ddc2c873c288105cc1848aae24d18
       X-Content-Type-Options:
       - nosniff
     status:
@@ -39,7 +39,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
   response:
@@ -53,20 +53,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:13 GMT
+      - Wed, 06 Apr 2022 18:30:04 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - de0fb9354de0fba5
+      - 5f07d2d33e37a193
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - de0fb9354de0fba5
+      - 5f07d2d33e37a193
       X-B3-TraceId:
-      - 624c4b314809585fde0fb9354de0fba5
+      - 624ddc2c2c982d305f07d2d33e37a193
       X-Content-Type-Options:
       - nosniff
     status:
@@ -80,7 +80,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: PATCH
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -94,19 +94,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:14 GMT
+      - Wed, 06 Apr 2022 18:30:04 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - c8f6edbe0a079be6
+      - e439a167aa5fbc7c
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - c8f6edbe0a079be6
+      - e439a167aa5fbc7c
       X-B3-TraceId:
-      - 624c4b324da53283c8f6edbe0a079be6
+      - 624ddc2cae75f250e439a167aa5fbc7c
       X-Content-Type-Options:
       - nosniff
     status:
@@ -116,7 +116,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -130,19 +130,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:14 GMT
+      - Wed, 06 Apr 2022 18:30:04 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 61adfafa5d0933ea
+      - d29e7d38f33eb0a2
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 61adfafa5d0933ea
+      - d29e7d38f33eb0a2
       X-B3-TraceId:
-      - 624c4b32d4b26f5b61adfafa5d0933ea
+      - 624ddc2cb15c26e4d29e7d38f33eb0a2
       X-Content-Type-Options:
       - nosniff
     status:
@@ -152,34 +152,34 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
   response:
     body:
-      string: '{"name":"pytest","remote":"origin","remote_name":"pytest","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1648832027,"ref":"742b118d314d2478a215aa02016c09e173deec7e","remote_ref":"742b118d314d2478a215aa02016c09e173deec7e","can":{}}'
+      string: '{"name":"pytest-incremental-equal","remote":"origin","remote_name":"pytest-incremental-equal","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1648832027,"ref":"742b118d314d2478a215aa02016c09e173deec7e","remote_ref":"742b118d314d2478a215aa02016c09e173deec7e","can":{}}'
     headers:
       Connection:
       - keep-alive
       Content-Length:
-      - '363'
+      - '399'
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:14 GMT
+      - Wed, 06 Apr 2022 18:30:04 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - f494f902e23258b4
+      - 01c7d7ad07b81f31
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - f494f902e23258b4
+      - 01c7d7ad07b81f31
       X-B3-TraceId:
-      - 624c4b327e0afd7cf494f902e23258b4
+      - 624ddc2cd0838b6b01c7d7ad07b81f31
       X-Content-Type-Options:
       - nosniff
     status:
@@ -193,7 +193,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
   response:
@@ -207,34 +207,34 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:14 GMT
+      - Wed, 06 Apr 2022 18:30:04 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 9326e7cebe24d7fa
+      - 03d2fcdf8d4e9ed1
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 9326e7cebe24d7fa
+      - 03d2fcdf8d4e9ed1
       X-B3-TraceId:
-      - 624c4b3205218d049326e7cebe24d7fa
+      - 624ddc2cbc57defb03d2fcdf8d4e9ed1
       X-Content-Type-Options:
       - nosniff
     status:
       code: 200
       message: OK
 - request:
-    body: '{"name": "tmp_spectacles_a", "ref": "pytest-incremental-fix-prod"}'
+    body: '{"name": "tmp_spectacles_a", "ref": "origin/pytest-incremental-fix-prod"}'
     headers:
       Content-Length:
-      - '66'
+      - '73'
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: PUT
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
   response:
@@ -248,20 +248,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:16 GMT
+      - Wed, 06 Apr 2022 18:30:06 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 4770fefd85e14afd
+      - c7898ad8ba4c7c81
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 4770fefd85e14afd
+      - c7898ad8ba4c7c81
       X-B3-TraceId:
-      - 624c4b32b56656a94770fefd85e14afd
+      - 624ddc2dec310d04c7898ad8ba4c7c81
       X-Content-Type-Options:
       - nosniff
     status:
@@ -271,7 +271,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/manifest
   response:
@@ -285,19 +285,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:16 GMT
+      - Wed, 06 Apr 2022 18:30:07 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 36299d9698bad051
+      - 9c705962d6fbe85c
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 36299d9698bad051
+      - 9c705962d6fbe85c
       X-B3-TraceId:
-      - 624c4b3474d0295b36299d9698bad051
+      - 624ddc2fca6bab269c705962d6fbe85c
       X-Content-Type-Options:
       - nosniff
     status:
@@ -307,7 +307,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -321,19 +321,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:16 GMT
+      - Wed, 06 Apr 2022 18:30:07 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - a993a74da4e8f97a
+      - 4238d13faa9ec3cc
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - a993a74da4e8f97a
+      - 4238d13faa9ec3cc
       X-B3-TraceId:
-      - 624c4b34a9dd8b95a993a74da4e8f97a
+      - 624ddc2f180d505f4238d13faa9ec3cc
       X-Content-Type-Options:
       - nosniff
     status:
@@ -343,7 +343,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
   response:
@@ -357,20 +357,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:16 GMT
+      - Wed, 06 Apr 2022 18:30:07 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 7a6f847abbaa7044
+      - febd71f90fbb6d9d
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 7a6f847abbaa7044
+      - febd71f90fbb6d9d
       X-B3-TraceId:
-      - 624c4b34f1419ae67a6f847abbaa7044
+      - 624ddc2f35442f55febd71f90fbb6d9d
       X-Content-Type-Options:
       - nosniff
     status:
@@ -384,7 +384,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: PATCH
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -398,19 +398,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:16 GMT
+      - Wed, 06 Apr 2022 18:30:07 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 0a6c8c0f2f9564b5
+      - 9ade9b4caaf5f0c8
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 0a6c8c0f2f9564b5
+      - 9ade9b4caaf5f0c8
       X-B3-TraceId:
-      - 624c4b34851c64e10a6c8c0f2f9564b5
+      - 624ddc2f53b6db689ade9b4caaf5f0c8
       X-Content-Type-Options:
       - nosniff
     status:
@@ -420,7 +420,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -434,19 +434,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:16 GMT
+      - Wed, 06 Apr 2022 18:30:07 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 7acadf468fbbde81
+      - dc851bee2158509c
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 7acadf468fbbde81
+      - dc851bee2158509c
       X-B3-TraceId:
-      - 624c4b348f5e45347acadf468fbbde81
+      - 624ddc2f146584dbdc851bee2158509c
       X-Content-Type-Options:
       - nosniff
     status:
@@ -456,7 +456,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
   response:
@@ -470,20 +470,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:16 GMT
+      - Wed, 06 Apr 2022 18:30:07 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 39223dd32a8bd020
+      - b9e4a36d75bce8e2
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 39223dd32a8bd020
+      - b9e4a36d75bce8e2
       X-B3-TraceId:
-      - 624c4b3493c8fa1439223dd32a8bd020
+      - 624ddc2f60abec0ab9e4a36d75bce8e2
       X-Content-Type-Options:
       - nosniff
     status:
@@ -497,7 +497,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: PATCH
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -511,19 +511,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:17 GMT
+      - Wed, 06 Apr 2022 18:30:07 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 84008cdf96a7a40e
+      - 7397adf096bcf14d
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 84008cdf96a7a40e
+      - 7397adf096bcf14d
       X-B3-TraceId:
-      - 624c4b348f0bf67d84008cdf96a7a40e
+      - 624ddc2fb3358f857397adf096bcf14d
       X-Content-Type-Options:
       - nosniff
     status:
@@ -533,7 +533,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -547,19 +547,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:17 GMT
+      - Wed, 06 Apr 2022 18:30:07 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 50e993fc5a95ce73
+      - 3030f38f318d42cc
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 50e993fc5a95ce73
+      - 3030f38f318d42cc
       X-B3-TraceId:
-      - 624c4b350a905a7750e993fc5a95ce73
+      - 624ddc2fdea3a4d63030f38f318d42cc
       X-Content-Type-Options:
       - nosniff
     status:
@@ -569,7 +569,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
   response:
@@ -583,20 +583,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:17 GMT
+      - Wed, 06 Apr 2022 18:30:07 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 9ef4d6c8a8e3228b
+      - ceeefdd84211284b
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 9ef4d6c8a8e3228b
+      - ceeefdd84211284b
       X-B3-TraceId:
-      - 624c4b35307e81dd9ef4d6c8a8e3228b
+      - 624ddc2f87a24d52ceeefdd84211284b
       X-Content-Type-Options:
       - nosniff
     status:
@@ -610,7 +610,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
   response:
@@ -624,20 +624,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:17 GMT
+      - Wed, 06 Apr 2022 18:30:08 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - ce0719b763209516
+      - b4bdb27036b2897e
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - ce0719b763209516
+      - b4bdb27036b2897e
       X-B3-TraceId:
-      - 624c4b351952826ece0719b763209516
+      - 624ddc2ff2e1e32cb4bdb27036b2897e
       X-Content-Type-Options:
       - nosniff
     status:
@@ -651,7 +651,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: PUT
     uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
   response:
@@ -665,20 +665,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:18 GMT
+      - Wed, 06 Apr 2022 18:30:08 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 8e4173fc0c5340dc
+      - 137c18fd3e08e574
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 8e4173fc0c5340dc
+      - 137c18fd3e08e574
       X-B3-TraceId:
-      - 624c4b35837d50d08e4173fc0c5340dc
+      - 624ddc30667695d3137c18fd3e08e574
       X-Content-Type-Options:
       - nosniff
     status:
@@ -688,7 +688,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/manifest
   response:
@@ -737,7 +737,7 @@ interactions:
       Content-Type:
       - text/html
       Date:
-      - Tue, 05 Apr 2022 13:59:18 GMT
+      - Wed, 06 Apr 2022 18:30:09 GMT
       Vary:
       - Accept-Encoding
     status:
@@ -747,7 +747,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/lookml_models?fields=name%2Cproject_name%2Cexplores
   response:
@@ -822,29 +822,30 @@ interactions:
         Items (Kittens)","hidden":true,"group_label":" eCommerce","name":"kitten_order_items","can":{}},{"description":null,"label":"E-Comm
         Cohort Analysis Training","hidden":false,"group_label":" eCommerce","name":"ecomm_training_info","can":{}},{"description":null,"label":"Kmeans
         Model5","hidden":false,"group_label":" eCommerce","name":"kmeans_model5","can":{}},{"description":null,"label":"(8)
-        Cohort Analysis","hidden":false,"group_label":" eCommerce","name":"ecomm_predict","can":{}}]},{"name":"square","project_name":"square_demo","explores":[{"description":null,"label":"Payments","hidden":false,"group_label":"Square","name":"payments","can":{}},{"description":null,"label":"Sellers","hidden":false,"group_label":"Square","name":"sellers","can":{}}]}]'
+        Cohort Analysis","hidden":false,"group_label":" eCommerce","name":"ecomm_predict","can":{}}]},{"name":"square","project_name":"square_demo","explores":[{"description":null,"label":"Payments","hidden":false,"group_label":"Square","name":"payments","can":{}},{"description":null,"label":"Sellers","hidden":false,"group_label":"Square","name":"sellers","can":{}}]},{"name":"ecomm","project_name":"looker-demo","explores":[{"description":null,"label":"Demo
+        - Orders","hidden":false,"group_label":"Ecomm","name":"order_items","can":{}}]}]'
     headers:
       Connection:
       - keep-alive
       Content-Length:
-      - '10535'
+      - '10706'
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:19 GMT
+      - Wed, 06 Apr 2022 18:30:09 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - b56331e8b3f8999c
+      - bb31fc877a3d5d12
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - b56331e8b3f8999c
+      - bb31fc877a3d5d12
       X-B3-TraceId:
-      - 624c4b3601ccca21b56331e8b3f8999c
+      - 624ddc3101a6ef62bb31fc877a3d5d12
       X-Content-Type-Options:
       - nosniff
     status:
@@ -854,7 +855,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/lookml_models/eye_exam/explores/users?fields=fields
   response:
@@ -885,20 +886,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:19 GMT
+      - Wed, 06 Apr 2022 18:30:10 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - d87850635d207c98
+      - 90af4b2d49039911
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - d87850635d207c98
+      - 90af4b2d49039911
       X-B3-TraceId:
-      - 624c4b3717d19935d87850635d207c98
+      - 624ddc31f5b48b8390af4b2d49039911
       X-Content-Type-Options:
       - nosniff
     status:
@@ -908,7 +909,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/lookml_models/eye_exam/explores/users__fail?fields=fields
   response:
@@ -944,20 +945,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:19 GMT
+      - Wed, 06 Apr 2022 18:30:10 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 706ba8dcd11aafda
+      - f546efa196f825ad
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 706ba8dcd11aafda
+      - f546efa196f825ad
       X-B3-TraceId:
-      - 624c4b37ed104062706ba8dcd11aafda
+      - 624ddc32284c99bef546efa196f825ad
       X-Content-Type-Options:
       - nosniff
     status:
@@ -973,7 +974,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/queries?fields=id%2Cshare_url
   response:
@@ -987,19 +988,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:19 GMT
+      - Wed, 06 Apr 2022 18:30:10 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 444b3057ea358e1b
+      - 87fb9f155ce983c6
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 444b3057ea358e1b
+      - 87fb9f155ce983c6
       X-B3-TraceId:
-      - 624c4b377a2dbab8444b3057ea358e1b
+      - 624ddc3297cb86de87fb9f155ce983c6
       X-Content-Type-Options:
       - nosniff
     status:
@@ -1009,7 +1010,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/queries/2216/run/sql
   response:
@@ -1026,19 +1027,19 @@ interactions:
       Content-Type:
       - application/sql
       Date:
-      - Tue, 05 Apr 2022 13:59:19 GMT
+      - Wed, 06 Apr 2022 18:30:10 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 5166bf5244abf653
+      - 0d56c4a75c35c5d5
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 5166bf5244abf653
+      - 0d56c4a75c35c5d5
       X-B3-TraceId:
-      - 624c4b379cfcefd35166bf5244abf653
+      - 624ddc32058c8b200d56c4a75c35c5d5
       X-Content-Type-Options:
       - nosniff
     status:
@@ -1054,7 +1055,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/queries?fields=id%2Cshare_url
   response:
@@ -1068,19 +1069,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:19 GMT
+      - Wed, 06 Apr 2022 18:30:10 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 21683e971cfc581d
+      - 1019bf4967daa5fa
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 21683e971cfc581d
+      - 1019bf4967daa5fa
       X-B3-TraceId:
-      - 624c4b37f047f8fa21683e971cfc581d
+      - 624ddc32c4b286281019bf4967daa5fa
       X-Content-Type-Options:
       - nosniff
     status:
@@ -1090,7 +1091,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/queries/1944/run/sql
   response:
@@ -1108,60 +1109,60 @@ interactions:
       Content-Type:
       - application/sql
       Date:
-      - Tue, 05 Apr 2022 13:59:19 GMT
+      - Wed, 06 Apr 2022 18:30:10 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - fd9a5e09c1305ba9
+      - c29f35652e3c0f38
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - fd9a5e09c1305ba9
+      - c29f35652e3c0f38
       X-B3-TraceId:
-      - 624c4b377d9d5f8bfd9a5e09c1305ba9
+      - 624ddc327af741d0c29f35652e3c0f38
       X-Content-Type-Options:
       - nosniff
     status:
       code: 200
       message: OK
 - request:
-    body: '{"name": "pytest"}'
+    body: '{"name": "pytest-incremental-equal"}'
     headers:
       Content-Length:
-      - '18'
+      - '36'
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: PUT
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
   response:
     body:
-      string: '{"name":"pytest","remote":"origin","remote_name":"pytest","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1648832027,"ref":"742b118d314d2478a215aa02016c09e173deec7e","remote_ref":"742b118d314d2478a215aa02016c09e173deec7e","can":{}}'
+      string: '{"name":"pytest-incremental-equal","remote":"origin","remote_name":"pytest-incremental-equal","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1648832027,"ref":"742b118d314d2478a215aa02016c09e173deec7e","remote_ref":"742b118d314d2478a215aa02016c09e173deec7e","can":{}}'
     headers:
       Connection:
       - keep-alive
       Content-Length:
-      - '363'
+      - '399'
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:20 GMT
+      - Wed, 06 Apr 2022 18:30:11 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 37cb51087bafbf17
+      - 14466677126e8818
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 37cb51087bafbf17
+      - 14466677126e8818
       X-B3-TraceId:
-      - 624c4b37b7c6915d37cb51087bafbf17
+      - 624ddc3258b55ad414466677126e8818
       X-Content-Type-Options:
       - nosniff
     status:
@@ -1173,7 +1174,7 @@ interactions:
       Content-Length:
       - '0'
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: DELETE
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch/tmp_spectacles_a
   response:
@@ -1183,19 +1184,19 @@ interactions:
       Connection:
       - keep-alive
       Date:
-      - Tue, 05 Apr 2022 13:59:21 GMT
+      - Wed, 06 Apr 2022 18:30:12 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Origin
       X-B3-ParentSpanId:
-      - 94bc866812b3b4de
+      - 49c90f1737803695
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 94bc866812b3b4de
+      - 49c90f1737803695
       X-B3-TraceId:
-      - 624c4b3864a1458094bc866812b3b4de
+      - 624ddc33d66e910e49c90f1737803695
       X-Content-Type-Options:
       - nosniff
     status:
@@ -1209,7 +1210,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: PUT
     uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
   response:
@@ -1223,20 +1224,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:22 GMT
+      - Wed, 06 Apr 2022 18:30:13 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 881ab668bcfeb70c
+      - 7bbffd7d1e21bd10
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 881ab668bcfeb70c
+      - 7bbffd7d1e21bd10
       X-B3-TraceId:
-      - 624c4b39eec67f4d881ab668bcfeb70c
+      - 624ddc3495c6c7c87bbffd7d1e21bd10
       X-Content-Type-Options:
       - nosniff
     status:
@@ -1248,7 +1249,7 @@ interactions:
       Content-Length:
       - '0'
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: DELETE
     uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch/tmp_spectacles_b
   response:
@@ -1258,19 +1259,19 @@ interactions:
       Connection:
       - keep-alive
       Date:
-      - Tue, 05 Apr 2022 13:59:22 GMT
+      - Wed, 06 Apr 2022 18:30:13 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Origin
       X-B3-ParentSpanId:
-      - cf6b0f77d9ac1d97
+      - 21c3f5a1805de2ed
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - cf6b0f77d9ac1d97
+      - 21c3f5a1805de2ed
       X-B3-TraceId:
-      - 624c4b3a3f4419c1cf6b0f77d9ac1d97
+      - 624ddc35946bf8d421c3f5a1805de2ed
       X-Content-Type-Options:
       - nosniff
     status:
@@ -1284,7 +1285,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: PUT
     uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
   response:
@@ -1298,20 +1299,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:22 GMT
+      - Wed, 06 Apr 2022 18:30:14 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - d1057ace842aca2a
+      - 2ad65ba240c5c8ad
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - d1057ace842aca2a
+      - 2ad65ba240c5c8ad
       X-B3-TraceId:
-      - 624c4b3a58b1b367d1057ace842aca2a
+      - 624ddc35e45dfe062ad65ba240c5c8ad
       X-Content-Type-Options:
       - nosniff
     status:
@@ -1325,7 +1326,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: PATCH
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -1339,19 +1340,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:23 GMT
+      - Wed, 06 Apr 2022 18:30:14 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - d991717100e4373c
+      - 1fb865eb94e6038d
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - d991717100e4373c
+      - 1fb865eb94e6038d
       X-B3-TraceId:
-      - 624c4b3b823e5dded991717100e4373c
+      - 624ddc36990fb3b11fb865eb94e6038d
       X-Content-Type-Options:
       - nosniff
     status:
@@ -1365,7 +1366,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: PATCH
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -1379,19 +1380,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:23 GMT
+      - Wed, 06 Apr 2022 18:30:14 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 52c020bea5e8d02a
+      - 3790eb30705be0e2
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 52c020bea5e8d02a
+      - 3790eb30705be0e2
       X-B3-TraceId:
-      - 624c4b3bb1c2cbe352c020bea5e8d02a
+      - 624ddc36e42c3ce63790eb30705be0e2
       X-Content-Type-Options:
       - nosniff
     status:
@@ -1401,7 +1402,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -1415,19 +1416,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:23 GMT
+      - Wed, 06 Apr 2022 18:30:14 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 5ed9c43191160004
+      - 55755aa726f7aff6
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 5ed9c43191160004
+      - 55755aa726f7aff6
       X-B3-TraceId:
-      - 624c4b3bfad1156e5ed9c43191160004
+      - 624ddc36c573a0e455755aa726f7aff6
       X-Content-Type-Options:
       - nosniff
     status:
@@ -1437,34 +1438,34 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
   response:
     body:
-      string: '{"name":"pytest","remote":"origin","remote_name":"pytest","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1648832027,"ref":"742b118d314d2478a215aa02016c09e173deec7e","remote_ref":"742b118d314d2478a215aa02016c09e173deec7e","can":{}}'
+      string: '{"name":"pytest-incremental-equal","remote":"origin","remote_name":"pytest-incremental-equal","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1648832027,"ref":"742b118d314d2478a215aa02016c09e173deec7e","remote_ref":"742b118d314d2478a215aa02016c09e173deec7e","can":{}}'
     headers:
       Connection:
       - keep-alive
       Content-Length:
-      - '363'
+      - '399'
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:23 GMT
+      - Wed, 06 Apr 2022 18:30:14 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 85ebb9e000fb97f3
+      - 86691dde2cc5ce30
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 85ebb9e000fb97f3
+      - 86691dde2cc5ce30
       X-B3-TraceId:
-      - 624c4b3bd3eed55485ebb9e000fb97f3
+      - 624ddc3604fb4c6986691dde2cc5ce30
       X-Content-Type-Options:
       - nosniff
     status:
@@ -1478,7 +1479,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
   response:
@@ -1492,34 +1493,34 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:23 GMT
+      - Wed, 06 Apr 2022 18:30:14 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 460a42f7bbfd89f3
+      - c73f933177b19740
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 460a42f7bbfd89f3
+      - c73f933177b19740
       X-B3-TraceId:
-      - 624c4b3b6d8d998e460a42f7bbfd89f3
+      - 624ddc360418952cc73f933177b19740
       X-Content-Type-Options:
       - nosniff
     status:
       code: 200
       message: OK
 - request:
-    body: '{"name": "tmp_spectacles_c", "ref": "pytest-incremental-dirty-prod"}'
+    body: '{"name": "tmp_spectacles_c", "ref": "origin/pytest-incremental-dirty-prod"}'
     headers:
       Content-Length:
-      - '68'
+      - '75'
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: PUT
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
   response:
@@ -1533,20 +1534,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:25 GMT
+      - Wed, 06 Apr 2022 18:30:16 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 6e894fb546f5ce88
+      - 64e3d3e61bdf483a
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 6e894fb546f5ce88
+      - 64e3d3e61bdf483a
       X-B3-TraceId:
-      - 624c4b3b49d1704d6e894fb546f5ce88
+      - 624ddc3629c5106d64e3d3e61bdf483a
       X-Content-Type-Options:
       - nosniff
     status:
@@ -1556,7 +1557,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/manifest
   response:
@@ -1570,19 +1571,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:25 GMT
+      - Wed, 06 Apr 2022 18:30:16 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 35128c7f447a65c3
+      - 25de1b8ff20737b6
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 35128c7f447a65c3
+      - 25de1b8ff20737b6
       X-B3-TraceId:
-      - 624c4b3d64ebf8ec35128c7f447a65c3
+      - 624ddc38b0c1dee325de1b8ff20737b6
       X-Content-Type-Options:
       - nosniff
     status:
@@ -1592,7 +1593,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -1606,19 +1607,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:25 GMT
+      - Wed, 06 Apr 2022 18:30:16 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - acfc38ee5c7faa91
+      - 922a203109b1bb15
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - acfc38ee5c7faa91
+      - 922a203109b1bb15
       X-B3-TraceId:
-      - 624c4b3d910887ddacfc38ee5c7faa91
+      - 624ddc3824650776922a203109b1bb15
       X-Content-Type-Options:
       - nosniff
     status:
@@ -1628,7 +1629,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
   response:
@@ -1642,20 +1643,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:25 GMT
+      - Wed, 06 Apr 2022 18:30:17 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 52043c13e6be9e04
+      - cd7cba6cad58af29
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 52043c13e6be9e04
+      - cd7cba6cad58af29
       X-B3-TraceId:
-      - 624c4b3d4ab6ff0752043c13e6be9e04
+      - 624ddc398d63c576cd7cba6cad58af29
       X-Content-Type-Options:
       - nosniff
     status:
@@ -1669,7 +1670,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: PATCH
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -1683,19 +1684,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:26 GMT
+      - Wed, 06 Apr 2022 18:30:17 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - a706e7b5d03bbe45
+      - f9a85f9041700899
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - a706e7b5d03bbe45
+      - f9a85f9041700899
       X-B3-TraceId:
-      - 624c4b3dded621ada706e7b5d03bbe45
+      - 624ddc39828c1b89f9a85f9041700899
       X-Content-Type-Options:
       - nosniff
     status:
@@ -1705,7 +1706,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -1719,19 +1720,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:26 GMT
+      - Wed, 06 Apr 2022 18:30:17 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 492503172692f6a4
+      - 7f1b713281ae6dbd
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 492503172692f6a4
+      - 7f1b713281ae6dbd
       X-B3-TraceId:
-      - 624c4b3e3a8e9e14492503172692f6a4
+      - 624ddc39bb1953c87f1b713281ae6dbd
       X-Content-Type-Options:
       - nosniff
     status:
@@ -1741,7 +1742,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
   response:
@@ -1755,20 +1756,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:26 GMT
+      - Wed, 06 Apr 2022 18:30:17 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 4248278dafa6e533
+      - ffbadc138556d2b2
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 4248278dafa6e533
+      - ffbadc138556d2b2
       X-B3-TraceId:
-      - 624c4b3ee989d5284248278dafa6e533
+      - 624ddc39ddb0d194ffbadc138556d2b2
       X-Content-Type-Options:
       - nosniff
     status:
@@ -1782,7 +1783,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: PATCH
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -1796,19 +1797,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:26 GMT
+      - Wed, 06 Apr 2022 18:30:17 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 5f05b3ce97cd0c33
+      - 77c233829fefe329
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 5f05b3ce97cd0c33
+      - 77c233829fefe329
       X-B3-TraceId:
-      - 624c4b3e3132eb9d5f05b3ce97cd0c33
+      - 624ddc3931f8c73b77c233829fefe329
       X-Content-Type-Options:
       - nosniff
     status:
@@ -1818,7 +1819,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -1832,19 +1833,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:26 GMT
+      - Wed, 06 Apr 2022 18:30:17 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 6e0fad755d9d61de
+      - 5c59ce113c6c0da1
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 6e0fad755d9d61de
+      - 5c59ce113c6c0da1
       X-B3-TraceId:
-      - 624c4b3e30dae80a6e0fad755d9d61de
+      - 624ddc398fbc96f25c59ce113c6c0da1
       X-Content-Type-Options:
       - nosniff
     status:
@@ -1854,7 +1855,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
   response:
@@ -1868,20 +1869,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:26 GMT
+      - Wed, 06 Apr 2022 18:30:17 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - d0a3b827d4951342
+      - 5f7487b26ea7d0e0
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - d0a3b827d4951342
+      - 5f7487b26ea7d0e0
       X-B3-TraceId:
-      - 624c4b3e4068c656d0a3b827d4951342
+      - 624ddc393ff30c425f7487b26ea7d0e0
       X-Content-Type-Options:
       - nosniff
     status:
@@ -1895,7 +1896,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
   response:
@@ -1909,20 +1910,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:26 GMT
+      - Wed, 06 Apr 2022 18:30:17 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 7d47dbad7544588d
+      - 4b2350a2259fb0ce
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 7d47dbad7544588d
+      - 4b2350a2259fb0ce
       X-B3-TraceId:
-      - 624c4b3ed36bc13f7d47dbad7544588d
+      - 624ddc390c0d3f4b4b2350a2259fb0ce
       X-Content-Type-Options:
       - nosniff
     status:
@@ -1936,7 +1937,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: PUT
     uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
   response:
@@ -1950,20 +1951,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:27 GMT
+      - Wed, 06 Apr 2022 18:30:18 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 5cc45188f8a1e62a
+      - 4a9796886260ee98
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 5cc45188f8a1e62a
+      - 4a9796886260ee98
       X-B3-TraceId:
-      - 624c4b3eea305c325cc45188f8a1e62a
+      - 624ddc3906d43b704a9796886260ee98
       X-Content-Type-Options:
       - nosniff
     status:
@@ -1973,7 +1974,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/manifest
   response:
@@ -2022,7 +2023,7 @@ interactions:
       Content-Type:
       - text/html
       Date:
-      - Tue, 05 Apr 2022 13:59:27 GMT
+      - Wed, 06 Apr 2022 18:30:18 GMT
       Vary:
       - Accept-Encoding
     status:
@@ -2032,7 +2033,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/lookml_models?fields=name%2Cproject_name%2Cexplores
   response:
@@ -2107,29 +2108,30 @@ interactions:
         Items (Kittens)","hidden":true,"group_label":" eCommerce","name":"kitten_order_items","can":{}},{"description":null,"label":"E-Comm
         Cohort Analysis Training","hidden":false,"group_label":" eCommerce","name":"ecomm_training_info","can":{}},{"description":null,"label":"Kmeans
         Model5","hidden":false,"group_label":" eCommerce","name":"kmeans_model5","can":{}},{"description":null,"label":"(8)
-        Cohort Analysis","hidden":false,"group_label":" eCommerce","name":"ecomm_predict","can":{}}]},{"name":"square","project_name":"square_demo","explores":[{"description":null,"label":"Payments","hidden":false,"group_label":"Square","name":"payments","can":{}},{"description":null,"label":"Sellers","hidden":false,"group_label":"Square","name":"sellers","can":{}}]}]'
+        Cohort Analysis","hidden":false,"group_label":" eCommerce","name":"ecomm_predict","can":{}}]},{"name":"square","project_name":"square_demo","explores":[{"description":null,"label":"Payments","hidden":false,"group_label":"Square","name":"payments","can":{}},{"description":null,"label":"Sellers","hidden":false,"group_label":"Square","name":"sellers","can":{}}]},{"name":"ecomm","project_name":"looker-demo","explores":[{"description":null,"label":"Demo
+        - Orders","hidden":false,"group_label":"Ecomm","name":"order_items","can":{}}]}]'
     headers:
       Connection:
       - keep-alive
       Content-Length:
-      - '10535'
+      - '10706'
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:28 GMT
+      - Wed, 06 Apr 2022 18:30:19 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - f6dc6051d16e5796
+      - feab0b3987f65afd
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - f6dc6051d16e5796
+      - feab0b3987f65afd
       X-B3-TraceId:
-      - 624c4b3f22e733dff6dc6051d16e5796
+      - 624ddc3aa7defbb4feab0b3987f65afd
       X-Content-Type-Options:
       - nosniff
     status:
@@ -2139,7 +2141,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/lookml_models/eye_exam/explores/users?fields=fields
   response:
@@ -2170,20 +2172,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:28 GMT
+      - Wed, 06 Apr 2022 18:30:19 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 548566e436c9bb63
+      - 31e158050efda775
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 548566e436c9bb63
+      - 31e158050efda775
       X-B3-TraceId:
-      - 624c4b4078a92600548566e436c9bb63
+      - 624ddc3be3f675cb31e158050efda775
       X-Content-Type-Options:
       - nosniff
     status:
@@ -2193,7 +2195,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/lookml_models/eye_exam/explores/users__fail?fields=fields
   response:
@@ -2229,20 +2231,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:28 GMT
+      - Wed, 06 Apr 2022 18:30:19 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 22beafa0f3c5095e
+      - fab059e72f780068
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 22beafa0f3c5095e
+      - fab059e72f780068
       X-B3-TraceId:
-      - 624c4b40dbdf521322beafa0f3c5095e
+      - 624ddc3bc16c63cafab059e72f780068
       X-Content-Type-Options:
       - nosniff
     status:
@@ -2258,7 +2260,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/queries?fields=id%2Cshare_url
   response:
@@ -2272,19 +2274,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:28 GMT
+      - Wed, 06 Apr 2022 18:30:19 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 783180c98e0f2bc2
+      - 49f35215a0a52385
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 783180c98e0f2bc2
+      - 49f35215a0a52385
       X-B3-TraceId:
-      - 624c4b409406b74d783180c98e0f2bc2
+      - 624ddc3ba3e8068a49f35215a0a52385
       X-Content-Type-Options:
       - nosniff
     status:
@@ -2294,7 +2296,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/queries/2216/run/sql
   response:
@@ -2311,19 +2313,19 @@ interactions:
       Content-Type:
       - application/sql
       Date:
-      - Tue, 05 Apr 2022 13:59:28 GMT
+      - Wed, 06 Apr 2022 18:30:20 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 2591319f42364589
+      - b345a61c720eb2d2
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 2591319f42364589
+      - b345a61c720eb2d2
       X-B3-TraceId:
-      - 624c4b40d95d0e402591319f42364589
+      - 624ddc3b27909d5fb345a61c720eb2d2
       X-Content-Type-Options:
       - nosniff
     status:
@@ -2339,7 +2341,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/queries?fields=id%2Cshare_url
   response:
@@ -2353,19 +2355,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:28 GMT
+      - Wed, 06 Apr 2022 18:30:20 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 2ad0934cd1398a78
+      - 8a7ca8531d17874c
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 2ad0934cd1398a78
+      - 8a7ca8531d17874c
       X-B3-TraceId:
-      - 624c4b40b040ebff2ad0934cd1398a78
+      - 624ddc3c5c4df5798a7ca8531d17874c
       X-Content-Type-Options:
       - nosniff
     status:
@@ -2375,7 +2377,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/queries/1944/run/sql
   response:
@@ -2393,60 +2395,60 @@ interactions:
       Content-Type:
       - application/sql
       Date:
-      - Tue, 05 Apr 2022 13:59:29 GMT
+      - Wed, 06 Apr 2022 18:30:20 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 047079dec9d8514e
+      - e3b917c2a0b86aee
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 047079dec9d8514e
+      - e3b917c2a0b86aee
       X-B3-TraceId:
-      - 624c4b40a1a95ab1047079dec9d8514e
+      - 624ddc3ce611b2a3e3b917c2a0b86aee
       X-Content-Type-Options:
       - nosniff
     status:
       code: 200
       message: OK
 - request:
-    body: '{"name": "pytest"}'
+    body: '{"name": "pytest-incremental-equal"}'
     headers:
       Content-Length:
-      - '18'
+      - '36'
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: PUT
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
   response:
     body:
-      string: '{"name":"pytest","remote":"origin","remote_name":"pytest","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1648832027,"ref":"742b118d314d2478a215aa02016c09e173deec7e","remote_ref":"742b118d314d2478a215aa02016c09e173deec7e","can":{}}'
+      string: '{"name":"pytest-incremental-equal","remote":"origin","remote_name":"pytest-incremental-equal","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1648832027,"ref":"742b118d314d2478a215aa02016c09e173deec7e","remote_ref":"742b118d314d2478a215aa02016c09e173deec7e","can":{}}'
     headers:
       Connection:
       - keep-alive
       Content-Length:
-      - '363'
+      - '399'
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:29 GMT
+      - Wed, 06 Apr 2022 18:30:21 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 7ba07a9e89dddff3
+      - 2e660fcfaf798566
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 7ba07a9e89dddff3
+      - 2e660fcfaf798566
       X-B3-TraceId:
-      - 624c4b41a3e31f407ba07a9e89dddff3
+      - 624ddc3c6989f0032e660fcfaf798566
       X-Content-Type-Options:
       - nosniff
     status:
@@ -2458,7 +2460,7 @@ interactions:
       Content-Length:
       - '0'
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: DELETE
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch/tmp_spectacles_c
   response:
@@ -2468,19 +2470,19 @@ interactions:
       Connection:
       - keep-alive
       Date:
-      - Tue, 05 Apr 2022 13:59:30 GMT
+      - Wed, 06 Apr 2022 18:30:21 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Origin
       X-B3-ParentSpanId:
-      - 173e0b1edce1b0b0
+      - 9cc4d04d5f07c7a9
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 173e0b1edce1b0b0
+      - 9cc4d04d5f07c7a9
       X-B3-TraceId:
-      - 624c4b410b7c3023173e0b1edce1b0b0
+      - 624ddc3d27a345e99cc4d04d5f07c7a9
       X-Content-Type-Options:
       - nosniff
     status:
@@ -2494,7 +2496,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: PUT
     uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
   response:
@@ -2508,20 +2510,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:31 GMT
+      - Wed, 06 Apr 2022 18:30:22 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 3270a4572567f20a
+      - e81d8af29de96ba3
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 3270a4572567f20a
+      - e81d8af29de96ba3
       X-B3-TraceId:
-      - 624c4b423d0e12f33270a4572567f20a
+      - 624ddc3e0ea5171be81d8af29de96ba3
       X-Content-Type-Options:
       - nosniff
     status:
@@ -2533,7 +2535,7 @@ interactions:
       Content-Length:
       - '0'
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: DELETE
     uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch/tmp_spectacles_d
   response:
@@ -2543,19 +2545,19 @@ interactions:
       Connection:
       - keep-alive
       Date:
-      - Tue, 05 Apr 2022 13:59:31 GMT
+      - Wed, 06 Apr 2022 18:30:22 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Origin
       X-B3-ParentSpanId:
-      - 21b280c0bfb4c448
+      - 80442e124d7d7796
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 21b280c0bfb4c448
+      - 80442e124d7d7796
       X-B3-TraceId:
-      - 624c4b43293122a021b280c0bfb4c448
+      - 624ddc3e5b03fd1280442e124d7d7796
       X-Content-Type-Options:
       - nosniff
     status:
@@ -2569,7 +2571,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: PUT
     uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
   response:
@@ -2583,20 +2585,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:32 GMT
+      - Wed, 06 Apr 2022 18:30:23 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 63d4e37589306c21
+      - 1a812290ff85794f
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 63d4e37589306c21
+      - 1a812290ff85794f
       X-B3-TraceId:
-      - 624c4b43a10da78563d4e37589306c21
+      - 624ddc3e539b1d4b1a812290ff85794f
       X-Content-Type-Options:
       - nosniff
     status:
@@ -2610,7 +2612,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: PATCH
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -2624,19 +2626,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:32 GMT
+      - Wed, 06 Apr 2022 18:30:23 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 74b190bc8b1e5013
+      - a043977dcf196dea
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 74b190bc8b1e5013
+      - a043977dcf196dea
       X-B3-TraceId:
-      - 624c4b44e628ad1a74b190bc8b1e5013
+      - 624ddc3f692d7ef4a043977dcf196dea
       X-Content-Type-Options:
       - nosniff
     status:
@@ -2650,7 +2652,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: PATCH
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -2664,19 +2666,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:32 GMT
+      - Wed, 06 Apr 2022 18:30:23 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - f4adefa6a0d087b8
+      - 24c93001a7081753
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - f4adefa6a0d087b8
+      - 24c93001a7081753
       X-B3-TraceId:
-      - 624c4b44ad4fe48cf4adefa6a0d087b8
+      - 624ddc3f0ba8b31724c93001a7081753
       X-Content-Type-Options:
       - nosniff
     status:
@@ -2690,7 +2692,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: PUT
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
   response:
@@ -2704,20 +2706,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:33 GMT
+      - Wed, 06 Apr 2022 18:30:24 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 8cb120b3e5c1a3f5
+      - 623126fcfca1b327
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 8cb120b3e5c1a3f5
+      - 623126fcfca1b327
       X-B3-TraceId:
-      - 624c4b44f722d1f28cb120b3e5c1a3f5
+      - 624ddc3ff993975b623126fcfca1b327
       X-Content-Type-Options:
       - nosniff
     status:
@@ -2729,7 +2731,7 @@ interactions:
       Content-Length:
       - '0'
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/reset_to_remote
   response:
@@ -2739,19 +2741,19 @@ interactions:
       Connection:
       - keep-alive
       Date:
-      - Tue, 05 Apr 2022 13:59:34 GMT
+      - Wed, 06 Apr 2022 18:30:25 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Origin
       X-B3-ParentSpanId:
-      - 59e5f1639502d695
+      - bc2eb3940349722e
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 59e5f1639502d695
+      - bc2eb3940349722e
       X-B3-TraceId:
-      - 624c4b4504a4898059e5f1639502d695
+      - 624ddc40e9f5167bbc2eb3940349722e
       X-Content-Type-Options:
       - nosniff
     status:
@@ -2761,7 +2763,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/manifest
   response:
@@ -2775,19 +2777,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:34 GMT
+      - Wed, 06 Apr 2022 18:30:25 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 77574f3ec20ea6df
+      - 4a9aa791c9eaae51
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 77574f3ec20ea6df
+      - 4a9aa791c9eaae51
       X-B3-TraceId:
-      - 624c4b466a51398577574f3ec20ea6df
+      - 624ddc41d069d4614a9aa791c9eaae51
       X-Content-Type-Options:
       - nosniff
     status:
@@ -2797,7 +2799,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -2811,19 +2813,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:34 GMT
+      - Wed, 06 Apr 2022 18:30:25 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 1c9dfa74f0614805
+      - bd520fa5aa237570
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 1c9dfa74f0614805
+      - bd520fa5aa237570
       X-B3-TraceId:
-      - 624c4b469797f9a61c9dfa74f0614805
+      - 624ddc411b0c0a85bd520fa5aa237570
       X-Content-Type-Options:
       - nosniff
     status:
@@ -2833,7 +2835,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
   response:
@@ -2847,20 +2849,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:34 GMT
+      - Wed, 06 Apr 2022 18:30:25 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - d699251c1ac4a6ba
+      - 8582c24ea1a35a60
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - d699251c1ac4a6ba
+      - 8582c24ea1a35a60
       X-B3-TraceId:
-      - 624c4b465bf02b76d699251c1ac4a6ba
+      - 624ddc41dd4caeed8582c24ea1a35a60
       X-Content-Type-Options:
       - nosniff
     status:
@@ -2874,7 +2876,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: PATCH
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -2888,19 +2890,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:34 GMT
+      - Wed, 06 Apr 2022 18:30:25 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 9b1bf0b8295bc15d
+      - 7ce0badb25b1e706
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 9b1bf0b8295bc15d
+      - 7ce0badb25b1e706
       X-B3-TraceId:
-      - 624c4b463d8487d69b1bf0b8295bc15d
+      - 624ddc41725248677ce0badb25b1e706
       X-Content-Type-Options:
       - nosniff
     status:
@@ -2910,7 +2912,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -2924,19 +2926,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:34 GMT
+      - Wed, 06 Apr 2022 18:30:25 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - e21428ac82372ec6
+      - 4b4b6ec9d62126d7
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - e21428ac82372ec6
+      - 4b4b6ec9d62126d7
       X-B3-TraceId:
-      - 624c4b46d03c0507e21428ac82372ec6
+      - 624ddc412d82f03e4b4b6ec9d62126d7
       X-Content-Type-Options:
       - nosniff
     status:
@@ -2946,7 +2948,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
   response:
@@ -2960,20 +2962,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:34 GMT
+      - Wed, 06 Apr 2022 18:30:25 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 60a895846c459ac9
+      - 88c6b0c512be0e56
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 60a895846c459ac9
+      - 88c6b0c512be0e56
       X-B3-TraceId:
-      - 624c4b4619c2e13660a895846c459ac9
+      - 624ddc41ed08285788c6b0c512be0e56
       X-Content-Type-Options:
       - nosniff
     status:
@@ -2987,7 +2989,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: PATCH
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -3001,19 +3003,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:34 GMT
+      - Wed, 06 Apr 2022 18:30:26 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - ba5db7c64975009d
+      - 2459a931a0ff6b6e
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - ba5db7c64975009d
+      - 2459a931a0ff6b6e
       X-B3-TraceId:
-      - 624c4b461c0924b1ba5db7c64975009d
+      - 624ddc41158910bd2459a931a0ff6b6e
       X-Content-Type-Options:
       - nosniff
     status:
@@ -3023,7 +3025,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -3037,19 +3039,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:34 GMT
+      - Wed, 06 Apr 2022 18:30:26 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - acd373d1addb714f
+      - 7b3ad68815e22354
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - acd373d1addb714f
+      - 7b3ad68815e22354
       X-B3-TraceId:
-      - 624c4b4603d9876cacd373d1addb714f
+      - 624ddc4279dac0367b3ad68815e22354
       X-Content-Type-Options:
       - nosniff
     status:
@@ -3059,7 +3061,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
   response:
@@ -3073,20 +3075,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:34 GMT
+      - Wed, 06 Apr 2022 18:30:26 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 94f088219c3b1031
+      - ac0a9fac8e5f7656
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 94f088219c3b1031
+      - ac0a9fac8e5f7656
       X-B3-TraceId:
-      - 624c4b468fd29bb694f088219c3b1031
+      - 624ddc4286274090ac0a9fac8e5f7656
       X-Content-Type-Options:
       - nosniff
     status:
@@ -3100,7 +3102,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
   response:
@@ -3114,20 +3116,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:35 GMT
+      - Wed, 06 Apr 2022 18:30:26 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - f30e44729b39ce0b
+      - 1c87cd2101a3e7cc
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - f30e44729b39ce0b
+      - 1c87cd2101a3e7cc
       X-B3-TraceId:
-      - 624c4b46f5bd6282f30e44729b39ce0b
+      - 624ddc429cdbae6e1c87cd2101a3e7cc
       X-Content-Type-Options:
       - nosniff
     status:
@@ -3141,7 +3143,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: PUT
     uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
   response:
@@ -3155,20 +3157,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:35 GMT
+      - Wed, 06 Apr 2022 18:30:27 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - b47214155d05c546
+      - 577e18ef638c4177
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - b47214155d05c546
+      - 577e18ef638c4177
       X-B3-TraceId:
-      - 624c4b47e0cc4e90b47214155d05c546
+      - 624ddc42188b5cdd577e18ef638c4177
       X-Content-Type-Options:
       - nosniff
     status:
@@ -3178,7 +3180,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/manifest
   response:
@@ -3227,7 +3229,7 @@ interactions:
       Content-Type:
       - text/html
       Date:
-      - Tue, 05 Apr 2022 13:59:36 GMT
+      - Wed, 06 Apr 2022 18:30:27 GMT
       Vary:
       - Accept-Encoding
     status:
@@ -3241,12 +3243,12 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/query_tasks?fields=id&cache=false
   response:
     body:
-      string: '{"id":"30429acb7e4e75adaab92e4cdbe113e3"}'
+      string: '{"id":"de4d0b87a43c32e6b8cc340a327e59b6"}'
     headers:
       Connection:
       - keep-alive
@@ -3255,19 +3257,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:36 GMT
+      - Wed, 06 Apr 2022 18:30:27 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 35a6dcc30fd017f5
+      - c734dbc8dfbaa520
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 35a6dcc30fd017f5
+      - c734dbc8dfbaa520
       X-B3-TraceId:
-      - 624c4b48917c86a935a6dcc30fd017f5
+      - 624ddc438fa940edc734dbc8dfbaa520
       X-Content-Type-Options:
       - nosniff
     status:
@@ -3277,12 +3279,12 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
-    uri: https://spectacles.looker.com:19999/api/3.1/query_tasks/multi_results?query_task_ids=30429acb7e4e75adaab92e4cdbe113e3
+    uri: https://spectacles.looker.com:19999/api/3.1/query_tasks/multi_results?query_task_ids=de4d0b87a43c32e6b8cc340a327e59b6
   response:
     body:
-      string: '{"30429acb7e4e75adaab92e4cdbe113e3":{"status":"added"}}'
+      string: '{"de4d0b87a43c32e6b8cc340a327e59b6":{"status":"added"}}'
     headers:
       Connection:
       - keep-alive
@@ -3291,19 +3293,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:36 GMT
+      - Wed, 06 Apr 2022 18:30:27 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - f904e9b49df98cb1
+      - 13b6cc35a657a629
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - f904e9b49df98cb1
+      - 13b6cc35a657a629
       X-B3-TraceId:
-      - 624c4b48bd804268f904e9b49df98cb1
+      - 624ddc43244c258013b6cc35a657a629
       X-Content-Type-Options:
       - nosniff
     status:
@@ -3313,12 +3315,12 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
-    uri: https://spectacles.looker.com:19999/api/3.1/query_tasks/multi_results?query_task_ids=30429acb7e4e75adaab92e4cdbe113e3
+    uri: https://spectacles.looker.com:19999/api/3.1/query_tasks/multi_results?query_task_ids=de4d0b87a43c32e6b8cc340a327e59b6
   response:
     body:
-      string: '{"30429acb7e4e75adaab92e4cdbe113e3":{"status":"error","result_source":"query","data":{"from_cache":true,"id":"30429acb7e4e75adaab92e4cdbe113e3","supports_pivot_in_db":true,"null_sort_treatment":"low","expired":false,"ran_at":"2022-04-05T13:59:36+00:00","aggregate_table_used_info":null,"runtime":"0.322","added_params":{"query_timezone":"America/New_York","sorts":["users__fail.city"]},"forecast_result":null,"sql":"SELECT\n    users__fail.city_  AS
+      string: '{"de4d0b87a43c32e6b8cc340a327e59b6":{"status":"error","result_source":"query","data":{"from_cache":true,"id":"de4d0b87a43c32e6b8cc340a327e59b6","supports_pivot_in_db":true,"null_sort_treatment":"low","expired":false,"ran_at":"2022-04-06T18:30:28+00:00","aggregate_table_used_info":null,"runtime":"0.349","added_params":{"query_timezone":"America/New_York","sorts":["users__fail.city"]},"forecast_result":null,"sql":"SELECT\n    users__fail.city_  AS
         users__fail_city,\n    users__fail.email_address_  AS users__fail_email,\n    users__fail.first_name  AS
         users__fail_first_name,\n    users__fail.id  AS users__fail_id,\n    users__fail.last_name  AS
         users__fail_last_name\nFROM looker-private-demo.ecomm.users\n   AS users__fail\nWHERE
@@ -3347,7 +3349,7 @@ interactions:
         users__fail_city,\n    users__fail.email_address_  AS users__fail_email,\n    users__fail.first_name  AS
         users__fail_first_name,\n    users__fail.id  AS users__fail_id,\n    users__fail.last_name  AS
         users__fail_last_name\nFROM looker-private-demo.ecomm.users\n   AS users__fail\nWHERE
-        (1 = 2)\nORDER BY\n    1\nLIMIT 0","edit_url":null,"error_pos":null,"level":"error","sql_error_loc":{"line":2,"column":17}}],"drill_menu_build_time":0.039182,"has_subtotals":false}}}'
+        (1 = 2)\nORDER BY\n    1\nLIMIT 0","edit_url":null,"error_pos":null,"level":"error","sql_error_loc":{"line":2,"column":17}}],"drill_menu_build_time":0.039207,"has_subtotals":false}}}'
     headers:
       Connection:
       - keep-alive
@@ -3356,20 +3358,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:37 GMT
+      - Wed, 06 Apr 2022 18:30:28 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 780bec6381d4a42f
+      - 6ea328c4041cba03
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 780bec6381d4a42f
+      - 6ea328c4041cba03
       X-B3-TraceId:
-      - 624c4b49f9ef9632780bec6381d4a42f
+      - 624ddc444fc3f8b96ea328c4041cba03
       X-Content-Type-Options:
       - nosniff
     status:
@@ -3383,7 +3385,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: PUT
     uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
   response:
@@ -3397,20 +3399,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:38 GMT
+      - Wed, 06 Apr 2022 18:30:29 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - d099ee8a3768b62d
+      - fd53ccf4b640caa3
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - d099ee8a3768b62d
+      - fd53ccf4b640caa3
       X-B3-TraceId:
-      - 624c4b49e4d226a1d099ee8a3768b62d
+      - 624ddc4480ea5137fd53ccf4b640caa3
       X-Content-Type-Options:
       - nosniff
     status:
@@ -3422,7 +3424,7 @@ interactions:
       Content-Length:
       - '0'
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: DELETE
     uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch/tmp_spectacles_e
   response:
@@ -3432,19 +3434,19 @@ interactions:
       Connection:
       - keep-alive
       Date:
-      - Tue, 05 Apr 2022 13:59:38 GMT
+      - Wed, 06 Apr 2022 18:30:29 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Origin
       X-B3-ParentSpanId:
-      - 83600ff070501e21
+      - 3284d1877a3e14c8
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 83600ff070501e21
+      - 3284d1877a3e14c8
       X-B3-TraceId:
-      - 624c4b4a76a3022883600ff070501e21
+      - 624ddc459f4c1a5d3284d1877a3e14c8
       X-Content-Type-Options:
       - nosniff
     status:
@@ -3458,7 +3460,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: PUT
     uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
   response:
@@ -3472,20 +3474,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:39 GMT
+      - Wed, 06 Apr 2022 18:30:30 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 7cdfc9a6a0f46605
+      - 7c2bebd558c5e8f7
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 7cdfc9a6a0f46605
+      - 7c2bebd558c5e8f7
       X-B3-TraceId:
-      - 624c4b4a2a9842237cdfc9a6a0f46605
+      - 624ddc45c49bf1827c2bebd558c5e8f7
       X-Content-Type-Options:
       - nosniff
     status:
@@ -3499,7 +3501,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: PATCH
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -3513,19 +3515,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:39 GMT
+      - Wed, 06 Apr 2022 18:30:30 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 5944e820dac775c1
+      - f2edda64d158ff16
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 5944e820dac775c1
+      - f2edda64d158ff16
       X-B3-TraceId:
-      - 624c4b4ba207b4385944e820dac775c1
+      - 624ddc46365d725ef2edda64d158ff16
       X-Content-Type-Options:
       - nosniff
     status:
@@ -3539,7 +3541,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: PATCH
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -3553,19 +3555,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:39 GMT
+      - Wed, 06 Apr 2022 18:30:30 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - dc2464a6697fee2a
+      - 885b2a2c7902231d
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - dc2464a6697fee2a
+      - 885b2a2c7902231d
       X-B3-TraceId:
-      - 624c4b4bce7e8356dc2464a6697fee2a
+      - 624ddc4618455b09885b2a2c7902231d
       X-Content-Type-Options:
       - nosniff
     status:
@@ -3575,7 +3577,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -3589,19 +3591,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:39 GMT
+      - Wed, 06 Apr 2022 18:30:30 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 999ed5dc2ea99cd1
+      - 13a0b824707da2fa
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 999ed5dc2ea99cd1
+      - 13a0b824707da2fa
       X-B3-TraceId:
-      - 624c4b4b12111407999ed5dc2ea99cd1
+      - 624ddc46e2b25ded13a0b824707da2fa
       X-Content-Type-Options:
       - nosniff
     status:
@@ -3611,7 +3613,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
   response:
@@ -3625,20 +3627,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:39 GMT
+      - Wed, 06 Apr 2022 18:30:30 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - a9fb4f72e8419b64
+      - 0c29e213924732e3
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - a9fb4f72e8419b64
+      - 0c29e213924732e3
       X-B3-TraceId:
-      - 624c4b4b21aacd3ca9fb4f72e8419b64
+      - 624ddc460f55e4840c29e213924732e3
       X-Content-Type-Options:
       - nosniff
     status:
@@ -3652,7 +3654,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
   response:
@@ -3666,34 +3668,34 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:39 GMT
+      - Wed, 06 Apr 2022 18:30:31 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 97f44a9ee61a4069
+      - 50ee72ccbc05423e
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 97f44a9ee61a4069
+      - 50ee72ccbc05423e
       X-B3-TraceId:
-      - 624c4b4b1857408b97f44a9ee61a4069
+      - 624ddc4625e4be8350ee72ccbc05423e
       X-Content-Type-Options:
       - nosniff
     status:
       code: 200
       message: OK
 - request:
-    body: '{"name": "tmp_spectacles_f", "ref": "pytest-incremental-fix-prod"}'
+    body: '{"name": "tmp_spectacles_f", "ref": "origin/pytest-incremental-fix-prod"}'
     headers:
       Content-Length:
-      - '66'
+      - '73'
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: PUT
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
   response:
@@ -3707,20 +3709,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:40 GMT
+      - Wed, 06 Apr 2022 18:30:31 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - cb1ceee553f74063
+      - 094ddb446b7f061e
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - cb1ceee553f74063
+      - 094ddb446b7f061e
       X-B3-TraceId:
-      - 624c4b4b98789c92cb1ceee553f74063
+      - 624ddc4766988eb6094ddb446b7f061e
       X-Content-Type-Options:
       - nosniff
     status:
@@ -3730,7 +3732,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/manifest
   response:
@@ -3744,19 +3746,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:40 GMT
+      - Wed, 06 Apr 2022 18:30:31 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - ade225223d6e9764
+      - 901e8dcdd34d1f0f
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - ade225223d6e9764
+      - 901e8dcdd34d1f0f
       X-B3-TraceId:
-      - 624c4b4cb528006bade225223d6e9764
+      - 624ddc4797f20281901e8dcdd34d1f0f
       X-Content-Type-Options:
       - nosniff
     status:
@@ -3766,7 +3768,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -3780,19 +3782,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:40 GMT
+      - Wed, 06 Apr 2022 18:30:31 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 9afd0f7d38eedc7e
+      - e69f676f9e863afe
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 9afd0f7d38eedc7e
+      - e69f676f9e863afe
       X-B3-TraceId:
-      - 624c4b4cd423b6ef9afd0f7d38eedc7e
+      - 624ddc4739924c60e69f676f9e863afe
       X-Content-Type-Options:
       - nosniff
     status:
@@ -3802,7 +3804,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
   response:
@@ -3816,20 +3818,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:40 GMT
+      - Wed, 06 Apr 2022 18:30:32 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - c562d7d6bb3f23ad
+      - 46487c9e200fb728
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - c562d7d6bb3f23ad
+      - 46487c9e200fb728
       X-B3-TraceId:
-      - 624c4b4ce0299293c562d7d6bb3f23ad
+      - 624ddc48ce69918246487c9e200fb728
       X-Content-Type-Options:
       - nosniff
     status:
@@ -3843,7 +3845,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: PATCH
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -3857,19 +3859,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:40 GMT
+      - Wed, 06 Apr 2022 18:30:32 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - b76f5d70c6f583c6
+      - e427fc026e927c04
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - b76f5d70c6f583c6
+      - e427fc026e927c04
       X-B3-TraceId:
-      - 624c4b4cbf36460cb76f5d70c6f583c6
+      - 624ddc489c909475e427fc026e927c04
       X-Content-Type-Options:
       - nosniff
     status:
@@ -3879,7 +3881,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -3893,19 +3895,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:40 GMT
+      - Wed, 06 Apr 2022 18:30:32 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - bb0642a62c070cf8
+      - 9ed64c4a963b6ed4
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - bb0642a62c070cf8
+      - 9ed64c4a963b6ed4
       X-B3-TraceId:
-      - 624c4b4cbb01dc0cbb0642a62c070cf8
+      - 624ddc484edbe7c09ed64c4a963b6ed4
       X-Content-Type-Options:
       - nosniff
     status:
@@ -3915,7 +3917,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
   response:
@@ -3929,20 +3931,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:40 GMT
+      - Wed, 06 Apr 2022 18:30:32 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 40c0f3bd1b7c0342
+      - bfa9bb9a74a447a6
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 40c0f3bd1b7c0342
+      - bfa9bb9a74a447a6
       X-B3-TraceId:
-      - 624c4b4ca0d8985b40c0f3bd1b7c0342
+      - 624ddc48daa698edbfa9bb9a74a447a6
       X-Content-Type-Options:
       - nosniff
     status:
@@ -3956,7 +3958,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: PATCH
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -3970,19 +3972,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:41 GMT
+      - Wed, 06 Apr 2022 18:30:32 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 2fa2f14e3f6bf1f6
+      - f9cbd624083ea8ae
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 2fa2f14e3f6bf1f6
+      - f9cbd624083ea8ae
       X-B3-TraceId:
-      - 624c4b4d3e4404062fa2f14e3f6bf1f6
+      - 624ddc48273be47bf9cbd624083ea8ae
       X-Content-Type-Options:
       - nosniff
     status:
@@ -3992,7 +3994,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -4006,19 +4008,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:41 GMT
+      - Wed, 06 Apr 2022 18:30:32 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 57c8091b51e5588a
+      - e23ece21d768ad97
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 57c8091b51e5588a
+      - e23ece21d768ad97
       X-B3-TraceId:
-      - 624c4b4db795558257c8091b51e5588a
+      - 624ddc4881fa460ae23ece21d768ad97
       X-Content-Type-Options:
       - nosniff
     status:
@@ -4028,7 +4030,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
   response:
@@ -4042,20 +4044,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:41 GMT
+      - Wed, 06 Apr 2022 18:30:32 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 38c35001b80b5f1c
+      - 98cbe2113f1f27e2
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 38c35001b80b5f1c
+      - 98cbe2113f1f27e2
       X-B3-TraceId:
-      - 624c4b4d5cc5df7b38c35001b80b5f1c
+      - 624ddc483dcb66bb98cbe2113f1f27e2
       X-Content-Type-Options:
       - nosniff
     status:
@@ -4069,7 +4071,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
   response:
@@ -4083,20 +4085,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:41 GMT
+      - Wed, 06 Apr 2022 18:30:32 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 26849321091dd0e6
+      - 1e0b83b889e964df
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 26849321091dd0e6
+      - 1e0b83b889e964df
       X-B3-TraceId:
-      - 624c4b4d4cf9db4b26849321091dd0e6
+      - 624ddc48cc99087e1e0b83b889e964df
       X-Content-Type-Options:
       - nosniff
     status:
@@ -4110,7 +4112,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: PUT
     uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
   response:
@@ -4124,20 +4126,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:42 GMT
+      - Wed, 06 Apr 2022 18:30:33 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - ce53becc87087659
+      - 8718cc058f93db79
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - ce53becc87087659
+      - 8718cc058f93db79
       X-B3-TraceId:
-      - 624c4b4d02f699d7ce53becc87087659
+      - 624ddc48443266158718cc058f93db79
       X-Content-Type-Options:
       - nosniff
     status:
@@ -4147,7 +4149,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/manifest
   response:
@@ -4196,7 +4198,7 @@ interactions:
       Content-Type:
       - text/html
       Date:
-      - Tue, 05 Apr 2022 13:59:42 GMT
+      - Wed, 06 Apr 2022 18:30:33 GMT
       Vary:
       - Accept-Encoding
     status:
@@ -4211,7 +4213,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/queries?fields=id%2Cshare_url
   response:
@@ -4225,19 +4227,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:42 GMT
+      - Wed, 06 Apr 2022 18:30:33 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 3749c4088da8a027
+      - a3152c3b76f96e0a
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 3749c4088da8a027
+      - a3152c3b76f96e0a
       X-B3-TraceId:
-      - 624c4b4eb99065d23749c4088da8a027
+      - 624ddc4993accda4a3152c3b76f96e0a
       X-Content-Type-Options:
       - nosniff
     status:
@@ -4252,7 +4254,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/queries?fields=id%2Cshare_url
   response:
@@ -4266,19 +4268,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:42 GMT
+      - Wed, 06 Apr 2022 18:30:34 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 86ed4d3dbc54acab
+      - 888578b86ed30e7d
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 86ed4d3dbc54acab
+      - 888578b86ed30e7d
       X-B3-TraceId:
-      - 624c4b4ec104117f86ed4d3dbc54acab
+      - 624ddc4a251c043a888578b86ed30e7d
       X-Content-Type-Options:
       - nosniff
     status:
@@ -4293,7 +4295,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/queries?fields=id%2Cshare_url
   response:
@@ -4307,19 +4309,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:42 GMT
+      - Wed, 06 Apr 2022 18:30:34 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 855efd269f6385e7
+      - 3f04a14042dc3a44
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 855efd269f6385e7
+      - 3f04a14042dc3a44
       X-B3-TraceId:
-      - 624c4b4e9d05eb1f855efd269f6385e7
+      - 624ddc4a25d5f7343f04a14042dc3a44
       X-Content-Type-Options:
       - nosniff
     status:
@@ -4334,7 +4336,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/queries?fields=id%2Cshare_url
   response:
@@ -4348,19 +4350,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:43 GMT
+      - Wed, 06 Apr 2022 18:30:34 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 595c962eb18dc088
+      - e61c69c701c9ca61
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 595c962eb18dc088
+      - e61c69c701c9ca61
       X-B3-TraceId:
-      - 624c4b4f3f00401b595c962eb18dc088
+      - 624ddc4a745c6e9ee61c69c701c9ca61
       X-Content-Type-Options:
       - nosniff
     status:
@@ -4375,7 +4377,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/queries?fields=id%2Cshare_url
   response:
@@ -4389,19 +4391,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:43 GMT
+      - Wed, 06 Apr 2022 18:30:34 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 28e2eccacdcae301
+      - 4adfba1161dc12f2
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 28e2eccacdcae301
+      - 4adfba1161dc12f2
       X-B3-TraceId:
-      - 624c4b4fdd073d6128e2eccacdcae301
+      - 624ddc4a654faaa64adfba1161dc12f2
       X-Content-Type-Options:
       - nosniff
     status:
@@ -4415,12 +4417,12 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/query_tasks?fields=id&cache=false
   response:
     body:
-      string: '{"id":"bee5aaf7f83c0dd8e938e0f47b7085d4"}'
+      string: '{"id":"1016168c869dcc61be72b1247951859a"}'
     headers:
       Connection:
       - keep-alive
@@ -4429,19 +4431,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:43 GMT
+      - Wed, 06 Apr 2022 18:30:34 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 9375c03b625d827f
+      - 994d88eebaa62c34
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 9375c03b625d827f
+      - 994d88eebaa62c34
       X-B3-TraceId:
-      - 624c4b4fb6baa11d9375c03b625d827f
+      - 624ddc4aa9cedf15994d88eebaa62c34
       X-Content-Type-Options:
       - nosniff
     status:
@@ -4455,12 +4457,12 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/query_tasks?fields=id&cache=false
   response:
     body:
-      string: '{"id":"58ac86d59d2ae384a33a6703190d0171"}'
+      string: '{"id":"b0396c48392a15ded95258061391ebbc"}'
     headers:
       Connection:
       - keep-alive
@@ -4469,19 +4471,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:43 GMT
+      - Wed, 06 Apr 2022 18:30:34 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 508bea7ebe89bc05
+      - 48374f841fdd7aae
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 508bea7ebe89bc05
+      - 48374f841fdd7aae
       X-B3-TraceId:
-      - 624c4b4f1b425cda508bea7ebe89bc05
+      - 624ddc4aa29c3bad48374f841fdd7aae
       X-Content-Type-Options:
       - nosniff
     status:
@@ -4495,12 +4497,12 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/query_tasks?fields=id&cache=false
   response:
     body:
-      string: '{"id":"f018042a14b931dbd81bf9ba49eab3f6"}'
+      string: '{"id":"4b3adbccc587a94e5eddae82eba8328d"}'
     headers:
       Connection:
       - keep-alive
@@ -4509,19 +4511,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:43 GMT
+      - Wed, 06 Apr 2022 18:30:35 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 00f05d0b7f54b572
+      - 6aa06f694b4c2f1a
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 00f05d0b7f54b572
+      - 6aa06f694b4c2f1a
       X-B3-TraceId:
-      - 624c4b4f194f3ab100f05d0b7f54b572
+      - 624ddc4ad163f0d36aa06f694b4c2f1a
       X-Content-Type-Options:
       - nosniff
     status:
@@ -4535,12 +4537,12 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/query_tasks?fields=id&cache=false
   response:
     body:
-      string: '{"id":"bf11036200724d5a23276b794050c658"}'
+      string: '{"id":"cd0efeca5ae616890ec4d10119e1ea6a"}'
     headers:
       Connection:
       - keep-alive
@@ -4549,19 +4551,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:43 GMT
+      - Wed, 06 Apr 2022 18:30:35 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - bc98669040f96721
+      - fa703d4bbeb845c3
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - bc98669040f96721
+      - fa703d4bbeb845c3
       X-B3-TraceId:
-      - 624c4b4fd19d9676bc98669040f96721
+      - 624ddc4b39a776cefa703d4bbeb845c3
       X-Content-Type-Options:
       - nosniff
     status:
@@ -4575,12 +4577,12 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/query_tasks?fields=id&cache=false
   response:
     body:
-      string: '{"id":"542441b6dfb303c7a9604253cab6de5a"}'
+      string: '{"id":"b1ea68393b078c4ded55e1b4c119db5a"}'
     headers:
       Connection:
       - keep-alive
@@ -4589,19 +4591,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:44 GMT
+      - Wed, 06 Apr 2022 18:30:35 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 899991ea74c3eb18
+      - cf905ef992454a61
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 899991ea74c3eb18
+      - cf905ef992454a61
       X-B3-TraceId:
-      - 624c4b5077a4905f899991ea74c3eb18
+      - 624ddc4b20fda5a2cf905ef992454a61
       X-Content-Type-Options:
       - nosniff
     status:
@@ -4611,23 +4613,12 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
-    uri: https://spectacles.looker.com:19999/api/3.1/query_tasks/multi_results?query_task_ids=bee5aaf7f83c0dd8e938e0f47b7085d4%2C58ac86d59d2ae384a33a6703190d0171%2Cf018042a14b931dbd81bf9ba49eab3f6%2Cbf11036200724d5a23276b794050c658%2C542441b6dfb303c7a9604253cab6de5a
+    uri: https://spectacles.looker.com:19999/api/3.1/query_tasks/multi_results?query_task_ids=1016168c869dcc61be72b1247951859a%2Cb0396c48392a15ded95258061391ebbc%2C4b3adbccc587a94e5eddae82eba8328d%2Ccd0efeca5ae616890ec4d10119e1ea6a%2Cb1ea68393b078c4ded55e1b4c119db5a
   response:
     body:
-      string: '{"542441b6dfb303c7a9604253cab6de5a":{"status":"added"},"58ac86d59d2ae384a33a6703190d0171":{"status":"error","result_source":"query","data":{"from_cache":true,"id":"58ac86d59d2ae384a33a6703190d0171","supports_pivot_in_db":true,"null_sort_treatment":"low","expired":false,"ran_at":"2022-04-05T13:59:43+00:00","aggregate_table_used_info":null,"runtime":"0.286","added_params":{"query_timezone":"America/New_York","sorts":["users__fail.email"]},"forecast_result":null,"sql":"SELECT\n    users__fail.email_address_  AS
-        users__fail_email\nFROM looker-private-demo.ecomm.users\n   AS users__fail\nWHERE
-        (1 = 2)\nGROUP BY\n    1\nORDER BY\n    1\nLIMIT 0","sql_explain":null,"fields":{"measures":[],"dimensions":[{"align":"left","can_filter":true,"category":"dimension","default_filter_value":null,"description":"","enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":false,"label":"Users
-        Fail Email","label_from_parameter":null,"label_short":"Email","map_layer":null,"name":"users__fail.email","strict_value_format":false,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"string","user_attribute_filter_types":["string","advanced_filter_string"],"value_format":null,"view":"users__fail","view_label":"Users
-        Fail","dynamic":false,"week_start_day":"monday","original_view":"users__fail","dimension_group":null,"error":null,"field_group_variant":"Email","measure":false,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users__fail","suggest_dimension":"users__fail.email","suggest_explore":"users__fail","suggestable":true,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"lookml_link":"/projects/eye_exam/files/views%2Fusers__fail.view.lkml?line=26","permanent":null,"source_file":"views/users__fail.view.lkml","source_file_path":"eye_exam/views/users__fail.view.lkml","sql":"${TABLE}.email_address_
-        ","sql_case":null,"filters":null,"times_used":0,"sorted":{"sort_index":0,"desc":false}}],"table_calculations":[],"pivots":[]},"fill_fields":[],"has_totals":false,"has_row_totals":false,"applied_filters":{},"applied_filter_expression":"1=2","number_format":"1,234.56","explore":{"name":"users__fail","label":"Users
-        Fail","description":null},"timezone":"America/New_York","data":[],"errors":[{"message":"The
-        Google BigQuery Standard SQL database encountered an error while running this
-        query.","message_details":"Query execution failed:  - Name email_address_
-        not found inside users__fail at [2:17]","params":"SELECT\n    users__fail.email_address_  AS
-        users__fail_email\nFROM looker-private-demo.ecomm.users\n   AS users__fail\nWHERE
-        (1 = 2)\nGROUP BY\n    1\nORDER BY\n    1\nLIMIT 0","edit_url":null,"error_pos":null,"level":"error","sql_error_loc":{"line":2,"column":17}}],"drill_menu_build_time":0.036551999999999994,"has_subtotals":false}},"bee5aaf7f83c0dd8e938e0f47b7085d4":{"status":"error","result_source":"query","data":{"from_cache":true,"id":"bee5aaf7f83c0dd8e938e0f47b7085d4","supports_pivot_in_db":true,"null_sort_treatment":"low","expired":false,"ran_at":"2022-04-05T13:59:43+00:00","aggregate_table_used_info":null,"runtime":"0.292","added_params":{"query_timezone":"America/New_York","sorts":["users__fail.city"]},"forecast_result":null,"sql":"SELECT\n    users__fail.city_  AS
+      string: '{"1016168c869dcc61be72b1247951859a":{"status":"error","result_source":"query","data":{"from_cache":true,"id":"1016168c869dcc61be72b1247951859a","supports_pivot_in_db":true,"null_sort_treatment":"low","expired":false,"ran_at":"2022-04-06T18:30:35+00:00","aggregate_table_used_info":null,"runtime":"0.284","added_params":{"query_timezone":"America/New_York","sorts":["users__fail.city"]},"forecast_result":null,"sql":"SELECT\n    users__fail.city_  AS
         users__fail_city\nFROM looker-private-demo.ecomm.users\n   AS users__fail\nWHERE
         (1 = 2)\nGROUP BY\n    1\nORDER BY\n    1\nLIMIT 0","sql_explain":null,"fields":{"measures":[],"dimensions":[{"align":"left","can_filter":true,"category":"dimension","default_filter_value":null,"description":"","enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":false,"label":"Users
         Fail City","label_from_parameter":null,"label_short":"City","map_layer":null,"name":"users__fail.city","strict_value_format":false,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"string","user_attribute_filter_types":["string","advanced_filter_string"],"value_format":null,"view":"users__fail","view_label":"Users
@@ -4638,29 +4629,40 @@ interactions:
         query.","message_details":"Query execution failed:  - Name city_ not found
         inside users__fail at [2:17]","params":"SELECT\n    users__fail.city_  AS
         users__fail_city\nFROM looker-private-demo.ecomm.users\n   AS users__fail\nWHERE
-        (1 = 2)\nGROUP BY\n    1\nORDER BY\n    1\nLIMIT 0","edit_url":null,"error_pos":null,"level":"error","sql_error_loc":{"line":2,"column":17}}],"drill_menu_build_time":0.037549,"has_subtotals":false}},"bf11036200724d5a23276b794050c658":{"status":"running"},"f018042a14b931dbd81bf9ba49eab3f6":{"status":"running"}}'
+        (1 = 2)\nGROUP BY\n    1\nORDER BY\n    1\nLIMIT 0","edit_url":null,"error_pos":null,"level":"error","sql_error_loc":{"line":2,"column":17}}],"drill_menu_build_time":0.035961999999999994,"has_subtotals":false}},"4b3adbccc587a94e5eddae82eba8328d":{"status":"running"},"b0396c48392a15ded95258061391ebbc":{"status":"error","result_source":"query","data":{"from_cache":true,"id":"b0396c48392a15ded95258061391ebbc","supports_pivot_in_db":true,"null_sort_treatment":"low","expired":false,"ran_at":"2022-04-06T18:30:35+00:00","aggregate_table_used_info":null,"runtime":"0.288","added_params":{"query_timezone":"America/New_York","sorts":["users__fail.email"]},"forecast_result":null,"sql":"SELECT\n    users__fail.email_address_  AS
+        users__fail_email\nFROM looker-private-demo.ecomm.users\n   AS users__fail\nWHERE
+        (1 = 2)\nGROUP BY\n    1\nORDER BY\n    1\nLIMIT 0","sql_explain":null,"fields":{"measures":[],"dimensions":[{"align":"left","can_filter":true,"category":"dimension","default_filter_value":null,"description":"","enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":false,"label":"Users
+        Fail Email","label_from_parameter":null,"label_short":"Email","map_layer":null,"name":"users__fail.email","strict_value_format":false,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"string","user_attribute_filter_types":["string","advanced_filter_string"],"value_format":null,"view":"users__fail","view_label":"Users
+        Fail","dynamic":false,"week_start_day":"monday","original_view":"users__fail","dimension_group":null,"error":null,"field_group_variant":"Email","measure":false,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users__fail","suggest_dimension":"users__fail.email","suggest_explore":"users__fail","suggestable":true,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"lookml_link":"/projects/eye_exam/files/views%2Fusers__fail.view.lkml?line=26","permanent":null,"source_file":"views/users__fail.view.lkml","source_file_path":"eye_exam/views/users__fail.view.lkml","sql":"${TABLE}.email_address_
+        ","sql_case":null,"filters":null,"times_used":0,"sorted":{"sort_index":0,"desc":false}}],"table_calculations":[],"pivots":[]},"fill_fields":[],"has_totals":false,"has_row_totals":false,"applied_filters":{},"applied_filter_expression":"1=2","number_format":"1,234.56","explore":{"name":"users__fail","label":"Users
+        Fail","description":null},"timezone":"America/New_York","data":[],"errors":[{"message":"The
+        Google BigQuery Standard SQL database encountered an error while running this
+        query.","message_details":"Query execution failed:  - Name email_address_
+        not found inside users__fail at [2:17]","params":"SELECT\n    users__fail.email_address_  AS
+        users__fail_email\nFROM looker-private-demo.ecomm.users\n   AS users__fail\nWHERE
+        (1 = 2)\nGROUP BY\n    1\nORDER BY\n    1\nLIMIT 0","edit_url":null,"error_pos":null,"level":"error","sql_error_loc":{"line":2,"column":17}}],"drill_menu_build_time":0.035184,"has_subtotals":false}},"b1ea68393b078c4ded55e1b4c119db5a":{"status":"running"},"cd0efeca5ae616890ec4d10119e1ea6a":{"status":"running"}}'
     headers:
       Connection:
       - keep-alive
       Content-Length:
-      - '5875'
+      - '5877'
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:44 GMT
+      - Wed, 06 Apr 2022 18:30:35 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 0e292bd8dd62d411
+      - 7d12ffa894c80153
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 0e292bd8dd62d411
+      - 7d12ffa894c80153
       X-B3-TraceId:
-      - 624c4b500d6cc1890e292bd8dd62d411
+      - 624ddc4b4f0aab2f7d12ffa894c80153
       X-Content-Type-Options:
       - nosniff
     status:
@@ -4670,54 +4672,54 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
-    uri: https://spectacles.looker.com:19999/api/3.1/query_tasks/multi_results?query_task_ids=f018042a14b931dbd81bf9ba49eab3f6%2Cbf11036200724d5a23276b794050c658%2C542441b6dfb303c7a9604253cab6de5a
+    uri: https://spectacles.looker.com:19999/api/3.1/query_tasks/multi_results?query_task_ids=4b3adbccc587a94e5eddae82eba8328d%2Ccd0efeca5ae616890ec4d10119e1ea6a%2Cb1ea68393b078c4ded55e1b4c119db5a
   response:
     body:
-      string: '{"542441b6dfb303c7a9604253cab6de5a":{"status":"complete","result_source":"query","data":{"from_cache":true,"id":"542441b6dfb303c7a9604253cab6de5a","truncated":true,"supports_pivot_in_db":true,"null_sort_treatment":"low","expired":false,"ran_at":"2022-04-05T13:59:44+00:00","aggregate_table_used_info":null,"runtime":"0.528","added_params":{"query_timezone":"America/New_York","sorts":["users__fail.last_name"]},"forecast_result":null,"dialect_specific_metadata":{"total_bytes_processed":0,"backend_cache_hit":false,"bi_engine_mode":null,"bi_engine_reasons":null,"bigquery_job_id":"looker-partners:US.job_QFvf18VINF2yq53GsWWpNmdarasn"},"sql":"SELECT\n    users__fail.last_name  AS
-        users__fail_last_name\nFROM looker-private-demo.ecomm.users\n   AS users__fail\nWHERE
-        (1 = 2)\nGROUP BY\n    1\nORDER BY\n    1\nLIMIT 0","sql_explain":null,"fields":{"measures":[],"dimensions":[{"align":"left","can_filter":true,"category":"dimension","default_filter_value":null,"description":"","enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":false,"label":"Users
-        Fail Last Name","label_from_parameter":null,"label_short":"Last Name","map_layer":null,"name":"users__fail.last_name","strict_value_format":false,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"string","user_attribute_filter_types":["string","advanced_filter_string"],"value_format":null,"view":"users__fail","view_label":"Users
-        Fail","dynamic":false,"week_start_day":"monday","original_view":"users__fail","dimension_group":null,"error":null,"field_group_variant":"Last
-        Name","measure":false,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users__fail","suggest_dimension":"users__fail.last_name","suggest_explore":"users__fail","suggestable":true,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"lookml_link":"/projects/eye_exam/files/views%2Fusers__fail.view.lkml?line=38","permanent":null,"source_file":"views/users__fail.view.lkml","source_file_path":"eye_exam/views/users__fail.view.lkml","sql":"${TABLE}.last_name
-        ","sql_case":null,"filters":null,"times_used":0,"sorted":{"sort_index":0,"desc":false}}],"table_calculations":[],"pivots":[]},"fill_fields":[],"has_totals":false,"has_row_totals":false,"applied_filters":{},"applied_filter_expression":"1=2","number_format":"1,234.56","explore":{"name":"users__fail","label":"Users
-        Fail","description":null},"timezone":"America/New_York","data":[],"drill_menu_build_time":0.037524,"has_subtotals":false}},"bf11036200724d5a23276b794050c658":{"status":"complete","result_source":"query","data":{"from_cache":true,"id":"bf11036200724d5a23276b794050c658","truncated":true,"supports_pivot_in_db":true,"null_sort_treatment":"low","expired":false,"ran_at":"2022-04-05T13:59:44+00:00","aggregate_table_used_info":null,"runtime":"0.540","added_params":{"query_timezone":"America/New_York"},"forecast_result":null,"dialect_specific_metadata":{"total_bytes_processed":0,"backend_cache_hit":true,"bi_engine_mode":null,"bi_engine_reasons":null,"bigquery_job_id":"looker-partners:US.job_43BJByN7b-w4SeAa_0nLJf4H0DWW"},"sql":"SELECT\n    users__fail.id  AS
-        users__fail_id\nFROM looker-private-demo.ecomm.users\n   AS users__fail\nWHERE
-        (1 = 2)\nLIMIT 0","sql_explain":null,"fields":{"measures":[],"dimensions":[{"align":"right","can_filter":true,"category":"dimension","default_filter_value":null,"description":"","enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":true,"label":"Users
-        Fail ID","label_from_parameter":null,"label_short":"ID","map_layer":null,"name":"users__fail.id","strict_value_format":false,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"number","user_attribute_filter_types":["number","advanced_filter_number"],"value_format":null,"view":"users__fail","view_label":"Users
-        Fail","dynamic":false,"week_start_day":"monday","original_view":"users__fail","dimension_group":null,"error":null,"field_group_variant":"ID","measure":false,"parameter":false,"primary_key":true,"project_name":"eye_exam","scope":"users__fail","suggest_dimension":"users__fail.id","suggest_explore":"users__fail","suggestable":false,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"lookml_link":"/projects/eye_exam/files/views%2Fusers__fail.view.lkml?line=8","permanent":null,"source_file":"views/users__fail.view.lkml","source_file_path":"eye_exam/views/users__fail.view.lkml","sql":"${TABLE}.id
-        ","sql_case":null,"filters":null,"times_used":0}],"table_calculations":[],"pivots":[]},"fill_fields":[],"has_totals":false,"has_row_totals":false,"applied_filters":{},"applied_filter_expression":"1=2","number_format":"1,234.56","explore":{"name":"users__fail","label":"Users
-        Fail","description":null},"timezone":"America/New_York","data":[],"drill_menu_build_time":0.037927,"has_subtotals":false}},"f018042a14b931dbd81bf9ba49eab3f6":{"status":"complete","result_source":"query","data":{"from_cache":true,"id":"f018042a14b931dbd81bf9ba49eab3f6","truncated":true,"supports_pivot_in_db":true,"null_sort_treatment":"low","expired":false,"ran_at":"2022-04-05T13:59:44+00:00","aggregate_table_used_info":null,"runtime":"0.591","added_params":{"query_timezone":"America/New_York","sorts":["users__fail.first_name"]},"forecast_result":null,"dialect_specific_metadata":{"total_bytes_processed":0,"backend_cache_hit":false,"bi_engine_mode":null,"bi_engine_reasons":null,"bigquery_job_id":"looker-partners:US.job_FZfypC869qPC5ywmrrrEbRjPSgPt"},"sql":"SELECT\n    users__fail.first_name  AS
+      string: '{"4b3adbccc587a94e5eddae82eba8328d":{"status":"complete","result_source":"query","data":{"from_cache":true,"id":"4b3adbccc587a94e5eddae82eba8328d","truncated":true,"supports_pivot_in_db":true,"null_sort_treatment":"low","expired":false,"ran_at":"2022-04-06T18:30:35+00:00","aggregate_table_used_info":null,"runtime":"0.497","added_params":{"query_timezone":"America/New_York","sorts":["users__fail.first_name"]},"forecast_result":null,"dialect_specific_metadata":{"total_bytes_processed":0,"backend_cache_hit":true,"bi_engine_mode":null,"bi_engine_reasons":null,"bigquery_job_id":"looker-partners:US.job_PURW0KMZ7JFKaqGf0zd9rM8OiR0G"},"sql":"SELECT\n    users__fail.first_name  AS
         users__fail_first_name\nFROM looker-private-demo.ecomm.users\n   AS users__fail\nWHERE
         (1 = 2)\nGROUP BY\n    1\nORDER BY\n    1\nLIMIT 0","sql_explain":null,"fields":{"measures":[],"dimensions":[{"align":"left","can_filter":true,"category":"dimension","default_filter_value":null,"description":"","enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":false,"label":"Users
         Fail First Name","label_from_parameter":null,"label_short":"First Name","map_layer":null,"name":"users__fail.first_name","strict_value_format":false,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"string","user_attribute_filter_types":["string","advanced_filter_string"],"value_format":null,"view":"users__fail","view_label":"Users
         Fail","dynamic":false,"week_start_day":"monday","original_view":"users__fail","dimension_group":null,"error":null,"field_group_variant":"First
         Name","measure":false,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users__fail","suggest_dimension":"users__fail.first_name","suggest_explore":"users__fail","suggestable":true,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"lookml_link":"/projects/eye_exam/files/views%2Fusers__fail.view.lkml?line=32","permanent":null,"source_file":"views/users__fail.view.lkml","source_file_path":"eye_exam/views/users__fail.view.lkml","sql":"${TABLE}.first_name
         ","sql_case":null,"filters":null,"times_used":0,"sorted":{"sort_index":0,"desc":false}}],"table_calculations":[],"pivots":[]},"fill_fields":[],"has_totals":false,"has_row_totals":false,"applied_filters":{},"applied_filter_expression":"1=2","number_format":"1,234.56","explore":{"name":"users__fail","label":"Users
-        Fail","description":null},"timezone":"America/New_York","data":[],"drill_menu_build_time":0.036506,"has_subtotals":false}}}'
+        Fail","description":null},"timezone":"America/New_York","data":[],"drill_menu_build_time":0.036469999999999995,"has_subtotals":false}},"b1ea68393b078c4ded55e1b4c119db5a":{"status":"complete","result_source":"query","data":{"from_cache":true,"id":"b1ea68393b078c4ded55e1b4c119db5a","truncated":true,"supports_pivot_in_db":true,"null_sort_treatment":"low","expired":false,"ran_at":"2022-04-06T18:30:36+00:00","aggregate_table_used_info":null,"runtime":"0.506","added_params":{"query_timezone":"America/New_York","sorts":["users__fail.last_name"]},"forecast_result":null,"dialect_specific_metadata":{"total_bytes_processed":0,"backend_cache_hit":true,"bi_engine_mode":null,"bi_engine_reasons":null,"bigquery_job_id":"looker-partners:US.job_C1tlXYiMd49qt8TNyNhPuZphoD9m"},"sql":"SELECT\n    users__fail.last_name  AS
+        users__fail_last_name\nFROM looker-private-demo.ecomm.users\n   AS users__fail\nWHERE
+        (1 = 2)\nGROUP BY\n    1\nORDER BY\n    1\nLIMIT 0","sql_explain":null,"fields":{"measures":[],"dimensions":[{"align":"left","can_filter":true,"category":"dimension","default_filter_value":null,"description":"","enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":false,"label":"Users
+        Fail Last Name","label_from_parameter":null,"label_short":"Last Name","map_layer":null,"name":"users__fail.last_name","strict_value_format":false,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"string","user_attribute_filter_types":["string","advanced_filter_string"],"value_format":null,"view":"users__fail","view_label":"Users
+        Fail","dynamic":false,"week_start_day":"monday","original_view":"users__fail","dimension_group":null,"error":null,"field_group_variant":"Last
+        Name","measure":false,"parameter":false,"primary_key":false,"project_name":"eye_exam","scope":"users__fail","suggest_dimension":"users__fail.last_name","suggest_explore":"users__fail","suggestable":true,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"lookml_link":"/projects/eye_exam/files/views%2Fusers__fail.view.lkml?line=38","permanent":null,"source_file":"views/users__fail.view.lkml","source_file_path":"eye_exam/views/users__fail.view.lkml","sql":"${TABLE}.last_name
+        ","sql_case":null,"filters":null,"times_used":0,"sorted":{"sort_index":0,"desc":false}}],"table_calculations":[],"pivots":[]},"fill_fields":[],"has_totals":false,"has_row_totals":false,"applied_filters":{},"applied_filter_expression":"1=2","number_format":"1,234.56","explore":{"name":"users__fail","label":"Users
+        Fail","description":null},"timezone":"America/New_York","data":[],"drill_menu_build_time":0.036858999999999996,"has_subtotals":false}},"cd0efeca5ae616890ec4d10119e1ea6a":{"status":"complete","result_source":"query","data":{"from_cache":true,"id":"cd0efeca5ae616890ec4d10119e1ea6a","truncated":true,"supports_pivot_in_db":true,"null_sort_treatment":"low","expired":false,"ran_at":"2022-04-06T18:30:35+00:00","aggregate_table_used_info":null,"runtime":"0.507","added_params":{"query_timezone":"America/New_York"},"forecast_result":null,"dialect_specific_metadata":{"total_bytes_processed":0,"backend_cache_hit":true,"bi_engine_mode":null,"bi_engine_reasons":null,"bigquery_job_id":"looker-partners:US.job_eSdSC76BOOBn9laC7uhfp2lyvMQF"},"sql":"SELECT\n    users__fail.id  AS
+        users__fail_id\nFROM looker-private-demo.ecomm.users\n   AS users__fail\nWHERE
+        (1 = 2)\nLIMIT 0","sql_explain":null,"fields":{"measures":[],"dimensions":[{"align":"right","can_filter":true,"category":"dimension","default_filter_value":null,"description":"","enumerations":null,"field_group_label":null,"fill_style":null,"fiscal_month_offset":0,"has_allowed_values":false,"hidden":false,"is_filter":false,"is_numeric":true,"label":"Users
+        Fail ID","label_from_parameter":null,"label_short":"ID","map_layer":null,"name":"users__fail.id","strict_value_format":false,"requires_refresh_on_sort":false,"sortable":true,"suggestions":null,"tags":[],"type":"number","user_attribute_filter_types":["number","advanced_filter_number"],"value_format":null,"view":"users__fail","view_label":"Users
+        Fail","dynamic":false,"week_start_day":"monday","original_view":"users__fail","dimension_group":null,"error":null,"field_group_variant":"ID","measure":false,"parameter":false,"primary_key":true,"project_name":"eye_exam","scope":"users__fail","suggest_dimension":"users__fail.id","suggest_explore":"users__fail","suggestable":false,"is_fiscal":false,"is_timeframe":false,"can_time_filter":false,"time_interval":null,"lookml_link":"/projects/eye_exam/files/views%2Fusers__fail.view.lkml?line=8","permanent":null,"source_file":"views/users__fail.view.lkml","source_file_path":"eye_exam/views/users__fail.view.lkml","sql":"${TABLE}.id
+        ","sql_case":null,"filters":null,"times_used":0}],"table_calculations":[],"pivots":[]},"fill_fields":[],"has_totals":false,"has_row_totals":false,"applied_filters":{},"applied_filter_expression":"1=2","number_format":"1,234.56","explore":{"name":"users__fail","label":"Users
+        Fail","description":null},"timezone":"America/New_York","data":[],"drill_menu_build_time":0.036024999999999995,"has_subtotals":false}}}'
     headers:
       Connection:
       - keep-alive
       Content-Length:
-      - '7687'
+      - '7721'
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:44 GMT
+      - Wed, 06 Apr 2022 18:30:36 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 234d4919d4947019
+      - f990db19bd6a4db4
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 234d4919d4947019
+      - f990db19bd6a4db4
       X-B3-TraceId:
-      - 624c4b50707b6e5a234d4919d4947019
+      - 624ddc4cbd06189ff990db19bd6a4db4
       X-Content-Type-Options:
       - nosniff
     status:
@@ -4731,7 +4733,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: PUT
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
   response:
@@ -4745,20 +4747,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:46 GMT
+      - Wed, 06 Apr 2022 18:30:37 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - cea7680c5c327ab0
+      - b450e61036f168e5
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - cea7680c5c327ab0
+      - b450e61036f168e5
       X-B3-TraceId:
-      - 624c4b516d5a2baacea7680c5c327ab0
+      - 624ddc4cd231a190b450e61036f168e5
       X-Content-Type-Options:
       - nosniff
     status:
@@ -4770,7 +4772,7 @@ interactions:
       Content-Length:
       - '0'
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: DELETE
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch/tmp_spectacles_f
   response:
@@ -4780,19 +4782,19 @@ interactions:
       Connection:
       - keep-alive
       Date:
-      - Tue, 05 Apr 2022 13:59:46 GMT
+      - Wed, 06 Apr 2022 18:30:37 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Origin
       X-B3-ParentSpanId:
-      - 869cfa1f5a54152f
+      - 747bee59b44702d3
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 869cfa1f5a54152f
+      - 747bee59b44702d3
       X-B3-TraceId:
-      - 624c4b523e1393d4869cfa1f5a54152f
+      - 624ddc4d029ab696747bee59b44702d3
       X-Content-Type-Options:
       - nosniff
     status:
@@ -4806,7 +4808,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: PUT
     uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
   response:
@@ -4820,20 +4822,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:47 GMT
+      - Wed, 06 Apr 2022 18:30:38 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 2751bfad005dc620
+      - 04e94f0c9c40f531
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 2751bfad005dc620
+      - 04e94f0c9c40f531
       X-B3-TraceId:
-      - 624c4b52f65aa77f2751bfad005dc620
+      - 624ddc4dd21026bd04e94f0c9c40f531
       X-Content-Type-Options:
       - nosniff
     status:
@@ -4845,7 +4847,7 @@ interactions:
       Content-Length:
       - '0'
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: DELETE
     uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch/tmp_spectacles_g
   response:
@@ -4855,19 +4857,19 @@ interactions:
       Connection:
       - keep-alive
       Date:
-      - Tue, 05 Apr 2022 13:59:47 GMT
+      - Wed, 06 Apr 2022 18:30:38 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Origin
       X-B3-ParentSpanId:
-      - 2ea6deac23da4a15
+      - 524e096f26c4b9e3
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 2ea6deac23da4a15
+      - 524e096f26c4b9e3
       X-B3-TraceId:
-      - 624c4b5379076c1d2ea6deac23da4a15
+      - 624ddc4e434eeb84524e096f26c4b9e3
       X-Content-Type-Options:
       - nosniff
     status:
@@ -4881,7 +4883,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: PUT
     uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
   response:
@@ -4895,20 +4897,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:47 GMT
+      - Wed, 06 Apr 2022 18:30:39 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - e861f8a32b4a22f2
+      - be29dd91932ce3da
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - e861f8a32b4a22f2
+      - be29dd91932ce3da
       X-B3-TraceId:
-      - 624c4b53fdbf936fe861f8a32b4a22f2
+      - 624ddc4e31d239f2be29dd91932ce3da
       X-Content-Type-Options:
       - nosniff
     status:
@@ -4922,7 +4924,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: PATCH
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -4936,19 +4938,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:48 GMT
+      - Wed, 06 Apr 2022 18:30:39 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - cc9be5c77aef2d1a
+      - 0335f508e1f07560
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - cc9be5c77aef2d1a
+      - 0335f508e1f07560
       X-B3-TraceId:
-      - 624c4b53289ce938cc9be5c77aef2d1a
+      - 624ddc4fe88311c30335f508e1f07560
       X-Content-Type-Options:
       - nosniff
     status:
@@ -4962,7 +4964,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: PATCH
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -4976,19 +4978,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:48 GMT
+      - Wed, 06 Apr 2022 18:30:39 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 571978e63646e602
+      - 8249318e080f854e
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 571978e63646e602
+      - 8249318e080f854e
       X-B3-TraceId:
-      - 624c4b54583cc8be571978e63646e602
+      - 624ddc4f96f77f9d8249318e080f854e
       X-Content-Type-Options:
       - nosniff
     status:
@@ -4998,7 +5000,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -5012,19 +5014,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:48 GMT
+      - Wed, 06 Apr 2022 18:30:39 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - ab9b0e3c16e92e12
+      - 6ff77a53ca8024ee
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - ab9b0e3c16e92e12
+      - 6ff77a53ca8024ee
       X-B3-TraceId:
-      - 624c4b54bdc58829ab9b0e3c16e92e12
+      - 624ddc4f08c7a3736ff77a53ca8024ee
       X-Content-Type-Options:
       - nosniff
     status:
@@ -5034,7 +5036,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
   response:
@@ -5048,20 +5050,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:48 GMT
+      - Wed, 06 Apr 2022 18:30:39 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - bcdb889287b4df81
+      - 92b0b6bd6657da5a
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - bcdb889287b4df81
+      - 92b0b6bd6657da5a
       X-B3-TraceId:
-      - 624c4b542018b4dfbcdb889287b4df81
+      - 624ddc4f2f84f51e92b0b6bd6657da5a
       X-Content-Type-Options:
       - nosniff
     status:
@@ -5075,7 +5077,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
   response:
@@ -5089,34 +5091,34 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:48 GMT
+      - Wed, 06 Apr 2022 18:30:40 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 8672349173b07ede
+      - 0a0152a6cc14deef
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 8672349173b07ede
+      - 0a0152a6cc14deef
       X-B3-TraceId:
-      - 624c4b54db82b5878672349173b07ede
+      - 624ddc4fecad5e1c0a0152a6cc14deef
       X-Content-Type-Options:
       - nosniff
     status:
       code: 200
       message: OK
 - request:
-    body: '{"name": "tmp_spectacles_h", "ref": "pytest-incremental-dirty-prod"}'
+    body: '{"name": "tmp_spectacles_h", "ref": "origin/pytest-incremental-dirty-prod"}'
     headers:
       Content-Length:
-      - '68'
+      - '75'
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: PUT
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
   response:
@@ -5130,20 +5132,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:50 GMT
+      - Wed, 06 Apr 2022 18:30:42 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 6d6fa9f1098cdd7a
+      - 787f17bbc2c2d3fe
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 6d6fa9f1098cdd7a
+      - 787f17bbc2c2d3fe
       X-B3-TraceId:
-      - 624c4b54770839e56d6fa9f1098cdd7a
+      - 624ddc506a3807a0787f17bbc2c2d3fe
       X-Content-Type-Options:
       - nosniff
     status:
@@ -5153,7 +5155,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/manifest
   response:
@@ -5167,19 +5169,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:50 GMT
+      - Wed, 06 Apr 2022 18:30:42 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 1a5689cef03b2d2e
+      - f86bf19cd2b72b8d
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 1a5689cef03b2d2e
+      - f86bf19cd2b72b8d
       X-B3-TraceId:
-      - 624c4b5629ebe8451a5689cef03b2d2e
+      - 624ddc52af2eb5d4f86bf19cd2b72b8d
       X-Content-Type-Options:
       - nosniff
     status:
@@ -5189,7 +5191,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -5203,19 +5205,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:50 GMT
+      - Wed, 06 Apr 2022 18:30:42 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - bc7b12397b00daff
+      - 908a58e590f276ab
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - bc7b12397b00daff
+      - 908a58e590f276ab
       X-B3-TraceId:
-      - 624c4b56db7b0b4fbc7b12397b00daff
+      - 624ddc5211b37bbc908a58e590f276ab
       X-Content-Type-Options:
       - nosniff
     status:
@@ -5225,7 +5227,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
   response:
@@ -5239,20 +5241,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:50 GMT
+      - Wed, 06 Apr 2022 18:30:42 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 272b212f76cf6026
+      - 2180e1ba9b2db1b6
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 272b212f76cf6026
+      - 2180e1ba9b2db1b6
       X-B3-TraceId:
-      - 624c4b56ae521aa8272b212f76cf6026
+      - 624ddc5252ff39612180e1ba9b2db1b6
       X-Content-Type-Options:
       - nosniff
     status:
@@ -5266,7 +5268,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: PATCH
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -5280,19 +5282,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:50 GMT
+      - Wed, 06 Apr 2022 18:30:42 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - d016ecbb5d15ae30
+      - 4cf993c271846a03
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - d016ecbb5d15ae30
+      - 4cf993c271846a03
       X-B3-TraceId:
-      - 624c4b569253f8a2d016ecbb5d15ae30
+      - 624ddc5263c30f7f4cf993c271846a03
       X-Content-Type-Options:
       - nosniff
     status:
@@ -5302,7 +5304,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -5316,19 +5318,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:51 GMT
+      - Wed, 06 Apr 2022 18:30:42 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 898b54bfbccb7e35
+      - fc958ac12b464727
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 898b54bfbccb7e35
+      - fc958ac12b464727
       X-B3-TraceId:
-      - 624c4b579f8e2418898b54bfbccb7e35
+      - 624ddc529dd60d0bfc958ac12b464727
       X-Content-Type-Options:
       - nosniff
     status:
@@ -5338,7 +5340,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
   response:
@@ -5352,20 +5354,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:51 GMT
+      - Wed, 06 Apr 2022 18:30:42 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - e0523726706cef31
+      - e44a3e5a9a623bb7
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - e0523726706cef31
+      - e44a3e5a9a623bb7
       X-B3-TraceId:
-      - 624c4b57beae5ec1e0523726706cef31
+      - 624ddc5205384a91e44a3e5a9a623bb7
       X-Content-Type-Options:
       - nosniff
     status:
@@ -5379,7 +5381,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: PATCH
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -5393,19 +5395,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:51 GMT
+      - Wed, 06 Apr 2022 18:30:42 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 2361d3d59be7d9ff
+      - ce9842f956a532b9
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 2361d3d59be7d9ff
+      - ce9842f956a532b9
       X-B3-TraceId:
-      - 624c4b57ac5856172361d3d59be7d9ff
+      - 624ddc5247bc147ece9842f956a532b9
       X-Content-Type-Options:
       - nosniff
     status:
@@ -5415,7 +5417,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -5429,19 +5431,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:51 GMT
+      - Wed, 06 Apr 2022 18:30:42 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 981a373e0c2219ea
+      - eaea765d345e8bd8
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 981a373e0c2219ea
+      - eaea765d345e8bd8
       X-B3-TraceId:
-      - 624c4b57e4ae2ec1981a373e0c2219ea
+      - 624ddc52127d5388eaea765d345e8bd8
       X-Content-Type-Options:
       - nosniff
     status:
@@ -5451,7 +5453,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
   response:
@@ -5465,20 +5467,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:51 GMT
+      - Wed, 06 Apr 2022 18:30:43 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - deff970a14dd0d5e
+      - d01e1baddd180994
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - deff970a14dd0d5e
+      - d01e1baddd180994
       X-B3-TraceId:
-      - 624c4b573084d8a4deff970a14dd0d5e
+      - 624ddc52285a70c3d01e1baddd180994
       X-Content-Type-Options:
       - nosniff
     status:
@@ -5492,7 +5494,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
   response:
@@ -5506,20 +5508,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:51 GMT
+      - Wed, 06 Apr 2022 18:30:43 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 66d1ac793672ff20
+      - 5462c67cd8cfcf2b
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 66d1ac793672ff20
+      - 5462c67cd8cfcf2b
       X-B3-TraceId:
-      - 624c4b57428f7a3066d1ac793672ff20
+      - 624ddc531828ad925462c67cd8cfcf2b
       X-Content-Type-Options:
       - nosniff
     status:
@@ -5533,7 +5535,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: PUT
     uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
   response:
@@ -5547,20 +5549,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:52 GMT
+      - Wed, 06 Apr 2022 18:30:44 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 166a113e1853265c
+      - '5857621673262473'
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 166a113e1853265c
+      - '5857621673262473'
       X-B3-TraceId:
-      - 624c4b575d19c8ab166a113e1853265c
+      - 624ddc535556568c5857621673262473
       X-Content-Type-Options:
       - nosniff
     status:
@@ -5570,7 +5572,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/manifest
   response:
@@ -5619,7 +5621,7 @@ interactions:
       Content-Type:
       - text/html
       Date:
-      - Tue, 05 Apr 2022 13:59:52 GMT
+      - Wed, 06 Apr 2022 18:30:44 GMT
       Vary:
       - Accept-Encoding
     status:
@@ -5634,7 +5636,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/queries?fields=id%2Cshare_url
   response:
@@ -5648,19 +5650,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:52 GMT
+      - Wed, 06 Apr 2022 18:30:44 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 6aa10d18635c280a
+      - ecabaa528e252166
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 6aa10d18635c280a
+      - ecabaa528e252166
       X-B3-TraceId:
-      - 624c4b580cdfbed36aa10d18635c280a
+      - 624ddc54f683ace7ecabaa528e252166
       X-Content-Type-Options:
       - nosniff
     status:
@@ -5670,7 +5672,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/queries/1919/run/sql
   response:
@@ -5686,19 +5688,19 @@ interactions:
       Content-Type:
       - application/sql
       Date:
-      - Tue, 05 Apr 2022 13:59:53 GMT
+      - Wed, 06 Apr 2022 18:30:44 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 9c2d01f5d9bf1f0d
+      - 982a371a2ff404a6
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 9c2d01f5d9bf1f0d
+      - 982a371a2ff404a6
       X-B3-TraceId:
-      - 624c4b599eaf0f169c2d01f5d9bf1f0d
+      - 624ddc546769ee21982a371a2ff404a6
       X-Content-Type-Options:
       - nosniff
     status:
@@ -5713,7 +5715,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/queries?fields=id%2Cshare_url
   response:
@@ -5727,19 +5729,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:53 GMT
+      - Wed, 06 Apr 2022 18:30:44 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 0e3496a584af72c4
+      - 4db7eefaeeee6806
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 0e3496a584af72c4
+      - 4db7eefaeeee6806
       X-B3-TraceId:
-      - 624c4b59ebbeca4c0e3496a584af72c4
+      - 624ddc546384129e4db7eefaeeee6806
       X-Content-Type-Options:
       - nosniff
     status:
@@ -5749,7 +5751,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/queries/1928/run/sql
   response:
@@ -5765,19 +5767,19 @@ interactions:
       Content-Type:
       - application/sql
       Date:
-      - Tue, 05 Apr 2022 13:59:53 GMT
+      - Wed, 06 Apr 2022 18:30:45 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 4380b2d2bc015001
+      - 025783f7cdb21a03
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 4380b2d2bc015001
+      - 025783f7cdb21a03
       X-B3-TraceId:
-      - 624c4b59a65df75a4380b2d2bc015001
+      - 624ddc55e15aade4025783f7cdb21a03
       X-Content-Type-Options:
       - nosniff
     status:
@@ -5791,7 +5793,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: PUT
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
   response:
@@ -5805,20 +5807,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:54 GMT
+      - Wed, 06 Apr 2022 18:30:45 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 248e3fd280b9be5d
+      - e2651322cf7ffe03
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 248e3fd280b9be5d
+      - e2651322cf7ffe03
       X-B3-TraceId:
-      - 624c4b599ff47e1f248e3fd280b9be5d
+      - 624ddc5543c76ee5e2651322cf7ffe03
       X-Content-Type-Options:
       - nosniff
     status:
@@ -5830,7 +5832,7 @@ interactions:
       Content-Length:
       - '0'
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: DELETE
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch/tmp_spectacles_h
   response:
@@ -5840,19 +5842,19 @@ interactions:
       Connection:
       - keep-alive
       Date:
-      - Tue, 05 Apr 2022 13:59:55 GMT
+      - Wed, 06 Apr 2022 18:30:46 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Origin
       X-B3-ParentSpanId:
-      - 7fb4cd90efd7684d
+      - 2346beaf4e627d4d
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 7fb4cd90efd7684d
+      - 2346beaf4e627d4d
       X-B3-TraceId:
-      - 624c4b5a39bb48fb7fb4cd90efd7684d
+      - 624ddc5646d46a7b2346beaf4e627d4d
       X-Content-Type-Options:
       - nosniff
     status:
@@ -5866,7 +5868,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: PUT
     uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
   response:
@@ -5880,20 +5882,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:55 GMT
+      - Wed, 06 Apr 2022 18:30:47 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - ce9b4f7051dcf4d2
+      - d19306c241e11d13
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - ce9b4f7051dcf4d2
+      - d19306c241e11d13
       X-B3-TraceId:
-      - 624c4b5bd857ed9dce9b4f7051dcf4d2
+      - 624ddc5698b3f09fd19306c241e11d13
       X-Content-Type-Options:
       - nosniff
     status:
@@ -5905,7 +5907,7 @@ interactions:
       Content-Length:
       - '0'
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: DELETE
     uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch/tmp_spectacles_i
   response:
@@ -5915,19 +5917,19 @@ interactions:
       Connection:
       - keep-alive
       Date:
-      - Tue, 05 Apr 2022 13:59:56 GMT
+      - Wed, 06 Apr 2022 18:30:47 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Origin
       X-B3-ParentSpanId:
-      - b1d870bd77e58218
+      - 6cc7280fcdb41eb4
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - b1d870bd77e58218
+      - 6cc7280fcdb41eb4
       X-B3-TraceId:
-      - 624c4b5b2c68486bb1d870bd77e58218
+      - 624ddc57600075dd6cc7280fcdb41eb4
       X-Content-Type-Options:
       - nosniff
     status:
@@ -5941,7 +5943,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: PUT
     uri: https://spectacles.looker.com:19999/api/3.1/projects/welcome_to_looker/git_branch
   response:
@@ -5955,20 +5957,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:56 GMT
+      - Wed, 06 Apr 2022 18:30:48 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 3195d6790718eac7
+      - e1ac68bdd516d890
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 3195d6790718eac7
+      - e1ac68bdd516d890
       X-B3-TraceId:
-      - 624c4b5cead3dbe13195d6790718eac7
+      - 624ddc5729cf3dc9e1ac68bdd516d890
       X-Content-Type-Options:
       - nosniff
     status:
@@ -5982,7 +5984,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=85016224
     method: PATCH
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -5996,19 +5998,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:59:56 GMT
+      - Wed, 06 Apr 2022 18:30:48 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 8801b26679da3fb7
+      - e7b3eb4d2519d32e
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 8801b26679da3fb7
+      - e7b3eb4d2519d32e
       X-B3-TraceId:
-      - 624c4b5c7f2c667d8801b26679da3fb7
+      - 624ddc589bf35ae9e7b3eb4d2519d32e
       X-Content-Type-Options:
       - nosniff
     status:

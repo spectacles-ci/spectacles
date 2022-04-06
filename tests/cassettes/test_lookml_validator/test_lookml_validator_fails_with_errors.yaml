@@ -7,7 +7,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=29676601
+      - looker.browser=85016224
     method: PATCH
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -21,19 +21,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Fri, 01 Apr 2022 20:25:57 GMT
+      - Wed, 06 Apr 2022 18:32:45 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 4769fb70375964ee
+      - a788d4a7b638395a
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 4769fb70375964ee
+      - a788d4a7b638395a
       X-B3-TraceId:
-      - 62475fd579e4d3fa4769fb70375964ee
+      - 624ddccd7ab4a808a788d4a7b638395a
       X-Content-Type-Options:
       - nosniff
     status:
@@ -47,7 +47,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=29676601
+      - looker.browser=85016224
     method: PUT
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
   response:
@@ -61,20 +61,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Fri, 01 Apr 2022 20:25:58 GMT
+      - Wed, 06 Apr 2022 18:32:46 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - ead3692251ce45c7
+      - cd3955eef5c8b166
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - ead3692251ce45c7
+      - cd3955eef5c8b166
       X-B3-TraceId:
-      - 62475fd59394fc2fead3692251ce45c7
+      - 624ddccd8353516ccd3955eef5c8b166
       X-Content-Type-Options:
       - nosniff
     status:
@@ -84,7 +84,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=29676601
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/validate
   response:
@@ -122,20 +122,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Fri, 01 Apr 2022 20:25:58 GMT
+      - Wed, 06 Apr 2022 18:32:46 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 5ccb8351a35e5738
+      - ce0b836ab5eaaa5c
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 5ccb8351a35e5738
+      - ce0b836ab5eaaa5c
       X-B3-TraceId:
-      - 62475fd6b1d7e8cf5ccb8351a35e5738
+      - 624ddcce7d1af892ce0b836ab5eaaa5c
       X-Content-Type-Options:
       - nosniff
     status:

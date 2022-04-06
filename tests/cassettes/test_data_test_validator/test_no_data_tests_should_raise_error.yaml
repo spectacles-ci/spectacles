@@ -3,7 +3,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=89961667
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/lookml_models?fields=name%2Cproject_name%2Cexplores
   response:
@@ -78,29 +78,30 @@ interactions:
         Items (Kittens)","hidden":true,"group_label":" eCommerce","name":"kitten_order_items","can":{}},{"description":null,"label":"E-Comm
         Cohort Analysis Training","hidden":false,"group_label":" eCommerce","name":"ecomm_training_info","can":{}},{"description":null,"label":"Kmeans
         Model5","hidden":false,"group_label":" eCommerce","name":"kmeans_model5","can":{}},{"description":null,"label":"(8)
-        Cohort Analysis","hidden":false,"group_label":" eCommerce","name":"ecomm_predict","can":{}}]},{"name":"square","project_name":"square_demo","explores":[{"description":null,"label":"Payments","hidden":false,"group_label":"Square","name":"payments","can":{}},{"description":null,"label":"Sellers","hidden":false,"group_label":"Square","name":"sellers","can":{}}]}]'
+        Cohort Analysis","hidden":false,"group_label":" eCommerce","name":"ecomm_predict","can":{}}]},{"name":"square","project_name":"square_demo","explores":[{"description":null,"label":"Payments","hidden":false,"group_label":"Square","name":"payments","can":{}},{"description":null,"label":"Sellers","hidden":false,"group_label":"Square","name":"sellers","can":{}}]},{"name":"ecomm","project_name":"looker-demo","explores":[{"description":null,"label":"Demo
+        - Orders","hidden":false,"group_label":"Ecomm","name":"order_items","can":{}}]}]'
     headers:
       Connection:
       - keep-alive
       Content-Length:
-      - '10524'
+      - '10695'
       Content-Type:
       - application/json
       Date:
-      - Mon, 04 Apr 2022 17:24:15 GMT
+      - Wed, 06 Apr 2022 18:27:46 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - c0a7efd2c4c53901
+      - 272f613fbaae61e3
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - c0a7efd2c4c53901
+      - 272f613fbaae61e3
       X-B3-TraceId:
-      - 624b29bf477a4970c0a7efd2c4c53901
+      - 624ddba152fd4a77272f613fbaae61e3
       X-Content-Type-Options:
       - nosniff
     status:
@@ -110,7 +111,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=89961667
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/lookml_tests
   response:
@@ -124,20 +125,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Mon, 04 Apr 2022 17:24:15 GMT
+      - Wed, 06 Apr 2022 18:27:46 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 4955ade58d21143d
+      - e748857bc7ea03af
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 4955ade58d21143d
+      - e748857bc7ea03af
       X-B3-TraceId:
-      - 624b29bfaab5cfe14955ade58d21143d
+      - 624ddba2f8acdcd2e748857bc7ea03af
       X-Content-Type-Options:
       - nosniff
     status:

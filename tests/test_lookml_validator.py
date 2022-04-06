@@ -4,7 +4,6 @@ from typing import Iterable
 from spectacles.validators import LookMLValidator
 
 
-@pytest.mark.default_cassette("fixture_validator_init.yaml")
 @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
 @pytest.fixture(scope="class")
 def validator(looker_client) -> Iterable[LookMLValidator]:

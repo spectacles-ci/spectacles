@@ -7,7 +7,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=29676601
+      - looker.browser=85016224
     method: PATCH
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -21,19 +21,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Fri, 01 Apr 2022 20:26:32 GMT
+      - Wed, 06 Apr 2022 18:32:47 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 74dca549695172f1
+      - e374cbdd18726cf2
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 74dca549695172f1
+      - e374cbdd18726cf2
       X-B3-TraceId:
-      - 62475ff8e9204e9e74dca549695172f1
+      - 624ddccf91b7ca70e374cbdd18726cf2
       X-Content-Type-Options:
       - nosniff
     status:
@@ -43,7 +43,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=29676601
+      - looker.browser=85016224
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/lookml_models?fields=name%2Cproject_name%2Cexplores
   response:
@@ -118,29 +118,30 @@ interactions:
         Items (Kittens)","hidden":true,"group_label":" eCommerce","name":"kitten_order_items","can":{}},{"description":null,"label":"E-Comm
         Cohort Analysis Training","hidden":false,"group_label":" eCommerce","name":"ecomm_training_info","can":{}},{"description":null,"label":"Kmeans
         Model5","hidden":false,"group_label":" eCommerce","name":"kmeans_model5","can":{}},{"description":null,"label":"(8)
-        Cohort Analysis","hidden":false,"group_label":" eCommerce","name":"ecomm_predict","can":{}}]},{"name":"square","project_name":"square_demo","explores":[{"description":null,"label":"Payments","hidden":false,"group_label":"Square","name":"payments","can":{}},{"description":null,"label":"Sellers","hidden":false,"group_label":"Square","name":"sellers","can":{}}]}]'
+        Cohort Analysis","hidden":false,"group_label":" eCommerce","name":"ecomm_predict","can":{}}]},{"name":"square","project_name":"square_demo","explores":[{"description":null,"label":"Payments","hidden":false,"group_label":"Square","name":"payments","can":{}},{"description":null,"label":"Sellers","hidden":false,"group_label":"Square","name":"sellers","can":{}}]},{"name":"ecomm","project_name":"looker-demo","explores":[{"description":null,"label":"Demo
+        - Orders","hidden":false,"group_label":"Ecomm","name":"order_items","can":{}}]}]'
     headers:
       Connection:
       - keep-alive
       Content-Length:
-      - '10524'
+      - '10695'
       Content-Type:
       - application/json
       Date:
-      - Fri, 01 Apr 2022 20:26:32 GMT
+      - Wed, 06 Apr 2022 18:32:47 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 5f20eedb9bfdb42d
+      - 2459089bbc4e6ca0
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 5f20eedb9bfdb42d
+      - 2459089bbc4e6ca0
       X-B3-TraceId:
-      - 62475ff836744b7f5f20eedb9bfdb42d
+      - 624ddccfd439258a2459089bbc4e6ca0
       X-Content-Type-Options:
       - nosniff
     status:
