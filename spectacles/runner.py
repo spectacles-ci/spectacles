@@ -1,6 +1,6 @@
 import re
 from spectacles.exceptions import LookerApiError, SqlError
-from typing import List, Optional, cast, Tuple
+from typing import Dict, List, Optional, cast, Tuple
 from dataclasses import dataclass
 import itertools
 from spectacles.client import LookerClient
@@ -33,21 +33,23 @@ def is_commit(string: str) -> bool:
 
 
 class LookerBranchManager:
-    def __init__(self, client: LookerClient, project: str, remote_reset: bool = False):
+    def __init__(
+        self,
+        client: LookerClient,
+        project: str,
+        remote_reset: bool = False,
+        pin_imports: Dict[str, str] = {},
+    ):
         """Context manager for Git branch checkout, creation, and deletion."""
         logger.debug(f"Setting up branch manager in project '{project}'")
         self.client = client
         self.project = project
         self.remote_reset = remote_reset
+        self.pin_imports = pin_imports
 
         state: ProjectState = self.get_project_state()
         self.workspace: str = state.workspace
         self.history: List[ProjectState] = [state]
-        self.imports: List[str] = self.get_project_imports()
-        logger.debug(
-            f"Project '{self.project}' imports the following projects: {self.imports}"
-        )
-
         self.commit: Optional[str] = None
         self.branch: Optional[str] = None
         self.is_temp_branch: bool = False
@@ -121,6 +123,11 @@ class LookerBranchManager:
             f"[ephemeral = {self.ephemeral}]"
         )
 
+        self.imports: List[str] = self.get_project_imports()
+        logger.debug(
+            f"Project '{self.project}' imports the following projects: {self.imports}"
+        )
+
         # Create temporary branches off production for manifest dependencies
         if not self.imports:
             logger.debug(f"Project '{self.project}' doesn't import any other projects")
@@ -131,8 +138,11 @@ class LookerBranchManager:
         else:
             logger.debug("Creating temporary branches in imported projects")
             for project in self.imports:
-                manager = LookerBranchManager(self.client, project)
-                manager(ephemeral=True).__enter__()
+                import_ref = self.pin_imports.get(project, None)
+                manager = LookerBranchManager(
+                    self.client, project, pin_imports=self.pin_imports
+                )
+                manager(ref=import_ref, ephemeral=True).__enter__()
                 self.import_managers.append(manager)
 
         logger.indent(-1)
@@ -239,10 +249,13 @@ class Runner:
         client: LookerClient,
         project: str,
         remote_reset: bool = False,
+        pin_imports: Dict[str, str] = {},
     ):
         self.project = project
         self.client = client
-        self.branch_manager = LookerBranchManager(client, project, remote_reset)
+        self.branch_manager = LookerBranchManager(
+            client, project, remote_reset, pin_imports
+        )
 
     def validate_sql(
         self,
