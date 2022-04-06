@@ -3,7 +3,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=86124290
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -17,19 +17,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:58:38 GMT
+      - Wed, 06 Apr 2022 18:00:21 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 7f94b23b9d19d1bb
+      - cc32644fa8fcd4dd
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 7f94b23b9d19d1bb
+      - cc32644fa8fcd4dd
       X-B3-TraceId:
-      - 624c4b0e718b19607f94b23b9d19d1bb
+      - 624dd5358e1967b3cc32644fa8fcd4dd
       X-Content-Type-Options:
       - nosniff
     status:
@@ -39,7 +39,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=86124290
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
   response:
@@ -53,20 +53,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:58:38 GMT
+      - Wed, 06 Apr 2022 18:00:21 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 4bf4ad5252de4b40
+      - b395c6ca6be8877b
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 4bf4ad5252de4b40
+      - b395c6ca6be8877b
       X-B3-TraceId:
-      - 624c4b0ed71e59b64bf4ad5252de4b40
+      - 624dd535927faf36b395c6ca6be8877b
       X-Content-Type-Options:
       - nosniff
     status:
@@ -76,7 +76,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=86124290
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/manifest
   response:
@@ -90,19 +90,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:58:38 GMT
+      - Wed, 06 Apr 2022 18:00:21 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 4469740fffd17e43
+      - 0746f8ab7137d3fd
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 4469740fffd17e43
+      - 0746f8ab7137d3fd
       X-B3-TraceId:
-      - 624c4b0ef3327e874469740fffd17e43
+      - 624dd535daf926360746f8ab7137d3fd
       X-Content-Type-Options:
       - nosniff
     status:
@@ -112,7 +112,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=86124290
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/lookml_models?fields=name%2Cproject_name%2Cexplores
   response:
@@ -187,29 +187,30 @@ interactions:
         Items (Kittens)","hidden":true,"group_label":" eCommerce","name":"kitten_order_items","can":{}},{"description":null,"label":"E-Comm
         Cohort Analysis Training","hidden":false,"group_label":" eCommerce","name":"ecomm_training_info","can":{}},{"description":null,"label":"Kmeans
         Model5","hidden":false,"group_label":" eCommerce","name":"kmeans_model5","can":{}},{"description":null,"label":"(8)
-        Cohort Analysis","hidden":false,"group_label":" eCommerce","name":"ecomm_predict","can":{}}]},{"name":"square","project_name":"square_demo","explores":[{"description":null,"label":"Payments","hidden":false,"group_label":"Square","name":"payments","can":{}},{"description":null,"label":"Sellers","hidden":false,"group_label":"Square","name":"sellers","can":{}}]}]'
+        Cohort Analysis","hidden":false,"group_label":" eCommerce","name":"ecomm_predict","can":{}}]},{"name":"square","project_name":"square_demo","explores":[{"description":null,"label":"Payments","hidden":false,"group_label":"Square","name":"payments","can":{}},{"description":null,"label":"Sellers","hidden":false,"group_label":"Square","name":"sellers","can":{}}]},{"name":"ecomm","project_name":"looker-demo","explores":[{"description":null,"label":"Demo
+        - Orders","hidden":false,"group_label":"Ecomm","name":"order_items","can":{}}]}]'
     headers:
       Connection:
       - keep-alive
       Content-Length:
-      - '10524'
+      - '10695'
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:58:39 GMT
+      - Wed, 06 Apr 2022 18:00:21 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - adb6e620bb3ec902
+      - 30d5be5deedee435
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - adb6e620bb3ec902
+      - 30d5be5deedee435
       X-B3-TraceId:
-      - 624c4b0e89eab4d1adb6e620bb3ec902
+      - 624dd53596c4f8ea30d5be5deedee435
       X-Content-Type-Options:
       - nosniff
     status:
@@ -219,7 +220,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=39326198
+      - looker.browser=86124290
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/content_validation
   response:
@@ -263,7 +264,7 @@ interactions:
         Analytics Overview","space":{"name":"Looker eCommerce","id":47},"folder":{"name":"Looker
         eCommerce","id":47},"id":24},"dashboard_element":{"body_text":null,"dashboard_id":24,"id":203,"look_id":null,"note_display":"below","note_state":"expanded","note_text":"","note_text_as_html":"","query_id":null,"subtitle_text":null,"title":"Total
         Profit","title_hidden":false,"title_text":null,"type":"vis","rich_content_json":null},"dashboard_filter":null,"scheduled_plan":null,"alert":null,"lookml_dashboard":null,"lookml_dashboard_element":null,"errors":[{"message":"Unknown
-        field \"orders.total_profit_k\".","field_name":"orders.total_profit_k","model_name":"thelook_partner","explore_name":"order_items","removable":true}],"id":9}],"computation_time":1.035665,"total_looks_validated":31,"total_dashboard_elements_validated":167,"total_dashboard_filters_validated":29,"total_scheduled_plans_validated":9,"total_alerts_validated":0,"total_explores_validated":26}'
+        field \"orders.total_profit_k\".","field_name":"orders.total_profit_k","model_name":"thelook_partner","explore_name":"order_items","removable":true}],"id":9}],"computation_time":0.682458,"total_looks_validated":31,"total_dashboard_elements_validated":167,"total_dashboard_filters_validated":29,"total_scheduled_plans_validated":9,"total_alerts_validated":0,"total_explores_validated":26}'
     headers:
       Connection:
       - keep-alive
@@ -272,20 +273,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 05 Apr 2022 13:58:40 GMT
+      - Wed, 06 Apr 2022 18:00:22 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 3d7c82720eba46c3
+      - 683061d04d2ce0ac
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 3d7c82720eba46c3
+      - 683061d04d2ce0ac
       X-B3-TraceId:
-      - 624c4b0fa7f68a473d7c82720eba46c3
+      - 624dd535fba66e7a683061d04d2ce0ac
       X-Content-Type-Options:
       - nosniff
     status:
