@@ -6,7 +6,6 @@ from spectacles.exceptions import DataTestError, SpectaclesException
 from spectacles.lookml import build_project
 
 
-@pytest.mark.default_cassette("fixture_validator_init.yaml")
 @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
 @pytest.fixture(scope="class")
 def validator(looker_client) -> Iterable[DataTestValidator]:
@@ -17,7 +16,6 @@ def validator(looker_client) -> Iterable[DataTestValidator]:
 class TestValidatePass:
     """Test the eye_exam Looker project on master for an explore without errors."""
 
-    @pytest.mark.default_cassette("fixture_validator_pass.yaml")
     @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
     @pytest.fixture(scope="class")
     def tests(self, validator) -> Iterable[List[DataTest]]:
@@ -27,7 +25,6 @@ class TestValidatePass:
         tests: List[DataTest] = validator.get_tests(project)
         yield tests
 
-    @pytest.mark.default_cassette("fixture_validator_pass.yaml")
     @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
     @pytest.fixture(scope="class")
     def validator_errors(self, validator, tests):
@@ -42,7 +39,6 @@ class TestValidatePass:
 class TestValidateFail:
     """Test the eye_exam Looker project on master for an explore without errors."""
 
-    @pytest.mark.default_cassette("fixture_validator_fail.yaml")
     @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
     @pytest.fixture(scope="class")
     def tests(self, validator) -> Iterable[List[DataTest]]:
@@ -52,7 +48,6 @@ class TestValidateFail:
         tests: List[DataTest] = validator.get_tests(project)
         yield tests
 
-    @pytest.mark.default_cassette("fixture_validator_fail.yaml")
     @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
     @pytest.fixture(scope="class")
     def validator_errors(self, validator, tests):

@@ -7,7 +7,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=13521405
+      - looker.browser=85016224
     method: PATCH
     uri: https://spectacles.looker.com:19999/api/3.1/session
   response:
@@ -21,19 +21,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 06 Apr 2022 18:11:56 GMT
+      - Wed, 06 Apr 2022 18:32:45 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 4c756d0730651b26
+      - a788d4a7b638395a
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 4c756d0730651b26
+      - a788d4a7b638395a
       X-B3-TraceId:
-      - 624dd7ec0b355a2d4c756d0730651b26
+      - 624ddccd7ab4a808a788d4a7b638395a
       X-Content-Type-Options:
       - nosniff
     status:
@@ -47,7 +47,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - looker.browser=13521405
+      - looker.browser=85016224
     method: PUT
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
   response:
@@ -61,20 +61,20 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 06 Apr 2022 18:11:57 GMT
+      - Wed, 06 Apr 2022 18:32:46 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - f55134b04b00e0be
+      - cd3955eef5c8b166
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - f55134b04b00e0be
+      - cd3955eef5c8b166
       X-B3-TraceId:
-      - 624dd7ecd7ade35ff55134b04b00e0be
+      - 624ddccd8353516ccd3955eef5c8b166
       X-Content-Type-Options:
       - nosniff
     status:
@@ -84,42 +84,8 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=13521405
+      - looker.browser=85016224
     method: GET
-    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/validate
-  response:
-    body:
-      string: ''
-    headers:
-      Connection:
-      - keep-alive
-      Date:
-      - Wed, 06 Apr 2022 18:11:57 GMT
-      Strict-Transport-Security:
-      - max-age=15724800; includeSubDomains
-      Vary:
-      - Origin
-      X-B3-ParentSpanId:
-      - f1ed4ac6ab5ff75b
-      X-B3-Sampled:
-      - '0'
-      X-B3-SpanId:
-      - f1ed4ac6ab5ff75b
-      X-B3-TraceId:
-      - 624dd7edffdfbe61f1ed4ac6ab5ff75b
-      X-Content-Type-Options:
-      - nosniff
-    status:
-      code: 204
-      message: No Content
-- request:
-    body: null
-    headers:
-      Content-Length:
-      - '0'
-      Cookie:
-      - looker.browser=13521405
-    method: POST
     uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/validate
   response:
     body:
@@ -147,29 +113,29 @@ interactions:
         \"use_aragonite\" in manifest.lkml without \"LookML New Runtime (Aragonite)\"
         enabled is not supported. Param ignored.","field_name":null,"file_path":null,"line_number":null,"model_id":null,"explore":null,"help_url":null,"params":{"level":"warning","scope":"phase_zero"},"sanitized_message":"Using
         \"use_aragonite\" in manifest.lkml without \"(?)\" enabled is not supported.
-        Param ignored."}],"models_not_validated":[],"computation_time":0.16364312171936035,"project_digest":"273c17de4cd2c421a149c4e1df4d0ba5ce29b47a"}'
+        Param ignored."}],"models_not_validated":[],"computation_time":null,"stale":false,"project_digest":"273c17de4cd2c421a149c4e1df4d0ba5ce29b47a"}'
     headers:
       Connection:
       - keep-alive
       Content-Length:
-      - '3210'
+      - '3209'
       Content-Type:
       - application/json
       Date:
-      - Wed, 06 Apr 2022 18:11:57 GMT
+      - Wed, 06 Apr 2022 18:32:46 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - a83d5242d66f2805
+      - ce0b836ab5eaaa5c
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - a83d5242d66f2805
+      - ce0b836ab5eaaa5c
       X-B3-TraceId:
-      - 624dd7ed63a9adfba83d5242d66f2805
+      - 624ddcce7d1af892ce0b836ab5eaaa5c
       X-Content-Type-Options:
       - nosniff
     status:

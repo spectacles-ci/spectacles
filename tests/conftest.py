@@ -22,7 +22,6 @@ def vcr_config():
     return {"filter_headers": ["Authorization"]}
 
 
-@pytest.mark.default_cassette("init_client.yaml")
 @pytest.mark.vcr(
     filter_post_data_parameters=["client_id", "client_secret"],
     record_mode="all",
@@ -41,7 +40,6 @@ def looker_client() -> Iterable[LookerClient]:
 
 
 @pytest.mark.vcr(decode_compressed_response=True)
-@pytest.mark.default_cassette("init_github.yaml")
 @pytest.fixture
 def remote_repo() -> Repository:
     access_token = os.environ.get("GITHUB_ACCESS_TOKEN")
