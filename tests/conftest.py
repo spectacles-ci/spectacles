@@ -58,6 +58,7 @@ def dimension():
         tags=[],
         sql='${TABLE}."AGE"',
         url="/projects/eye_exam/files/views%2Fusers.view.lkml?line=6",
+        is_hidden=False,
     )
 
 
