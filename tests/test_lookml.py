@@ -84,8 +84,9 @@ def test_ignored_dimension_with_whitespace():
     tags = []
     url = "/projects/spectacles/files/test_view.view.lkml?line=340"
     sql = " -- spectacles: ignore\n${TABLE}.dimension_one "
+    is_hidden = False
     dimension = Dimension(
-        name, model_name, explore_name, dimension_type, tags, sql, url
+        name, model_name, explore_name, dimension_type, tags, sql, url, is_hidden
     )
     assert dimension.ignore
 
@@ -98,8 +99,9 @@ def test_ignored_dimension_with_no_whitespace():
     tags = []
     url = "/projects/spectacles/files/test_view.view.lkml?line=340"
     sql = "--spectacles:ignore\n${TABLE}.dimension_one "
+    is_hidden = False
     dimension = Dimension(
-        name, model_name, explore_name, dimension_type, tags, sql, url
+        name, model_name, explore_name, dimension_type, tags, sql, url, is_hidden
     )
     assert dimension.ignore
 
@@ -112,8 +114,9 @@ def test_ignored_dimension_with_tags():
     tags = ["spectacles: ignore"]
     url = "/projects/spectacles/files/test_view.view.lkml?line=340"
     sql = "${TABLE}.dimension_one "
+    is_hidden = False
     dimension = Dimension(
-        name, model_name, explore_name, dimension_type, tags, sql, url
+        name, model_name, explore_name, dimension_type, tags, sql, url, is_hidden
     )
     assert dimension.ignore
 
