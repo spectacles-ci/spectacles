@@ -34,6 +34,18 @@ class TestBuildProject:
         )
         assert len(project.models) == 1
 
+    def test_hidden_dimension_should_be_excluded_with_ignore_hidden(
+        self, looker_client
+    ):
+        project = build_project(
+            looker_client,
+            name="eye_exam",
+            filters=["eye_exam/users"],
+            include_dimensions=True,
+            ignore_hidden_fields=True,
+        )
+        assert len(project.models[0].explores[0].dimensions) == 5
+
 
 @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
 class TestBuildUnconfiguredProject:

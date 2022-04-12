@@ -3,7 +3,7 @@ interactions:
     body: null
     headers:
       Cookie:
-      - looker.browser=85016224
+      - looker.browser=3857495
     method: GET
     uri: https://spectacles.looker.com:19999/api/3.1/lookml_models?fields=name%2Cproject_name%2Cexplores
   response:
@@ -79,29 +79,30 @@ interactions:
         Cohort Analysis Training","hidden":false,"group_label":" eCommerce","name":"ecomm_training_info","can":{}},{"description":null,"label":"Kmeans
         Model5","hidden":false,"group_label":" eCommerce","name":"kmeans_model5","can":{}},{"description":null,"label":"(8)
         Cohort Analysis","hidden":false,"group_label":" eCommerce","name":"ecomm_predict","can":{}}]},{"name":"square","project_name":"square_demo","explores":[{"description":null,"label":"Payments","hidden":false,"group_label":"Square","name":"payments","can":{}},{"description":null,"label":"Sellers","hidden":false,"group_label":"Square","name":"sellers","can":{}}]},{"name":"ecomm","project_name":"looker-demo","explores":[{"description":null,"label":"Demo
-        - Orders","hidden":false,"group_label":"Ecomm","name":"order_items","can":{}}]}]'
+        - Orders","hidden":false,"group_label":"Demo - Ecommerce","name":"order_items","can":{}},{"description":null,"label":"Dim
+        Products","hidden":false,"group_label":"Demo - Ecommerce","name":"dim_products","can":{}}]}]'
     headers:
       Connection:
       - keep-alive
       Content-Length:
-      - '10695'
+      - '10829'
       Content-Type:
       - application/json
       Date:
-      - Wed, 06 Apr 2022 18:32:47 GMT
+      - Tue, 12 Apr 2022 14:52:06 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Vary:
       - Accept-Encoding
       - Accept-Encoding, Origin
       X-B3-ParentSpanId:
-      - 16b9c1acf56f2423
+      - fbf6f3ad4d88eee5
       X-B3-Sampled:
       - '0'
       X-B3-SpanId:
-      - 16b9c1acf56f2423
+      - fbf6f3ad4d88eee5
       X-B3-TraceId:
-      - 624ddccfa9cef39416b9c1acf56f2423
+      - 62559216b63e3c13fbf6f3ad4d88eee5
       X-Content-Type-Options:
       - nosniff
     status:
