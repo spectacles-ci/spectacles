@@ -1,6 +1,6 @@
 from copy import deepcopy
 import pytest
-from spectacles.lookml import Model, Explore, Dimension, build_project
+from spectacles.lookml import Model, Explore, Dimension, build_project, build_dimensions
 from spectacles.exceptions import SpectaclesException
 from utils import load_resource
 
@@ -55,6 +55,28 @@ class TestBuildUnconfiguredProject:
         looker_client.update_workspace(workspace="production")
         with pytest.raises(SpectaclesException):
             build_project(looker_client, name="eye_exam_unconfigured")
+
+
+@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
+class TestBuildDimensions:
+    def test_dimension_count_should_match(self, looker_client):
+        dimensions = build_dimensions(
+            looker_client,
+            model_name="eye_exam",
+            explore_name="users",
+        )
+        assert len(dimensions) == 6
+
+    def test_hidden_dimension_should_be_excluded_with_ignore_hidden(
+        self, looker_client
+    ):
+        dimensions = build_dimensions(
+            looker_client,
+            model_name="eye_exam",
+            explore_name="users",
+            ignore_hidden_fields=True,
+        )
+        assert len(dimensions) == 5
 
 
 def test_model_from_json():
