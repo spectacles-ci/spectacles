@@ -323,7 +323,7 @@ class SqlValidator:
         )
         while queries or self._test_by_task_id:
             if queries:
-                logger.debug(f"Starting a new loop, {len(tests)} tests queued")
+                logger.debug(f"Starting a new loop, {len(queries)} tests queued")
                 fill_query_slots(queries)
             query_tasks = list(self._test_by_task_id.keys())[:QUERY_TASK_LIMIT]
             logger.debug(f"Checking for results of {len(query_tasks)} query tasks")
