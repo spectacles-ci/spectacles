@@ -382,6 +382,7 @@ def build_dimensions(
     client: LookerClient,
     model_name: str,
     explore_name: str,
+    ignore_hidden_fields: bool = False,
 ) -> List[Dimension]:
     """Creates Dimension objects for all dimensions in a given explore."""
     dimensions_json = client.get_lookml_dimensions(model_name, explore_name)
@@ -389,7 +390,7 @@ def build_dimensions(
     for dimension_json in dimensions_json:
         dimension = Dimension.from_json(dimension_json, model_name, explore_name)
         dimension.url = client.base_url + dimension.url
-        if not dimension.ignore:
+        if not dimension.ignore and not (dimension.is_hidden and ignore_hidden_fields):
             dimensions.append(dimension)
     return dimensions
 
@@ -432,11 +433,9 @@ def build_project(
 
         if include_dimensions:
             for explore in model.explores:
-                explore.dimensions = build_dimensions(client, model.name, explore.name)
-                if ignore_hidden_fields:
-                    explore.dimensions = [
-                        dim for dim in explore.dimensions if not dim.is_hidden
-                    ]
+                explore.dimensions = build_dimensions(
+                    client, model.name, explore.name, ignore_hidden_fields
+                )
 
     project = Project(name, [model for model in models if len(model.explores) > 0])
     return project
