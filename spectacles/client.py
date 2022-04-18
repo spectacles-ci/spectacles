@@ -903,17 +903,22 @@ class LookerClient:
         response = self.get(url=url, timeout=TIMEOUT_SEC)
         try:
             response.raise_for_status()
-        except requests.exceptions.HTTPError:
-            raise LookerApiError(
-                name="unable-to-retrieve-compiled-sql",
-                title="Couldn't retrieve compiled SQL.",
-                status=response.status_code,
-                detail=(
-                    f"Failed to retrieve compiled SQL for query '{query_id}'. "
-                    "Please try again."
-                ),
-                response=response,
-            )
+        except requests.exceptions.HTTPError as e:
+            if e.response.status_code == 404:
+                return (
+                    "-- SQL could not be generated because of errors with this query."
+                )
+            else:
+                raise LookerApiError(
+                    name="unable-to-retrieve-compiled-sql",
+                    title="Couldn't retrieve compiled SQL.",
+                    status=response.status_code,
+                    detail=(
+                        f"Failed to retrieve compiled SQL for query '{query_id}'. "
+                        "Please try again."
+                    ),
+                    response=response,
+                )
 
         result = response.text
 
