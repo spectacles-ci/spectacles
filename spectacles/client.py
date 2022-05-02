@@ -94,7 +94,7 @@ class LookerClient:
             api_version: Desired API version to use for requests.
 
         """
-        logger.debug("Authenticating Looker API credentials")
+        logger.debug(f"Authenticating to the Looker as client ID '{self.client_id}'")
 
         url = utils.compose_url(self.api_url, path=["login"])
         body = {"client_id": self.client_id, "client_secret": self.client_secret}
