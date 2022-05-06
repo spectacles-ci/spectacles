@@ -1,3 +1,4 @@
+import asyncio
 from typing import List, Callable, Optional, Dict, Any, Iterable
 from urllib import parse
 from spectacles.logger import GLOBAL_LOGGER as logger
@@ -80,3 +81,13 @@ def chunks(to_chunk: list, size: int) -> Iterable:
     """Yield successive n-sized chunks from the list."""
     for i in range(0, len(to_chunk), size):
         yield to_chunk[i : i + size]
+
+
+async def gather_with_concurrency(n, *tasks):
+    semaphore = asyncio.Semaphore(n)
+
+    async def limited_task(task):
+        async with semaphore:
+            return await task
+
+    return await asyncio.gather(*(limited_task(task) for task in tasks))
