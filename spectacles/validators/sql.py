@@ -1,9 +1,11 @@
+import asyncio
 from dataclasses import dataclass
 from tabulate import tabulate
 from typing import Union, Dict, Any, List, Optional, Tuple
 import itertools
 import time
-from spectacles.utils import chunks
+import uvloop
+from spectacles.utils import chunks, gather_with_concurrency
 from spectacles.client import LookerClient
 from spectacles.lookml import Dimension, Explore, Project
 from spectacles.exceptions import SpectaclesException, SqlError
@@ -195,20 +197,27 @@ class SqlValidator:
         at_dimension_level: bool = False,
         chunk_size: int = DEFAULT_CHUNK_SIZE,
     ) -> List[SqlTest]:
-        tests: List[SqlTest] = []
-        if at_dimension_level:
-            for explore in project.iter_explores():
-                if not explore.skipped and explore.errored is not False:
-                    for dimension in explore.dimensions:
-                        test = self._create_dimension_test(dimension, compile_sql)
-                        tests.append(test)
-        else:
-            for explore in project.iter_explores():
-                test = self._create_explore_test(explore, compile_sql, chunk_size)
-                tests.append(test)
-        return tests
+        async def create_and_gather_async_tasks() -> List[SqlTest]:
+            coros: List[asyncio.Task] = []
+            if at_dimension_level:
+                for explore in project.iter_explores():
+                    if not explore.skipped and explore.errored is not False:
+                        for dimension in explore.dimensions:
+                            coros.append(
+                                self._create_dimension_test(dimension, compile_sql)
+                            )
+            else:
+                for explore in project.iter_explores():
+                    coros.append(
+                        self._create_explore_test(explore, compile_sql, chunk_size)
+                    )
 
-    def _create_explore_test(
+            return await gather_with_concurrency(100, *coros)
+
+        uvloop.install()
+        return asyncio.run(create_and_gather_async_tasks())
+
+    async def _create_explore_test(
         self,
         explore: Explore,
         compile_sql: bool = False,
@@ -224,17 +233,17 @@ class SqlValidator:
             )
         dimensions = [dimension.name for dimension in explore.dimensions]
         # Create a query that includes all dimensions
-        main_query = self.client.create_query(
+        main_query = await self.client.create_query(
             explore.model_name, explore.name, dimensions, fields=["id", "share_url"]
         )
-        sql = self.client.run_query(main_query["id"]) if compile_sql else None
+        sql = await self.client.run_query(main_query["id"]) if compile_sql else None
 
         execution_queries: List[Query] = []
         if len(dimensions) > chunk_size:
             # Create separate chunked queries for execution, we don't store compiled SQL
             # or the Explore URL for these queries
             for chunk in chunks(dimensions, size=chunk_size):
-                chunk_query = self.client.create_query(
+                chunk_query = await self.client.create_query(
                     explore.model_name, explore.name, chunk, fields=["id", "share_url"]
                 )
                 execution_queries.append(
@@ -251,16 +260,16 @@ class SqlValidator:
         )
         return test
 
-    def _create_dimension_test(
+    async def _create_dimension_test(
         self, dimension: Dimension, compile_sql: bool = False
     ) -> SqlTest:
-        query = self.client.create_query(
+        query = await self.client.create_query(
             dimension.model_name,
             dimension.explore_name,
             [dimension.name],
             fields=["id", "share_url"],
         )
-        sql = self.client.run_query(query["id"]) if compile_sql else None
+        sql = await self.client.run_query(query["id"]) if compile_sql else None
         test = SqlTest(
             queries=[Query(query["id"], query["share_url"])],
             lookml_ref=dimension,
