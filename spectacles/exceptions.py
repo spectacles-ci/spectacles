@@ -1,5 +1,5 @@
 from typing import Dict, Any, Optional
-import requests
+import httpx
 from spectacles.utils import details_from_http_error
 from spectacles.types import JsonDict
 
@@ -43,9 +43,9 @@ class LookerApiError(SpectaclesException):
         title: str,
         status: int,
         detail: str,
-        response: requests.Response,
+        response: httpx.Response,
     ):
-        request: requests.PreparedRequest = response.request
+        request: httpx.Request = response.request
         super().__init__("looker-api-errors/" + name, title, detail)
         self.status = status
         self.looker_api_response: Optional[JsonDict] = details_from_http_error(response)

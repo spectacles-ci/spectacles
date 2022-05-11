@@ -2,21 +2,18 @@ from typing import List, Dict, Optional
 import time
 from dataclasses import dataclass
 import backoff  # type: ignore
-import requests
 import httpx
-from httpx import HTTPStatusError, ConnectError
-from requests.exceptions import Timeout, HTTPError
+from httpx import HTTPStatusError, ConnectError, TimeoutException
 import spectacles.utils as utils
 from spectacles.types import JsonDict
 from spectacles.logger import GLOBAL_LOGGER as logger
 from spectacles.exceptions import SpectaclesException, LookerApiError
 
 TIMEOUT_SEC = 300
+MAX_ASYNC_CONNECTIONS = 200
 BACKOFF_EXCEPTIONS = (
-    Timeout,
-    HTTPError,
+    TimeoutException,
     HTTPStatusError,
-    ConnectionError,
     ConnectError,
 )
 
@@ -54,12 +51,14 @@ class LookerClient:
 
     def __init__(
         self,
+        async_client: httpx.AsyncClient,
         base_url: str,
         client_id: str,
         client_secret: str,
         port: Optional[int] = None,
         api_version: float = 3.1,
     ):
+        self.async_client = async_client
         supported_api_versions = [3.1]
         if api_version not in supported_api_versions:
             raise SpectaclesException(
@@ -88,7 +87,6 @@ class LookerClient:
         self.client_secret: str = client_secret
         self.api_version: float = api_version
         self.access_token: Optional[AccessToken] = None
-        self.session: requests.Session = requests.Session()
         self.workspace: str = "production"
 
         self.authenticate()
@@ -106,12 +104,11 @@ class LookerClient:
 
         url = utils.compose_url(self.api_url, path=["login"])
         body = {"client_id": self.client_id, "client_secret": self.client_secret}
-        self.session.auth = NullAuth()
         # This should not use `self.post` or it will create a recursive loop
-        response = self.session.post(url=url, data=body, timeout=TIMEOUT_SEC)
+        response = httpx.post(url=url, data=body, timeout=TIMEOUT_SEC)
         try:
             response.raise_for_status()
-        except requests.exceptions.HTTPError:
+        except httpx.HTTPStatusError:
             raise LookerApiError(
                 name="unable-to-authenticate",
                 title="Couldn't authenticate to the Looker API.",
@@ -128,62 +125,38 @@ class LookerClient:
             # Calculate the expiration time with a one-minute buffer
             result["expires_at"] = time.time() + result["expires_in"] - 60
         self.access_token = AccessToken(**result)
-        self.session.headers = {  # type: ignore
-            "Authorization": f"token {self.access_token}"
-        }
-
-        limits = httpx.Limits(max_connections=200)
-        self.async_client = httpx.AsyncClient(
-            headers=self.session.headers, limits=limits
+        self.async_client.headers = httpx.Headers(
+            {"Authorization": f"token {self.access_token}"}
         )
+
         looker_version = self.get_looker_release_version()
         logger.info(
             f"Connected to Looker version {looker_version} "
             f"using Looker API {self.api_version}"
         )
 
-    def __del__(self):
-        # TODO: __del__ is not reliable, use a context manager or try/finally
-        asyncio.run(self.async_client.aclose())
-
-    def request(self, method: str, url: str, *args, **kwargs) -> requests.Response:
+    async def request(self, method: str, url: str, *args, **kwargs) -> httpx.Response:
         if self.access_token and self.access_token.expired:
             logger.debug("Looker API access token has expired, requesting a new one")
             self.authenticate()
             if self.workspace == "dev":
-                self.update_workspace("dev")
-        return self.session.request(method, url, *args, **kwargs)
-
-    async def request_async(
-        self, method: str, url: str, *args, **kwargs
-    ) -> httpx.Response:
-        if self.access_token and self.access_token.expired:
-            logger.debug("Looker API access token has expired, requesting a new one")
-            self.authenticate()
-            if self.workspace == "dev":
-                self.update_workspace("dev")
+                await self.update_workspace("dev")
         return await self.async_client.request(method, url, *args, **kwargs)
 
-    def get(self, url, *args, **kwargs) -> requests.Response:
-        return self.request("GET", url, *args, **kwargs)
+    async def get(self, url, *args, **kwargs) -> httpx.Response:
+        return await self.request("GET", url, *args, **kwargs)
 
-    async def get_async(self, url, *args, **kwargs) -> httpx.Response:
-        return await self.request_async("GET", url, *args, **kwargs)
+    async def post(self, url, *args, **kwargs) -> httpx.Response:
+        return await self.request("POST", url, *args, **kwargs)
 
-    def post(self, url, *args, **kwargs) -> requests.Response:
-        return self.request("POST", url, *args, **kwargs)
+    async def patch(self, url, *args, **kwargs) -> httpx.Response:
+        return await self.request("PATCH", url, *args, **kwargs)
 
-    async def post_async(self, url, *args, **kwargs) -> httpx.Response:
-        return await self.request_async("POST", url, *args, **kwargs)
+    async def put(self, url, *args, **kwargs) -> httpx.Response:
+        return await self.request("PUT", url, *args, **kwargs)
 
-    def patch(self, url, *args, **kwargs) -> requests.Response:
-        return self.request("PATCH", url, *args, **kwargs)
-
-    def put(self, url, *args, **kwargs) -> requests.Response:
-        return self.request("PUT", url, *args, **kwargs)
-
-    def delete(self, url, *args, **kwargs) -> requests.Response:
-        return self.request("DELETE", url, *args, **kwargs)
+    async def delete(self, url, *args, **kwargs) -> httpx.Response:
+        return await self.request("DELETE", url, *args, **kwargs)
 
     def get_looker_release_version(self) -> str:
         """Gets the version number of connected Looker instance.
@@ -196,10 +169,10 @@ class LookerClient:
 
         url = utils.compose_url(self.api_url, path=["versions"])
 
-        response = self.get(url=url, timeout=TIMEOUT_SEC)
+        response = httpx.get(url=url, timeout=TIMEOUT_SEC)
         try:
             response.raise_for_status()
-        except requests.exceptions.HTTPError:
+        except httpx.HTTPStatusError:
             raise LookerApiError(
                 name="unable-to-get-version",
                 title="Couldn't get Looker's release version.",
@@ -213,7 +186,7 @@ class LookerClient:
 
         return response.json()["looker_release_version"]
 
-    def get_workspace(self) -> str:
+    async def get_workspace(self) -> str:
         """Gets the session workspace.
 
         Args:
@@ -224,10 +197,10 @@ class LookerClient:
         """
         logger.debug("Getting the workspace in use by this session")
         url = utils.compose_url(self.api_url, path=["session"])
-        response = self.get(url=url, timeout=TIMEOUT_SEC)
+        response = await self.get(url=url, timeout=TIMEOUT_SEC)
         try:
             response.raise_for_status()
-        except requests.exceptions.HTTPError:
+        except httpx.HTTPStatusError:
             raise LookerApiError(
                 name="unable-to-get-workspace",
                 title="Couldn't get the workspace.",
@@ -240,7 +213,7 @@ class LookerClient:
             )
         return response.json()["workspace_id"]
 
-    def update_workspace(self, workspace: str) -> None:
+    async def update_workspace(self, workspace: str) -> None:
         """Updates the session workspace.
 
         Args:
@@ -249,10 +222,10 @@ class LookerClient:
         logger.debug(f"Updating session to use the {workspace} workspace")
         url = utils.compose_url(self.api_url, path=["session"])
         body = {"workspace_id": workspace}
-        response = self.patch(url=url, json=body, timeout=TIMEOUT_SEC)
+        response = await self.patch(url=url, json=body, timeout=TIMEOUT_SEC)
         try:
             response.raise_for_status()
-        except requests.exceptions.HTTPError:
+        except httpx.HTTPStatusError:
             raise LookerApiError(
                 name="unable-to-update-workspace",
                 title="Couldn't update the session's workspace.",
@@ -267,7 +240,7 @@ class LookerClient:
             )
         self.workspace = workspace
 
-    def get_all_branches(self, project: str) -> List[str]:
+    async def get_all_branches(self, project: str) -> List[str]:
         """Returns a list of git branches in the project repository.
 
         Args:
@@ -277,10 +250,10 @@ class LookerClient:
         url = utils.compose_url(
             self.api_url, path=["projects", project, "git_branches"]
         )
-        response = self.get(url=url, timeout=TIMEOUT_SEC)
+        response = await self.get(url=url, timeout=TIMEOUT_SEC)
         try:
             response.raise_for_status()
-        except requests.exceptions.HTTPError:
+        except httpx.HTTPStatusError:
             raise LookerApiError(
                 name="unable-to-get-branches",
                 title="Couldn't get all Git branches.",
@@ -294,7 +267,7 @@ class LookerClient:
 
         return [branch["name"] for branch in response.json()]
 
-    def checkout_branch(self, project: str, branch: str) -> None:
+    async def checkout_branch(self, project: str, branch: str) -> None:
         """Checks out a new git branch. Only works in dev workspace.
 
         Args:
@@ -304,10 +277,10 @@ class LookerClient:
         logger.debug(f"Setting project '{project}' branch to '{branch}'")
         url = utils.compose_url(self.api_url, path=["projects", project, "git_branch"])
         body = {"name": branch}
-        response = self.put(url=url, json=body, timeout=TIMEOUT_SEC)
+        response = await self.put(url=url, json=body, timeout=TIMEOUT_SEC)
         try:
             response.raise_for_status()
-        except requests.exceptions.HTTPError:
+        except httpx.HTTPStatusError:
             raise LookerApiError(
                 name="unable-to-checkout-branch",
                 title="Couldn't checkout Git branch.",
@@ -320,7 +293,7 @@ class LookerClient:
                 response=response,
             )
 
-    def reset_to_remote(self, project: str) -> None:
+    async def reset_to_remote(self, project: str) -> None:
         """Reset a project development branch to the revision of the project that is on the remote.
 
         Args:
@@ -331,10 +304,10 @@ class LookerClient:
         url = utils.compose_url(
             self.api_url, path=["projects", project, "reset_to_remote"]
         )
-        response = self.post(url=url, timeout=TIMEOUT_SEC)
+        response = await self.post(url=url, timeout=TIMEOUT_SEC)
         try:
             response.raise_for_status()
-        except requests.exceptions.HTTPError:
+        except httpx.HTTPStatusError:
             raise LookerApiError(
                 name="unable-to-reset-remote",
                 title="Couldn't checkout Git branch.",
@@ -346,7 +319,7 @@ class LookerClient:
                 response=response,
             )
 
-    def get_manifest(self, project: str) -> JsonDict:
+    async def get_manifest(self, project: str) -> JsonDict:
         """Gets all the dependent LookML projects defined in the manifest file.
 
         Args:
@@ -357,11 +330,11 @@ class LookerClient:
         """
         logger.debug("Getting manifest details")
         url = utils.compose_url(self.api_url, path=["projects", project, "manifest"])
-        response = self.get(url=url, timeout=TIMEOUT_SEC)
+        response = await self.get(url=url, timeout=TIMEOUT_SEC)
 
         try:
             response.raise_for_status()
-        except requests.exceptions.HTTPError:
+        except httpx.HTTPStatusError:
             raise LookerApiError(
                 name="unable-to-get-manifest",
                 title="Couldn't retrieve project manifest.",
@@ -378,7 +351,7 @@ class LookerClient:
 
         return manifest
 
-    def get_active_branch(self, project: str) -> JsonDict:
+    async def get_active_branch(self, project: str) -> JsonDict:
         """Gets the active branch for the user in the given project.
 
         Args:
@@ -389,11 +362,11 @@ class LookerClient:
         """
         logger.debug(f"Getting active branch for project '{project}'")
         url = utils.compose_url(self.api_url, path=["projects", project, "git_branch"])
-        response = self.get(url=url, timeout=TIMEOUT_SEC)
+        response = await self.get(url=url, timeout=TIMEOUT_SEC)
 
         try:
             response.raise_for_status()
-        except requests.exceptions.HTTPError:
+        except httpx.HTTPStatusError:
             raise LookerApiError(
                 name="unable-to-get-active-branch",
                 title="Couldn't determine active Git branch.",
@@ -411,12 +384,12 @@ class LookerClient:
 
         return response.json()
 
-    def get_active_branch_name(self, project: str) -> str:
+    async def get_active_branch_name(self, project: str) -> str:
         """Helper method to return only the branch name."""
-        full_response = self.get_active_branch(project)
+        full_response = await self.get_active_branch(project)
         return full_response["name"]
 
-    def create_branch(self, project: str, branch: str, ref: Optional[str] = None):
+    async def create_branch(self, project: str, branch: str, ref: Optional[str] = None):
         """Creates a branch in the given project.
 
         Args:
@@ -444,11 +417,11 @@ class LookerClient:
         logger.debug(message)
 
         url = utils.compose_url(self.api_url, path=["projects", project, "git_branch"])
-        response = self.post(url=url, json=body, timeout=TIMEOUT_SEC)
+        response = await self.post(url=url, json=body, timeout=TIMEOUT_SEC)
 
         try:
             response.raise_for_status()
-        except requests.exceptions.HTTPError:
+        except httpx.HTTPStatusError:
             raise LookerApiError(
                 name="unable-to-create-branch",
                 title="Couldn't create new Git branch.",
@@ -457,7 +430,7 @@ class LookerClient:
                 response=response,
             )
 
-    def hard_reset_branch(self, project: str, branch: str, ref: str):
+    async def hard_reset_branch(self, project: str, branch: str, ref: str):
         """Hard resets a branch to the ref prodvided.
 
         DANGER: hard reset will be force pushed to the remote. Unsaved changes and
@@ -474,11 +447,11 @@ class LookerClient:
 
         body = {"name": branch, "ref": ref}
         url = utils.compose_url(self.api_url, path=["projects", project, "git_branch"])
-        response = self.put(url=url, json=body, timeout=TIMEOUT_SEC)
+        response = await self.put(url=url, json=body, timeout=TIMEOUT_SEC)
 
         try:
             response.raise_for_status()
-        except requests.exceptions.HTTPError:
+        except httpx.HTTPStatusError:
             raise LookerApiError(
                 name="unable-to-update-branch",
                 title="Couldn't update Git branch.",
@@ -491,7 +464,7 @@ class LookerClient:
                 response=response,
             )
 
-    def delete_branch(self, project: str, branch: str):
+    async def delete_branch(self, project: str, branch: str):
         """Deletes a branch in the given project.
 
         Args:
@@ -503,11 +476,11 @@ class LookerClient:
         url = utils.compose_url(
             self.api_url, path=["projects", project, "git_branch", branch]
         )
-        response = self.delete(url=url, timeout=TIMEOUT_SEC)
+        response = await self.delete(url=url, timeout=TIMEOUT_SEC)
 
         try:
             response.raise_for_status()
-        except requests.exceptions.HTTPError:
+        except httpx.HTTPStatusError:
             raise LookerApiError(
                 name="unable-to-delete-branch",
                 title="Couldn't delete Git branch.",
@@ -519,7 +492,7 @@ class LookerClient:
                 response=response,
             )
 
-    def all_lookml_tests(self, project: str) -> List[JsonDict]:
+    async def all_lookml_tests(self, project: str) -> List[JsonDict]:
         """Gets all LookML/data tests for a given project.
 
         Args:
@@ -533,11 +506,11 @@ class LookerClient:
         url = utils.compose_url(
             self.api_url, path=["projects", project, "lookml_tests"]
         )
-        response = self.get(url=url, timeout=TIMEOUT_SEC)
+        response = await self.get(url=url, timeout=TIMEOUT_SEC)
 
         try:
             response.raise_for_status()
-        except requests.exceptions.HTTPError:
+        except httpx.HTTPStatusError:
             raise LookerApiError(
                 name="unable-to-get-data-tests",
                 title="Couldn't retrieve all data tests.",
@@ -551,7 +524,7 @@ class LookerClient:
 
         return response.json()
 
-    def run_lookml_test(
+    async def run_lookml_test(
         self, project: str, model: str = None, test: str = None
     ) -> List[JsonDict]:
         """Runs all LookML/data tests for a given project and model (optional)
@@ -585,11 +558,11 @@ class LookerClient:
             params["model"] = model
         if test is not None:
             params["test"] = test
-        response = self.session.get(url=url, params=params, timeout=TIMEOUT_SEC)
+        response = await self.get(url=url, params=params, timeout=TIMEOUT_SEC)
 
         try:
             response.raise_for_status()
-        except requests.exceptions.HTTPError:
+        except httpx.HTTPStatusError:
             raise LookerApiError(
                 name="unable-to-run-data-test",
                 title="Couldn't run data test.",
@@ -603,7 +576,7 @@ class LookerClient:
 
         return response.json()
 
-    def get_lookml_models(self, fields: Optional[List] = None) -> List[JsonDict]:
+    async def get_lookml_models(self, fields: Optional[List] = None) -> List[JsonDict]:
         """Gets all models and explores from the LookmlModel endpoint.
 
         Returns:
@@ -619,10 +592,10 @@ class LookerClient:
             params["fields"] = fields
 
         url = utils.compose_url(self.api_url, path=["lookml_models"], params=params)
-        response = self.get(url=url, timeout=TIMEOUT_SEC)
+        response = await self.get(url=url, timeout=TIMEOUT_SEC)
         try:
             response.raise_for_status()
-        except requests.exceptions.HTTPError:
+        except httpx.HTTPStatusError:
             raise LookerApiError(
                 name="unable-to-get-lookml",
                 title="Couldn't retrieve models and explores.",
@@ -633,7 +606,7 @@ class LookerClient:
 
         return response.json()
 
-    def get_lookml_dimensions(self, model: str, explore: str) -> List[str]:
+    async def get_lookml_dimensions(self, model: str, explore: str) -> List[str]:
         """Gets all dimensions for an explore from the LookmlModel endpoint.
 
         Args:
@@ -652,10 +625,10 @@ class LookerClient:
             path=["lookml_models", model, "explores", explore],
             params=params,
         )
-        response = self.get(url=url, timeout=TIMEOUT_SEC)
+        response = await self.get(url=url, timeout=TIMEOUT_SEC)
         try:
             response.raise_for_status()
-        except requests.exceptions.HTTPError:
+        except httpx.HTTPStatusError:
             raise LookerApiError(
                 name="unable-to-get-dimension-lookml",
                 title="Couldn't retrieve dimensions.",
@@ -704,10 +677,10 @@ class LookerClient:
             params["fields"] = fields
 
         url = utils.compose_url(self.api_url, path=["queries"], params=params)
-        response = await self.post_async(url=url, json=body, timeout=TIMEOUT_SEC)
+        response = await self.post(url=url, json=body, timeout=TIMEOUT_SEC)
         try:
             response.raise_for_status()
-        except requests.exceptions.HTTPError:
+        except httpx.HTTPStatusError:
             raise LookerApiError(
                 name="unable-to-create-query",
                 title="Couldn't create query.",
@@ -731,7 +704,7 @@ class LookerClient:
         )
         return result
 
-    def create_query_task(self, query_id: int) -> str:
+    async def create_query_task(self, query_id: int) -> str:
         """Runs a previously created query asynchronously and returns the query task ID.
 
         If a ClientError or TimeoutError is received, attempts to retry.
@@ -751,13 +724,13 @@ class LookerClient:
         params = {"fields": ["id"]}
         url = utils.compose_url(self.api_url, path=["query_tasks"], params=params)
 
-        response = self.post(
+        response = await self.post(
             url=url, json=body, params={"cache": "false"}, timeout=TIMEOUT_SEC
         )
 
         try:
             response.raise_for_status()
-        except requests.exceptions.HTTPError:
+        except httpx.HTTPStatusError:
             raise LookerApiError(
                 name="unable-to-launch-query",
                 title="Couldn't launch query.",
@@ -774,7 +747,7 @@ class LookerClient:
         logger.debug("Query %d is running under query task %s", query_id, query_task_id)
         return query_task_id
 
-    def get_query_task_multi_results(self, query_task_ids: List[str]) -> JsonDict:
+    async def get_query_task_multi_results(self, query_task_ids: List[str]) -> JsonDict:
         """Returns query task results.
 
         If a ClientError or TimeoutError is received, attempts to retry.
@@ -791,7 +764,7 @@ class LookerClient:
             "Attempting to get results for %d query tasks", len(query_task_ids)
         )
         url = utils.compose_url(self.api_url, path=["query_tasks", "multi_results"])
-        response = self.get(
+        response = await self.get(
             url=url,
             params={"query_task_ids": ",".join(query_task_ids)},
             timeout=TIMEOUT_SEC,
@@ -799,7 +772,7 @@ class LookerClient:
 
         try:
             response.raise_for_status()
-        except requests.exceptions.HTTPError:
+        except httpx.HTTPStatusError:
             raise LookerApiError(
                 name="unable-to-get-query-results",
                 title="Couldn't get results for the specified query tasks.",
@@ -815,7 +788,7 @@ class LookerClient:
         result = response.json()
         return result
 
-    def cancel_query_task(self, query_task_id: str):
+    async def cancel_query_task(self, query_task_id: str):
         """Cancels a query task.
 
         Args:
@@ -824,21 +797,21 @@ class LookerClient:
         """
         logger.debug(f"Cancelling query task: {query_task_id}")
         url = utils.compose_url(self.api_url, path=["running_queries", query_task_id])
-        self.delete(url=url, timeout=TIMEOUT_SEC)
+        await self.delete(url=url, timeout=TIMEOUT_SEC)
 
         # No raise_for_status() here because Looker API seems to give a 404
         # if you try to cancel a finished query which can happen as part of cleanup
 
-    def content_validation(self) -> JsonDict:
+    async def content_validation(self) -> JsonDict:
         logger.debug("Validating all content in Looker")
         url = utils.compose_url(self.api_url, path=["content_validation"])
-        response = self.get(
+        response = await self.get(
             url=url, timeout=3600
         )  # 1 hour timeout for content validation
 
         try:
             response.raise_for_status()
-        except requests.exceptions.HTTPError:
+        except httpx.HTTPStatusError:
             raise LookerApiError(
                 name="unable-to-validate-content",
                 title="Couldn't validate Looks and Dashboards.",
@@ -850,14 +823,14 @@ class LookerClient:
         result = response.json()
         return result
 
-    def all_folders(self) -> List[JsonDict]:
+    async def all_folders(self) -> List[JsonDict]:
         logger.debug("Getting information about all folders")
         url = utils.compose_url(self.api_url, path=["folders"])
-        response = self.get(url=url, timeout=TIMEOUT_SEC)
+        response = await self.get(url=url, timeout=TIMEOUT_SEC)
 
         try:
             response.raise_for_status()
-        except requests.exceptions.HTTPError:
+        except httpx.HTTPStatusError:
             raise LookerApiError(
                 name="unable-to-get-folders",
                 title="Couldn't obtain project folders.",
@@ -884,10 +857,10 @@ class LookerClient:
         logger.debug("Retrieving the SQL for query ID %s", query_id)
 
         url = utils.compose_url(self.api_url, path=["queries", query_id, "run", "sql"])
-        response = await self.get_async(url=url, timeout=TIMEOUT_SEC)
+        response = await self.get(url=url, timeout=TIMEOUT_SEC)
         try:
             response.raise_for_status()
-        except requests.exceptions.HTTPError as e:
+        except httpx.HTTPStatusError as e:
             if e.response.status_code == 404:
                 return (
                     "-- SQL could not be generated because of errors with this query."
@@ -908,12 +881,3 @@ class LookerClient:
         logger.debug("Retrieved compiled SQL for query %s", query_id)
 
         return result
-
-
-class NullAuth(requests.auth.AuthBase):
-    """A custom auth class which ensures requests does not override authorization
-    headers with netrc file credentials if present.
-    """
-
-    def __call__(self, r):
-        return r
