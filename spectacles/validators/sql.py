@@ -14,7 +14,7 @@ DEFAULT_CHUNK_SIZE = 500
 ProfilerTableRow = Tuple[str, str, float, int, str]
 
 
-@dataclass
+@dataclass(eq=True)
 class Query:
     query_id: int
     explore_url: str
@@ -269,9 +269,9 @@ class SqlValidator:
         )
         return test
 
-    def run_tests(self, tests: List[SqlTest], profile: bool = False):
+    def run_tests(self, tests: List[SqlTest], fail_fast: bool, profile: bool = False):
         try:
-            self._run_tests(tests)
+            self._run_tests(tests, fail_fast)
         except KeyboardInterrupt:
             logger.info(
                 "\n\n" + "Please wait, asking Looker to cancel any running queries..."
@@ -296,7 +296,7 @@ class SqlValidator:
         if profile:
             print_profile_results(self._long_running_tests, self.runtime_threshold)
 
-    def _run_tests(self, tests: List[SqlTest], fail_fast: bool = True) -> None:
+    def _run_tests(self, tests: List[SqlTest], fail_fast: bool) -> None:
         """Creates and runs tests with a maximum concurrency defined by query slots"""
         QUERY_TASK_LIMIT = 250
         test_by_query_id: Dict[int, SqlTest] = {
@@ -372,24 +372,24 @@ class SqlValidator:
             query_results.append(query_result)
         return query_results
 
-    def _handle_query_result(self, result: QueryResult, fail_fast: bool = True) -> None:
+    def _handle_query_result(self, result: QueryResult, fail_fast: bool) -> None:
         test = self._test_by_task_id.pop(result.query_task_id)
         self.query_slots += 1
         test.status = result.status
         test.runtime = (test.runtime or 0.0) + (result.runtime or 0.0)
         lookml_object = test.lookml_ref
         lookml_object.queried = True
+        completed_query: Query = test.get_query_by_task_id(result.query_task_id)
 
         if result.runtime and result.runtime >= self.runtime_threshold:
-            query: Query = test.get_query_by_task_id(result.query_task_id)
             self._long_running_tests.append(
-                ProfilerResult(lookml_object, result.runtime, query)
+                ProfilerResult(lookml_object, result.runtime, completed_query)
             )
 
         if result.status == "error" and result.error:
             if fail_fast:
                 # Once a test has an error, stop all other queries
-                for query in test.queries:
+                for query in (q for q in test.queries if q != completed_query):
                     self._preemptive_cancellations.append(query)
 
             model_name = lookml_object.model_name
