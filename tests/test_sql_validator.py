@@ -40,7 +40,7 @@ class TestValidatePass:
     @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
     @pytest.fixture(scope="class")
     def validator_after_run(self, validator, explore_tests) -> Iterable[SqlValidator]:
-        validator.run_tests(list(explore_tests))
+        validator.run_tests(list(explore_tests), fail_fast=True)
         yield validator
 
     @pytest.mark.default_cassette("fixture_dimension_tests_pass.yaml")
@@ -104,7 +104,7 @@ class TestValidateFail:
     @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
     @pytest.fixture(scope="class")
     def validator_after_run(self, validator, explore_tests) -> Iterable[SqlValidator]:
-        validator.run_tests(list(explore_tests))
+        validator.run_tests(list(explore_tests), fail_fast=True)
         yield validator
 
     @pytest.mark.default_cassette("fixture_dimension_tests_fail.yaml")
@@ -167,7 +167,8 @@ def test_create_and_run_keyboard_interrupt_cancels_queries(validator):
                     query_task_id="def",
                     explore_url="https://example.looker.com/x/56789",
                 )
-            ]
+            ],
+            fail_fast=True,
         )
     except SpectaclesException:
         mock_cancel_queries.assert_called_once_with(["abc"])

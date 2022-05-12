@@ -131,7 +131,7 @@ def test_validate_sql_returns_valid_schema(
 ):
     error_message = "An error ocurred"
 
-    def add_error_to_project(tests, profile):
+    def add_error_to_project(tests, fail_fast, profile):
         project.models[0].explores[0].queried = True
         project.models[0].explores[0].errors = [SqlError("", "", "", "", error_message)]
 
