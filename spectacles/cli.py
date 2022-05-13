@@ -9,6 +9,7 @@ import argparse
 import logging
 import os
 from typing import Callable, List
+import httpx
 from spectacles import __version__
 from spectacles.runner import Runner
 from spectacles.client import LookerClient
@@ -862,7 +863,7 @@ def run_assert(
 
 
 @log_duration
-def run_sql(
+async def run_sql(
     log_dir,
     project,
     ref,
@@ -884,21 +885,28 @@ def run_sql(
     ignore_hidden,
 ) -> None:
     """Runs and validates the SQL for each selected LookML dimension."""
-    client = LookerClient(base_url, client_id, client_secret, port, api_version)
-    runner = Runner(client, project, remote_reset, pin_imports)
+    try:
+        # Don't trust env to ignore .netrc credentials
+        async_client = httpx.AsyncClient(trust_env=False)
+        client = LookerClient(
+            async_client, base_url, client_id, client_secret, port, api_version
+        )
+        runner = Runner(client, project, remote_reset, pin_imports)
 
-    results = runner.validate_sql(
-        ref,
-        filters,
-        fail_fast,
-        incremental,
-        target,
-        concurrency,
-        profile,
-        runtime_threshold,
-        chunk_size,
-        ignore_hidden,
-    )
+        results = runner.validate_sql(
+            ref,
+            filters,
+            fail_fast,
+            incremental,
+            target,
+            concurrency,
+            profile,
+            runtime_threshold,
+            chunk_size,
+            ignore_hidden,
+        )
+    finally:
+        await async_client.aclose()
 
     for test in sorted(results["tested"], key=lambda x: (x["model"], x["explore"])):
         message = f"{test['model']}.{test['explore']}"
