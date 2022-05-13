@@ -349,9 +349,7 @@ class Runner:
         )
 
         with self.branch_manager(ref=ref):
-            validator.run_tests(
-                tests, fail_fast, profile=profile if fail_fast else False
-            )
+            validator.run_tests(tests, profile=profile if fail_fast else False)
 
         # Create dimension tests for the desired ref when explores errored
         if not fail_fast:
@@ -359,7 +357,7 @@ class Runner:
                 base_ref = self.branch_manager.ref
                 logger.debug("Building dimension tests for the desired ref")
                 base_tests = validator.create_tests(project, at_dimension_level=True)
-                validator.run_tests(base_tests, fail_fast, profile)
+                validator.run_tests(base_tests, profile)
 
             # For errored dimensions, create dimension tests for the target ref
             if incremental:
