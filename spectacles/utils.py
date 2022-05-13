@@ -3,7 +3,7 @@ from typing import List, Callable, Optional, Dict, Any, Iterable
 from urllib import parse
 from spectacles.logger import GLOBAL_LOGGER as logger
 import functools
-import requests
+import httpx
 import timeit
 import hashlib
 import time
@@ -26,7 +26,7 @@ def compose_url(base_url: str, path: List, params: Dict = {}) -> str:
     return url
 
 
-def details_from_http_error(response: requests.Response) -> Optional[Dict[str, Any]]:
+def details_from_http_error(response: httpx.Response) -> Optional[Dict[str, Any]]:
     try:
         details = response.json()
     # Requests raises a ValueError if the response is invalid JSON

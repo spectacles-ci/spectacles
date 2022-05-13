@@ -1,10 +1,9 @@
 import asyncio
 from dataclasses import dataclass
 from tabulate import tabulate
-from typing import Union, Dict, Any, List, Optional, Tuple
+from typing import Union, Dict, Any, List, Optional, Tuple, Coroutine
 import itertools
 import time
-import uvloop
 from spectacles.utils import chunks, gather_with_concurrency
 from spectacles.client import LookerClient
 from spectacles.lookml import Dimension, Explore, Project
@@ -183,39 +182,35 @@ class SqlValidator:
         runtime_threshold: int = 5,
     ):
         self.client = client
-        self.query_slots = concurrency
+        self.concurrency = concurrency
         self.runtime_threshold = runtime_threshold
         # Lookup used to retrieve the LookML object
         self._test_by_task_id: Dict[str, SqlTest] = {}
         self._preemptive_cancellations: List[Query] = []
         self._long_running_tests: List[ProfilerResult] = []
 
-    def create_tests(
+    async def create_tests(
         self,
         project: Project,
         compile_sql: bool = False,
         at_dimension_level: bool = False,
         chunk_size: int = DEFAULT_CHUNK_SIZE,
     ) -> List[SqlTest]:
-        async def create_and_gather_async_tasks() -> List[SqlTest]:
-            coros: List[asyncio.Task] = []
-            if at_dimension_level:
-                for explore in project.iter_explores():
-                    if not explore.skipped and explore.errored is not False:
-                        for dimension in explore.dimensions:
-                            coros.append(
-                                self._create_dimension_test(dimension, compile_sql)
-                            )
-            else:
-                for explore in project.iter_explores():
-                    coros.append(
-                        self._create_explore_test(explore, compile_sql, chunk_size)
-                    )
+        coros: List[Coroutine] = []
+        if at_dimension_level:
+            for explore in project.iter_explores():
+                if not explore.skipped and explore.errored is not False:
+                    for dimension in explore.dimensions:
+                        coros.append(
+                            self._create_dimension_test(dimension, compile_sql)
+                        )
+        else:
+            for explore in project.iter_explores():
+                coros.append(
+                    self._create_explore_test(explore, compile_sql, chunk_size)
+                )
 
-            return await gather_with_concurrency(100, *coros)
-
-        uvloop.install()
-        return asyncio.run(create_and_gather_async_tasks())
+        return await gather_with_concurrency(100, *coros)
 
     async def _create_explore_test(
         self,
@@ -278,9 +273,11 @@ class SqlValidator:
         )
         return test
 
-    def run_tests(self, tests: List[SqlTest], profile: bool = False):
+    async def run_tests(
+        self, tests: List[SqlTest], fail_fast: bool, profile: bool = False
+    ):
         try:
-            self._run_tests(tests)
+            await self._run_tests(tests, fail_fast)
         except KeyboardInterrupt:
             logger.info(
                 "\n\n" + "Please wait, asking Looker to cancel any running queries..."
@@ -305,46 +302,50 @@ class SqlValidator:
         if profile:
             print_profile_results(self._long_running_tests, self.runtime_threshold)
 
-    def _run_tests(self, tests: List[SqlTest], fail_fast: bool = True) -> None:
+    async def _run_tests(self, tests: List[SqlTest], fail_fast: bool) -> None:
         """Creates and runs tests with a maximum concurrency defined by query slots"""
         QUERY_TASK_LIMIT = 250
         test_by_query_id: Dict[int, SqlTest] = {
             query.query_id: test for test in tests for query in test.queries
         }
-
-        def fill_query_slots(queries: List[Query]) -> None:
-            """Creates query tasks until slots are full or all queries are running"""
-            while queries and self.query_slots > 0:
-                logger.debug(
-                    f"{self.query_slots} available query slots, creating query task"
-                )
-                query = queries.pop(0)
-                if query in self._preemptive_cancellations:
-                    continue
-                query_task_id = self.client.create_query_task(query.query_id)
-                self.query_slots -= 1
-                query.query_task_id = query_task_id
-                # At query creation, we mapped tests by query ID, now we map to task ID
-                self._test_by_task_id[query_task_id] = test_by_query_id[query.query_id]
-
         queries: List[Query] = list(
             itertools.chain.from_iterable(test.queries for test in tests)
         )
-        while queries or self._test_by_task_id:
-            if queries:
-                logger.debug(f"Starting a new loop, {len(queries)} tests queued")
-                fill_query_slots(queries)
-            query_tasks = list(self._test_by_task_id.keys())[:QUERY_TASK_LIMIT]
-            logger.debug(f"Checking for results of {len(query_tasks)} query tasks")
-            for query_result in self._get_query_results(query_tasks):
-                if query_result.status in ("complete", "error"):
-                    self._handle_query_result(query_result, fail_fast)
-            time.sleep(0.5)
+        query_slot = asyncio.Semaphore(self.concurrency)
 
-    def _get_query_results(self, query_task_ids: List[str]) -> List[QueryResult]:
+        async def run_query(query: Query):
+            await query_slot.acquire()
+            if query in self._preemptive_cancellations:
+                query_slot.release()
+                return None
+            query_task_id = await self.client.create_query_task(query.query_id)
+            query.query_task_id = query_task_id
+            self._test_by_task_id[query_task_id] = test_by_query_id[query.query_id]
+
+        todo = set([asyncio.create_task(run_query(query)) for query in queries])
+        while self._test_by_task_id or len(todo):
+            if todo:
+                done, _pending = await asyncio.wait(
+                    todo, return_when=asyncio.FIRST_COMPLETED, timeout=2
+                )
+                todo.difference_update(done)  # Remove done
+                logger.debug(f"{len(todo)} queries remaining to launch")
+
+            query_tasks = list(self._test_by_task_id.keys())[:QUERY_TASK_LIMIT]
+            for query_result in await self._get_query_results(query_tasks):
+                if query_result.status in ("complete", "error"):
+                    query_slot.release()
+                    self._handle_query_result(query_result, fail_fast)
+
+            # If we're no longer waiting because all queries were launched slow the
+            # requests for results down a bit.
+            if not todo:
+                await asyncio.sleep(1)
+
+    async def _get_query_results(self, query_task_ids: List[str]) -> List[QueryResult]:
         """Returns ID, status, and error message for all query tasks"""
         query_results = []
-        results = self.client.get_query_task_multi_results(query_task_ids)
+        results = await self.client.get_query_task_multi_results(query_task_ids)
         for query_task_id, result in results.items():
             status = result["status"]
             if status not in ("complete", "error", "running", "added", "expired"):
@@ -381,9 +382,8 @@ class SqlValidator:
             query_results.append(query_result)
         return query_results
 
-    def _handle_query_result(self, result: QueryResult, fail_fast: bool = True) -> None:
+    def _handle_query_result(self, result: QueryResult, fail_fast: bool) -> None:
         test = self._test_by_task_id.pop(result.query_task_id)
-        self.query_slots += 1
         test.status = result.status
         test.runtime = (test.runtime or 0.0) + (result.runtime or 0.0)
         lookml_object = test.lookml_ref
