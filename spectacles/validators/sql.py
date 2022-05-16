@@ -325,17 +325,16 @@ class SqlValidator:
         todo = set([asyncio.create_task(run_query(query)) for query in queries])
         while self._test_by_task_id or len(todo):
             if todo:
-                done, _pending = await asyncio.wait(
-                    todo, return_when=asyncio.FIRST_COMPLETED, timeout=2
-                )
+                done, _pending = await asyncio.wait(todo, timeout=0.2)
                 todo.difference_update(done)  # Remove done
                 logger.debug(f"{len(todo)} queries remaining to launch")
 
             query_tasks = list(self._test_by_task_id.keys())[:QUERY_TASK_LIMIT]
-            for query_result in await self._get_query_results(query_tasks):
-                if query_result.status in ("complete", "error"):
-                    query_slot.release()
-                    self._handle_query_result(query_result, fail_fast)
+            if query_tasks:
+                for query_result in await self._get_query_results(query_tasks):
+                    if query_result.status in ("complete", "error"):
+                        query_slot.release()
+                        self._handle_query_result(query_result, fail_fast)
 
             # If we're no longer waiting because all queries were launched slow the
             # requests for results down a bit.
