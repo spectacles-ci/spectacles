@@ -3,14 +3,15 @@ import asyncio
 from collections import defaultdict
 from dataclasses import dataclass
 from tabulate import tabulate
-from typing import ClassVar, Union, Dict, Any, List, Optional, Tuple, Iterator
+from typing import ClassVar, Union, List, Optional, Tuple, Iterator
+import pydantic
 from spectacles.client import LookerClient
 from spectacles.lookml import CompiledExplore, Dimension, Explore
 from spectacles.exceptions import SpectaclesException, SqlError
 from spectacles.logger import GLOBAL_LOGGER as logger
 from spectacles.printer import print_header
-from spectacles.types import JsonDict
 from spectacles.utils import consume_queue, halt_queue
+from spectacles.types import QueryResult
 
 QUERY_TASK_LIMIT = 250
 DEFAULT_CHUNK_SIZE = 500
@@ -25,6 +26,7 @@ class Query:
     explore_url: str | None = None
     errored: bool | None = None
     chunk_size: int = DEFAULT_CHUNK_SIZE
+    # TODO: Remove this later if we don't need it
     count: ClassVar[dict] = defaultdict(lambda: defaultdict(int))
 
     def __post_init__(self) -> None:
@@ -63,16 +65,6 @@ class Query:
         else:
             yield Query(self.explore, self.dimensions[:midpoint])
             yield Query(self.explore, self.dimensions[midpoint:])
-
-
-@dataclass
-class QueryResult:
-    """Stores ID, query status, and error details for a completed query task"""
-
-    query_task_id: str
-    status: str
-    runtime: Optional[float] = None
-    error: Optional[Dict[str, Any]] = None
 
 
 @dataclass(frozen=True)
@@ -270,44 +262,6 @@ class SqlValidator:
             logger.debug("Marking all tasks in queries_to_run queue as done")
             halt_queue(queries_to_run)
 
-    def _structure_query_result(self, task_id: str, result: JsonDict) -> QueryResult:
-        # Get the query status
-        status = result["status"]
-        if status not in ("complete", "error", "running", "added", "expired"):
-            raise SpectaclesException(
-                name="unexpected-query-result-status",
-                title="Encountered an unexpected query result status.",
-                detail=(
-                    f"Query result status '{status}' was returned by the Looker API."
-                ),
-            )
-
-        # Get the query runtime
-        try:
-            runtime: Optional[float] = float(result["data"]["runtime"])
-        except KeyError:
-            runtime = None
-
-        query_result = QueryResult(task_id, status, runtime)
-
-        # Get the query error
-        if status == "error":
-            try:
-                error_details = self._extract_error_details(result)
-            except Exception as error:
-                logger.debug(
-                    f"Unable to parse unexpected query result format: {result}"
-                )
-                raise SpectaclesException(
-                    name="unexpected-query-result-format",
-                    title="Encountered an unexpected query result format.",
-                    detail="Unable to extract error details. The unexpected result has been logged.",
-                ) from error
-            else:
-                query_result.error = error_details
-
-        return query_result
-
     async def _get_query_results(
         self,
         queries_to_run: asyncio.Queue[Optional[Query]],
@@ -325,7 +279,20 @@ class SqlValidator:
 
                 raw = await self.client.get_query_task_multi_results(task_ids)
                 for task_id, result in raw.items():
-                    query_result = self._structure_query_result(task_id, result)
+                    try:
+                        query_result = QueryResult.parse_obj(result)
+                    except pydantic.ValidationError as validation_error:
+                        logger.debug(
+                            f"Unable to parse unexpected Looker API response format: {result}"
+                        )
+                        raise SpectaclesException(
+                            name="unexpected-query-result-format",
+                            title="Encountered an unexpected query result format.",
+                            detail=(
+                                "Unable to extract error details from the Looker API's "
+                                "response. The unexpected response has been logged."
+                            ),
+                        ) from validation_error
                     logger.debug(
                         f"Query task {task_id} status is: {query_result.status}"
                     )
@@ -338,18 +305,22 @@ class SqlValidator:
                         query = self._task_to_query[task_id]
                         query.errored = True
 
-                        # Fail fast, assign the error to its explore
+                        # Fail fast, assign the error(s) to its explore
                         if fail_fast:
                             explore = query.explore
                             explore.queried = True
-                            error = SqlError(
-                                model=explore.model_name,
-                                explore=explore.name,
-                                dimension=None,
-                                explore_url=query.explore_url,
-                                **(query_result.error),
-                            )
-                            explore.errors.append(error)
+                            for error in query_result.get_valid_errors():
+                                explore.errors.append(
+                                    SqlError(
+                                        model=explore.model_name,
+                                        explore=explore.name,
+                                        dimension=None,
+                                        sql=query_result.sql,
+                                        message=error.full_message,
+                                        line_number=error.sql_error_loc.line,
+                                        explore_url=query.explore_url,
+                                    )
+                                )
 
                         # Make child queries and put them back on the queue
                         elif len(query.dimensions) > 1:
@@ -358,19 +329,23 @@ class SqlValidator:
                                 n += 1
                                 await queries_to_run.put(child)
 
-                        # Assign the error to its dimension
+                        # Assign the error(s) to its dimension
                         else:
                             dimension = query.dimensions[0]
                             dimension.queried = True
-                            error = SqlError(
-                                model=dimension.model_name,
-                                explore=dimension.explore_name,
-                                dimension=dimension.name,
-                                lookml_url=dimension.url,
-                                explore_url=query.explore_url,
-                                **(query_result.error),
-                            )
-                            dimension.errors.append(error)
+                            for error in query_result.get_valid_errors():
+                                dimension.errors.append(
+                                    SqlError(
+                                        model=dimension.model_name,
+                                        explore=dimension.explore_name,
+                                        dimension=dimension.name,
+                                        sql=query_result.sql,
+                                        message=error.full_message,
+                                        line_number=error.sql_error_loc.line,
+                                        lookml_url=dimension.url,
+                                        explore_url=query.explore_url,
+                                    )
+                                )
 
                         # Indicate there are no more queries or subqueries to run
                         queries_to_run.task_done()
@@ -399,52 +374,3 @@ class SqlValidator:
             # We need to mark all remaining tasks as finished so Queue.join can unblock
             logger.debug("Marking all tasks in running_queries queue as done")
             halt_queue(running_queries)
-
-    @staticmethod
-    def _extract_error_details(query_result: Dict) -> Optional[Dict]:
-        """Extracts the relevant error fields from a Looker API response"""
-        data = query_result["data"]
-        if isinstance(data, dict):
-            errors = data.get("errors") or [data.get("error")]
-            try:
-                first_error = next(
-                    error
-                    for error in errors
-                    if error.get("message")
-                    not in [
-                        (
-                            "Note: This query contains derived tables with conditional SQL for Development Mode. "
-                            "Query results in Production Mode might be different."
-                        ),
-                        (
-                            "Note: This query contains derived tables with Development Mode filters. "
-                            "Query results in Production Mode might be different."
-                        ),
-                    ]
-                )
-            except StopIteration:
-                return None
-            message = " ".join(
-                filter(
-                    None,
-                    [first_error.get("message"), first_error.get("message_details")],
-                )
-            )
-            sql = data.get("sql")
-            error_loc = first_error.get("sql_error_loc")
-            if error_loc:
-                line_number = error_loc.get("line")
-            else:
-                line_number = None
-        elif isinstance(data, list):
-            message = data[0]
-            line_number = None
-            sql = None
-        else:
-            raise TypeError(
-                "Unexpected error response type. "
-                "Expected a dict or a list, "
-                f"received type {type(data)}: {data}"
-            )
-
-        return {"message": message, "sql": sql, "line_number": line_number}
