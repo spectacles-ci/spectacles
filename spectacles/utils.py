@@ -1,6 +1,5 @@
 import asyncio
-from multiprocessing.sharedctypes import Value
-from typing import Iterator, List, Callable, Optional, Dict, Any, Iterable, Tuple
+from typing import List, Callable, Optional, Dict, Any, Iterable, Tuple
 from urllib import parse
 import functools
 import httpx
@@ -85,10 +84,12 @@ def chunks(to_chunk: list, size: int) -> Iterable:
         yield to_chunk[i : i + size]
 
 
-def consume_queue(queue: asyncio.Queue[T], limit: Optional[int] = None) -> Tuple[T]:
+def consume_queue(
+    queue: asyncio.Queue[T], limit: Optional[int] = None
+) -> Tuple[T, ...]:
     """Purge an async queue of all its contents, up to a limit, and return them."""
     count = 0
-    contents = tuple()
+    contents: tuple[T, ...] = tuple()
     while not queue.empty() and (limit is None or count <= limit):
         contents += (queue.get_nowait(),)
         count += 1
