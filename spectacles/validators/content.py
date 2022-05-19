@@ -1,7 +1,7 @@
 from typing import List, Optional, Any, Dict
 from spectacles.client import LookerClient
 from spectacles.exceptions import ContentError, SpectaclesException
-from spectacles.lookml import Explore, Project
+from spectacles.lookml import Explore, Project, Model
 from spectacles.logger import GLOBAL_LOGGER as logger
 from spectacles.types import JsonDict
 
@@ -131,8 +131,9 @@ class ContentValidator:
             explore: Optional[Explore] = project.get_explore(
                 model=model_name, name=explore_name
             )
-            # Skip errors that are not associated with selected explores
-            if explore:
+            model: Optional[Model] = project.get_model(model_name)
+            # Skip errors that are not associated with selected explores or models
+            if explore or model:
                 content_id = result[content_type]["id"]
                 content_error = ContentError(
                     model=model_name,
@@ -154,8 +155,11 @@ class ContentValidator:
                         else None
                     ),
                 )
-                if content_error not in explore.errors:
+                if explore and content_error not in explore.errors:
                     explore.errors.append(content_error)
+                    content_errors.append(content_error)
+                elif model and content_error not in model.errors:
+                    model.errors.append(content_error)
                     content_errors.append(content_error)
 
         return content_errors

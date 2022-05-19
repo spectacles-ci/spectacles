@@ -172,6 +172,7 @@ class Model(LookMlObject):
         self.name = name
         self.project_name = project_name
         self.explores = explores
+        self.errors: List[ValidationError] = []
 
     def __repr__(self):
         return f"{self.__class__.__name__}(name={self.name}, explores={self.explores})"
@@ -189,7 +190,9 @@ class Model(LookMlObject):
     @property
     def errored(self):
         if self.queried:
-            return any(explore.errored for explore in self.explores)
+            return bool(self.errors) or any(
+                explore.errored for explore in self.explores
+            )
         else:
             return None
 
@@ -329,6 +332,17 @@ class Project(LookMlObject):
         tested = []
 
         for model in self.models:
+            # Add model level content validation errors.
+            # We create an explore "tested" record for those that
+            # aren't in the LookML tree.
+            distinct_explores = set([e.explore for e in model.errors])
+            model_tested = [
+                {"model": model.name, "explore": e, "status": "failed"}
+                for e in distinct_explores
+            ]
+            tested.extend(model_tested)
+            errors.extend([e.to_dict() for e in model.errors])
+
             for explore in model.explores:
                 status = "passed"
                 if explore.skipped:
@@ -410,7 +424,7 @@ def build_project(
     fields = ["name", "project_name", "explores"]
     for lookmlmodel in client.get_lookml_models(fields=fields):
         model = Model.from_json(lookmlmodel)
-        if model.project_name == name and model.explores:
+        if model.project_name == name:
             models.append(model)
 
     if not models:
@@ -437,5 +451,12 @@ def build_project(
                     client, model.name, explore.name, ignore_hidden_fields
                 )
 
-    project = Project(name, [model for model in models if len(model.explores) > 0])
+    project = Project(
+        name,
+        [
+            model
+            for model in models
+            if is_selected(model.name, "__spectacles__", filters)
+        ],
+    )
     return project
