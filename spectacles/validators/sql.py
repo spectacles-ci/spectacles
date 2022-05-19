@@ -198,7 +198,7 @@ class SqlValidator:
             # Wait for all work to complete
             await queries_to_run.join()
             await running_queries.join()
-            logger.debug("DONE JOINING")
+            logger.debug("Successfully joined all queues")
         except KeyboardInterrupt:
             logger.info(
                 "\n\n" + "Please wait, asking Looker to cancel any running queries..."
