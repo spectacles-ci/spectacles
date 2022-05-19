@@ -827,6 +827,51 @@ class LookerClient:
         result = response.json()
         return result
 
+    async def lookml_validation(self, project) -> JsonDict:
+        logger.debug(f"Validating LookML for project '{project}'")
+        url = utils.compose_url(self.api_url, path=["projects", project, "validate"])
+        response = await self.post(url=url, timeout=TIMEOUT_SEC)
+
+        try:
+            response.raise_for_status()
+        except httpx.HTTPStatusError:
+            raise LookerApiError(
+                name="unable-to-validate-lookml",
+                title=f"Couldn't validate LookML in project {project}.",
+                status=response.status_code,
+                detail=("Failed to run the LookML validator. Please try again."),
+                response=response,
+            )
+
+        result = response.json()
+        return result
+
+    async def cached_lookml_validation(self, project) -> Optional[JsonDict]:
+        logger.debug(f"Getting cached LookML validation results for '{project}'")
+        url = utils.compose_url(self.api_url, path=["projects", project, "validate"])
+        response = await self.get(url=url, timeout=TIMEOUT_SEC)
+
+        try:
+            response.raise_for_status()
+        except httpx.HTTPStatusError:
+            raise LookerApiError(
+                name="unable-to-get-cached-lookml-validation",
+                title=f"Couldn't get cached LookML validation results in project '{project}'.",
+                status=response.status_code,
+                detail=(
+                    "Failed to get cached LookML valiation results. Please try again."
+                ),
+                response=response,
+            )
+
+        # If no cached validation results are available, Looker returns a 204 No Content.
+        # The response has no payload. We should return None in this case and handle accordingly.
+        if response.status_code == 204:
+            return None
+
+        result = response.json()
+        return result
+
     async def all_folders(self) -> List[JsonDict]:
         logger.debug("Getting information about all folders")
         url = utils.compose_url(self.api_url, path=["folders"])

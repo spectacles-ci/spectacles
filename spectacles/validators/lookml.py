@@ -30,11 +30,11 @@ class LookMLValidator:
     def __init__(self, client: LookerClient):
         self.client = client
 
-    def validate(self, project: str, severity: str = "warning") -> Dict[str, Any]:
+    async def validate(self, project: str, severity: str = "warning") -> Dict[str, Any]:
         severity_level: int = NAME_TO_LEVEL[severity]
-        validation_results = self.client.cached_lookml_validation(project)
+        validation_results = await self.client.cached_lookml_validation(project)
         if not validation_results or validation_results.get("stale"):
-            validation_results = self.client.lookml_validation(project)
+            validation_results = await self.client.lookml_validation(project)
         errors = []
         lookml_url: Optional[str] = None
         for error in validation_results["errors"]:

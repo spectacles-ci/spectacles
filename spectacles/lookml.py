@@ -1,7 +1,7 @@
 import asyncio
 from dataclasses import dataclass
 import re
-from typing import Dict, List, Sequence, Optional, Any, Iterable, Type
+from typing import Dict, List, Sequence, Optional, Any, Iterable, Type, Literal
 from spectacles.client import LookerClient
 from spectacles.exceptions import ValidationError, LookMlNotFound
 from spectacles.types import JsonDict, T
@@ -170,14 +170,26 @@ class Explore(LookMlObject):
 
 
 @dataclass(eq=True, frozen=True)
-class CompiledExplore:
-    name: str
+class CompiledSql:
     model_name: str
+    explore_name: str
     sql: str
+    dimension_name: Optional[str] = None
 
     @classmethod
-    def from_explore(cls: Type[T], explore: Explore, sql: str) -> T:
-        return CompiledExplore(explore.name, explore.model_name, sql)
+    def from_explore(cls, explore: Explore, sql: str) -> "CompiledSql":
+        return CompiledSql(
+            model_name=explore.model_name, explore_name=explore.name, sql=sql
+        )
+
+    @classmethod
+    def from_dimension(cls, dimension: Dimension, sql: str) -> "CompiledSql":
+        return CompiledSql(
+            model_name=dimension.model_name,
+            explore_name=dimension.explore_name,
+            dimension_name=dimension.name,
+            sql=sql,
+        )
 
 
 class Model(LookMlObject):

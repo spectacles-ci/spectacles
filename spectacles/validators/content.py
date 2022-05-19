@@ -13,28 +13,34 @@ class ContentValidator:
         exclude_personal: bool = False,
         folders: List[str] = None,
     ):
-        include_folders = []
-        exclude_folders = []
+        self.client = client
+        self.exclude_personal = exclude_personal
+        self.include_folders = []
+        self.exclude_folders = []
+
         if folders:
             for folder_id in folders:
                 if folder_id.startswith("-"):
-                    exclude_folders.append(int(folder_id[1:]))
+                    self.exclude_folders.append(int(folder_id[1:]))
                 else:
-                    include_folders.append(int(folder_id))
+                    self.include_folders.append(int(folder_id))
 
-        logger.debug(f"Including content in folders: {include_folders}")
-
-        self.client = client
-        personal_folders = self._get_personal_folders() if exclude_personal else []
+    async def validate(self, project: Project) -> List[ContentError]:
+        personal_folders = (
+            await self._get_personal_folders() if self.exclude_personal else []
+        )
 
         self.excluded_folders: List[int] = personal_folders + (
-            self._get_all_subfolders(exclude_folders) if exclude_folders else []
+            await self._get_all_subfolders(self.exclude_folders)
+            if self.exclude_folders
+            else []
         )
         self.included_folders: List[int] = (
-            self._get_all_subfolders(include_folders) if include_folders else []
+            await self._get_all_subfolders(self.include_folders)
+            if self.include_folders
+            else []
         )
 
-    def validate(self, project: Project) -> List[ContentError]:
         def is_folder_selected(folder_id: Optional[str]) -> bool:
             if folder_id in self.excluded_folders:
                 return False
@@ -43,7 +49,7 @@ class ContentValidator:
             else:
                 return True
 
-        result = self.client.content_validation()
+        result = await self.client.content_validation()
         project.queried = True
 
         content_errors: List[ContentError] = []
@@ -71,17 +77,17 @@ class ContentValidator:
 
         return content_errors
 
-    def _get_personal_folders(self) -> List[int]:
+    async def _get_personal_folders(self) -> List[int]:
         personal_folders = []
-        result = self.client.all_folders()
+        result = await self.client.all_folders()
         for folder in result:
             if folder["is_personal"] or folder["is_personal_descendant"]:
                 personal_folders.append(folder["id"])
         return personal_folders
 
-    def _get_all_subfolders(self, input_folders: List[int]) -> List[int]:
+    async def _get_all_subfolders(self, input_folders: List[int]) -> List[int]:
         result = []
-        all_folders = self.client.all_folders()
+        all_folders = await self.client.all_folders()
         for folder_id in input_folders:
             if not any(folder["id"] == folder_id for folder in all_folders):
                 raise SpectaclesException(
