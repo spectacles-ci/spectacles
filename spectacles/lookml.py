@@ -435,7 +435,8 @@ async def build_explore_dimensions(
         dimension: Dimension = Dimension.from_json(
             dimension_json, explore.model_name, explore.name
         )
-        dimension.url = client.base_url + dimension.url
+        if dimension.url is not None:
+            dimension.url = client.base_url + dimension.url
         if not dimension.ignore and not (dimension.is_hidden and ignore_hidden_fields):
             dimensions.append(dimension)
 
