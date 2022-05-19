@@ -1,9 +1,10 @@
 import asyncio
+from dataclasses import dataclass
 import re
-from typing import Dict, List, Sequence, Optional, Any, Iterable
+from typing import Dict, List, Sequence, Optional, Any, Iterable, Type
 from spectacles.client import LookerClient
 from spectacles.exceptions import ValidationError, LookMlNotFound
-from spectacles.types import JsonDict
+from spectacles.types import JsonDict, T
 from spectacles.select import is_selected
 
 
@@ -166,6 +167,17 @@ class Explore(LookMlObject):
             return errors
         else:
             return 0
+
+
+@dataclass(eq=True, frozen=True)
+class CompiledExplore:
+    name: str
+    model_name: str
+    sql: str
+
+    @classmethod
+    def from_explore(cls: Type[T], explore: Explore, sql: str) -> T:
+        return CompiledExplore(explore.name, explore.model_name, sql)
 
 
 class Model(LookMlObject):

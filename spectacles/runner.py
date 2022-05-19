@@ -1,3 +1,4 @@
+import asyncio
 import re
 from spectacles.exceptions import LookerApiError, SqlError
 from typing import Dict, List, Optional, cast, Tuple
@@ -11,10 +12,10 @@ from spectacles.validators import (
     LookMLValidator,
 )
 from spectacles.types import JsonDict
-from spectacles.validators.sql import SqlTest, DEFAULT_CHUNK_SIZE
+from spectacles.validators.sql import DEFAULT_CHUNK_SIZE
 from spectacles.exceptions import SpectaclesException
 from spectacles.utils import time_hash
-from spectacles.lookml import build_project, Project, Explore
+from spectacles.lookml import CompiledExplore, build_project, Project, Explore
 from spectacles.logger import GLOBAL_LOGGER as logger
 from spectacles.printer import print_header
 
@@ -47,9 +48,6 @@ class LookerBranchManager:
         self.remote_reset = remote_reset
         self.pin_imports = pin_imports
 
-        state: ProjectState = self.get_project_state()
-        self.workspace: str = state.workspace
-        self.history: List[ProjectState] = [state]
         self.commit: Optional[str] = None
         self.branch: Optional[str] = None
         self.is_temp_branch: bool = False
@@ -90,32 +88,36 @@ class LookerBranchManager:
         self.import_managers = []
         return self
 
-    def __enter__(self):
+    async def __aenter__(self):
         logger.indent(1)
+
+        state: ProjectState = await self.get_project_state()
+        self.workspace: str = state.workspace
+        self.history: List[ProjectState] = [state]
         # A branch was passed, so we check it out in dev mode.
         if self.branch:
-            self.update_workspace("dev")
+            await self.update_workspace("dev")
             if self.ephemeral:
-                self.branch = self.checkout_temp_branch("origin/" + self.branch)
+                self.branch = await self.checkout_temp_branch("origin/" + self.branch)
             else:
-                self.client.checkout_branch(self.project, self.branch)
+                await self.client.checkout_branch(self.project, self.branch)
                 if self.remote_reset:
-                    self.client.reset_to_remote(self.project)
+                    await self.client.reset_to_remote(self.project)
         # A commit was passed, so we non-destructively create a temporary branch we can
         # hard reset to the commit.
         elif self.commit:
-            self.branch = self.checkout_temp_branch(self.commit)
+            self.branch = await self.checkout_temp_branch(self.commit)
         # Neither branch nor commit were passed, so go to production.
         else:
             if self.init_state.workspace == "production":
                 prod_state = self.init_state
             else:
-                self.update_workspace("production")
-                prod_state = self.get_project_state()
+                await self.update_workspace("production")
+                prod_state = await self.get_project_state()
             self.branch = prod_state.branch
             self.commit = prod_state.commit
             if self.ephemeral:
-                self.branch = self.checkout_temp_branch(prod_state.commit)
+                self.branch = await self.checkout_temp_branch(prod_state.commit)
 
         logger.debug(
             f"Set project '{self.project}' to branch '{self.branch}' @ "
@@ -123,7 +125,7 @@ class LookerBranchManager:
             f"[ephemeral = {self.ephemeral}]"
         )
 
-        self.imports: List[str] = self.get_project_imports()
+        self.imports: List[str] = await self.get_project_imports()
         logger.debug(
             f"Project '{self.project}' imports the following projects: {self.imports}"
         )
@@ -144,17 +146,16 @@ class LookerBranchManager:
                     manager = LookerBranchManager(
                         self.client, project, pin_imports=self.pin_imports
                     )
-                    manager(ref=import_ref, ephemeral=True).__enter__()
+                    await manager(ref=import_ref, ephemeral=True).__aenter__()
                     self.import_managers.append(manager)
                 else:
                     logger.debug(
                         f"Skipping project '{project}', which is already imported"
                     )
-
         logger.indent(-1)
         logger.debug("")
 
-    def __exit__(self, *args):
+    async def __aexit__(self, *args):
         logger.debug("")
         logger.debug(f"Cleaning up Git state in '{self.project}'")
         logger.indent(1)
@@ -167,17 +168,17 @@ class LookerBranchManager:
 
         if self.is_temp_branch:
             dev_state = self.history.pop()
-            self.client.checkout_branch(self.project, dev_state.branch)
-            self.client.delete_branch(self.project, self.branch)
+            await self.client.checkout_branch(self.project, dev_state.branch)
+            await self.client.delete_branch(self.project, self.branch)
 
         for manager in self.import_managers:
-            manager.__exit__()
+            await manager.__aexit__()
 
         if self.init_state.workspace == "production":
-            self.update_workspace("production")
+            await self.update_workspace("production")
         else:
-            self.update_workspace("dev")
-            self.client.checkout_branch(self.project, self.init_state.branch)
+            await self.update_workspace("dev")
+            await self.client.checkout_branch(self.project, self.init_state.branch)
 
         logger.indent(-1)
         logger.debug("")
@@ -193,42 +194,42 @@ class LookerBranchManager:
         else:
             return self.branch
 
-    def update_workspace(self, workspace: str):
+    async def update_workspace(self, workspace: str):
         if workspace not in ("dev", "production"):
             raise ValueError("Workspace can only be set to 'dev' or 'production'")
         if self.workspace != workspace:
-            self.client.update_workspace(workspace)
+            await self.client.update_workspace(workspace)
             self.workspace = workspace
 
-    def get_project_state(self) -> ProjectState:
-        workspace = self.client.get_workspace()
-        branch_info = self.client.get_active_branch(self.project)
+    async def get_project_state(self) -> ProjectState:
+        workspace = await self.client.get_workspace()
+        branch_info = await self.client.get_active_branch(self.project)
         return ProjectState(
             self.project, workspace, branch_info["name"], branch_info["ref"]
         )
 
-    def get_project_imports(self) -> List[str]:
+    async def get_project_imports(self) -> List[str]:
         try:
-            manifest = self.client.get_manifest(self.project)
+            manifest = await self.client.get_manifest(self.project)
         except LookerApiError:
             return []
         else:
             return [p["name"] for p in manifest["imports"] if not p["is_remote"]]
 
-    def checkout_temp_branch(self, ref: str) -> str:
+    async def checkout_temp_branch(self, ref: str) -> str:
         """Creates a temporary branch off a commit or off production."""
         # Save the dev mode state so we have somewhere to delete the temp branch
         # from later. We can't delete branches from prod workspace.
-        self.update_workspace("dev")
-        self.history.append(self.get_project_state())
+        await self.update_workspace("dev")
+        self.history.append(await self.get_project_state())
         name = "tmp_spectacles_" + time_hash()
         logger.debug(
             f"Branching '{name}' off '{ref}'. "
             f"Afterwards, restoring to branch '{self.init_state.branch}' in "
             f"project '{self.project}'"
         )
-        self.client.create_branch(self.project, name)
-        self.client.hard_reset_branch(self.project, name, ref)
+        await self.client.create_branch(self.project, name)
+        await self.client.hard_reset_branch(self.project, name, ref)
         self.is_temp_branch = True
         return name
 
@@ -263,7 +264,7 @@ class Runner:
             client, project, remote_reset, pin_imports
         )
 
-    def validate_sql(
+    async def validate_sql(
         self,
         ref: Optional[str] = None,
         filters: List[str] = None,
@@ -279,28 +280,31 @@ class Runner:
         if filters is None:
             filters = ["*/*"]
         validator = SqlValidator(self.client, concurrency, runtime_threshold)
-        tests: List[SqlTest] = []
-
         ephemeral = True if incremental else None
         # Create explore-level tests for the desired ref
-        with self.branch_manager(ref=ref, ephemeral=ephemeral):
+        async with self.branch_manager(ref=ref, ephemeral=ephemeral):
             base_ref = self.branch_manager.ref  # Resolve the full ref after checkout
-            logger.debug("Building explore tests for the desired ref")
-            project = build_project(
+            logger.debug("Compiling SQL for Explores at the base ref")
+            project = await build_project(
                 self.client,
                 name=self.project,
                 filters=filters,
                 include_dimensions=True,
                 ignore_hidden_fields=ignore_hidden_fields,
             )
-            base_tests = validator.create_tests(
-                project, compile_sql=incremental, chunk_size=chunk_size
-            )
+            base_explores: set[CompiledExplore] = set()
+            if incremental:
+                compiled_explores = await asyncio.gather(
+                    *(
+                        validator.compile_sql(explore)
+                        for explore in project.iter_explores()
+                    )
+                )
+                base_explores = set(compiled_explores)
 
         if incremental:
-            unique_base_tests = set(base_tests)
             # Create explore tests for the target
-            with self.branch_manager(ref=target, ephemeral=True):
+            async with self.branch_manager(ref=target, ephemeral=True):
                 target_ref = self.branch_manager.ref
                 if target_ref == base_ref:
                     raise SpectaclesException(
@@ -313,85 +317,94 @@ class Runner:
                             "so incremental comparison isn't possible."
                         ),
                     )
-                logger.debug("Building explore tests for the target ref")
-                target_project: Project = build_project(
+                logger.debug("Compiling SQL for Explores at the target ref")
+                target_project = await build_project(
                     self.client,
                     name=self.project,
                     filters=filters,
                     include_dimensions=True,
                     ignore_hidden_fields=ignore_hidden_fields,
                 )
-                target_tests = validator.create_tests(
-                    target_project, compile_sql=True, chunk_size=chunk_size
-                )
-                unique_target_tests = set(target_tests)
+                target_explores: set[CompiledExplore] = set()
+                if incremental:
+                    compiled_explores = await asyncio.gather(
+                        *(
+                            validator.compile_sql(explore)
+                            for explore in target_project.iter_explores()
+                        )
+                    )
+                    target_explores = set(compiled_explores)
 
             # Determine which explore tests are identical between target and base
             # Iterate instead of set operations so we have control of which test, and
             # corresponding which `lookml_ref` is used
-            tests = []
-            for test in unique_base_tests:
-                if test in unique_target_tests:
+            explores: Tuple[Explore, ...] = tuple()
+            for compiled in base_explores:
+                explore = project.get_explore(compiled.model_name, compiled.name)
+                if explore is None:
+                    raise TypeError(
+                        "Couldn't find the explore "
+                        f"{compiled.model_name}.{compiled.name}"
+                    )
+                if compiled in target_explores:
                     # Mark explores with the same compiled SQL (test) as skipped
-                    explore = cast(Explore, test.lookml_ref)  # Appease mypy
                     explore.skipped = True
                 else:
                     # Test explores with unique SQL for base ref
-                    tests.append(test)
+                    explores += (explore,)
 
-            logger.debug(
-                f"Found {len(unique_base_tests - unique_target_tests)} "
-                "explore tests with unique SQL"
-            )
+            logger.debug(f"Found {len(explores)} explores with unique SQL")
         else:
-            tests = base_tests
+            explores = tuple(project.iter_explores())
 
-        explore_count = project.count_explores()
+        explore_count = len(explores)
         print_header(
             f"Testing {explore_count} "
             f"{'explore' if explore_count == 1 else 'explores'} "
             + ("[fail fast] " if fail_fast else "")
-            + f"[concurrency = {validator.query_slots}]"
+            + f"[concurrency = {concurrency}]"
         )
 
-        with self.branch_manager(ref=ref):
-            validator.run_tests(tests, profile=profile if fail_fast else False)
+        async with self.branch_manager(ref=ref):
+            await validator.search(
+                explores, fail_fast, profile=profile if fail_fast else False
+            )
 
         # Create dimension tests for the desired ref when explores errored
-        if not fail_fast:
-            with self.branch_manager(ref=ref, ephemeral=ephemeral):
-                base_ref = self.branch_manager.ref
-                logger.debug("Building dimension tests for the desired ref")
-                base_tests = validator.create_tests(project, at_dimension_level=True)
-                validator.run_tests(base_tests, profile)
+        # if not fail_fast and incremental:
+        #     async with self.branch_manager(ref=ref, ephemeral=ephemeral):
+        #         base_ref = self.branch_manager.ref
+        #         logger.debug("Building dimension tests for the desired ref")
+        #         base_tests = validator.create_tests(project, at_dimension_level=True)
+        #         validator.run_tests(base_tests, profile)
 
-            # For errored dimensions, create dimension tests for the target ref
-            if incremental:
-                with self.branch_manager(ref=target, ephemeral=True):
-                    target_ref = self.branch_manager.ref
-                    logger.debug("Building dimension tests for the target ref")
+        #     # For errored dimensions, create dimension tests for the target ref
+        #     if incremental:
+        #         with self.branch_manager(ref=target, ephemeral=True):
+        #             target_ref = self.branch_manager.ref
+        #             logger.debug("Building dimension tests for the target ref")
 
-                    target_sql: List[Tuple[str, str]] = []
-                    for dimension in project.iter_dimensions(errored=True):
-                        test = validator._create_dimension_test(
-                            dimension, compile_sql=True
-                        )
-                        if test.sql:
-                            target_sql.append((test.lookml_ref.name, test.sql))
+        #             target_sql: List[Tuple[str, str]] = []
+        #             for dimension in project.iter_dimensions(errored=True):
+        #                 test = validator._create_dimension_test(
+        #                     dimension, compile_sql=True
+        #                 )
+        #                 if test.sql:
+        #                     target_sql.append((test.lookml_ref.name, test.sql))
 
-                # Keep only the errors that don't exist on the target branch
-                logger.debug(
-                    "Removing errors that would exist in project "
-                    f"@ {target or 'production'}"
-                )
+        #         # Keep only the errors that don't exist on the target branch
+        #         logger.debug(
+        #             "Removing errors that would exist in project "
+        #             f"@ {target or 'production'}"
+        #         )
 
-                for dimension in project.iter_dimensions(errored=True):
-                    for error in dimension.errors:
-                        if (
-                            isinstance(error, SqlError)
-                            and (dimension.name, error.metadata["sql"]) in target_sql
-                        ):
-                            error.ignore = True
+        #         for dimension in project.iter_dimensions(errored=True):
+        #             for error in dimension.errors:
+        #                 if (
+        #                     isinstance(error, SqlError)
+        #                     and (dimension.name, error.metadata["sql"]) in target_sql
+        #                 ):
+        #                     error.ignore = True
 
         results = project.get_results(validator="sql", fail_fast=fail_fast)
         return results

@@ -1,25 +1,68 @@
+from __future__ import annotations
 import asyncio
+from collections import defaultdict
 from dataclasses import dataclass
 from tabulate import tabulate
-from typing import Union, Dict, Any, List, Optional, Tuple, Coroutine
-import itertools
-import time
-from spectacles.utils import chunks, gather_with_concurrency
+from typing import ClassVar, Union, Dict, Any, List, Optional, Tuple, Iterator
 from spectacles.client import LookerClient
-from spectacles.lookml import Dimension, Explore, Project
+from spectacles.lookml import CompiledExplore, Dimension, Explore
 from spectacles.exceptions import SpectaclesException, SqlError
 from spectacles.logger import GLOBAL_LOGGER as logger
 from spectacles.printer import print_header
+from spectacles.types import JsonDict
+from spectacles.utils import consume_queue, halt_queue
 
+QUERY_TASK_LIMIT = 250
 DEFAULT_CHUNK_SIZE = 500
 ProfilerTableRow = Tuple[str, str, float, int, str]
 
 
 @dataclass
 class Query:
-    query_id: int
-    explore_url: str
-    query_task_id: Optional[str] = None
+    explore: Explore
+    dimensions: tuple[Dimension, ...]
+    query_id: int | None = None
+    explore_url: str | None = None
+    errored: bool | None = None
+    chunk_size: int = DEFAULT_CHUNK_SIZE
+    count: ClassVar[dict] = defaultdict(lambda: defaultdict(int))
+
+    def __post_init__(self) -> None:
+        Query.count[self.explore.name][len(self.dimensions)] += 1
+        # Confirm that all dimensions are from the Explore associated here
+        if len(set((d.model_name, d.explore_name) for d in self.dimensions)) > 1:
+            raise ValueError("All Dimensions must be from the same model and explore")
+        elif self.dimensions[0].explore_name != self.explore.name:
+            raise ValueError("Dimension.explore_name must equal Query.explore.name")
+        elif self.dimensions[0].model_name != self.explore.model_name:
+            raise ValueError("Dimension.model_name must equal Query.explore.model_name")
+
+    def __repr__(self) -> str:
+        return f"Query(explore={self.explore.name} n={len(self.dimensions)})"
+
+    async def create(self, client: LookerClient) -> None:
+        result = await client.create_query(
+            model=self.dimensions[0].model_name,
+            explore=self.dimensions[0].explore_name,
+            dimensions=[dimension.name for dimension in self.dimensions],
+            fields=["id", "share_url"],
+        )
+        self.query_id = result["id"]
+        self.explore_url = result["share_url"]
+
+    def divide(self) -> Iterator[Query]:
+        if not self.errored:
+            raise TypeError("Query.errored must be True to divide")
+        elif len(self.dimensions) == 1:
+            raise ValueError("Can't divide, Query has only one dimension")
+
+        midpoint = len(self.dimensions) // 2
+        if midpoint > self.chunk_size:
+            for i in range(0, len(self.dimensions), self.chunk_size):
+                yield Query(self.explore, self.dimensions[i : i + self.chunk_size])
+        else:
+            yield Query(self.explore, self.dimensions[:midpoint])
+            yield Query(self.explore, self.dimensions[midpoint:])
 
 
 @dataclass
@@ -49,83 +92,6 @@ class ProfilerResult:
             self.query.query_id,
             self.query.explore_url,
         )
-
-
-class SqlTest:
-    def __init__(
-        self,
-        queries: List[Query],
-        lookml_ref: Union[Dimension, Explore],
-        explore_url: str,
-        sql: Optional[str] = None,
-        query_task_id: Optional[str] = None,
-        status: Optional[str] = None,
-        runtime: Optional[float] = None,
-        error: Optional[SqlError] = None,
-    ):
-        self.queries = queries
-        self.explore_url = explore_url
-        self.query_task_id = query_task_id
-        self.status = status
-        self.runtime = runtime
-        self.error = error
-
-        self._lookml_ref = lookml_ref
-        self._sql = sql
-
-    @property
-    def failed(self) -> bool:
-        return bool(self.error)
-
-    @property
-    def lookml_url(self) -> Optional[str]:
-        return getattr(self.lookml_ref, "url", None)
-
-    @property
-    def lookml_ref(self) -> Union[Dimension, Explore]:
-        return self._lookml_ref
-
-    @property
-    def sql(self) -> Optional[str]:
-        return self._sql
-
-    # Reminder: __eq__ is used for set equality
-    def __eq__(self, other: Any) -> bool:
-        if isinstance(other, self.__class__):
-            if self.sql and other.sql:
-                return (
-                    self.lookml_ref.model_name == other.lookml_ref.model_name
-                    and self.lookml_ref.name == other.lookml_ref.name
-                    and self.sql == other.sql
-                )
-            else:
-                return self.lookml_ref == other.lookml_ref
-        else:
-            raise NotImplementedError
-
-    def __hash__(self) -> int:
-        if self.sql is None:
-            raise ValueError("Test has no SQL defined")
-        return hash((self.lookml_ref.model_name, self.lookml_ref.name, self.sql))
-
-    def __dict__(self):
-        metadata = {"explore_url": self.explore_url}
-        if self.lookml_url:
-            metadata["lookml_url"] = self.lookml_url
-        output = {
-            "lookml_type": self.lookml_ref.__class__.__name__,
-            "passed": not self.failed,
-            "metadata": metadata,
-        }
-        if self.error:
-            output["errors"] = [self.error.__dict__]
-        return output
-
-    def get_query_by_task_id(self, query_task_id: str) -> Query:
-        for query in self.queries:
-            if query.query_task_id == query_task_id:
-                return query
-        raise KeyError(f"Query with query_task_id '{query_task_id}' not found in test")
 
 
 def print_profile_results(
@@ -184,41 +150,10 @@ class SqlValidator:
         self.client = client
         self.concurrency = concurrency
         self.runtime_threshold = runtime_threshold
-        # Lookup used to retrieve the LookML object
-        self._test_by_task_id: Dict[str, SqlTest] = {}
-        self._preemptive_cancellations: List[Query] = []
-        self._long_running_tests: List[ProfilerResult] = []
+        self._task_to_query: dict[str, Query] = {}
+        self._long_running_queries: List[ProfilerResult] = []
 
-    async def create_tests(
-        self,
-        project: Project,
-        compile_sql: bool = False,
-        at_dimension_level: bool = False,
-        chunk_size: int = DEFAULT_CHUNK_SIZE,
-    ) -> List[SqlTest]:
-        coros: List[Coroutine] = []
-        if at_dimension_level:
-            for explore in project.iter_explores():
-                if not explore.skipped and explore.errored is not False:
-                    for dimension in explore.dimensions:
-                        coros.append(
-                            self._create_dimension_test(dimension, compile_sql)
-                        )
-        else:
-            for explore in project.iter_explores():
-                coros.append(
-                    self._create_explore_test(explore, compile_sql, chunk_size)
-                )
-
-        return await gather_with_concurrency(100, *coros)
-
-    async def _create_explore_test(
-        self,
-        explore: Explore,
-        compile_sql: bool = False,
-        chunk_size: int = DEFAULT_CHUNK_SIZE,
-    ) -> SqlTest:
-        """Creates a SqlTest to query all dimensions in an explore"""
+    async def compile_sql(self, explore: Explore) -> CompiledExplore:
         if not explore.dimensions:
             raise AttributeError(
                 "Explore object is missing dimensions, "
@@ -228,66 +163,55 @@ class SqlValidator:
             )
         dimensions = [dimension.name for dimension in explore.dimensions]
         # Create a query that includes all dimensions
-        main_query = await self.client.create_query(
+        query = await self.client.create_query(
             explore.model_name, explore.name, dimensions, fields=["id", "share_url"]
         )
-        sql = await self.client.run_query(main_query["id"]) if compile_sql else None
+        sql = await self.client.run_query(query["id"])
+        return CompiledExplore.from_explore(explore, sql)
 
-        execution_queries: List[Query] = []
-        if len(dimensions) > chunk_size:
-            # Create separate chunked queries for execution, we don't store compiled SQL
-            # or the Explore URL for these queries
-            for chunk in chunks(dimensions, size=chunk_size):
-                chunk_query = await self.client.create_query(
-                    explore.model_name, explore.name, chunk, fields=["id", "share_url"]
-                )
-                execution_queries.append(
-                    Query(chunk_query["id"], chunk_query["share_url"])
-                )
-        else:
-            execution_queries = [Query(main_query["id"], main_query["share_url"])]
-
-        test = SqlTest(
-            queries=execution_queries,
-            lookml_ref=explore,
-            explore_url=main_query["share_url"],
-            sql=sql,
-        )
-        return test
-
-    async def _create_dimension_test(
-        self, dimension: Dimension, compile_sql: bool = False
-    ) -> SqlTest:
-        query = await self.client.create_query(
-            dimension.model_name,
-            dimension.explore_name,
-            [dimension.name],
-            fields=["id", "share_url"],
-        )
-        sql = await self.client.run_query(query["id"]) if compile_sql else None
-        test = SqlTest(
-            queries=[Query(query["id"], query["share_url"])],
-            lookml_ref=dimension,
-            explore_url=query["share_url"],
-            sql=sql,
-        )
-        return test
-
-    async def run_tests(
-        self, tests: List[SqlTest], fail_fast: bool, profile: bool = False
+    async def search(
+        self, explores: tuple[Explore, ...], fail_fast: bool, profile: bool = False
     ):
+        queries_to_run: asyncio.Queue[Optional[Query]] = asyncio.Queue()
+        running_queries: asyncio.Queue[str] = asyncio.Queue()
+        query_slot = asyncio.Semaphore(self.concurrency)
+
+        print("Starting up the workers")
+        workers = (
+            asyncio.create_task(
+                self._run_query(queries_to_run, running_queries, query_slot),
+                name="run_query",
+            ),
+            asyncio.create_task(
+                self._get_query_results(
+                    queries_to_run, running_queries, fail_fast, query_slot
+                ),
+                name="get_query_results",
+            ),
+        )
+
         try:
-            await self._run_tests(tests, fail_fast)
+            print("Populating the queue")
+            for explore in explores:
+                queries_to_run.put_nowait(Query(explore, tuple(explore.dimensions)))
+
+            # Wait for all work to complete
+            await queries_to_run.join()
+            await running_queries.join()
+            logger.debug("DONE JOINING")
         except KeyboardInterrupt:
             logger.info(
                 "\n\n" + "Please wait, asking Looker to cancel any running queries..."
             )
-            query_tasks = list(self._test_by_task_id.keys())
-            self._cancel_queries(query_tasks)
-            if query_tasks:
+            task_ids = []
+            while not running_queries.empty():
+                task_id = running_queries.get_nowait()
+                task_ids.append(task_id)
+                await self.client.cancel_query_task(task_id)
+            if task_ids:
                 message = (
-                    f"Attempted to cancel {len(query_tasks)} running "
-                    f"{'query' if len(query_tasks) == 1 else 'queries'}."
+                    f"Attempted to cancel {len(task_ids)} running "
+                    f"{'query' if len(task_ids) == 1 else 'queries'}."
                 )
             else:
                 message = (
@@ -298,126 +222,183 @@ class SqlValidator:
                 title="SQL validation was manually interrupted.",
                 detail=message,
             )
+        finally:
+            # Shut down the workers gracefully
+            for worker in workers:
+                worker.cancel()
+            results = await asyncio.gather(*workers, return_exceptions=True)
+            for result in results:
+                if isinstance(result, asyncio.CancelledError):
+                    pass
+                elif isinstance(result, Exception):
+                    raise result
 
         if profile:
             print_profile_results(self._long_running_tests, self.runtime_threshold)
 
-    async def _run_tests(self, tests: List[SqlTest], fail_fast: bool) -> None:
-        """Creates and runs tests with a maximum concurrency defined by query slots"""
-        QUERY_TASK_LIMIT = 250
-        test_by_query_id: Dict[int, SqlTest] = {
-            query.query_id: test for test in tests for query in test.queries
-        }
-        queries: List[Query] = list(
-            itertools.chain.from_iterable(test.queries for test in tests)
-        )
-        query_slot = asyncio.Semaphore(self.concurrency)
-
-        async def run_query(query: Query):
-            await query_slot.acquire()
-            if query in self._preemptive_cancellations:
-                query_slot.release()
-                return None
-            query_task_id = await self.client.create_query_task(query.query_id)
-            query.query_task_id = query_task_id
-            self._test_by_task_id[query_task_id] = test_by_query_id[query.query_id]
-
-        todo = set([asyncio.create_task(run_query(query)) for query in queries])
-        while self._test_by_task_id or len(todo):
-            if todo:
-                done, _pending = await asyncio.wait(todo, timeout=0.2)
-                todo.difference_update(done)  # Remove done
-                logger.debug(f"{len(todo)} queries remaining to launch")
-
-            query_tasks = list(self._test_by_task_id.keys())[:QUERY_TASK_LIMIT]
-            if query_tasks:
-                for query_result in await self._get_query_results(query_tasks):
-                    if query_result.status in ("complete", "error"):
-                        query_slot.release()
-                        self._handle_query_result(query_result, fail_fast)
-
-            # If we're no longer waiting because all queries were launched slow the
-            # requests for results down a bit.
-            if not todo:
-                await asyncio.sleep(1)
-
-    async def _get_query_results(self, query_task_ids: List[str]) -> List[QueryResult]:
-        """Returns ID, status, and error message for all query tasks"""
-        query_results = []
-        results = await self.client.get_query_task_multi_results(query_task_ids)
-        for query_task_id, result in results.items():
-            status = result["status"]
-            if status not in ("complete", "error", "running", "added", "expired"):
-                raise SpectaclesException(
-                    name="unexpected-query-result-status",
-                    title="Encountered an unexpected query result status.",
-                    detail=(
-                        f"Query result status '{status}' was returned "
-                        "by the Looker API."
-                    ),
-                )
-            logger.debug(f"Query task {query_task_id} status is: {status}")
-
-            try:
-                runtime: Optional[float] = float(result["data"]["runtime"])
-            except KeyError:
-                runtime = None
-
-            query_result = QueryResult(query_task_id, status, runtime)
-            if status == "error":
-                try:
-                    error_details = self._extract_error_details(result)
-                except Exception as error:
-                    logger.debug(
-                        f"Unable to parse unexpected query result format: {result}"
+    async def _run_query(
+        self,
+        queries_to_run: asyncio.Queue[Optional[Query]],
+        running_queries: asyncio.Queue[str],
+        query_slot: asyncio.Semaphore,
+    ) -> None:
+        try:
+            # End execution if a sentinel is received from the queue
+            while (query := await queries_to_run.get()) is not None:
+                await query_slot.acquire()
+                await query.create(self.client)
+                print(f"Running query {query!r} [qid={query.query_id}]")
+                if query.query_id is None:
+                    raise TypeError(
+                        "Query.query_id cannot be None, "
+                        "run Query.create to get a query ID"
                     )
-                    raise SpectaclesException(
-                        name="unexpected-query-result-format",
-                        title="Encountered an unexpected query result format.",
-                        detail="Unable to extract error details. The unexpected result has been logged.",
-                    ) from error
-                else:
-                    query_result.error = error_details
-            query_results.append(query_result)
-        return query_results
+                task_id = await self.client.create_query_task(query.query_id)
+                self._task_to_query[task_id] = query
+                running_queries.put_nowait(task_id)
 
-    def _handle_query_result(self, result: QueryResult, fail_fast: bool) -> None:
-        test = self._test_by_task_id.pop(result.query_task_id)
-        test.status = result.status
-        test.runtime = (test.runtime or 0.0) + (result.runtime or 0.0)
-        lookml_object = test.lookml_ref
-        lookml_object.queried = True
+            logger.debug("Received sentinel, shutting down")
 
-        if result.runtime and result.runtime >= self.runtime_threshold:
-            query: Query = test.get_query_by_task_id(result.query_task_id)
-            self._long_running_tests.append(
-                ProfilerResult(lookml_object, result.runtime, query)
+        except Exception:
+            logger.debug(
+                "Encountered an exception while running a query:", exc_info=True
+            )
+            raise
+        finally:
+            # This only gets called if a sentinel is received or exception is raised.
+            # We need to mark all remaining tasks as finished so Queue.join can unblock
+            logger.debug("Marking all tasks in queries_to_run queue as done")
+            halt_queue(queries_to_run)
+
+    def _structure_query_result(self, task_id: str, result: JsonDict) -> QueryResult:
+        # Get the query status
+        status = result["status"]
+        if status not in ("complete", "error", "running", "added", "expired"):
+            raise SpectaclesException(
+                name="unexpected-query-result-status",
+                title="Encountered an unexpected query result status.",
+                detail=(
+                    f"Query result status '{status}' was returned by the Looker API."
+                ),
             )
 
-        if result.status == "error" and result.error:
-            if fail_fast:
-                # Once a test has an error, stop all other queries
-                for query in test.queries:
-                    self._preemptive_cancellations.append(query)
+        # Get the query runtime
+        try:
+            runtime: Optional[float] = float(result["data"]["runtime"])
+        except KeyError:
+            runtime = None
 
-            model_name = lookml_object.model_name
-            dimension_name: Optional[str] = None
-            if isinstance(lookml_object, Dimension):
-                explore_name = lookml_object.explore_name
-                dimension_name = lookml_object.name
+        query_result = QueryResult(task_id, status, runtime)
+
+        # Get the query error
+        if status == "error":
+            try:
+                error_details = self._extract_error_details(result)
+            except Exception as error:
+                logger.debug(
+                    f"Unable to parse unexpected query result format: {result}"
+                )
+                raise SpectaclesException(
+                    name="unexpected-query-result-format",
+                    title="Encountered an unexpected query result format.",
+                    detail="Unable to extract error details. The unexpected result has been logged.",
+                ) from error
             else:
-                explore_name = lookml_object.name
+                query_result.error = error_details
 
-            sql_error = SqlError(
-                model=model_name,
-                explore=explore_name,
-                dimension=dimension_name,
-                lookml_url=test.lookml_url,
-                explore_url=test.explore_url,
-                **result.error,
+        return query_result
+
+    async def _get_query_results(
+        self,
+        queries_to_run: asyncio.Queue[Optional[Query]],
+        running_queries: asyncio.Queue[str],
+        fail_fast: bool,
+        query_slot: asyncio.Semaphore,
+    ) -> None:
+        try:
+            while True:
+                task_ids = consume_queue(running_queries, limit=QUERY_TASK_LIMIT)
+                if not task_ids:
+                    logger.debug("No running queries, waiting for one to start...")
+                    await asyncio.sleep(0.5)
+                    continue
+
+                raw = await self.client.get_query_task_multi_results(task_ids)
+                for task_id, result in raw.items():
+                    query_result = self._structure_query_result(task_id, result)
+                    logger.debug(
+                        f"Query task {task_id} status is: {query_result.status}"
+                    )
+                    if query_result.status == "complete":
+                        query_slot.release()
+                        self._task_to_query[task_id].errored = False
+                        queries_to_run.task_done()
+                    elif query_result.status == "error":
+                        query_slot.release()
+                        query = self._task_to_query[task_id]
+                        query.errored = True
+
+                        # Fail fast, assign the error to its explore
+                        if fail_fast:
+                            explore = query.explore
+                            explore.queried = True
+                            error = SqlError(
+                                model=explore.model_name,
+                                explore=explore.name,
+                                dimension=None,
+                                explore_url=query.explore_url,
+                                **(query_result.error),
+                            )
+                            explore.errors.append(error)
+
+                        # Make child queries and put them back on the queue
+                        elif len(query.dimensions) > 1:
+                            n = 0
+                            for child in query.divide():
+                                n += 1
+                                await queries_to_run.put(child)
+
+                        # Assign the error to its dimension
+                        else:
+                            dimension = query.dimensions[0]
+                            dimension.queried = True
+                            error = SqlError(
+                                model=dimension.model_name,
+                                explore=dimension.explore_name,
+                                dimension=dimension.name,
+                                lookml_url=dimension.url,
+                                explore_url=query.explore_url,
+                                **(query_result.error),
+                            )
+                            dimension.errors.append(error)
+
+                        # Indicate there are no more queries or subqueries to run
+                        queries_to_run.task_done()
+                    else:
+                        # Query still running, put the task back on the queue
+                        await running_queries.put(task_id)
+
+                # Notify queue that all task IDs were processed
+                for _ in range(len(task_ids)):
+                    running_queries.task_done()
+
+                await asyncio.sleep(0.5)
+        except Exception:
+            logger.debug(
+                "Encountered an exception while retrieving results:", exc_info=True
             )
-            test.error = sql_error
-            lookml_object.errors.append(sql_error)
+            # Put a sentinel on the run query queue to shut it down
+            queries_to_run.put_nowait(None)
+            # Wait until the sentinel has been consumed and handled
+            while not queries_to_run.empty():
+                logger.debug("Waiting for the queries_to_run queue to clear")
+                await asyncio.sleep(1)
+            raise
+        finally:
+            # This only gets called if an exception is raised.
+            # We need to mark all remaining tasks as finished so Queue.join can unblock
+            logger.debug("Marking all tasks in running_queries queue as done")
+            halt_queue(running_queries)
 
     @staticmethod
     def _extract_error_details(query_result: Dict) -> Optional[Dict]:
@@ -467,8 +448,3 @@ class SqlValidator:
             )
 
         return {"message": message, "sql": sql, "line_number": line_number}
-
-    def _cancel_queries(self, query_task_ids: List[str]) -> None:
-        """Asks the Looker API to cancel specified queries"""
-        for query_task_id in query_task_ids:
-            self.client.cancel_query_task(query_task_id)

@@ -1,4 +1,4 @@
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Tuple
 import time
 from dataclasses import dataclass
 import backoff  # type: ignore
@@ -389,7 +389,9 @@ class LookerClient:
         full_response = await self.get_active_branch(project)
         return full_response["name"]
 
-    async def create_branch(self, project: str, branch: str, ref: Optional[str] = None):
+    async def create_branch(
+        self, project: str, branch: str, ref: Optional[str] = None
+    ) -> None:
         """Creates a branch in the given project.
 
         Args:
@@ -430,7 +432,7 @@ class LookerClient:
                 response=response,
             )
 
-    async def hard_reset_branch(self, project: str, branch: str, ref: str):
+    async def hard_reset_branch(self, project: str, branch: str, ref: str) -> None:
         """Hard resets a branch to the ref prodvided.
 
         DANGER: hard reset will be force pushed to the remote. Unsaved changes and
@@ -747,7 +749,9 @@ class LookerClient:
         logger.debug("Query %d is running under query task %s", query_id, query_task_id)
         return query_task_id
 
-    async def get_query_task_multi_results(self, query_task_ids: List[str]) -> JsonDict:
+    async def get_query_task_multi_results(
+        self, query_task_ids: Tuple[str]
+    ) -> JsonDict:
         """Returns query task results.
 
         If a ClientError or TimeoutError is received, attempts to retry.
@@ -788,7 +792,7 @@ class LookerClient:
         result = response.json()
         return result
 
-    async def cancel_query_task(self, query_task_id: str):
+    async def cancel_query_task(self, query_task_id: str) -> None:
         """Cancels a query task.
 
         Args:
