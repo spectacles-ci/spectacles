@@ -1,12 +1,14 @@
 import asyncio
-from typing import List, Callable, Optional, Dict, Any, Iterable
+from multiprocessing.sharedctypes import Value
+from typing import Iterator, List, Callable, Optional, Dict, Any, Iterable, Tuple
 from urllib import parse
-from spectacles.logger import GLOBAL_LOGGER as logger
 import functools
 import httpx
 import timeit
 import hashlib
 import time
+from spectacles.logger import GLOBAL_LOGGER as logger
+from spectacles.types import T
 
 
 def compose_url(base_url: str, path: List, params: Dict = {}) -> str:
@@ -83,11 +85,20 @@ def chunks(to_chunk: list, size: int) -> Iterable:
         yield to_chunk[i : i + size]
 
 
-async def gather_with_concurrency(n, *tasks):
-    semaphore = asyncio.Semaphore(n)
+def consume_queue(queue: asyncio.Queue[T], limit: Optional[int] = None) -> Tuple[T]:
+    """Purge an async queue of all its contents, up to a limit, and return them."""
+    count = 0
+    contents = tuple()
+    while not queue.empty() and (limit is None or count <= limit):
+        contents += (queue.get_nowait(),)
+        count += 1
+    return contents
 
-    async def limited_task(task):
-        async with semaphore:
-            return await task
 
-    return await asyncio.gather(*(limited_task(task) for task in tasks))
+def halt_queue(queue: asyncio.Queue) -> None:
+    """Inform a queue that all tasks are finished, unblocking any Queue.join calls."""
+    while True:
+        try:
+            queue.task_done()
+        except ValueError:  # ValueError raised when no unfinished tasks remain
+            break
