@@ -446,7 +446,12 @@ class Runner:
                 "Building LookML project hierarchy for project "
                 f"'{self.project}' @ {self.branch_manager.ref}"
             )
-            project = build_project(self.client, name=self.project, filters=filters)
+            project = build_project(
+                self.client,
+                name=self.project,
+                filters=filters,
+                include_all_explores=True,
+            )
             explore_count = project.count_explores()
             print_header(
                 f"Validating content based on {explore_count} "
@@ -454,7 +459,7 @@ class Runner:
                 + (" [incremental mode] " if incremental else "")
             )
             validator.validate(project)
-            results = project.get_results(validator="content")
+            results = project.get_results(validator="content", filters=filters)
 
         if incremental and (self.branch_manager.branch or self.branch_manager.commit):
             logger.debug("Starting another content validation against the target ref")

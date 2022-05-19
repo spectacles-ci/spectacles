@@ -325,7 +325,10 @@ class Project(LookMlObject):
             return model_object.get_explore(name)
 
     def get_results(
-        self, validator: str, fail_fast: Optional[bool] = None
+        self,
+        validator: str,
+        fail_fast: Optional[bool] = None,
+        filters: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
         errors: List[Dict[str, Any]] = []
         successes: List[Dict[str, Any]] = []
@@ -335,15 +338,24 @@ class Project(LookMlObject):
             # Add model level content validation errors.
             # We create an explore "tested" record for those that
             # aren't in the LookML tree.
-            distinct_explores = set([e.explore for e in model.errors])
+            distinct_explores = set()
+            if filters is None:
+                raise Exception()
+            for error in [
+                e for e in model.errors if is_selected(model.name, e.explore, filters)
+            ]:
+                distinct_explores.add(error.explore)
+                errors.append(error.to_dict())
             model_tested = [
                 {"model": model.name, "explore": e, "status": "failed"}
                 for e in distinct_explores
             ]
             tested.extend(model_tested)
-            errors.extend([e.to_dict() for e in model.errors])
 
             for explore in model.explores:
+                # For the content validator, we need to prune the errors
+                if filters and not is_selected(model.name, explore.name, filters):
+                    continue
                 status = "passed"
                 if explore.skipped:
                     status = "skipped"
@@ -415,6 +427,7 @@ def build_project(
     filters: Optional[List[str]] = None,
     include_dimensions: bool = False,
     ignore_hidden_fields: bool = False,
+    include_all_explores: bool = False,
 ) -> Project:
     """Creates an object (tree) representation of a LookML project."""
     if filters is None:
@@ -438,25 +451,20 @@ def build_project(
             ),
         )
 
-    for model in models:
-        model.explores = [
-            explore
-            for explore in model.explores
-            if is_selected(model.name, explore.name, filters)
-        ]
+    # For the content validator, we need all explores.
+    if not include_all_explores:
+        for model in models:
+            model.explores = [
+                explore
+                for explore in model.explores
+                if is_selected(model.name, explore.name, filters)
+            ]
 
-        if include_dimensions:
-            for explore in model.explores:
-                explore.dimensions = build_dimensions(
-                    client, model.name, explore.name, ignore_hidden_fields
-                )
+            if include_dimensions:
+                for explore in model.explores:
+                    explore.dimensions = build_dimensions(
+                        client, model.name, explore.name, ignore_hidden_fields
+                    )
 
-    project = Project(
-        name,
-        [
-            model
-            for model in models
-            if is_selected(model.name, "__spectacles__", filters)
-        ],
-    )
+    project = Project(name, [model for model in models])
     return project
