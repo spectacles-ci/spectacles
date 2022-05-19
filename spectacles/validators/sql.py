@@ -3,7 +3,7 @@ import asyncio
 from collections import defaultdict
 from dataclasses import dataclass
 from tabulate import tabulate
-from typing import ClassVar, Union, List, Optional, Tuple, Iterator
+from typing import ClassVar, List, Optional, Tuple, Iterator
 import pydantic
 from spectacles.client import LookerClient
 from spectacles.lookml import CompiledExplore, Dimension, Explore
@@ -15,7 +15,7 @@ from spectacles.types import QueryResult
 
 QUERY_TASK_LIMIT = 250
 DEFAULT_CHUNK_SIZE = 500
-ProfilerTableRow = Tuple[str, str, float, int, str]
+ProfilerTableRow = Tuple[str, float, int, str]
 
 
 @dataclass
@@ -26,6 +26,7 @@ class Query:
     explore_url: str | None = None
     errored: bool | None = None
     chunk_size: int = DEFAULT_CHUNK_SIZE
+    runtime: float | None = None
     # TODO: Remove this later if we don't need it
     count: ClassVar[dict] = defaultdict(lambda: defaultdict(int))
 
@@ -66,45 +67,37 @@ class Query:
             yield Query(self.explore, self.dimensions[:midpoint])
             yield Query(self.explore, self.dimensions[midpoint:])
 
-
-@dataclass(frozen=True)
-class ProfilerResult:
-    """Stores the data needed to display results for the query profiler."""
-
-    lookml_obj: Union[Dimension, Explore]
-    runtime: float
-    query: Query
-
-    def format(self) -> ProfilerTableRow:
-        """Return data in a format suitable for tabulate to print."""
-        return (
-            self.lookml_obj.__class__.__name__.lower(),
-            self.lookml_obj.name,
-            self.runtime,
-            self.query.query_id,
-            self.query.explore_url,
-        )
+    def to_profiler_format(self) -> ProfilerTableRow:
+        if self.runtime is None:
+            raise TypeError("Query has no runtime")
+        if self.query_id is None:
+            raise TypeError(
+                "Query.query_id cannot be None, run Query.create to get a query ID"
+            )
+        if self.explore_url is None:
+            raise TypeError(
+                "Query.explore_url cannot be None, "
+                "run Query.create to get an explore URL"
+            )
+        return (self.explore.name, self.runtime, self.query_id, self.explore_url)
 
 
-def print_profile_results(
-    results: List[ProfilerResult], runtime_threshold: int
-) -> None:
+def print_profile_results(queries: List[Query], runtime_threshold: int) -> None:
     """Defined here instead of in .printer to avoid circular type imports."""
     HEADER_CHAR = "."
     print_header("Query profiler results", char=HEADER_CHAR, leading_newline=False)
-    if results:
-        results_by_runtime = sorted(
-            results,
+    if queries:
+        queries_by_runtime = sorted(
+            queries,
             key=lambda x: x.runtime if x.runtime is not None else -1,
             reverse=True,
         )
         output = tabulate(
-            [result.format() for result in results_by_runtime],
+            [query.to_profiler_format() for query in queries_by_runtime],
             headers=[
-                "Type",
-                "Name",
+                "Explore",
                 "Runtime (s)",
-                "Query IDs",
+                "Query ID",
                 "Explore From Here",
             ],
             tablefmt="github",
@@ -143,7 +136,7 @@ class SqlValidator:
         self.concurrency = concurrency
         self.runtime_threshold = runtime_threshold
         self._task_to_query: dict[str, Query] = {}
-        self._long_running_queries: List[ProfilerResult] = []
+        self._long_running_queries: List[Query] = []
 
     async def compile_sql(self, explore: Explore) -> CompiledExplore:
         if not explore.dimensions:
@@ -226,7 +219,7 @@ class SqlValidator:
                     raise result
 
         if profile:
-            print_profile_results(self._long_running_tests, self.runtime_threshold)
+            print_profile_results(self._long_running_queries, self.runtime_threshold)
 
     async def _run_query(
         self,
@@ -296,59 +289,64 @@ class SqlValidator:
                     logger.debug(
                         f"Query task {task_id} status is: {query_result.status}"
                     )
-                    if query_result.status == "complete":
-                        query_slot.release()
-                        self._task_to_query[task_id].errored = False
-                        queries_to_run.task_done()
-                    elif query_result.status == "error":
-                        query_slot.release()
+
+                    # Append long-running queries for the profiler
+                    if query_result.status in ("complete", "error"):
                         query = self._task_to_query[task_id]
-                        query.errored = True
-
-                        # Fail fast, assign the error(s) to its explore
-                        if fail_fast:
-                            explore = query.explore
-                            explore.queried = True
-                            for error in query_result.get_valid_errors():
-                                explore.errors.append(
-                                    SqlError(
-                                        model=explore.model_name,
-                                        explore=explore.name,
-                                        dimension=None,
-                                        sql=query_result.sql,
-                                        message=error.full_message,
-                                        line_number=error.sql_error_loc.line,
-                                        explore_url=query.explore_url,
-                                    )
-                                )
-
-                        # Make child queries and put them back on the queue
-                        elif len(query.dimensions) > 1:
-                            n = 0
-                            for child in query.divide():
-                                n += 1
-                                await queries_to_run.put(child)
-
-                        # Assign the error(s) to its dimension
+                        if query_result.runtime > self.runtime_threshold:
+                            self._long_running_queries.append(query)
+                        if query_result.status == "complete":
+                            query_slot.release()
+                            query.errored = False
+                            queries_to_run.task_done()
                         else:
-                            dimension = query.dimensions[0]
-                            dimension.queried = True
-                            for error in query_result.get_valid_errors():
-                                dimension.errors.append(
-                                    SqlError(
-                                        model=dimension.model_name,
-                                        explore=dimension.explore_name,
-                                        dimension=dimension.name,
-                                        sql=query_result.sql,
-                                        message=error.full_message,
-                                        line_number=error.sql_error_loc.line,
-                                        lookml_url=dimension.url,
-                                        explore_url=query.explore_url,
-                                    )
-                                )
+                            query_slot.release()
+                            query.errored = True
 
-                        # Indicate there are no more queries or subqueries to run
-                        queries_to_run.task_done()
+                            # Fail fast, assign the error(s) to its explore
+                            if fail_fast:
+                                explore = query.explore
+                                explore.queried = True
+                                for error in query_result.get_valid_errors():
+                                    explore.errors.append(
+                                        SqlError(
+                                            model=explore.model_name,
+                                            explore=explore.name,
+                                            dimension=None,
+                                            sql=query_result.sql,
+                                            message=error.full_message,
+                                            line_number=error.sql_error_loc.line,
+                                            explore_url=query.explore_url,
+                                        )
+                                    )
+
+                            # Make child queries and put them back on the queue
+                            elif len(query.dimensions) > 1:
+                                n = 0
+                                for child in query.divide():
+                                    n += 1
+                                    await queries_to_run.put(child)
+
+                            # Assign the error(s) to its dimension
+                            else:
+                                dimension = query.dimensions[0]
+                                dimension.queried = True
+                                for error in query_result.get_valid_errors():
+                                    dimension.errors.append(
+                                        SqlError(
+                                            model=dimension.model_name,
+                                            explore=dimension.explore_name,
+                                            dimension=dimension.name,
+                                            sql=query_result.sql,
+                                            message=error.full_message,
+                                            line_number=error.sql_error_loc.line,
+                                            lookml_url=dimension.url,
+                                            explore_url=query.explore_url,
+                                        )
+                                    )
+
+                            # Indicate there are no more queries or subqueries to run
+                            queries_to_run.task_done()
                     else:
                         # Query still running, put the task back on the queue
                         await running_queries.put(task_id)
