@@ -17,8 +17,8 @@ class QueryStatusEnum(str, Enum):
 class ErrorSqlLocation(BaseModel):
     """Stores the line and column within a SQL query where an error occurred."""
 
-    line: int
-    column: int
+    line: Optional[int]
+    column: Optional[int]
 
 
 class QueryError(BaseModel):

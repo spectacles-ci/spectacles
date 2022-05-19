@@ -1,7 +1,7 @@
 import asyncio
 import re
 from spectacles.exceptions import LookerApiError, SqlError
-from typing import Dict, List, Optional, cast, Tuple
+from typing import Dict, List, Optional, Tuple
 from dataclasses import dataclass
 import itertools
 from spectacles.client import LookerClient
@@ -15,7 +15,7 @@ from spectacles.types import JsonDict
 from spectacles.validators.sql import DEFAULT_CHUNK_SIZE
 from spectacles.exceptions import SpectaclesException
 from spectacles.utils import time_hash
-from spectacles.lookml import CompiledExplore, build_project, Project, Explore
+from spectacles.lookml import CompiledSql, build_project, Explore
 from spectacles.logger import GLOBAL_LOGGER as logger
 from spectacles.printer import print_header
 
@@ -292,11 +292,11 @@ class Runner:
                 include_dimensions=True,
                 ignore_hidden_fields=ignore_hidden_fields,
             )
-            base_explores: set[CompiledExplore] = set()
+            base_explores: set[CompiledSql] = set()
             if incremental:
                 compiled_explores = await asyncio.gather(
                     *(
-                        validator.compile_sql(explore)
+                        validator.compile_explore(explore)
                         for explore in project.iter_explores()
                     )
                 )
@@ -325,11 +325,11 @@ class Runner:
                     include_dimensions=True,
                     ignore_hidden_fields=ignore_hidden_fields,
                 )
-                target_explores: set[CompiledExplore] = set()
+                target_explores: set[CompiledSql] = set()
                 if incremental:
                     compiled_explores = await asyncio.gather(
                         *(
-                            validator.compile_sql(explore)
+                            validator.compile_explore(explore)
                             for explore in target_project.iter_explores()
                         )
                     )
@@ -340,11 +340,13 @@ class Runner:
             # corresponding which `lookml_ref` is used
             explores: Tuple[Explore, ...] = tuple()
             for compiled in base_explores:
-                explore = project.get_explore(compiled.model_name, compiled.name)
+                explore = project.get_explore(
+                    compiled.model_name, compiled.explore_name
+                )
                 if explore is None:
                     raise TypeError(
                         "Couldn't find the explore "
-                        f"{compiled.model_name}.{compiled.name}"
+                        f"{compiled.model_name}.{compiled.explore_name}"
                     )
                 if compiled in target_explores:
                     # Mark explores with the same compiled SQL (test) as skipped
@@ -371,45 +373,38 @@ class Runner:
             )
 
         # Create dimension tests for the desired ref when explores errored
-        # if not fail_fast and incremental:
-        #     async with self.branch_manager(ref=ref, ephemeral=ephemeral):
-        #         base_ref = self.branch_manager.ref
-        #         logger.debug("Building dimension tests for the desired ref")
-        #         base_tests = validator.create_tests(project, at_dimension_level=True)
-        #         validator.run_tests(base_tests, profile)
+        if not fail_fast and incremental:
+            errored_dimensions = project.iter_dimensions(errored=True)
+            # For errored dimensions, create dimension tests for the target ref
+            with self.branch_manager(ref=target, ephemeral=True):
+                target_ref = self.branch_manager.ref
+                logger.debug("Compiling SQL for dimensions at the target ref")
+                compiled_dimensions = await asyncio.gather(
+                    *(
+                        validator.compile_dimension(dimension)
+                        for dimension in target_project.iter_dimensions(errored=True)
+                    )
+                )
+                target_dimensions = set(compiled_dimensions)
 
-        #     # For errored dimensions, create dimension tests for the target ref
-        #     if incremental:
-        #         with self.branch_manager(ref=target, ephemeral=True):
-        #             target_ref = self.branch_manager.ref
-        #             logger.debug("Building dimension tests for the target ref")
+            # Keep only the errors that don't exist on the target branch
+            logger.debug(
+                "Removing errors that would exist in project "
+                f"@ {target or 'production'}"
+            )
 
-        #             target_sql: List[Tuple[str, str]] = []
-        #             for dimension in project.iter_dimensions(errored=True):
-        #                 test = validator._create_dimension_test(
-        #                     dimension, compile_sql=True
-        #                 )
-        #                 if test.sql:
-        #                     target_sql.append((test.lookml_ref.name, test.sql))
-
-        #         # Keep only the errors that don't exist on the target branch
-        #         logger.debug(
-        #             "Removing errors that would exist in project "
-        #             f"@ {target or 'production'}"
-        #         )
-
-        #         for dimension in project.iter_dimensions(errored=True):
-        #             for error in dimension.errors:
-        #                 if (
-        #                     isinstance(error, SqlError)
-        #                     and (dimension.name, error.metadata["sql"]) in target_sql
-        #                 ):
-        #                     error.ignore = True
+            for dimension in errored_dimensions:
+                for error in dimension.errors:
+                    if (
+                        isinstance(error, SqlError)
+                        and (dimension.name, error.metadata["sql"]) in target_dimensions
+                    ):
+                        error.ignore = True
 
         results = project.get_results(validator="sql", fail_fast=fail_fast)
         return results
 
-    def validate_data_tests(
+    async def validate_data_tests(
         self,
         ref: Optional[str] = None,
         filters: List[str] = None,
@@ -422,26 +417,28 @@ class Runner:
                 "Building LookML project hierarchy for project "
                 f"'{self.project}' @ {self.branch_manager.ref}"
             )
-            project = build_project(self.client, name=self.project, filters=filters)
+            project = await build_project(
+                self.client, name=self.project, filters=filters
+            )
             explore_count = project.count_explores()
             print_header(
                 f"Running data tests based on {explore_count} "
                 f"{'explore' if explore_count == 1 else 'explores'}"
             )
-            tests = validator.get_tests(project)
-            validator.validate(tests)
+            tests = await validator.get_tests(project)
+            await validator.validate(tests)
 
         results = project.get_results(validator="data_test")
         return results
 
-    def validate_lookml(self, ref: Optional[str], severity: str) -> JsonDict:
+    async def validate_lookml(self, ref: Optional[str], severity: str) -> JsonDict:
         with self.branch_manager(ref=ref):
             validator = LookMLValidator(self.client)
             print_header(f"Validating LookML in project {self.project} [{severity}]")
-            results = validator.validate(self.project, severity)
+            results = await validator.validate(self.project, severity)
         return results
 
-    def validate_content(
+    async def validate_content(
         self,
         ref: Optional[str] = None,
         filters: List[str] = None,
@@ -465,7 +462,7 @@ class Runner:
                 "Building LookML project hierarchy for project "
                 f"'{self.project}' @ {self.branch_manager.ref}"
             )
-            project = build_project(
+            project = await build_project(
                 self.client,
                 name=self.project,
                 filters=filters,
@@ -477,7 +474,7 @@ class Runner:
                 f"{'explore' if explore_count == 1 else 'explores'}"
                 + (" [incremental mode] " if incremental else "")
             )
-            validator.validate(project)
+            await validator.validate(project)
             results = project.get_results(validator="content", filters=filters)
 
         if incremental and (self.branch_manager.branch or self.branch_manager.commit):
@@ -487,13 +484,13 @@ class Runner:
                     "Building LookML project hierarchy for project "
                     f"'{self.project}' @ {self.branch_manager.ref}"
                 )
-                target_project = build_project(
+                target_project = await build_project(
                     self.client,
                     name=self.project,
                     filters=filters,
                     include_all_explores=True,
                 )
-                validator.validate(target_project)
+                await validator.validate(target_project)
                 target_results = target_project.get_results(
                     validator="content", filters=filters
                 )

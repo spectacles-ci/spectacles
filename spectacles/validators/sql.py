@@ -3,10 +3,10 @@ import asyncio
 from collections import defaultdict
 from dataclasses import dataclass
 from tabulate import tabulate
-from typing import ClassVar, List, Optional, Tuple, Iterator
+from typing import ClassVar, List, Optional, Tuple, Iterator, Union
 import pydantic
 from spectacles.client import LookerClient
-from spectacles.lookml import CompiledExplore, Dimension, Explore
+from spectacles.lookml import CompiledSql, Dimension, Explore
 from spectacles.exceptions import SpectaclesException, SqlError
 from spectacles.logger import GLOBAL_LOGGER as logger
 from spectacles.printer import print_header
@@ -138,7 +138,7 @@ class SqlValidator:
         self._task_to_query: dict[str, Query] = {}
         self._long_running_queries: List[Query] = []
 
-    async def compile_sql(self, explore: Explore) -> CompiledExplore:
+    async def compile_explore(self, explore: Explore) -> CompiledSql:
         if not explore.dimensions:
             raise AttributeError(
                 "Explore object is missing dimensions, "
@@ -149,10 +149,21 @@ class SqlValidator:
         dimensions = [dimension.name for dimension in explore.dimensions]
         # Create a query that includes all dimensions
         query = await self.client.create_query(
-            explore.model_name, explore.name, dimensions, fields=["id", "share_url"]
+            explore.model_name, explore.name, dimensions, fields=["id"]
         )
         sql = await self.client.run_query(query["id"])
-        return CompiledExplore.from_explore(explore, sql)
+        return CompiledSql.from_explore(explore, sql)
+
+    async def compile_dimension(self, dimension: Dimension) -> CompiledSql:
+        # Create a query for the dimension
+        query = await self.client.create_query(
+            dimension.model_name,
+            dimension.explore_name,
+            [dimension.name],
+            fields=["id"],
+        )
+        sql = await self.client.run_query(query["id"])
+        return CompiledSql.from_dimension(dimension, sql)
 
     async def search(
         self, explores: tuple[Explore, ...], fail_fast: bool, profile: bool = False
@@ -161,7 +172,6 @@ class SqlValidator:
         running_queries: asyncio.Queue[str] = asyncio.Queue()
         query_slot = asyncio.Semaphore(self.concurrency)
 
-        print("Starting up the workers")
         workers = (
             asyncio.create_task(
                 self._run_query(queries_to_run, running_queries, query_slot),
@@ -176,7 +186,6 @@ class SqlValidator:
         )
 
         try:
-            print("Populating the queue")
             for explore in explores:
                 queries_to_run.put_nowait(Query(explore, tuple(explore.dimensions)))
 
@@ -232,7 +241,7 @@ class SqlValidator:
             while (query := await queries_to_run.get()) is not None:
                 await query_slot.acquire()
                 await query.create(self.client)
-                print(f"Running query {query!r} [qid={query.query_id}]")
+                logger.debug(f"Running query {query!r} [qid={query.query_id}]")
                 if query.query_id is None:
                     raise TypeError(
                         "Query.query_id cannot be None, "

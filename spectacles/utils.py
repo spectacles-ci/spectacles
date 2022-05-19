@@ -1,9 +1,7 @@
 import asyncio
-from typing import List, Callable, Optional, Dict, Any, Iterable, Tuple
+from typing import Callable, List, Optional, Dict, Any, Iterable, Tuple
 from urllib import parse
-import functools
 import httpx
-import timeit
 import hashlib
 import time
 from spectacles.logger import GLOBAL_LOGGER as logger
@@ -55,14 +53,12 @@ def get_detail(fn_name: str):
 
 
 def log_duration(fn: Callable):
-    functools.wraps(fn)
-
-    def timed_function(*args, **kwargs):
-        start_time = timeit.default_timer()
+    async def timed_function(*args, **kwargs):
+        start_time = time.time()
         try:
-            result = fn(*args, **kwargs)
+            result = await fn(*args, **kwargs)
         finally:
-            elapsed = timeit.default_timer() - start_time
+            elapsed = time.time() - start_time
             elapsed_str = human_readable(elapsed)
             message_detail = get_detail(fn.__name__)
 
