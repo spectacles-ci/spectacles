@@ -750,7 +750,7 @@ class LookerClient:
         return query_task_id
 
     async def get_query_task_multi_results(
-        self, query_task_ids: Tuple[str]
+        self, query_task_ids: Tuple[str, ...]
     ) -> JsonDict:
         """Returns query task results.
 
