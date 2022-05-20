@@ -239,7 +239,7 @@ class Model(LookMlObject):
 
     @property
     def number_of_errors(self):
-        return sum(
+        return len(self.errors) + sum(
             [explore.number_of_errors for explore in self.explores if explore.errored]
         )
 

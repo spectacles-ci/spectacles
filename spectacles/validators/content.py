@@ -158,7 +158,7 @@ class ContentValidator:
                 if explore and content_error not in explore.errors:
                     explore.errors.append(content_error)
                     content_errors.append(content_error)
-                if model and content_error not in model.errors:
+                elif model and content_error not in model.errors:
                     model.errors.append(content_error)
                     content_errors.append(content_error)
 
