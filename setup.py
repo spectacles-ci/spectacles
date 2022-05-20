@@ -14,6 +14,7 @@ setup(
     version=__version__,
     py_modules=["spectacles"],
     packages=find_packages(exclude=["docs", "tests*", "scripts"]),
+    package_data={"spectacles": ["py.typed"]},
     include_package_data=True,
     install_requires=[
         "requests",
