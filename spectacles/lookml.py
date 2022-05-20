@@ -474,6 +474,8 @@ def build_project(
                     explore.dimensions = build_dimensions(
                         client, model.name, explore.name, ignore_hidden_fields
                     )
-
-    project = Project(name, models)
-    return project
+        project = Project(name, [m for m in models if len(m.explores) > 0])
+        return project
+    else:
+        project = Project(name, models)
+        return project
