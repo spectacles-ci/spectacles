@@ -39,14 +39,14 @@ class LookerBranchManager:
         client: LookerClient,
         project: str,
         remote_reset: bool = False,
-        pin_imports: Dict[str, str] = {},
+        pin_imports: Optional[Dict[str, str]] = None,
     ):
         """Context manager for Git branch checkout, creation, and deletion."""
         logger.debug(f"Setting up branch manager in project '{project}'")
         self.client = client
         self.project = project
         self.remote_reset = remote_reset
-        self.pin_imports = pin_imports
+        self.pin_imports = pin_imports or {}
 
         self.commit: Optional[str] = None
         self.branch: Optional[str] = None
@@ -256,18 +256,18 @@ class Runner:
         client: LookerClient,
         project: str,
         remote_reset: bool = False,
-        pin_imports: Dict[str, str] = {},
+        pin_imports: Optional[Dict[str, str]] = None,
     ):
         self.project = project
         self.client = client
         self.branch_manager = LookerBranchManager(
-            client, project, remote_reset, pin_imports
+            client, project, remote_reset, pin_imports or {}
         )
 
     async def validate_sql(
         self,
         ref: Optional[str] = None,
-        filters: List[str] = None,
+        filters: Optional[List[str]] = None,
         fail_fast: bool = True,
         incremental: bool = False,
         target: Optional[str] = None,
