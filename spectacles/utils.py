@@ -1,3 +1,4 @@
+from __future__ import annotations
 import asyncio
 from typing import Callable, List, Optional, Dict, Any, Iterable, Tuple
 from urllib import parse
