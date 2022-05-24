@@ -128,10 +128,11 @@ class ContentValidator:
         for error in result["errors"]:
             model_name = error["model_name"]
             explore_name = error["explore_name"]
-            explore: Optional[Explore] = project.get_explore(
-                model=model_name, name=explore_name
-            )
             model: Optional[Model] = project.get_model(model_name)
+            if model:
+                explore: Optional[Explore] = model.get_explore(name=explore_name)
+            else:
+                explore = None
             # Skip errors that are not associated with selected explores
             if explore or model:
                 content_id = result[content_type]["id"]

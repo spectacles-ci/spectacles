@@ -343,17 +343,14 @@ class Project(LookMlObject):
                 # Raise name error if there are errors on the model and filters
                 # isn't being passed. We need filters when running the content
                 # validator, which is the only time a model will have errors.
-                raise NameError(
+                raise TypeError(
                     "The argument 'filters' is required in Content Validator."
                 )
             elif filters is not None and model.errors:  # appease mypy
-                for error in [
-                    e
-                    for e in model.errors
-                    if is_selected(model.name, e.explore, filters)
-                ]:
-                    distinct_explores.add(error.explore)
-                    errors.append(error.to_dict())
+                for error in model.errors:
+                    if is_selected(model.name, error.explore, filters):
+                        distinct_explores.add(error.explore)
+                        errors.append(error.to_dict())
                 model_tested = [
                     {"model": model.name, "explore": e, "status": "failed"}
                     for e in distinct_explores
@@ -460,7 +457,7 @@ def build_project(
             ),
         )
 
-    # For the content validator, we need all explores.
+    # Prune to selected explores for non-content validators
     if not include_all_explores:
         for model in models:
             model.explores = [
@@ -469,13 +466,17 @@ def build_project(
                 if is_selected(model.name, explore.name, filters)
             ]
 
-            if include_dimensions:
-                for explore in model.explores:
-                    explore.dimensions = build_dimensions(
-                        client, model.name, explore.name, ignore_hidden_fields
-                    )
-        project = Project(name, [m for m in models if len(m.explores) > 0])
-        return project
-    else:
+    if include_dimensions:
+        for model in models:
+            for explore in model.explores:
+                explore.dimensions = build_dimensions(
+                    client, model.name, explore.name, ignore_hidden_fields
+                )
+
+    # Include empty models when including all explores
+    if include_all_explores:
         project = Project(name, models)
-        return project
+    else:
+        project = Project(name, [m for m in models if len(m.explores) > 0])
+
+    return project
