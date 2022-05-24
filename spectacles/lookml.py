@@ -339,23 +339,20 @@ class Project(LookMlObject):
             # We create an explore "tested" record for those that
             # aren't in the LookML tree.
             distinct_explores = set()
-            if filters is None and model.errors:
-                # Raise name error if there are errors on the model and filters
-                # isn't being passed. We need filters when running the content
-                # validator, which is the only time a model will have errors.
-                raise TypeError(
-                    "The argument 'filters' is required in Content Validator."
-                )
-            elif filters is not None and model.errors:  # appease mypy
-                for error in model.errors:
-                    if is_selected(model.name, error.explore, filters):
-                        distinct_explores.add(error.explore)
-                        errors.append(error.to_dict())
-                model_tested = [
-                    {"model": model.name, "explore": e, "status": "failed"}
-                    for e in distinct_explores
-                ]
-                tested.extend(model_tested)
+
+            for error in model.errors:
+                if filters is not None and not is_selected(
+                    model.name, error.explore, filters
+                ):
+                    continue
+                distinct_explores.add(error.explore)
+                errors.append(error.to_dict())
+
+            model_tested = [
+                {"model": model.name, "explore": e, "status": "failed"}
+                for e in distinct_explores
+            ]
+            tested.extend(model_tested)
 
             for explore in model.explores:
                 if filters is not None and not is_selected(
