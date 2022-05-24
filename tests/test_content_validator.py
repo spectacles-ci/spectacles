@@ -146,6 +146,29 @@ class TestValidateFailIncludeExcludeFolder:
         assert len(validator_errors) == 0
 
 
+class TestValidateFailOnDeletedExplore:
+    """Test the eye_exam Looker project on master for an explore that has been deleted."""
+
+    @pytest.mark.default_cassette("fixture_validator_fail_deleted_explore.yaml")
+    @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
+    @pytest.fixture(scope="class")
+    def validator_errors(self, validator) -> Iterable[List[ContentError]]:
+        filters = ["eye_exam/*"]
+        project = build_project(
+            validator.client,
+            name="eye_exam",
+            filters=filters,
+            include_all_explores=True,
+        )
+        validator.validate(project)
+        errors = project.get_results(validator="content", filters=filters)["errors"]
+        yield errors
+
+    def test_error_from_deleted_explore_should_be_present(self, validator_errors):
+        titles = [error["metadata"]["title"] for error in validator_errors]
+        assert "Users [from deleted explore]" in titles
+
+
 def test_non_existing_excluded_folder_should_raise_exception(looker_client):
     with pytest.raises(SpectaclesException):
         ContentValidator(
