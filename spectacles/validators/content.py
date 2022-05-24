@@ -132,7 +132,7 @@ class ContentValidator:
                 model=model_name, name=explore_name
             )
             model: Optional[Model] = project.get_model(model_name)
-            # Skip errors that are not associated with selected explores
+            # Skip errors that are not associated with selected explores or existing models
             if explore or model:
                 content_id = result[content_type]["id"]
                 content_error = ContentError(
