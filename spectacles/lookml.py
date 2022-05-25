@@ -172,6 +172,7 @@ class Model(LookMlObject):
         self.name = name
         self.project_name = project_name
         self.explores = explores
+        self.errors: List[ValidationError] = []
 
     def __repr__(self):
         return f"{self.__class__.__name__}(name={self.name}, explores={self.explores})"
@@ -189,7 +190,9 @@ class Model(LookMlObject):
     @property
     def errored(self):
         if self.queried:
-            return any(explore.errored for explore in self.explores)
+            return bool(self.errors) or any(
+                explore.errored for explore in self.explores
+            )
         else:
             return None
 
@@ -236,7 +239,7 @@ class Model(LookMlObject):
 
     @property
     def number_of_errors(self):
-        return sum(
+        return len(self.errors) + sum(
             [explore.number_of_errors for explore in self.explores if explore.errored]
         )
 
@@ -322,14 +325,40 @@ class Project(LookMlObject):
             return model_object.get_explore(name)
 
     def get_results(
-        self, validator: str, fail_fast: Optional[bool] = None
+        self,
+        validator: str,
+        fail_fast: Optional[bool] = None,
+        filters: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
         errors: List[Dict[str, Any]] = []
         successes: List[Dict[str, Any]] = []
         tested = []
 
         for model in self.models:
+            # Add model level content validation errors.
+            # We create an explore "tested" record for those that
+            # aren't in the LookML tree.
+            distinct_explores = set()
+
+            for error in model.errors:
+                if filters is not None and not is_selected(
+                    model.name, error.explore, filters
+                ):
+                    continue
+                distinct_explores.add(error.explore)
+                errors.append(error.to_dict())
+
+            model_tested = [
+                {"model": model.name, "explore": e, "status": "failed"}
+                for e in distinct_explores
+            ]
+            tested.extend(model_tested)
+
             for explore in model.explores:
+                if filters is not None and not is_selected(
+                    model.name, explore.name, filters
+                ):
+                    continue
                 status = "passed"
                 if explore.skipped:
                     status = "skipped"
@@ -401,6 +430,7 @@ def build_project(
     filters: Optional[List[str]] = None,
     include_dimensions: bool = False,
     ignore_hidden_fields: bool = False,
+    include_all_explores: bool = False,
 ) -> Project:
     """Creates an object (tree) representation of a LookML project."""
     if filters is None:
@@ -410,7 +440,7 @@ def build_project(
     fields = ["name", "project_name", "explores"]
     for lookmlmodel in client.get_lookml_models(fields=fields):
         model = Model.from_json(lookmlmodel)
-        if model.project_name == name and model.explores:
+        if model.project_name == name:
             models.append(model)
 
     if not models:
@@ -424,18 +454,26 @@ def build_project(
             ),
         )
 
-    for model in models:
-        model.explores = [
-            explore
-            for explore in model.explores
-            if is_selected(model.name, explore.name, filters)
-        ]
+    # Prune to selected explores for non-content validators
+    if not include_all_explores:
+        for model in models:
+            model.explores = [
+                explore
+                for explore in model.explores
+                if is_selected(model.name, explore.name, filters)
+            ]
 
-        if include_dimensions:
+    if include_dimensions:
+        for model in models:
             for explore in model.explores:
                 explore.dimensions = build_dimensions(
                     client, model.name, explore.name, ignore_hidden_fields
                 )
 
-    project = Project(name, [model for model in models if len(model.explores) > 0])
+    # Include empty models when including all explores
+    if include_all_explores:
+        project = Project(name, models)
+    else:
+        project = Project(name, [m for m in models if len(m.explores) > 0])
+
     return project
