@@ -9,6 +9,7 @@ from spectacles.types import JsonDict
 from spectacles.logger import GLOBAL_LOGGER as logger
 from spectacles.exceptions import SpectaclesException, LookerApiError
 
+DEFAULT_API_VERSION = 3.1
 TIMEOUT_SEC = 300
 MAX_ASYNC_CONNECTIONS = 200
 BACKOFF_EXCEPTIONS = (
@@ -56,7 +57,7 @@ class LookerClient:
         client_id: str,
         client_secret: str,
         port: Optional[int] = None,
-        api_version: float = 3.1,
+        api_version: float = DEFAULT_API_VERSION,
     ):
         self.async_client = async_client
         supported_api_versions = [3.1]
