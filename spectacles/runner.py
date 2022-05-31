@@ -12,7 +12,11 @@ from spectacles.validators import (
     LookMLValidator,
 )
 from spectacles.types import JsonDict
-from spectacles.validators.sql import DEFAULT_CHUNK_SIZE
+from spectacles.validators.sql import (
+    DEFAULT_CHUNK_SIZE,
+    DEFAULT_QUERY_CONCURRENCY,
+    DEFAULT_RUNTIME_THRESHOLD,
+)
 from spectacles.exceptions import SpectaclesException
 from spectacles.utils import time_hash
 from spectacles.lookml import CompiledSql, build_project, Explore
@@ -271,9 +275,9 @@ class Runner:
         fail_fast: bool = True,
         incremental: bool = False,
         target: Optional[str] = None,
-        concurrency: int = 10,
+        concurrency: int = DEFAULT_QUERY_CONCURRENCY,
         profile: bool = False,
-        runtime_threshold: int = 5,
+        runtime_threshold: int = DEFAULT_RUNTIME_THRESHOLD,
         chunk_size: int = DEFAULT_CHUNK_SIZE,
         ignore_hidden_fields: bool = False,
     ) -> JsonDict:
@@ -376,7 +380,7 @@ class Runner:
         if not fail_fast and incremental:
             errored_dimensions = project.iter_dimensions(errored=True)
             # For errored dimensions, create dimension tests for the target ref
-            with self.branch_manager(ref=target, ephemeral=True):
+            async with self.branch_manager(ref=target, ephemeral=True):
                 target_ref = self.branch_manager.ref
                 logger.debug("Compiling SQL for dimensions at the target ref")
                 compiled_dimensions = await asyncio.gather(
@@ -411,7 +415,7 @@ class Runner:
     ) -> JsonDict:
         if filters is None:
             filters = ["*/*"]
-        with self.branch_manager(ref):
+        async with self.branch_manager(ref):
             validator = DataTestValidator(self.client)
             logger.info(
                 "Building LookML project hierarchy for project "
@@ -432,7 +436,7 @@ class Runner:
         return results
 
     async def validate_lookml(self, ref: Optional[str], severity: str) -> JsonDict:
-        with self.branch_manager(ref=ref):
+        async with self.branch_manager(ref=ref):
             validator = LookMLValidator(self.client)
             print_header(f"Validating LookML in project {self.project} [{severity}]")
             results = await validator.validate(self.project, severity)
@@ -452,7 +456,7 @@ class Runner:
         if folders is None:
             folders = []
 
-        with self.branch_manager(ref=ref):
+        async with self.branch_manager(ref=ref):
             validator = ContentValidator(
                 self.client,
                 exclude_personal,
@@ -479,7 +483,7 @@ class Runner:
 
         if incremental and (self.branch_manager.branch or self.branch_manager.commit):
             logger.debug("Starting another content validation against the target ref")
-            with self.branch_manager(ref=target):
+            async with self.branch_manager(ref=target):
                 logger.debug(
                     "Building LookML project hierarchy for project "
                     f"'{self.project}' @ {self.branch_manager.ref}"

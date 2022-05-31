@@ -3,7 +3,7 @@ import asyncio
 from collections import defaultdict
 from dataclasses import dataclass
 from tabulate import tabulate
-from typing import ClassVar, List, Optional, Tuple, Iterator, Union
+from typing import ClassVar, List, Optional, Tuple, Iterator
 import pydantic
 from spectacles.client import LookerClient
 from spectacles.lookml import CompiledSql, Dimension, Explore
@@ -15,6 +15,8 @@ from spectacles.types import QueryResult
 
 QUERY_TASK_LIMIT = 250
 DEFAULT_CHUNK_SIZE = 500
+DEFAULT_QUERY_CONCURRENCY = 10
+DEFAULT_RUNTIME_THRESHOLD = 5
 ProfilerTableRow = Tuple[str, float, int, str]
 
 
@@ -129,8 +131,8 @@ class SqlValidator:
     def __init__(
         self,
         client: LookerClient,
-        concurrency: int = 10,
-        runtime_threshold: int = 5,
+        concurrency: int = DEFAULT_QUERY_CONCURRENCY,
+        runtime_threshold: int = DEFAULT_RUNTIME_THRESHOLD,
     ):
         self.client = client
         self.concurrency = concurrency

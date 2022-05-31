@@ -13,7 +13,7 @@ from typing import Callable, List
 import httpx
 from spectacles import __version__
 from spectacles.runner import Runner
-from spectacles.client import LookerClient
+from spectacles.client import DEFAULT_API_VERSION, LookerClient
 from spectacles.exceptions import (
     LookerApiError,
     SpectaclesException,
@@ -423,7 +423,7 @@ def _build_base_subparser() -> argparse.ArgumentParser:
         type=float,
         action=EnvVarAction,
         env_var="LOOKER_API_VERSION",
-        default=3.1,
+        default=DEFAULT_API_VERSION,
         help="The version of the Looker API to use. The default is version 3.1.",
     )
     base_subparser.add_argument(
