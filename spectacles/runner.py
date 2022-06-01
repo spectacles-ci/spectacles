@@ -137,13 +137,19 @@ class LookerBranchManager:
             )
         else:
             logger.debug("Creating temporary branches in imported projects")
+            previously_imported = tuple(mgr.project for mgr in self.import_managers)
             for project in self.imports:
-                import_ref = self.pin_imports.get(project, None)
-                manager = LookerBranchManager(
-                    self.client, project, pin_imports=self.pin_imports
-                )
-                manager(ref=import_ref, ephemeral=True).__enter__()
-                self.import_managers.append(manager)
+                if project not in previously_imported:
+                    import_ref = self.pin_imports.get(project, None)
+                    manager = LookerBranchManager(
+                        self.client, project, pin_imports=self.pin_imports
+                    )
+                    manager(ref=import_ref, ephemeral=True).__enter__()
+                    self.import_managers.append(manager)
+                else:
+                    logger.debug(
+                        f"Skipping project '{project}', which is already imported"
+                    )
 
         logger.indent(-1)
         logger.debug("")
@@ -161,7 +167,20 @@ class LookerBranchManager:
 
         if self.is_temp_branch:
             dev_state = self.history.pop()
-            self.client.checkout_branch(self.project, dev_state.branch)
+            try:
+                self.client.checkout_branch(self.project, dev_state.branch)
+            except LookerApiError as error:
+                if error.status == 422:
+                    logger.debug(
+                        f"Tried to restore '{self.project}' to the initial development "
+                        f"mode branch '{dev_state.branch}', but it no longer exists. "
+                        "Falling back to the first available personal branch"
+                    )
+                    branches = self.client.get_all_branches(self.project)
+                    dev_branches = [b for b in branches if b.startswith("dev-")]
+                    self.client.checkout_branch(self.project, dev_branches[0])
+                else:
+                    raise
             self.client.delete_branch(self.project, self.branch)
 
         for manager in self.import_managers:
@@ -171,7 +190,16 @@ class LookerBranchManager:
             self.update_workspace("production")
         else:
             self.update_workspace("dev")
-            self.client.checkout_branch(self.project, self.init_state.branch)
+            try:
+                self.client.checkout_branch(self.project, self.init_state.branch)
+            except LookerApiError as error:
+                if error.status == 422:
+                    logger.debug(
+                        f"Couldn't restore to initial branch '{self.init_state.branch}' "
+                        "because it no longer exists"
+                    )
+                else:
+                    raise
 
         logger.indent(-1)
         logger.debug("")
