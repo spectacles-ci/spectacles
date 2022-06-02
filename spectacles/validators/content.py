@@ -60,7 +60,8 @@ class ContentValidator:
                 continue
 
             # Sometimes the content no longer exists, in which case the folder is None
-            folder_id: Optional[str] = content[content_type]["folder"].get("id")
+            folder = content[content_type].get("folder")
+            folder_id: Optional[str] = folder.get("id") if folder else None
             # If exclude_personal isn't specified, personal_folders list is empty
             if not is_folder_selected(folder_id):
                 continue
