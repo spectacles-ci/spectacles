@@ -1,10 +1,12 @@
-from typing import List, Tuple, Callable
+import asyncio
+from typing import List, Tuple, Callable, Any
 import os
 import time
+import httpx
+import respx
 import inspect
 import pytest
-from unittest.mock import patch, Mock
-import requests
+from unittest.mock import AsyncMock, patch
 from spectacles.client import LookerClient, AccessToken
 from spectacles.exceptions import SpectaclesException, LookerApiError
 
@@ -39,20 +41,6 @@ def get_client_method_names() -> List[str]:
     ):
         client_methods.remove(skip_method)
     return client_methods
-
-
-@pytest.fixture
-def mock_401_response():
-    mock_request = Mock(spec=requests.PreparedRequest)
-    mock_request.method = "POST"
-    mock_request.url = "https://spectacles.looker.com"
-    mock_response = Mock(spec=requests.Response)
-    mock_response.status_code = 401
-    mock_response.raise_for_status.side_effect = requests.exceptions.HTTPError(
-        "An HTTP error occurred.", response=mock_response
-    )
-    mock_response.request = mock_request
-    return mock_response
 
 
 @pytest.fixture
@@ -99,35 +87,43 @@ def client_kwargs():
 
 
 @pytest.mark.vcr
-def test_get_looker_release_version_should_return_correct_version(looker_client):
+def test_get_looker_release_version_should_return_correct_version(
+    looker_client: LookerClient,
+):
     version = looker_client.get_looker_release_version()
-    assert version == "22.4.29"
+    assert version == "22.8.32"
 
 
 @pytest.mark.vcr(filter_post_data_parameters=["client_id", "client_secret"])
-def test_bad_authentication_request_should_raise_looker_api_error():
-    with pytest.raises(LookerApiError):
-        LookerClient(
-            base_url="https://spectacles.looker.com",
-            client_id=os.environ.get("LOOKER_CLIENT_ID"),
-            client_secret="xxxxxxxxxxxxxx",
-        )
+async def test_bad_authentication_request_should_raise_looker_api_error():
+    async with httpx.AsyncClient(trust_env=False) as async_client:
+        with pytest.raises(LookerApiError):
+            LookerClient(
+                async_client=async_client,
+                base_url="https://spectacles.looker.com",
+                client_id=os.environ.get("LOOKER_CLIENT_ID"),
+                client_secret="xxxxxxxxxxxxxx",
+            )
 
 
 @pytest.mark.vcr(filter_post_data_parameters=["client_id", "client_secret"])
-def test_unsupported_api_version_should_raise_error():
-    with pytest.raises(SpectaclesException):
-        LookerClient(
-            base_url="https://spectacles.looker.com",
-            client_id=os.environ.get("LOOKER_CLIENT_ID"),
-            client_secret=os.environ.get("LOOKER_CLIENT_SECRET"),
-            api_version=3.0,
-        )
+async def test_unsupported_api_version_should_raise_error():
+    async with httpx.AsyncClient(trust_env=False) as async_client:
+        with pytest.raises(SpectaclesException):
+            LookerClient(
+                async_client=async_client,
+                base_url="https://spectacles.looker.com",
+                client_id=os.environ.get("LOOKER_CLIENT_ID"),
+                client_secret=os.environ.get("LOOKER_CLIENT_SECRET"),
+                api_version=3.0,
+            )
 
 
 @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
-def test_create_query_with_dimensions_should_return_certain_fields(looker_client):
-    query = looker_client.create_query(
+async def test_create_query_with_dimensions_should_return_certain_fields(
+    looker_client: LookerClient,
+):
+    query = await looker_client.create_query(
         model="eye_exam", explore="users", dimensions=["id", "age"]
     )
     assert set(("id", "share_url")) <= set(query.keys())
@@ -137,8 +133,12 @@ def test_create_query_with_dimensions_should_return_certain_fields(looker_client
 
 
 @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
-def test_create_query_without_dimensions_should_return_certain_fields(looker_client):
-    query = looker_client.create_query(model="eye_exam", explore="users", dimensions=[])
+async def test_create_query_without_dimensions_should_return_certain_fields(
+    looker_client: LookerClient,
+):
+    query = await looker_client.create_query(
+        model="eye_exam", explore="users", dimensions=[]
+    )
     assert set(("id", "share_url")) <= set(query.keys())
     assert int(query["limit"]) == 0
     assert query["fields"] is None
@@ -146,28 +146,53 @@ def test_create_query_without_dimensions_should_return_certain_fields(looker_cli
     assert query["model"] == "eye_exam"
 
 
-@patch("spectacles.client.requests.Session.request")
+@patch("spectacles.client.LookerClient.request")
 @pytest.mark.parametrize("method_name", get_client_method_names())
-def test_bad_requests_should_raise_looker_api_errors(
-    mock_request, method_name, looker_client, client_kwargs, mock_401_response
+async def test_bad_requests_should_raise_looker_api_errors(
+    mock_request: AsyncMock,
+    method_name: str,
+    looker_client: LookerClient,
+    client_kwargs: dict[str, dict[str, Any]],
 ):
     """Tests each method of LookerClient for how it handles a 401 response"""
-    mock_request.return_value = mock_401_response
+    response = httpx.Response(
+        401, request=httpx.Request("POST", "https://spectacles.looker.com")
+    )
+    mock_request.return_value = response
     client_method = getattr(looker_client, method_name)
     with pytest.raises(LookerApiError):
-        client_method(**client_kwargs[method_name])
+        if client_method.__name__ == "get_looker_release_version":
+            # This is one method where we don't use LookerClient.request, so have to
+            # patch httpx.get directly instead
+            with patch("spectacles.client.httpx.get", return_value=response):
+                client_method(**client_kwargs[method_name])
+        elif asyncio.iscoroutinefunction(client_method):
+            await client_method(**client_kwargs[method_name])
+        else:
+            client_method(**client_kwargs[method_name])
 
 
-@patch("spectacles.client.requests.Session.post")
-def test_authenticate_should_set_session_headers(mock_post, monkeypatch):
-    mock_looker_version = Mock(spec=LookerClient.get_looker_release_version)
-    mock_looker_version.return_value("1.2.3")
-    monkeypatch.setattr(LookerClient, "get_looker_release_version", mock_looker_version)
-
-    mock_post_response = Mock(spec=requests.Response)
-    mock_post_response.json.return_value = dict(
-        access_token="test_access_token", token_type="Bearer", expires_in=3600
+@respx.mock(base_url="https://spectacles.looker.com:19999/api/3.1")
+async def test_authenticate_should_set_session_headers(respx_mock: respx.MockRouter):
+    respx_mock.post("/login").mock(
+        return_value=httpx.Response(
+            status_code=200,
+            json={
+                "access_token": "test_access_token",
+                "token_type": "Bearer",
+                "expires_in": 3600,
+            },
+        )
     )
-    mock_post.return_value = mock_post_response
-    client = LookerClient("base_url", "client_id", "client_secret")
-    assert client.session.headers == {"Authorization": "token test_access_token"}
+    respx_mock.get("/versions").mock(
+        return_value=httpx.Response(
+            status_code=200,
+            json={"looker_release_version": "0.0.0"},
+        )
+    )
+
+    async with httpx.AsyncClient(trust_env=False) as async_client:
+        client = LookerClient(
+            async_client, "https://spectacles.looker.com", "client_id", "client_secret"
+        )
+        assert client.async_client.headers["Authorization"] == "token test_access_token"
