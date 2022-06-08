@@ -1,8 +1,10 @@
-from typing import Iterable
+import asyncio
+from typing import AsyncIterable
 import os
 import json
 from github import Github as GitHub, Repository
 import pytest
+import httpx
 from spectacles.client import LookerClient
 from spectacles.exceptions import SqlError
 from spectacles.lookml import Project, Model, Explore, Dimension
@@ -22,6 +24,11 @@ def vcr_config():
     return {"filter_headers": ["Authorization"]}
 
 
+@pytest.fixture(scope="session")
+def event_loop():
+    return asyncio.get_event_loop()
+
+
 @pytest.mark.vcr(
     filter_post_data_parameters=["client_id", "client_secret"],
     record_mode="all",
@@ -29,14 +36,16 @@ def vcr_config():
     decode_compressed_response=True,
 )
 @pytest.fixture(scope="session")
-def looker_client() -> Iterable[LookerClient]:
-    client = LookerClient(
-        base_url="https://spectacles.looker.com",
-        client_id=os.environ.get("LOOKER_CLIENT_ID", ""),
-        client_secret=os.environ.get("LOOKER_CLIENT_SECRET", ""),
-    )
-    client.update_workspace("production")
-    yield client
+async def looker_client() -> AsyncIterable[LookerClient]:
+    async with httpx.AsyncClient(trust_env=False) as async_client:
+        client = LookerClient(
+            async_client=async_client,
+            base_url="https://spectacles.looker.com",
+            client_id=os.environ.get("LOOKER_CLIENT_ID", ""),
+            client_secret=os.environ.get("LOOKER_CLIENT_SECRET", ""),
+        )
+        await client.update_workspace("production")
+        yield client
 
 
 @pytest.mark.vcr(decode_compressed_response=True)
