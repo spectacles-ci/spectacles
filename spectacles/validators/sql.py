@@ -58,8 +58,8 @@ class Query:
     def divide(self) -> Iterator[Query]:
         if not self.errored:
             raise TypeError("Query.errored must be True to divide")
-        elif len(self.dimensions) == 1:
-            raise ValueError("Can't divide, Query has only one dimension")
+        if len(self.dimensions) < 2:
+            raise ValueError("Query must have at least 2 dimensions to divide")
 
         midpoint = len(self.dimensions) // 2
         if midpoint > self.chunk_size:
