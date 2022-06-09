@@ -1,10 +1,11 @@
-import asyncio
-from typing import AsyncIterable
+from typing import AsyncIterable, Iterable
 import os
 import json
 from github import Github as GitHub, Repository
 import pytest
 import httpx
+import respx
+from respx.fixtures import session_event_loop as event_loop  # noqa: F401
 from spectacles.client import LookerClient
 from spectacles.exceptions import SqlError
 from spectacles.lookml import Project, Model, Explore, Dimension
@@ -24,11 +25,6 @@ def vcr_config():
     return {"filter_headers": ["Authorization"]}
 
 
-@pytest.fixture(scope="session")
-def event_loop():
-    return asyncio.get_event_loop()
-
-
 @pytest.mark.vcr(
     filter_post_data_parameters=["client_id", "client_secret"],
     record_mode="all",
@@ -36,7 +32,7 @@ def event_loop():
     decode_compressed_response=True,
 )
 @pytest.fixture(scope="session")
-async def looker_client() -> AsyncIterable[LookerClient]:
+async def looker_client(event_loop) -> AsyncIterable[LookerClient]:  # noqa: F811
     async with httpx.AsyncClient(trust_env=False) as async_client:
         client = LookerClient(
             async_client=async_client,
@@ -46,6 +42,36 @@ async def looker_client() -> AsyncIterable[LookerClient]:
         )
         await client.update_workspace("production")
         yield client
+
+
+@pytest.fixture
+def mocked_api() -> Iterable[respx.MockRouter]:
+    with respx.mock(
+        base_url="https://spectacles.looker.com:19999/api/3.1", assert_all_called=False
+    ) as respx_mock:
+        respx_mock.post("/login", name="login").mock(
+            return_value=httpx.Response(
+                status_code=200,
+                json={
+                    "access_token": "<ACCESS TOKEN>",
+                    "token_type": "Bearer",
+                    "expires_in": 3600,
+                },
+            )
+        )
+        respx_mock.get("/versions", name="get_looker_api_version").mock(
+            return_value=httpx.Response(
+                status_code=200,
+                json={"looker_release_version": "0.0.0"},
+            )
+        )
+        respx_mock.post("/versions", name="queries").mock(
+            return_value=httpx.Response(
+                status_code=200,
+                json={"looker_release_version": "0.0.0"},
+            )
+        )
+        yield respx_mock
 
 
 @pytest.mark.vcr(decode_compressed_response=True)

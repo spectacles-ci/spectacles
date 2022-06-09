@@ -2,7 +2,6 @@ import asyncio
 from typing import List, Tuple, Callable, Any
 import time
 import httpx
-import respx
 import inspect
 import pytest
 from unittest.mock import AsyncMock, patch
@@ -111,27 +110,9 @@ async def test_bad_requests_should_raise_looker_api_errors(
             client_method(**client_kwargs[method_name])
 
 
-@respx.mock(base_url="https://spectacles.looker.com:19999/api/3.1")
-async def test_authenticate_should_set_session_headers(respx_mock: respx.MockRouter):
-    respx_mock.post("/login").mock(
-        return_value=httpx.Response(
-            status_code=200,
-            json={
-                "access_token": "test_access_token",
-                "token_type": "Bearer",
-                "expires_in": 3600,
-            },
-        )
-    )
-    respx_mock.get("/versions").mock(
-        return_value=httpx.Response(
-            status_code=200,
-            json={"looker_release_version": "0.0.0"},
-        )
-    )
-
+async def test_authenticate_should_set_session_headers(mocked_api):
     async with httpx.AsyncClient(trust_env=False) as async_client:
         client = LookerClient(
             async_client, "https://spectacles.looker.com", "client_id", "client_secret"
         )
-        assert client.async_client.headers["Authorization"] == "token test_access_token"
+        assert client.async_client.headers["Authorization"] == "token <ACCESS TOKEN>"
