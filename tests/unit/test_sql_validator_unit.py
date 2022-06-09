@@ -226,8 +226,63 @@ async def test_get_query_results_works(
 
 
 @pytest.mark.parametrize("fail_fast", (True, False))
-async def test_get_query_results_error_query_is_divided(fail_fast: bool):
-    ...
+@patch.object(Query, "divide")
+async def test_get_query_results_error_query_is_divided(
+    mock_divide: Mock,
+    fail_fast: bool,
+    mocked_api: respx.MockRouter,
+    query: Query,
+    validator: SqlValidator,
+    queries_to_run: asyncio.Queue,
+    running_queries: asyncio.Queue,
+    query_slot: asyncio.Semaphore,
+):
+    query_task_id = "abcdef12345"
+    message = "The users table does not exist"
+    mocked_api.get("query_tasks/multi_results", name="get_query_results").respond(
+        200,
+        json={
+            query_task_id: {
+                "status": "error",
+                "data": {
+                    "id": query_task_id,
+                    "runtime": 460.0,
+                    "sql": "SELECT * FROM users",
+                    "errors": [
+                        {"message": message, "sql_error_loc": {"line": 1, "column": 1}}
+                    ],
+                },
+            }
+        },
+    )
+    # Need more than one dimension so the query will be divided
+    query.dimensions = (query.dimensions[0], query.dimensions[0])
+    validator._task_to_query[query_task_id] = query
+
+    task = asyncio.create_task(
+        validator._get_query_results(
+            queries_to_run, running_queries, fail_fast, query_slot
+        )
+    )
+
+    await queries_to_run.put(query)
+    await running_queries.put(query_task_id)
+    await running_queries.join()
+    task.cancel()
+
+    with pytest.raises(asyncio.CancelledError):
+        await asyncio.gather(task)
+
+    mocked_api["get_query_results"].calls.assert_called_once()
+    mock_divide.assert_not_called() if fail_fast else mock_divide.assert_called_once()
+    assert query.errored
+
+    # If not fail fast, the explore won't be marked as queried because we haven't yet
+    # queried the individual dimensions
+    if fail_fast:
+        assert query.explore.queried
+        assert query.explore.errored
+        assert query.explore.errors[0].message == message
 
 
 @pytest.mark.parametrize("fail_fast", (True, False))
