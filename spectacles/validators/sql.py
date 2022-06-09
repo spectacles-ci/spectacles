@@ -241,6 +241,7 @@ class SqlValidator:
         try:
             # End execution if a sentinel is received from the queue
             while (query := await queries_to_run.get()) is not None:
+                logger.debug("Waiting to acquire a query slot")
                 await query_slot.acquire()
                 await query.create(self.client)
                 logger.debug(f"Running query {query!r} [qid={query.query_id}]")
@@ -309,6 +310,7 @@ class SqlValidator:
                         if query_result.status == "complete":
                             query_slot.release()
                             query.errored = False
+                            query.explore.queried = True
                             queries_to_run.task_done()
                         else:
                             query_slot.release()
