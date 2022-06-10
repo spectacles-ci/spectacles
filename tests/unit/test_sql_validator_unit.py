@@ -518,3 +518,58 @@ async def test_search_works_with_error_query(
         assert explore.errors[0].message == message
     else:
         assert all(d.errors[0].message == message for d in explore.dimensions)
+
+
+@pytest.mark.parametrize("fail_fast", (True, False))
+async def test_search_handles_exceptions_raised_while_running_queries(
+    fail_fast: bool,
+    mocked_api: respx.MockRouter,
+    validator: SqlValidator,
+    explore: Explore,
+    dimension: Dimension,
+):
+    explore.dimensions = [dimension, dimension]
+    explores = (explore,)
+
+    mocked_api.post(
+        "queries", params={"fields": "id,share_url"}, name="create_query"
+    ).mock(side_effect=(httpx.Response(404)))
+
+    with pytest.raises(LookerApiError):
+        await validator.search(explores, fail_fast)
+
+    task_names = (task.get_name() for task in asyncio.all_tasks())
+    assert "run_query" not in task_names
+    assert "get_query_results" not in task_names
+
+
+@pytest.mark.parametrize("fail_fast", (True, False))
+async def test_search_handles_exceptions_raised_while_getting_query_results(
+    fail_fast: bool,
+    mocked_api: respx.MockRouter,
+    validator: SqlValidator,
+    explore: Explore,
+    dimension: Dimension,
+):
+    explore.dimensions = [dimension, dimension]
+    explores = (explore,)
+    query_id = 12345
+    query_task_id = "abcdef12345"
+    explore_url = "https://spectacles.looker.com/x"
+
+    mocked_api.post(
+        "queries", params={"fields": "id,share_url"}, name="create_query"
+    ).respond(200, json={"id": query_id, "share_url": explore_url})
+    mocked_api.post(
+        "query_tasks",
+        params={"fields": "id", "cache": "false"},
+        name="create_query_task",
+    ).respond(200, json={"id": query_task_id})
+    mocked_api.get("query_tasks/multi_results", name="get_query_results").respond(404)
+
+    with pytest.raises(LookerApiError):
+        await validator.search(explores, fail_fast)
+
+    task_names = (task.get_name() for task in asyncio.all_tasks())
+    assert "run_query" not in task_names
+    assert "get_query_results" not in task_names
