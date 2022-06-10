@@ -169,7 +169,7 @@ class SqlValidator:
 
     async def search(
         self, explores: tuple[Explore, ...], fail_fast: bool, profile: bool = False
-    ):
+    ) -> None:
         queries_to_run: asyncio.Queue[Optional[Query]] = asyncio.Queue()
         running_queries: asyncio.Queue[str] = asyncio.Queue()
         query_slot = asyncio.Semaphore(self.concurrency)
