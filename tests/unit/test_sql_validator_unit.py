@@ -334,5 +334,31 @@ async def test_get_query_results_passing_query_is_not_divided(
     assert query in validator._long_running_queries
 
 
-async def test_get_query_results_handles_exceptions_raised_within():
-    ...
+@pytest.mark.parametrize("fail_fast", (True, False))
+async def test_get_query_results_handles_exceptions_raised_within(
+    fail_fast: bool,
+    mocked_api: respx.MockRouter,
+    validator: SqlValidator,
+    queries_to_run: asyncio.Queue,
+    running_queries: asyncio.Queue,
+    query_slot: asyncio.Semaphore,
+):
+    query_task_id = "abcdef12345"
+    mocked_api.get("query_tasks/multi_results", name="get_query_results").respond(404)
+
+    task = asyncio.create_task(
+        validator._get_query_results(
+            queries_to_run, running_queries, fail_fast, query_slot
+        )
+    )
+
+    await running_queries.put(query_task_id)
+    # Normally we'd let the run_query task pick this up,
+    # but since it's not running we'll get it manually
+    await queries_to_run.get()
+    await running_queries.join()
+
+    with pytest.raises(LookerApiError):
+        await asyncio.gather(task)
+
+    mocked_api["get_query_results"].calls.assert_called_once()
