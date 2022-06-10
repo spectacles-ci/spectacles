@@ -7,10 +7,11 @@ import respx
 from spectacles.validators.sql import Query, SqlValidator
 from spectacles.lookml import Explore, Dimension
 from spectacles.exceptions import LookerApiError
+from spectacles.client import LookerClient
 
 
 @pytest.fixture
-def validator(looker_client) -> SqlValidator:
+def validator(looker_client: LookerClient) -> SqlValidator:
     # TODO: Make sure we're mocking the login calls on client instantiation
     return SqlValidator(looker_client)
 
