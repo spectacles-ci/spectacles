@@ -363,3 +363,158 @@ async def test_get_query_results_handles_exceptions_raised_within(
         await asyncio.gather(task)
 
     mocked_api["get_query_results"].calls.assert_called_once()
+
+
+@pytest.mark.parametrize("fail_fast", (True, False))
+async def test_search_works_with_passing_query(
+    fail_fast: bool,
+    mocked_api: respx.MockRouter,
+    validator: SqlValidator,
+    explore: Explore,
+    dimension: Dimension,
+):
+    explore.dimensions = [dimension, dimension]
+    explores = (explore,)
+
+    query_id = 12345
+    query_task_id = "abcdef12345"
+    explore_url = "https://spectacles.looker.com/x"
+
+    mocked_api.post(
+        "queries", params={"fields": "id,share_url"}, name="create_query"
+    ).respond(200, json={"id": query_id, "share_url": explore_url})
+    mocked_api.post(
+        "query_tasks",
+        params={"fields": "id", "cache": "false"},
+        name="create_query_task",
+    ).respond(200, json={"id": query_task_id})
+    mocked_api.get("query_tasks/multi_results", name="get_query_results").respond(
+        200,
+        json={
+            query_task_id: {
+                "status": "complete",
+                "data": {
+                    "id": query_task_id,
+                    "runtime": 460.0,
+                    "sql": "SELECT * FROM users",
+                },
+            }
+        },
+    )
+
+    await validator.search(explores, fail_fast)
+
+    mocked_api["create_query"].calls.assert_called_once()
+    mocked_api["create_query_task"].calls.assert_called_once()
+    mocked_api["get_query_results"].calls.assert_called_once()
+
+
+@pytest.mark.parametrize("fail_fast", (True, False))
+async def test_search_works_with_error_query(
+    fail_fast: bool,
+    mocked_api: respx.MockRouter,
+    validator: SqlValidator,
+    explore: Explore,
+    dimension: Dimension,
+):
+    explore.dimensions = [dimension, dimension]
+    explores = (explore,)
+
+    explore_url = "https://spectacles.looker.com/x"
+    message = "The users table does not exist"
+
+    mocked_api.post(
+        "queries", params={"fields": "id,share_url"}, name="create_query"
+    ).mock(
+        side_effect=(
+            httpx.Response(200, json={"id": 1, "share_url": explore_url}),
+            httpx.Response(200, json={"id": 2, "share_url": explore_url}),
+            httpx.Response(200, json={"id": 3, "share_url": explore_url}),
+        )
+    )
+
+    mocked_api.post(
+        "query_tasks",
+        params={"fields": "id", "cache": "false"},
+        name="create_query_task",
+    ).mock(
+        side_effect=(
+            httpx.Response(200, json={"id": "abcdef1"}),
+            httpx.Response(200, json={"id": "abcdef2"}),
+            httpx.Response(200, json={"id": "abcdef3"}),
+        )
+    )
+
+    mocked_api.get("query_tasks/multi_results", name="get_query_results").mock(
+        side_effect=(
+            httpx.Response(
+                200,
+                json={
+                    "abcdef1": {
+                        "status": "error",
+                        "data": {
+                            "id": "abcdef1",
+                            "runtime": 2.0,
+                            "sql": "SELECT * FROM users",
+                            "errors": [
+                                {
+                                    "message": message,
+                                    "sql_error_loc": {"line": 1, "column": 1},
+                                }
+                            ],
+                        },
+                    }
+                },
+            ),
+            httpx.Response(
+                200,
+                json={
+                    "abcdef2": {
+                        "status": "error",
+                        "data": {
+                            "id": "abcdef2",
+                            "runtime": 1.0,
+                            "sql": "SELECT age FROM users",
+                            "errors": [
+                                {
+                                    "message": message,
+                                    "sql_error_loc": {"line": 1, "column": 1},
+                                }
+                            ],
+                        },
+                    },
+                    "abcdef3": {
+                        "status": "error",
+                        "data": {
+                            "id": "abcdef3",
+                            "runtime": 1.0,
+                            "sql": "SELECT user_id FROM users",
+                            "errors": [
+                                {
+                                    "message": message,
+                                    "sql_error_loc": {"line": 1, "column": 1},
+                                }
+                            ],
+                        },
+                    },
+                },
+            ),
+        )
+    )
+
+    await validator.search(explores, fail_fast)
+
+    if fail_fast:
+        mocked_api["create_query"].calls.assert_called_once()
+        mocked_api["create_query_task"].calls.assert_called_once()
+        mocked_api["get_query_results"].calls.assert_called_once()
+    else:
+        assert mocked_api["create_query"].calls.call_count == 3
+        assert mocked_api["create_query_task"].calls.call_count == 3
+        assert mocked_api["get_query_results"].calls.call_count == 2
+
+    assert explore.errored
+    if fail_fast:
+        assert explore.errors[0].message == message
+    else:
+        assert all(d.errors[0].message == message for d in explore.dimensions)
