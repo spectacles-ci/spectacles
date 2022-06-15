@@ -26,7 +26,7 @@ class QueryError(BaseModel):
 
     message: str
     message_details: Optional[str]
-    sql_error_loc: ErrorSqlLocation
+    sql_error_loc: Optional[ErrorSqlLocation]
 
     @property
     def full_message(self) -> str:
@@ -36,8 +36,8 @@ class QueryError(BaseModel):
 class QueryResultData(BaseModel):
     id: str
     runtime: float
-    sql: str
-    errors: Optional[Tuple[QueryError]]
+    sql: Optional[str]
+    errors: Optional[Tuple[QueryError, ...]]
 
 
 class ExpiredQueryResultData(BaseModel):
@@ -63,13 +63,13 @@ class QueryResult(BaseModel, use_enum_values=True):
         return self.data.runtime
 
     @property
-    def sql(self) -> str:
+    def sql(self) -> Optional[str]:
         if not isinstance(self.data, QueryResultData):
             raise TypeError("This query result doesn't contain any data")
         return self.data.sql
 
     @property
-    def errors(self) -> Tuple[QueryError]:
+    def errors(self) -> Tuple[QueryError, ...]:
         if not isinstance(self.data, QueryResultData):
             raise TypeError("This query result doesn't contain any data")
         elif self.data.errors is None:
