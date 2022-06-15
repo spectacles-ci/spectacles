@@ -2,6 +2,7 @@ from __future__ import annotations
 import asyncio
 from collections import defaultdict
 from dataclasses import dataclass
+import signal
 from tabulate import tabulate
 from typing import ClassVar, List, Optional, Tuple, Iterator
 import pydantic
@@ -187,6 +188,16 @@ class SqlValidator:
             ),
         )
 
+        # Register a signal handler that cancels any running queries
+        event_loop = asyncio.get_running_loop()
+        event_loop.add_signal_handler(
+            signal.SIGINT,
+            # We have to create a task because the signal handler can't be a coro
+            lambda queue=running_queries, workers=workers: asyncio.create_task(
+                self._shutdown(queue, workers)
+            ),
+        )
+
         try:
             for explore in explores:
                 queries_to_run.put_nowait(Query(explore, tuple(explore.dimensions)))
@@ -195,31 +206,9 @@ class SqlValidator:
             await queries_to_run.join()
             await running_queries.join()
             logger.debug("Successfully joined all queues")
-        except KeyboardInterrupt:
-            logger.info(
-                "\n\n" + "Please wait, asking Looker to cancel any running queries..."
-            )
-            task_ids = []
-            while not running_queries.empty():
-                task_id = running_queries.get_nowait()
-                task_ids.append(task_id)
-                await self.client.cancel_query_task(task_id)
-            if task_ids:
-                message = (
-                    f"Attempted to cancel {len(task_ids)} running "
-                    f"{'query' if len(task_ids) == 1 else 'queries'}."
-                )
-            else:
-                message = (
-                    "No queries were running at the time so nothing was cancelled."
-                )
-            raise SpectaclesException(
-                name="validation-keyboard-interrupt",
-                title="SQL validation was manually interrupted.",
-                detail=message,
-            )
         finally:
             # Shut down the workers gracefully
+            logger.debug("Shutting down workers")
             for worker in workers:
                 worker.cancel()
             results = await asyncio.gather(*workers, return_exceptions=True)
@@ -231,6 +220,27 @@ class SqlValidator:
 
         if profile:
             print_profile_results(self._long_running_queries, self.runtime_threshold)
+
+    async def _shutdown(
+        self, queue: asyncio.Queue, tasks: tuple[asyncio.Task, asyncio.Task]
+    ) -> None:
+        logger.info("\nPlease wait, asking Looker to cancel any running queries...")
+        task_ids = []
+        while not queue.empty():
+            task_id = queue.get_nowait()
+            task_ids.append(task_id)
+            self.client.cancel_query_task(task_id)
+
+        running_tasks = [
+            t for t in asyncio.all_tasks() if t is not asyncio.current_task()
+        ]
+
+        [task.cancel() for task in running_tasks]
+
+        logger.info(f"Cancelling {len(running_tasks)} outstanding tasks")
+        await asyncio.gather(*running_tasks, return_exceptions=True)
+
+        asyncio.get_running_loop().stop()
 
     async def _run_query(
         self,
