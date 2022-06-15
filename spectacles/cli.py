@@ -182,7 +182,7 @@ def handle_exceptions(function: Callable) -> Callable:
                 + "\n"
             )
             sys.exit(error.exit_code)
-        except KeyboardInterrupt as error:
+        except (KeyboardInterrupt) as error:
             logger.debug(error, exc_info=True)
             logger.info("Spectacles was manually interrupted.")
             sys.exit(1)
@@ -219,10 +219,10 @@ def process_pin_imports(input: List[str]) -> dict:
 @handle_exceptions
 def main():
     """Runs main function. This is the entry point."""
-    if sys.version_info < (3, 7):
+    if sys.version_info < (3, 8):
         raise SpectaclesException(
             name="insufficient-python-version",
-            title="Spectacles requires Python 3.7 or higher.",
+            title="Spectacles requires Python 3.8 or higher.",
             detail="The current Python version is %s." % platform.python_version(),
         )
 
