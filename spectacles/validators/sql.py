@@ -321,6 +321,11 @@ class SqlValidator:
                                 explore = query.explore
                                 explore.queried = True
                                 for error in query_result.get_valid_errors():
+                                    line_number = (
+                                        error.sql_error_loc.line
+                                        if error.sql_error_loc
+                                        else None
+                                    )
                                     explore.errors.append(
                                         SqlError(
                                             model=explore.model_name,
@@ -328,7 +333,7 @@ class SqlValidator:
                                             dimension=None,
                                             sql=query_result.sql,
                                             message=error.full_message,
-                                            line_number=error.sql_error_loc.line,
+                                            line_number=line_number,
                                             explore_url=query.explore_url,
                                         )
                                     )
@@ -345,6 +350,11 @@ class SqlValidator:
                                 dimension = query.dimensions[0]
                                 dimension.queried = True
                                 for error in query_result.get_valid_errors():
+                                    line_number = (
+                                        error.sql_error_loc.line
+                                        if error.sql_error_loc
+                                        else None
+                                    )
                                     dimension.errors.append(
                                         SqlError(
                                             model=dimension.model_name,
@@ -352,7 +362,7 @@ class SqlValidator:
                                             dimension=dimension.name,
                                             sql=query_result.sql,
                                             message=error.full_message,
-                                            line_number=error.sql_error_loc.line,
+                                            line_number=line_number,
                                             lookml_url=dimension.url,
                                             explore_url=query.explore_url,
                                         )

@@ -10,13 +10,15 @@ from spectacles.client import LookerClient
 from spectacles.exceptions import SqlError
 from spectacles.lookml import Project, Model, Explore, Dimension
 from utils import load_resource
+import vcr
+from pathlib import Path
 
 
 def filter_access_token(response):
-    if "access_token" in response["body"]["string"].decode():
-        body = json.loads(response["body"]["string"])
-        del body["access_token"]
-        response["body"]["string"] = json.dumps(body)
+    if "access_token" in response["content"]:
+        body = json.loads(response["content"])
+        body["access_token"] = "<Access token filtered from cassette>"
+        response["content"] = json.dumps(body)
     return response
 
 
@@ -25,23 +27,29 @@ def vcr_config():
     return {"filter_headers": ["Authorization"]}
 
 
-@pytest.mark.vcr(
-    filter_post_data_parameters=["client_id", "client_secret"],
-    record_mode="all",
-    before_record_response=filter_access_token,
-    decode_compressed_response=True,
-)
 @pytest.fixture(scope="session")
 async def looker_client(event_loop) -> AsyncIterable[LookerClient]:  # noqa: F811
-    async with httpx.AsyncClient(trust_env=False) as async_client:
-        client = LookerClient(
-            async_client=async_client,
-            base_url="https://spectacles.looker.com",
-            client_id=os.environ.get("LOOKER_CLIENT_ID", ""),
-            client_secret=os.environ.get("LOOKER_CLIENT_SECRET", ""),
-        )
-        await client.update_workspace("production")
-        yield client
+    with vcr.use_cassette(
+        path=str(
+            Path(__file__).parent
+            / "vcr"
+            / "cassettes"
+            / "fixtures"
+            / "looker_client.yaml"
+        ),
+        filter_post_data_parameters=["client_id", "client_secret"],
+        filter_headers=["Authorization"],
+        before_record_response=filter_access_token,
+    ):
+        async with httpx.AsyncClient(trust_env=False) as async_client:
+            client = LookerClient(
+                async_client=async_client,
+                base_url="https://spectacles.looker.com",
+                client_id=os.environ.get("LOOKER_CLIENT_ID", ""),
+                client_secret=os.environ.get("LOOKER_CLIENT_SECRET", ""),
+            )
+            await client.update_workspace("production")
+            yield client
 
 
 @pytest.fixture
