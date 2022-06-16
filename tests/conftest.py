@@ -1,7 +1,8 @@
 from typing import AsyncIterable, Iterable
 import os
 import json
-from github import Github as GitHub, Repository
+from github import Github as GitHub
+from github.Repository import Repository
 import pytest
 import httpx
 import respx
@@ -15,10 +16,14 @@ from pathlib import Path
 
 
 def filter_access_token(response):
-    if "access_token" in response["content"]:
+    if "content" in response and "access_token" in response["content"]:
         body = json.loads(response["content"])
         body["access_token"] = "<Access token filtered from cassette>"
         response["content"] = json.dumps(body)
+    elif "body" in response and "access_token" in response["body"]["string"].decode():
+        body = json.loads(response["body"]["string"].decode())
+        body["access_token"] = "<Access token filtered from cassette>"
+        response["body"]["string"] = json.dumps(body).encode()
     return response
 
 
@@ -82,13 +87,24 @@ def mocked_api() -> Iterable[respx.MockRouter]:
         yield respx_mock
 
 
-@pytest.mark.vcr(decode_compressed_response=True)
-@pytest.fixture
-def remote_repo() -> Repository:
+@pytest.fixture(scope="module")
+def remote_repo() -> Iterable[Repository]:
     access_token = os.environ.get("GITHUB_ACCESS_TOKEN")
-    client = GitHub(access_token)
-    repo = client.get_repo("spectacles-ci/eye-exam")
-    yield repo
+    with vcr.use_cassette(
+        path=str(
+            Path(__file__).parent
+            / "vcr"
+            / "cassettes"
+            / "fixtures"
+            / "remote_repo.yaml"
+        ),
+        filter_headers=["Authorization"],
+        before_record_response=filter_access_token,
+        decode_compressed_response=True,
+    ):
+        client = GitHub(access_token)
+        repo = client.get_repo("spectacles-ci/eye-exam")
+        yield repo
 
 
 @pytest.fixture
