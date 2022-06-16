@@ -36,7 +36,7 @@ class QueryError(BaseModel):
 class QueryResultData(BaseModel):
     id: str
     runtime: float
-    sql: Optional[str]
+    sql: str
     errors: Optional[Tuple[QueryError, ...]]
 
 
@@ -63,7 +63,7 @@ class QueryResult(BaseModel, use_enum_values=True):
         return self.data.runtime
 
     @property
-    def sql(self) -> Optional[str]:
+    def sql(self) -> str:
         if not isinstance(self.data, QueryResultData):
             raise TypeError("This query result doesn't contain any data")
         return self.data.sql

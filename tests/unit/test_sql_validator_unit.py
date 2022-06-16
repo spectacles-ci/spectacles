@@ -533,7 +533,7 @@ async def test_search_handles_exceptions_raised_while_running_queries(
 
     mocked_api.post(
         "queries", params={"fields": "id,share_url"}, name="create_query"
-    ).mock(side_effect=(httpx.Response(404)))
+    ).mock(side_effect=(httpx.Response(404),))
 
     with pytest.raises(LookerApiError):
         await validator.search(explores, fail_fast)
