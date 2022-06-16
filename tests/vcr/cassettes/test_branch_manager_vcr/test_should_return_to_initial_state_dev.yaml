@@ -1,0 +1,458 @@
+interactions:
+- request:
+    body: '{"workspace_id": "dev"}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '23'
+      content-type:
+      - application/json
+      cookie:
+      - looker.browser=78847301
+      host:
+      - spectacles.looker.com:19999
+      user-agent:
+      - python-httpx/0.23.0
+    method: PATCH
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    content: '{"workspace_id":"dev","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - close
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 16 Jun 2022 20:25:11 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 58b9cf2114998852
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 58b9cf2114998852
+      X-B3-TraceId:
+      - 62ab91a719ffe92858b9cf2114998852
+      X-Content-Type-Options:
+      - nosniff
+    http_version: HTTP/1.1
+    status_code: 200
+- request:
+    body: ''
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      cookie:
+      - looker.browser=78847301
+      host:
+      - spectacles.looker.com:19999
+      user-agent:
+      - python-httpx/0.23.0
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    content: '{"workspace_id":"dev","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - close
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 16 Jun 2022 20:25:11 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 2f826a6314443f00
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 2f826a6314443f00
+      X-B3-TraceId:
+      - 62ab91a75cc36cb72f826a6314443f00
+      X-Content-Type-Options:
+      - nosniff
+    http_version: HTTP/1.1
+    status_code: 200
+- request:
+    body: ''
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      cookie:
+      - looker.browser=78847301
+      host:
+      - spectacles.looker.com:19999
+      user-agent:
+      - python-httpx/0.23.0
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
+  response:
+    content: '{"name":"pytest","remote":"origin","remote_name":"pytest","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1655410229,"ref":"c2b675549d737cc192cba427f581237e63d1dafb","remote_ref":"c2b675549d737cc192cba427f581237e63d1dafb","can":{}}'
+    headers:
+      Connection:
+      - close
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 16 Jun 2022 20:25:11 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 54dfb396dfb30697
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 54dfb396dfb30697
+      X-B3-TraceId:
+      - 62ab91a70541243954dfb396dfb30697
+      X-Content-Type-Options:
+      - nosniff
+    http_version: HTTP/1.1
+    status_code: 200
+- request:
+    body: '{"workspace_id": "production"}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '30'
+      content-type:
+      - application/json
+      cookie:
+      - looker.browser=78847301
+      host:
+      - spectacles.looker.com:19999
+      user-agent:
+      - python-httpx/0.23.0
+    method: PATCH
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    content: '{"workspace_id":"production","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - close
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 16 Jun 2022 20:25:11 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 72167d3ad5543fba
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 72167d3ad5543fba
+      X-B3-TraceId:
+      - 62ab91a77c2c28a772167d3ad5543fba
+      X-Content-Type-Options:
+      - nosniff
+    http_version: HTTP/1.1
+    status_code: 200
+- request:
+    body: ''
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      cookie:
+      - looker.browser=78847301
+      host:
+      - spectacles.looker.com:19999
+      user-agent:
+      - python-httpx/0.23.0
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    content: '{"workspace_id":"production","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - close
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 16 Jun 2022 20:25:11 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 4a7112e8986eaf6d
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 4a7112e8986eaf6d
+      X-B3-TraceId:
+      - 62ab91a7fdb88b054a7112e8986eaf6d
+      X-Content-Type-Options:
+      - nosniff
+    http_version: HTTP/1.1
+    status_code: 200
+- request:
+    body: ''
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      cookie:
+      - looker.browser=78847301
+      host:
+      - spectacles.looker.com:19999
+      user-agent:
+      - python-httpx/0.23.0
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
+  response:
+    content: '{"name":"master","remote":"origin","remote_name":"master","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":true,"ahead_count":0,"behind_count":0,"commit_at":1654510275,"ref":"785a58bed86f4891f3b63de17f33ec8fab0ffdad","remote_ref":"785a58bed86f4891f3b63de17f33ec8fab0ffdad","can":{}}'
+    headers:
+      Connection:
+      - close
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 16 Jun 2022 20:25:11 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 411015ce136ab80c
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 411015ce136ab80c
+      X-B3-TraceId:
+      - 62ab91a77313e432411015ce136ab80c
+      X-Content-Type-Options:
+      - nosniff
+    http_version: HTTP/1.1
+    status_code: 200
+- request:
+    body: ''
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      cookie:
+      - looker.browser=78847301
+      host:
+      - spectacles.looker.com:19999
+      user-agent:
+      - python-httpx/0.23.0
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    content: '{"workspace_id":"production","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - close
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 16 Jun 2022 20:25:11 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 9ed7a4b746c4412a
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 9ed7a4b746c4412a
+      X-B3-TraceId:
+      - 62ab91a76a98e09e9ed7a4b746c4412a
+      X-Content-Type-Options:
+      - nosniff
+    http_version: HTTP/1.1
+    status_code: 200
+- request:
+    body: '{"workspace_id": "dev"}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '23'
+      content-type:
+      - application/json
+      cookie:
+      - looker.browser=78847301
+      host:
+      - spectacles.looker.com:19999
+      user-agent:
+      - python-httpx/0.23.0
+    method: PATCH
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    content: '{"workspace_id":"dev","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - close
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 16 Jun 2022 20:25:12 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 36b47a429776a16c
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 36b47a429776a16c
+      X-B3-TraceId:
+      - 62ab91a7786193fd36b47a429776a16c
+      X-Content-Type-Options:
+      - nosniff
+    http_version: HTTP/1.1
+    status_code: 200
+- request:
+    body: '{"name": "pytest"}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '18'
+      content-type:
+      - application/json
+      cookie:
+      - looker.browser=78847301
+      host:
+      - spectacles.looker.com:19999
+      user-agent:
+      - python-httpx/0.23.0
+    method: PUT
+    uri: https://spectacles.looker.com:19999/api/3.1/projects/eye_exam/git_branch
+  response:
+    content: '{"name":"pytest","remote":"origin","remote_name":"pytest","error":null,"message":null,"owner_name":null,"readonly":false,"personal":false,"is_local":true,"is_remote":true,"is_production":false,"ahead_count":0,"behind_count":0,"commit_at":1655410229,"ref":"c2b675549d737cc192cba427f581237e63d1dafb","remote_ref":"c2b675549d737cc192cba427f581237e63d1dafb","can":{}}'
+    headers:
+      Connection:
+      - close
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 16 Jun 2022 20:25:12 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - b93aee388fae56b0
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - b93aee388fae56b0
+      X-B3-TraceId:
+      - 62ab91a848f81830b93aee388fae56b0
+      X-Content-Type-Options:
+      - nosniff
+    http_version: HTTP/1.1
+    status_code: 200
+- request:
+    body: ''
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      cookie:
+      - looker.browser=78847301
+      host:
+      - spectacles.looker.com:19999
+      user-agent:
+      - python-httpx/0.23.0
+    method: GET
+    uri: https://spectacles.looker.com:19999/api/3.1/session
+  response:
+    content: '{"workspace_id":"dev","sudo_user_id":null,"can":{"view":true,"update":true}}'
+    headers:
+      Connection:
+      - close
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 16 Jun 2022 20:25:12 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - Accept-Encoding, Origin
+      X-B3-ParentSpanId:
+      - 2cced7d6a6fc13ed
+      X-B3-Sampled:
+      - '0'
+      X-B3-SpanId:
+      - 2cced7d6a6fc13ed
+      X-B3-TraceId:
+      - 62ab91a8ac0185102cced7d6a6fc13ed
+      X-Content-Type-Options:
+      - nosniff
+    http_version: HTTP/1.1
+    status_code: 200
+version: 1
