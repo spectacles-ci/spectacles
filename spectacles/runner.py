@@ -51,6 +51,7 @@ class LookerBranchManager:
         self.project = project
         self.remote_reset = remote_reset
         self.pin_imports = pin_imports or {}
+        self.history: List[ProjectState] = []
 
         self.commit: Optional[str] = None
         self.branch: Optional[str] = None
@@ -97,7 +98,7 @@ class LookerBranchManager:
 
         state: ProjectState = await self.get_project_state()
         self.workspace: str = state.workspace
-        self.history: List[ProjectState] = [state]
+        self.history = [state]
         # A branch was passed, so we check it out in dev mode.
         if self.branch:
             await self.update_workspace("dev")
@@ -189,7 +190,14 @@ class LookerBranchManager:
 
     @property
     def init_state(self) -> ProjectState:
-        return self.history[0]
+        try:
+            state = self.history[0]
+        except IndexError as error:
+            raise IndexError(
+                "No history exists, you must enter the context manager "
+                "to generate initial state."
+            ) from error
+        return state
 
     @property
     def ref(self) -> Optional[str]:
