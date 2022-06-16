@@ -1,14 +1,20 @@
 from copy import deepcopy
 import pytest
-from spectacles.lookml import Model, Explore, Dimension, build_project, build_dimensions
+from spectacles.lookml import (
+    Model,
+    Explore,
+    Dimension,
+    build_project,
+    build_explore_dimensions,
+)
 from spectacles.exceptions import SpectaclesException
 from utils import load_resource
 
 
 @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
 class TestBuildProject:
-    def test_model_explore_dimension_counts_should_match(self, looker_client):
-        project = build_project(
+    async def test_model_explore_dimension_counts_should_match(self, looker_client):
+        project = await build_project(
             looker_client,
             name="eye_exam",
             filters=["eye_exam/users"],
@@ -22,22 +28,24 @@ class TestBuildProject:
         assert not project.errored
         assert project.queried is False
 
-    def test_project_with_everything_excluded_should_not_have_models(
+    async def test_project_with_everything_excluded_should_not_have_models(
         self, looker_client
     ):
-        project = build_project(looker_client, name="eye_exam", filters=["-eye_exam/*"])
+        project = await build_project(
+            looker_client, name="eye_exam", filters=["-eye_exam/*"]
+        )
         assert len(project.models) == 0
 
-    def test_duplicate_selectors_should_be_deduplicated(self, looker_client):
-        project = build_project(
+    async def test_duplicate_selectors_should_be_deduplicated(self, looker_client):
+        project = await build_project(
             looker_client, name="eye_exam", filters=["eye_exam/users", "eye_exam/users"]
         )
         assert len(project.models) == 1
 
-    def test_hidden_dimension_should_be_excluded_with_ignore_hidden(
+    async def test_hidden_dimension_should_be_excluded_with_ignore_hidden(
         self, looker_client
     ):
-        project = build_project(
+        project = await build_project(
             looker_client,
             name="eye_exam",
             filters=["eye_exam/users"],
@@ -51,16 +59,18 @@ class TestBuildProject:
 class TestBuildUnconfiguredProject:
     """Test for a build error when building an unconfigured LookML project."""
 
-    def test_project_with_no_configured_models_should_raise_error(self, looker_client):
-        looker_client.update_workspace(workspace="production")
+    async def test_project_with_no_configured_models_should_raise_error(
+        self, looker_client
+    ):
+        await looker_client.update_workspace(workspace="production")
         with pytest.raises(SpectaclesException):
-            build_project(looker_client, name="eye_exam_unconfigured")
+            await build_project(looker_client, name="eye_exam_unconfigured")
 
 
 @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
 class TestBuildDimensions:
-    def test_dimension_count_should_match(self, looker_client):
-        dimensions = build_dimensions(
+    async def test_dimension_count_should_match(self, looker_client):
+        dimensions = await build_explore_dimensions(
             looker_client,
             model_name="eye_exam",
             explore_name="users",
@@ -70,7 +80,7 @@ class TestBuildDimensions:
     def test_hidden_dimension_should_be_excluded_with_ignore_hidden(
         self, looker_client
     ):
-        dimensions = build_dimensions(
+        dimensions = build_explore_dimensions(
             looker_client,
             model_name="eye_exam",
             explore_name="users",
