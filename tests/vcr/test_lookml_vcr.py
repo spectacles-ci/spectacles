@@ -6,7 +6,9 @@ from spectacles.exceptions import SpectaclesException
 
 @pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
 class TestBuildProject:
-    async def test_model_explore_dimension_counts_should_match(self, looker_client):
+    async def test_model_explore_dimension_counts_should_match(
+        self, looker_client: LookerClient
+    ):
         project = await build_project(
             looker_client,
             name="eye_exam",
@@ -22,21 +24,23 @@ class TestBuildProject:
         assert project.queried is False
 
     async def test_project_with_everything_excluded_should_not_have_models(
-        self, looker_client
+        self, looker_client: LookerClient
     ):
         project = await build_project(
             looker_client, name="eye_exam", filters=["-eye_exam/*"]
         )
         assert len(project.models) == 0
 
-    async def test_duplicate_selectors_should_be_deduplicated(self, looker_client):
+    async def test_duplicate_selectors_should_be_deduplicated(
+        self, looker_client: LookerClient
+    ):
         project = await build_project(
             looker_client, name="eye_exam", filters=["eye_exam/users", "eye_exam/users"]
         )
         assert len(project.models) == 1
 
     async def test_hidden_dimension_should_be_excluded_with_ignore_hidden(
-        self, looker_client
+        self, looker_client: LookerClient
     ):
         project = await build_project(
             looker_client,
@@ -53,7 +57,7 @@ class TestBuildUnconfiguredProject:
     """Test for a build error when building an unconfigured LookML project."""
 
     async def test_project_with_no_configured_models_should_raise_error(
-        self, looker_client
+        self, looker_client: LookerClient
     ):
         await looker_client.update_workspace(workspace="production")
         with pytest.raises(SpectaclesException):
