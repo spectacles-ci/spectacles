@@ -1,92 +1,7 @@
 from copy import deepcopy
 import pytest
-from spectacles.lookml import (
-    Model,
-    Explore,
-    Dimension,
-    build_project,
-    build_explore_dimensions,
-)
-from spectacles.exceptions import SpectaclesException
+from spectacles.lookml import Model, Explore, Dimension
 from utils import load_resource
-
-
-@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
-class TestBuildProject:
-    async def test_model_explore_dimension_counts_should_match(self, looker_client):
-        project = await build_project(
-            looker_client,
-            name="eye_exam",
-            filters=["eye_exam/users"],
-            include_dimensions=True,
-        )
-        assert len(project.models) == 1
-        assert len(project.models[0].explores) == 1
-        dimensions = project.models[0].explores[0].dimensions
-        assert len(dimensions) == 6
-        assert "users.city" in [dim.name for dim in dimensions]
-        assert not project.errored
-        assert project.queried is False
-
-    async def test_project_with_everything_excluded_should_not_have_models(
-        self, looker_client
-    ):
-        project = await build_project(
-            looker_client, name="eye_exam", filters=["-eye_exam/*"]
-        )
-        assert len(project.models) == 0
-
-    async def test_duplicate_selectors_should_be_deduplicated(self, looker_client):
-        project = await build_project(
-            looker_client, name="eye_exam", filters=["eye_exam/users", "eye_exam/users"]
-        )
-        assert len(project.models) == 1
-
-    async def test_hidden_dimension_should_be_excluded_with_ignore_hidden(
-        self, looker_client
-    ):
-        project = await build_project(
-            looker_client,
-            name="eye_exam",
-            filters=["eye_exam/users"],
-            include_dimensions=True,
-            ignore_hidden_fields=True,
-        )
-        assert len(project.models[0].explores[0].dimensions) == 5
-
-
-@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
-class TestBuildUnconfiguredProject:
-    """Test for a build error when building an unconfigured LookML project."""
-
-    async def test_project_with_no_configured_models_should_raise_error(
-        self, looker_client
-    ):
-        await looker_client.update_workspace(workspace="production")
-        with pytest.raises(SpectaclesException):
-            await build_project(looker_client, name="eye_exam_unconfigured")
-
-
-@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
-class TestBuildDimensions:
-    async def test_dimension_count_should_match(self, looker_client):
-        dimensions = await build_explore_dimensions(
-            looker_client,
-            model_name="eye_exam",
-            explore_name="users",
-        )
-        assert len(dimensions) == 6
-
-    def test_hidden_dimension_should_be_excluded_with_ignore_hidden(
-        self, looker_client
-    ):
-        dimensions = build_explore_dimensions(
-            looker_client,
-            model_name="eye_exam",
-            explore_name="users",
-            ignore_hidden_fields=True,
-        )
-        assert len(dimensions) == 5
 
 
 def test_model_from_json():
@@ -250,7 +165,7 @@ def test_explore_number_of_errors_batch_with_errors(dimension, explore, sql_erro
     assert explore.number_of_errors == 1
 
 
-def test_explore_number_of_errors_batch_with_no_errors(dimension, explore, sql_error):
+def test_explore_number_of_errors_batch_with_no_errors(dimension, explore):
     explore.dimensions = [dimension]
     explore.queried = True
     assert explore.number_of_errors == 0
@@ -263,7 +178,7 @@ def test_explore_number_of_errors_single_with_errors(dimension, explore, sql_err
     assert explore.number_of_errors == 2
 
 
-def test_explore_number_of_errors_single_with_no_errors(dimension, explore, sql_error):
+def test_explore_number_of_errors_single_with_no_errors(dimension, explore):
     dimension.queried = True
     explore.dimensions = [dimension, dimension]
     assert explore.number_of_errors == 0
@@ -277,9 +192,7 @@ def test_model_number_of_errors_batch_with_errors(dimension, explore, model, sql
     assert model.number_of_errors == 2
 
 
-def test_model_number_of_errors_batch_with_no_errors(
-    dimension, explore, model, sql_error
-):
+def test_model_number_of_errors_batch_with_no_errors(dimension, explore, model):
     explore.dimensions = [dimension]
     explore.queried = True
     model.explores = [explore, explore]
@@ -296,9 +209,7 @@ def test_model_number_of_errors_single_with_errors(
     assert model.number_of_errors == 4
 
 
-def test_model_number_of_errors_single_with_no_errors(
-    dimension, explore, model, sql_error
-):
+def test_model_number_of_errors_single_with_no_errors(dimension, explore, model):
     explore.dimensions = [dimension, dimension]
     explore.queried = True
     model.explores = [explore, explore]
@@ -334,7 +245,7 @@ def test_project_number_of_errors_batch_with_errors(
 
 
 def test_project_number_of_errors_batch_with_no_errors(
-    dimension, explore, model, project, sql_error
+    dimension, explore, model, project
 ):
     explore.dimensions = [dimension]
     explore.queried = True
@@ -355,7 +266,7 @@ def test_project_number_of_errors_single_with_errors(
 
 
 def test_project_number_of_errors_single_with_no_errors(
-    dimension, explore, model, project, sql_error
+    dimension, explore, model, project
 ):
     explore.dimensions = [dimension, dimension]
     explore.queried = True
