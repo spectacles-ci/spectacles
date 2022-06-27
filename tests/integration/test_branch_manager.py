@@ -1,12 +1,22 @@
+import os
 from typing import Iterable
 from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
+from github import Github as GitHub
 from github.Repository import Repository
 from spectacles.client import LookerClient
 from spectacles.runner import LookerBranchManager
 
 LOOKER_PROJECT = "eye_exam"
 TMP_REMOTE_BRANCH = "pytest-tmp"
+
+
+@pytest.fixture(scope="module")
+def remote_repo() -> Iterable[Repository]:
+    access_token = os.environ.get("GITHUB_ACCESS_TOKEN")
+    client = GitHub(access_token)
+    repo = client.get_repo("spectacles-ci/eye-exam")
+    yield repo
 
 
 @pytest.fixture(scope="module", autouse=True)
@@ -20,7 +30,6 @@ def test_remote_branch(remote_repo) -> Iterable[None]:
     remote_repo.get_git_ref(f"heads/{TMP_REMOTE_BRANCH}").delete()
 
 
-@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
 @patch("spectacles.runner.LookerBranchManager.get_project_imports", return_value=[])
 async def test_should_return_to_initial_state_prod(
     mock_get_imports: AsyncMock, looker_client: LookerClient
@@ -37,7 +46,6 @@ async def test_should_return_to_initial_state_prod(
     assert workspace == "production"
 
 
-@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
 @patch("spectacles.runner.LookerBranchManager.get_project_imports", return_value=[])
 async def test_should_return_to_initial_state_dev(
     mock_get_imports: AsyncMock, looker_client: LookerClient
@@ -54,7 +62,6 @@ async def test_should_return_to_initial_state_dev(
     assert workspace == "dev"
 
 
-@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
 @patch("spectacles.runner.LookerBranchManager.get_project_imports", return_value=[])
 async def test_manage_current_branch(
     mock_get_imports: AsyncMock, looker_client: LookerClient
@@ -79,7 +86,6 @@ async def test_manage_current_branch(
     assert active_branch == branch
 
 
-@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
 @patch("spectacles.runner.LookerBranchManager.get_project_imports", return_value=[])
 async def test_manage_other_branch(
     mock_get_imports: AsyncMock, looker_client: LookerClient
@@ -107,7 +113,6 @@ async def test_manage_other_branch(
     assert active_branch == starting_branch
 
 
-@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
 @patch("spectacles.runner.LookerBranchManager.get_project_imports", return_value=[])
 @patch("spectacles.runner.time_hash", return_value="abc123")
 async def test_manage_current_branch_with_ref(
@@ -142,7 +147,6 @@ async def test_manage_current_branch_with_ref(
     assert temp_branch not in all_branches
 
 
-@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
 @patch("spectacles.runner.time_hash", return_value="abc123")
 async def test_manage_current_branch_with_import_projects(
     mock_time_hash: MagicMock, looker_client: LookerClient
@@ -171,7 +175,6 @@ async def test_manage_current_branch_with_import_projects(
     assert active_branch == starting_branch
 
 
-@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
 @patch("spectacles.runner.time_hash", return_value="abc123")
 async def test_manage_other_branch_with_import_projects(
     mock_time_hash: MagicMock, looker_client: LookerClient
@@ -213,7 +216,6 @@ async def test_manage_other_branch_with_import_projects(
     assert temp_branch not in all_branches
 
 
-@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
 @patch("spectacles.runner.LookerBranchManager.get_project_imports", return_value=[])
 async def test_manage_prod_with_advanced_deploy(
     mock_get_imports: AsyncMock, looker_client: LookerClient
@@ -232,7 +234,6 @@ async def test_manage_prod_with_advanced_deploy(
     assert workspace == "production"
 
 
-@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
 @patch("spectacles.runner.time_hash", return_value="abc123")
 async def test_manage_with_ref_import_projects(
     mock_time_hash: MagicMock, looker_client: LookerClient
@@ -277,10 +278,6 @@ async def test_manage_with_ref_import_projects(
     assert temp_branches.isdisjoint(all_branches)
 
 
-@pytest.mark.vcr(
-    match_on=["uri", "method", "raw_body"], decode_compressed_response=True
-)
-@pytest.mark.xfail  # until https://github.com/kevin1024/vcrpy/issues/550 is fixed
 @patch("spectacles.runner.LookerBranchManager.get_project_imports", return_value=[])
 @patch("spectacles.runner.time_hash", return_value="abc123")
 async def test_manage_with_ref_not_present_in_local_repo(

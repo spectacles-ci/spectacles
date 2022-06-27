@@ -4,7 +4,7 @@ from spectacles.client import LookerClient
 from spectacles.validators.sql import SqlValidator
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def validator(looker_client: LookerClient) -> SqlValidator:
     return SqlValidator(looker_client)
 
@@ -30,14 +30,10 @@ async def explores(
     return explores
 
 
-@pytest.mark.default_cassette("test_passing_sql_validation.yaml")
-@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
 def test_explores_should_be_queried(explores: tuple[Explore, ...]):
     assert all(explore.queried for explore in explores)
 
 
-@pytest.mark.default_cassette("test_passing_sql_validation.yaml")
-@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
 def test_explores_errored_should_be_set_correctly(explores: tuple[Explore, ...]):
     assert len(explores) == 1
     explore = explores[0]
@@ -47,8 +43,6 @@ def test_explores_errored_should_be_set_correctly(explores: tuple[Explore, ...])
         assert explore.errored
 
 
-@pytest.mark.default_cassette("test_passing_sql_validation.yaml")
-@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
 def test_ignored_dimensions_should_not_be_queried(explores: tuple[Explore, ...]):
     for explore in explores:
         assert not any(dim.queried for dim in explore.dimensions if dim.ignore is True)
