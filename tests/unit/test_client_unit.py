@@ -2,6 +2,7 @@ import asyncio
 from typing import List, Tuple, Callable, Any
 import time
 import httpx
+import respx
 import inspect
 import pytest
 from unittest.mock import AsyncMock, patch
@@ -116,3 +117,15 @@ async def test_authenticate_should_set_session_headers(mocked_api):
             async_client, "https://spectacles.looker.com", "client_id", "client_secret"
         )
         assert client.async_client.headers["Authorization"] == "token <ACCESS TOKEN>"
+
+
+def test_get_looker_release_version_should_return_correct_version(
+    looker_client: LookerClient,
+    mocked_api: respx.MockRouter,
+):
+    mock_api_version = "22.8.32"
+    mocked_api.get("versions").respond(
+        200, json={"looker_release_version": mock_api_version}
+    )
+    version = looker_client.get_looker_release_version()
+    assert version == mock_api_version
