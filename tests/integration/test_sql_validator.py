@@ -11,7 +11,7 @@ def validator(looker_client: LookerClient) -> SqlValidator:
 
 @pytest.fixture(params=["no_sql_errors", "sql_errors"])
 async def explores(
-    request: pytest.FixtureRequest, looker_client: LookerClient, validator: SqlValidator
+    request: pytest.FixtureRequest, validator: SqlValidator
 ) -> tuple[Explore, ...]:
     """Returns Explores from eye_exam/user after SQL validation."""
     if request.param == "no_sql_errors":  # type: ignore[attr-defined]
@@ -20,7 +20,7 @@ async def explores(
         explore_name = "users__fail"
 
     project = await build_project(
-        looker_client,
+        validator.client,
         name="eye_exam",
         filters=[f"eye_exam/{explore_name}"],
         include_dimensions=True,
