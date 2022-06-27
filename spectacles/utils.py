@@ -1,6 +1,6 @@
 from __future__ import annotations
 import asyncio
-from typing import Callable, List, Optional, Dict, Any, Iterable, Tuple
+from typing import Callable, Coroutine, List, Optional, Dict, Any, Iterable, Tuple
 from urllib import parse
 import httpx
 import hashlib
@@ -53,7 +53,7 @@ def get_detail(fn_name: str):
     return detail_map.get(fn_name, "")
 
 
-def log_duration(fn: Callable):
+def log_duration(fn: Callable[..., Coroutine]):
     async def timed_function(*args, **kwargs):
         start_time = time.time()
         try:
