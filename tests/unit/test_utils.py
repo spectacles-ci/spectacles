@@ -1,8 +1,8 @@
 from spectacles import utils
 from spectacles.logger import GLOBAL_LOGGER as logger
-from unittest.mock import MagicMock
+from unittest import IsolatedAsyncioTestCase
+from unittest.mock import AsyncMock
 import pytest
-import unittest
 
 TEST_BASE_URL = "https://test.looker.com"
 
@@ -70,37 +70,37 @@ def test_get_detail(fn_name, expected):
     assert detail == expected
 
 
-class TestLogDurationDecorator(unittest.TestCase):
-    def test_log_SQL(self):
+class TestLogDurationDecorator(IsolatedAsyncioTestCase):
+    async def test_log_SQL(self):
         with self.assertLogs(logger=logger, level="INFO") as cm:
-            func = MagicMock()
+            func = AsyncMock()
             func.__name__ = "run_sql"
             decorated_func = utils.log_duration(func)
-            decorated_func()
+            await decorated_func()
         self.assertIn("INFO:spectacles:Completed SQL validation in", cm.output[0])
 
-    def test_log_assert(self):
+    async def test_log_assert(self):
         with self.assertLogs(logger=logger, level="INFO") as cm:
-            func = MagicMock()
+            func = AsyncMock()
             func.__name__ = "run_assert"
             decorated_func = utils.log_duration(func)
-            decorated_func()
+            await decorated_func()
         self.assertIn("INFO:spectacles:Completed data test validation in", cm.output[0])
 
-    def test_log_content(self):
+    async def test_log_content(self):
         with self.assertLogs(logger=logger, level="INFO") as cm:
-            func = MagicMock()
+            func = AsyncMock()
             func.__name__ = "run_content"
             decorated_func = utils.log_duration(func)
-            decorated_func()
+            await decorated_func()
         self.assertIn("INFO:spectacles:Completed content validation in", cm.output[0])
 
-    def test_log_other(self):
+    async def test_log_other(self):
         with self.assertLogs(logger=logger, level="INFO") as cm:
-            func = MagicMock()
+            func = AsyncMock()
             func.__name__ = "OtherValidator.validate"
             decorated_func = utils.log_duration(func)
-            decorated_func()
+            await decorated_func()
         self.assertIn("INFO:spectacles:Completed validation in", cm.output[0])
 
 
