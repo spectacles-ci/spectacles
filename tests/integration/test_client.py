@@ -5,15 +5,6 @@ from spectacles.client import LookerClient
 from spectacles.exceptions import LookerApiError, SpectaclesException
 
 
-@pytest.mark.vcr
-def test_get_looker_release_version_should_return_correct_version(
-    looker_client: LookerClient,
-):
-    version = looker_client.get_looker_release_version()
-    assert version == "22.8.32"
-
-
-@pytest.mark.vcr(filter_post_data_parameters=["client_id", "client_secret"])
 async def test_bad_authentication_request_should_raise_looker_api_error():
     async with httpx.AsyncClient(trust_env=False) as async_client:
         with pytest.raises(LookerApiError):
@@ -25,7 +16,6 @@ async def test_bad_authentication_request_should_raise_looker_api_error():
             )
 
 
-@pytest.mark.vcr(filter_post_data_parameters=["client_id", "client_secret"])
 async def test_unsupported_api_version_should_raise_error():
     async with httpx.AsyncClient(trust_env=False) as async_client:
         with pytest.raises(SpectaclesException):
@@ -38,7 +28,6 @@ async def test_unsupported_api_version_should_raise_error():
             )
 
 
-@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
 async def test_create_query_with_dimensions_should_return_certain_fields(
     looker_client: LookerClient,
 ):
@@ -51,7 +40,6 @@ async def test_create_query_with_dimensions_should_return_certain_fields(
     assert query["model"] == "eye_exam"
 
 
-@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
 async def test_create_query_without_dimensions_should_return_certain_fields(
     looker_client: LookerClient,
 ):

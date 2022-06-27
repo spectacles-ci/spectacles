@@ -4,7 +4,6 @@ from spectacles.lookml import Explore, build_project, build_explore_dimensions
 from spectacles.exceptions import SpectaclesException
 
 
-@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
 class TestBuildProject:
     async def test_model_explore_dimension_counts_should_match(
         self, looker_client: LookerClient
@@ -52,7 +51,6 @@ class TestBuildProject:
         assert len(project.models[0].explores[0].dimensions) == 5
 
 
-@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
 class TestBuildUnconfiguredProject:
     """Test for a build error when building an unconfigured LookML project."""
 
@@ -64,7 +62,6 @@ class TestBuildUnconfiguredProject:
             await build_project(looker_client, name="eye_exam_unconfigured")
 
 
-@pytest.mark.vcr(match_on=["uri", "method", "raw_body"])
 class TestBuildDimensions:
     async def test_dimension_count_should_match(
         self, looker_client: LookerClient, explore: Explore
