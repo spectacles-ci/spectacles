@@ -1,9 +1,9 @@
-from unittest.mock import patch, Mock
+from unittest.mock import AsyncMock, patch, Mock, MagicMock
 import logging
 import pytest
 import requests
-from constants import ENV_VARS
-from utils import build_validation
+from tests.constants import ENV_VARS
+from tests.utils import build_validation
 from spectacles.cli import (
     main,
     create_parser,
@@ -19,19 +19,19 @@ from spectacles.exceptions import (
 
 
 @pytest.fixture
-def clean_env(monkeypatch):
+def clean_env(monkeypatch: pytest.MonkeyPatch) -> None:
     for variable in ENV_VARS.keys():
         monkeypatch.delenv(variable, raising=False)
 
 
 @pytest.fixture
-def env(monkeypatch):
+def env(monkeypatch: pytest.MonkeyPatch) -> None:
     for variable, value in ENV_VARS.items():
         monkeypatch.setenv(variable, value)
 
 
 @pytest.fixture
-def limited_env(monkeypatch):
+def limited_env(monkeypatch: pytest.MonkeyPatch) -> None:
     for variable, value in ENV_VARS.items():
         if variable in ["LOOKER_CLIENT_SECRET", "LOOKER_PROJECT"]:
             monkeypatch.delenv(variable, raising=False)
@@ -50,7 +50,7 @@ def test_help():
     "exception,exit_code",
     [(ValueError, 1), (SpectaclesException, 100), (GenericValidationError, 102)],
 )
-def test_handle_exceptions_unhandled_error(exception, exit_code):
+def test_handle_exceptions_unhandled_error(exception: Exception, exit_code: int):
     @handle_exceptions
     def raise_exception():
         if exception == SpectaclesException:
@@ -70,7 +70,9 @@ def test_handle_exceptions_unhandled_error(exception, exit_code):
     assert pytest_error.value.code == exit_code
 
 
-def test_handle_exceptions_looker_error_should_log_response_and_status(caplog):
+def test_handle_exceptions_looker_error_should_log_response_and_status(
+    caplog: pytest.LogCaptureFixture,
+):
     caplog.set_level(logging.DEBUG)
     response = Mock(spec=requests.Response)
     response.request = Mock(spec=requests.PreparedRequest)
@@ -101,7 +103,9 @@ def test_handle_exceptions_looker_error_should_log_response_and_status(caplog):
     assert pytest_error.value.code == 101
 
 
-def test_parse_args_with_no_arguments_supplied(clean_env, capsys):
+def test_parse_args_with_no_arguments_supplied(
+    clean_env: None, capsys: pytest.CaptureFixture
+):
     parser = create_parser()
     with pytest.raises(SystemExit):
         parser.parse_args(["connect"])
@@ -112,7 +116,9 @@ def test_parse_args_with_no_arguments_supplied(clean_env, capsys):
     )
 
 
-def test_parse_args_with_one_argument_supplied(clean_env, capsys):
+def test_parse_args_with_one_argument_supplied(
+    clean_env: None, capsys: pytest.CaptureFixture
+):
     parser = create_parser()
     with pytest.raises(SystemExit):
         parser.parse_args(["connect", "--base-url", "BASE_URL_CLI"])
@@ -123,7 +129,7 @@ def test_parse_args_with_one_argument_supplied(clean_env, capsys):
     )
 
 
-def test_parse_args_with_only_cli(clean_env):
+def test_parse_args_with_only_cli(clean_env: None):
     parser = create_parser()
     args = parser.parse_args(
         [
@@ -142,7 +148,7 @@ def test_parse_args_with_only_cli(clean_env):
 
 
 @patch("spectacles.cli.YamlConfigAction.parse_config")
-def test_parse_args_with_only_config_file(mock_parse_config, clean_env):
+def test_parse_args_with_only_config_file(mock_parse_config, clean_env: None):
     parser = create_parser()
     mock_parse_config.return_value = {
         "base_url": "BASE_URL_CONFIG",
@@ -159,7 +165,9 @@ def test_parse_args_with_only_config_file(mock_parse_config, clean_env):
 
 
 @patch("spectacles.cli.YamlConfigAction.parse_config")
-def test_parse_args_with_incomplete_config_file(mock_parse_config, clean_env, capsys):
+def test_parse_args_with_incomplete_config_file(
+    mock_parse_config: MagicMock, clean_env: None, capsys: pytest.CaptureFixture
+):
     parser = create_parser()
     mock_parse_config.return_value = {
         "base_url": "BASE_URL_CONFIG",
@@ -174,7 +182,7 @@ def test_parse_args_with_incomplete_config_file(mock_parse_config, clean_env, ca
 @patch("spectacles.cli.run_sql")
 @patch("spectacles.cli.YamlConfigAction.parse_config")
 def test_config_file_explores_folders_processed_correctly(
-    mock_parse_config, mock_run_sql, clean_env
+    mock_parse_config: MagicMock, mock_run_sql: AsyncMock, clean_env: None
 ):
     mock_parse_config.return_value = {
         "base_url": "BASE_URL_CONFIG",
@@ -193,7 +201,9 @@ def test_config_file_explores_folders_processed_correctly(
 
 
 @patch("spectacles.cli.run_sql")
-def test_cli_explores_folders_processed_correctly(mock_run_sql, clean_env):
+def test_cli_explores_folders_processed_correctly(
+    mock_run_sql: AsyncMock, clean_env: None
+):
     with patch(
         "sys.argv",
         [
@@ -219,7 +229,7 @@ def test_cli_explores_folders_processed_correctly(mock_run_sql, clean_env):
     ]
 
 
-def test_parse_args_with_only_env_vars(env):
+def test_parse_args_with_only_env_vars(env: None):
     parser = create_parser()
     args = parser.parse_args(["connect"])
     assert args.base_url == "BASE_URL_ENV_VAR"
@@ -227,7 +237,9 @@ def test_parse_args_with_only_env_vars(env):
     assert args.client_secret == "CLIENT_SECRET_ENV_VAR"
 
 
-def test_parse_args_with_incomplete_env_vars(limited_env, capsys):
+def test_parse_args_with_incomplete_env_vars(
+    limited_env: None, capsys: pytest.CaptureFixture
+):
     parser = create_parser()
     with pytest.raises(SystemExit):
         parser.parse_args(["connect"])
@@ -236,7 +248,7 @@ def test_parse_args_with_incomplete_env_vars(limited_env, capsys):
 
 
 @patch("spectacles.cli.YamlConfigAction.parse_config")
-def test_arg_precedence(mock_parse_config, limited_env):
+def test_arg_precedence(mock_parse_config: MagicMock, limited_env: None):
     parser = create_parser()
     # Precedence: command line > environment variables > config files
     mock_parse_config.return_value = {
@@ -252,14 +264,16 @@ def test_arg_precedence(mock_parse_config, limited_env):
     assert args.client_secret == "CLIENT_SECRET_CONFIG"
 
 
-def test_env_var_override_argparse_default(env):
+def test_env_var_override_argparse_default(env: None):
     parser = create_parser()
     args = parser.parse_args(["connect"])
     assert args.port == 8080
 
 
 @patch("spectacles.cli.YamlConfigAction.parse_config")
-def test_config_override_argparse_default(mock_parse_config, clean_env):
+def test_config_override_argparse_default(
+    mock_parse_config: MagicMock, clean_env: None
+):
     parser = create_parser()
     mock_parse_config.return_value = {
         "base_url": "BASE_URL_CONFIG",
@@ -272,7 +286,7 @@ def test_config_override_argparse_default(mock_parse_config, clean_env):
 
 
 @patch("spectacles.cli.YamlConfigAction.parse_config")
-def test_bad_config_file_parameter(mock_parse_config, clean_env):
+def test_bad_config_file_parameter(mock_parse_config: MagicMock, clean_env: None):
     parser = create_parser()
     mock_parse_config.return_value = {
         "base_url": "BASE_URL_CONFIG",
@@ -285,13 +299,15 @@ def test_bad_config_file_parameter(mock_parse_config, clean_env):
         parser.parse_args(["connect", "--config-file", "config.yml"])
 
 
-def test_parse_remote_reset_with_assert(env):
+def test_parse_remote_reset_with_assert(env: None):
     parser = create_parser()
     args = parser.parse_args(["assert", "--remote-reset"])
     assert args.remote_reset
 
 
-def test_parse_args_with_mutually_exclusive_args_remote_reset(env, capsys):
+def test_parse_args_with_mutually_exclusive_args_remote_reset(
+    env: None, capsys: pytest.CaptureFixture
+):
     parser = create_parser()
     with pytest.raises(SystemExit):
         parser.parse_args(["sql", "--commit-ref", "abc123", "--remote-reset"])
@@ -302,7 +318,9 @@ def test_parse_args_with_mutually_exclusive_args_remote_reset(env, capsys):
     )
 
 
-def test_parse_args_with_mutually_exclusive_args_commit_ref(env, capsys):
+def test_parse_args_with_mutually_exclusive_args_commit_ref(
+    env: None, capsys: pytest.CaptureFixture
+):
     parser = create_parser()
     with pytest.raises(SystemExit):
         parser.parse_args(["sql", "--remote-reset", "--commit-ref", "abc123"])
@@ -317,9 +335,15 @@ def test_parse_args_with_mutually_exclusive_args_commit_ref(env, capsys):
 @patch("spectacles.cli.Runner")
 @patch("spectacles.cli.LookerClient", autospec=True)
 @patch("spectacles.cli.tracking")
-def test_main_with_sql_validator(mock_tracking, mock_client, mock_runner, env, caplog):
+def test_main_with_sql_validator(
+    mock_tracking: MagicMock,
+    mock_client: MagicMock,
+    mock_runner: MagicMock,
+    env: None,
+    caplog: pytest.LogCaptureFixture,
+):
     validation = build_validation("sql")
-    mock_runner.return_value.validate_sql.return_value = validation
+    mock_runner.return_value.validate_sql = AsyncMock(return_value=validation)
     with pytest.raises(SystemExit):
         main()
     mock_tracking.track_invocation_start.assert_called_once_with(
@@ -338,10 +362,14 @@ def test_main_with_sql_validator(mock_tracking, mock_client, mock_runner, env, c
 @patch("spectacles.cli.LookerClient", autospec=True)
 @patch("spectacles.cli.tracking")
 def test_main_with_content_validator(
-    mock_tracking, mock_client, mock_runner, env, caplog
+    mock_tracking: MagicMock,
+    mock_client: MagicMock,
+    mock_runner: MagicMock,
+    env: None,
+    caplog: pytest.LogCaptureFixture,
 ):
     validation = build_validation("content")
-    mock_runner.return_value.validate_content.return_value = validation
+    mock_runner.return_value.validate_content = AsyncMock(return_value=validation)
     with pytest.raises(SystemExit):
         main()
     mock_tracking.track_invocation_start.assert_called_once_with(
@@ -360,10 +388,14 @@ def test_main_with_content_validator(
 @patch("spectacles.cli.LookerClient", autospec=True)
 @patch("spectacles.cli.tracking")
 def test_main_with_assert_validator(
-    mock_tracking, mock_client, mock_runner, env, caplog
+    mock_tracking: MagicMock,
+    mock_client: MagicMock,
+    mock_runner: MagicMock,
+    env: None,
+    caplog: pytest.LogCaptureFixture,
 ):
     validation = build_validation("assert")
-    mock_runner.return_value.validate_data_tests.return_value = validation
+    mock_runner.return_value.validate_data_tests = AsyncMock(return_value=validation)
     with pytest.raises(SystemExit):
         main()
     mock_tracking.track_invocation_start.assert_called_once_with(
@@ -382,10 +414,14 @@ def test_main_with_assert_validator(
 @patch("spectacles.cli.LookerClient", autospec=True)
 @patch("spectacles.cli.tracking")
 def test_main_with_lookml_validator(
-    mock_tracking, mock_client, mock_runner, env, caplog
+    mock_tracking: MagicMock,
+    mock_client: MagicMock,
+    mock_runner: MagicMock,
+    env: None,
+    caplog: pytest.LogCaptureFixture,
 ):
     validation = build_validation("lookml")
-    mock_runner.return_value.validate_lookml.return_value = validation
+    mock_runner.return_value.validate_lookml = AsyncMock(return_value=validation)
     with pytest.raises(SystemExit):
         main()
     mock_tracking.track_invocation_start.assert_called_once_with(
@@ -401,7 +437,9 @@ def test_main_with_lookml_validator(
 @patch("sys.argv", new=["spectacles", "connect"])
 @patch("spectacles.cli.run_connect")
 @patch("spectacles.cli.tracking")
-def test_main_with_connect(mock_tracking, mock_run_connect, env):
+def test_main_with_connect(
+    mock_tracking: MagicMock, mock_run_connect: AsyncMock, env: None
+):
     main()
     mock_tracking.track_invocation_start.assert_called_once_with(
         "BASE_URL_ENV_VAR", "connect", project=None
@@ -419,7 +457,9 @@ def test_main_with_connect(mock_tracking, mock_run_connect, env):
 @patch("sys.argv", new=["spectacles", "connect", "--do-not-track"])
 @patch("spectacles.cli.run_connect")
 @patch("spectacles.cli.tracking")
-def test_main_with_do_not_track(mock_tracking, mock_run_connect, env):
+def test_main_with_do_not_track(
+    mock_tracking: MagicMock, mock_run_connect: AsyncMock, env: None
+):
     main()
     mock_tracking.track_invocation_start.assert_not_called()
     mock_tracking.track_invocation_end.assert_not_called()
