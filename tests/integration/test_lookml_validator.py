@@ -22,4 +22,4 @@ async def test_lookml_validator_fails_with_errors(validator: LookMLValidator):
     results = await validator.validate(project="eye_exam")
 
     assert results["status"] == "failed"
-    assert len(results["errors"]) == 7
+    assert len(results["errors"]) == 2
