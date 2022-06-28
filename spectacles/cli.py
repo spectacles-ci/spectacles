@@ -182,7 +182,7 @@ def handle_exceptions(function: Callable) -> Callable:
                 + "\n"
             )
             sys.exit(error.exit_code)
-        except (KeyboardInterrupt) as error:
+        except KeyboardInterrupt as error:
             logger.debug(error, exc_info=True)
             logger.info("Spectacles was manually interrupted.")
             sys.exit(1)
