@@ -48,7 +48,7 @@ jobs:
           name: mypy
           command: |
             . venv/bin/activate
-            mypy spectacles
+            mypy spectacles tests
 
       - run:
           name: flake8
