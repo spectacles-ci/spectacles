@@ -1,10 +1,10 @@
 import asyncio
 from dataclasses import dataclass
 import re
-from typing import Dict, List, Sequence, Optional, Any, Iterable, Type, Literal
+from typing import Dict, List, Sequence, Optional, Any, Iterable
 from spectacles.client import LookerClient
 from spectacles.exceptions import ValidationError, LookMlNotFound
-from spectacles.types import JsonDict, T
+from spectacles.types import JsonDict
 from spectacles.select import is_selected
 
 
