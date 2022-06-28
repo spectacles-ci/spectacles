@@ -37,7 +37,6 @@ def test_extract_error_details_should_error_on_non_str_message_details():
         QueryResult.parse_obj(response_json)
 
 
-@pytest.mark.xfail
 def test_query_results_with_no_message_details_works():
     message = "An error message."
     response_json = {
@@ -46,6 +45,7 @@ def test_query_results_with_no_message_details_works():
             "id": "abcdef12345",
             "runtime": 1.0,
             "errors": [{"message": message, "message_details": None}],
+            "sql": "SELECT * FROM orders",
         },
     }
     query_result = QueryResult.parse_obj(response_json)
