@@ -78,13 +78,15 @@ jobs:
           name: Run integration tests
           command: |
             . venv/bin/activate
-            pytest tests/unit
+            pytest tests/integration
 
 workflows:
   version: 2
   test:
     jobs:
       - unit
-      - integration:
+      - approve:
           type: approval
           requires: [unit]
+      - integration:
+          requires: [approve]
