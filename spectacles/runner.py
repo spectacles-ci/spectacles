@@ -394,7 +394,7 @@ class Runner:
                 compiled_dimensions = await asyncio.gather(
                     *(
                         validator.compile_dimension(dimension)
-                        for dimension in target_project.iter_dimensions(errored=True)
+                        for dimension in project.iter_dimensions(errored=True)
                     )
                 )
                 target_dimensions = set(compiled_dimensions)
@@ -405,11 +405,16 @@ class Runner:
                 f"@ {target or 'production'}"
             )
 
+            # Namespace SQL with the dimension name, just in case
+            target_sql = tuple(
+                (compiled.dimension_name, compiled.sql)
+                for compiled in target_dimensions
+            )
             for dimension in errored_dimensions:
                 for error in dimension.errors:
                     if (
                         isinstance(error, SqlError)
-                        and (dimension.name, error.metadata["sql"]) in target_dimensions
+                        and (dimension.name, error.metadata["sql"]) in target_sql
                     ):
                         error.ignore = True
 
