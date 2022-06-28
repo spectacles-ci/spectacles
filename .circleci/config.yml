@@ -21,10 +21,14 @@ jobs:
             - v1-dependencies-
 
       - run:
-          name: install spectacles
+          name: install non-python dependencies
           command: |
             sudo apt-get update
             sudo apt-get install libyaml-dev
+
+      - run:
+          name: install spectacles
+          command: |
             python3 -m venv venv
             . venv/bin/activate
             pip install -r requirements-dev.txt
