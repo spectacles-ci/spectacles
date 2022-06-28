@@ -29,7 +29,7 @@ jobs:
       - run:
           name: install spectacles
           command: |
-            python3 -m venv venv
+            python3 -m venv venv --clear
             . venv/bin/activate
             pip install -U pip
             pip install -r requirements-dev.txt
