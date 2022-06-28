@@ -1,5 +1,5 @@
 import asyncio
-from typing import List, Tuple, Callable, Any
+from typing import List, Tuple, Callable, Any, Dict
 import time
 import httpx
 import respx
@@ -91,7 +91,7 @@ async def test_bad_requests_should_raise_looker_api_errors(
     mock_request: AsyncMock,
     method_name: str,
     looker_client: LookerClient,
-    client_kwargs: dict[str, dict[str, Any]],
+    client_kwargs: Dict[str, Dict[str, Any]],
 ):
     """Tests each method of LookerClient for how it handles a 401 response"""
     response = httpx.Response(

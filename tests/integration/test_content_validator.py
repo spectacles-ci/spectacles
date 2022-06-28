@@ -14,7 +14,7 @@ def validator(looker_client: LookerClient) -> ContentValidator:
 @pytest.fixture(params=["no_errors", "errors"])
 async def validation_result(
     request: pytest.FixtureRequest, validator: ContentValidator
-) -> tuple[ContentError, ...]:
+) -> Tuple[ContentError, ...]:
     if request.param == "no_errors":  # type: ignore[attr-defined]
         explore_name = "users"
     else:
@@ -27,7 +27,7 @@ async def validation_result(
     return errors
 
 
-def test_correct_number_of_errors_returned(validation_result: tuple[ContentError, ...]):
+def test_correct_number_of_errors_returned(validation_result: Tuple[ContentError, ...]):
     # Errors should only come from the failing Explore
     if validation_result:
         assert len(validation_result) == 1
