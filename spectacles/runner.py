@@ -1,7 +1,7 @@
 import asyncio
 import re
 from spectacles.exceptions import LookerApiError, SqlError
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Set
 from dataclasses import dataclass
 import itertools
 from spectacles.client import LookerClient
@@ -304,7 +304,7 @@ class Runner:
                 include_dimensions=True,
                 ignore_hidden_fields=ignore_hidden_fields,
             )
-            base_explores: set[CompiledSql] = set()
+            base_explores: Set[CompiledSql] = set()
             if incremental:
                 compiled_explores = await asyncio.gather(
                     *(
@@ -337,7 +337,7 @@ class Runner:
                     include_dimensions=True,
                     ignore_hidden_fields=ignore_hidden_fields,
                 )
-                target_explores: set[CompiledSql] = set()
+                target_explores: Set[CompiledSql] = set()
                 if incremental:
                     compiled_explores = await asyncio.gather(
                         *(
