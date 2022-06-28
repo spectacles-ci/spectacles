@@ -17,14 +17,14 @@ def validator(looker_client: LookerClient) -> SqlValidator:
 
 
 @pytest.fixture
-def queries_to_run() -> asyncio.Queue[Optional[Query]]:
+def queries_to_run() -> "asyncio.Queue[Optional[Query]]":
     """Creates a queue of Queries or a sentinel None."""
     queue: asyncio.Queue[Optional[Query]] = asyncio.Queue()
     return queue
 
 
 @pytest.fixture
-def running_queries() -> asyncio.Queue[str]:
+def running_queries() -> "asyncio.Queue[str]":
     """Creates a queue of query task IDs."""
     queue: asyncio.Queue[str] = asyncio.Queue()
     return queue
