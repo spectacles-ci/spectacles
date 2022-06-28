@@ -13,7 +13,7 @@ TMP_REMOTE_BRANCH = "pytest-tmp"
 
 @pytest.fixture(scope="module")
 def remote_repo() -> Iterable[Repository]:
-    access_token = os.environ.get("GITHUB_ACCESS_TOKEN")
+    access_token = os.environ["GITHUB_ACCESS_TOKEN"]
     client = GitHub(access_token)
     repo = client.get_repo("spectacles-ci/eye-exam")
     yield repo
