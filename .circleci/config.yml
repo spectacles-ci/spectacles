@@ -72,7 +72,7 @@ jobs:
           name: pytest and coverage
           command: |
             . venv/bin/activate
-            coverage run --source spectacles -m pytest --record-mode none --block-network
+            coverage run --source spectacles -m pytest
             coverage report
 
 workflows:
