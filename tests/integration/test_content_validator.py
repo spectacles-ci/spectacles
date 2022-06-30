@@ -30,7 +30,7 @@ async def validation_result(
 def test_correct_number_of_errors_returned(validation_result: Tuple[ContentError, ...]):
     # Errors should only come from the failing Explore
     if validation_result:
-        assert len(validation_result) == 1
+        assert len(validation_result) == 2
         assert all(error.explore == "users__fail" for error in validation_result)
         titles = [error.metadata["title"] for error in validation_result]
         assert "personal" not in titles
@@ -55,7 +55,7 @@ async def test_error_from_included_folder_should_be_returned(
     )
     validator.include_folders.append(26)
     validation_result: List[ContentError] = await validator.validate(project)
-    assert len(validation_result) == 1
+    assert len(validation_result) == 2
 
 
 async def test_excluded_folder_should_take_priority_over_included_folder(
