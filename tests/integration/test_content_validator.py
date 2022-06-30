@@ -31,7 +31,10 @@ def test_correct_number_of_errors_returned(validation_result: Tuple[ContentError
     # Errors should only come from the failing Explore
     if validation_result:
         assert len(validation_result) == 2
-        assert all(error.explore == "users__fail" for error in validation_result)
+        assert all(
+            error.explore in ("users__fail", "users_deleted")
+            for error in validation_result
+        )
         titles = [error.metadata["title"] for error in validation_result]
         assert "personal" not in titles
 
