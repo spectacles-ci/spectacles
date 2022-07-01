@@ -26,7 +26,6 @@ class Query:
     query_id: int | None = None
     explore_url: str | None = None
     errored: bool | None = None
-    chunk_size: int = DEFAULT_CHUNK_SIZE
     runtime: float | None = None
 
     def __post_init__(self) -> None:
@@ -48,12 +47,8 @@ class Query:
             raise ValueError("Query must have at least 2 dimensions to divide")
 
         midpoint = len(self.dimensions) // 2
-        if midpoint > self.chunk_size:
-            for i in range(0, len(self.dimensions), self.chunk_size):
-                yield Query(self.explore, self.dimensions[i : i + self.chunk_size])
-        else:
-            yield Query(self.explore, self.dimensions[:midpoint])
-            yield Query(self.explore, self.dimensions[midpoint:])
+        yield Query(self.explore, self.dimensions[:midpoint])
+        yield Query(self.explore, self.dimensions[midpoint:])
 
     def to_profiler_format(self) -> ProfilerTableRow:
         if self.runtime is None:
@@ -154,7 +149,11 @@ class SqlValidator:
         return CompiledSql.from_dimension(dimension, sql)
 
     async def search(
-        self, explores: tuple[Explore, ...], fail_fast: bool, profile: bool = False
+        self,
+        explores: tuple[Explore, ...],
+        fail_fast: bool,
+        chunk_size: int = DEFAULT_CHUNK_SIZE,
+        profile: bool = False,
     ) -> None:
         queries_to_run: asyncio.Queue[Optional[Query]] = asyncio.Queue()
         running_queries: asyncio.Queue[str] = asyncio.Queue()
@@ -175,7 +174,14 @@ class SqlValidator:
 
         try:
             for explore in explores:
-                queries_to_run.put_nowait(Query(explore, tuple(explore.dimensions)))
+                # TODO: Think about fail fast
+                if len(explore.dimensions) <= chunk_size:
+                    queries_to_run.put_nowait(Query(explore, tuple(explore.dimensions)))
+                else:
+                    for i in range(0, len(explore.dimensions), chunk_size):
+                        chunk = explore.dimensions[i : i + chunk_size]
+                        query = Query(explore, tuple(chunk))
+                        queries_to_run.put_nowait(query)
 
             # Wait for all work to complete
             await queries_to_run.join()
@@ -333,12 +339,11 @@ class SqlValidator:
 
                             # Make child queries and put them back on the queue
                             elif len(query.dimensions) > 1:
-                                n = 0
                                 for child in query.divide():
-                                    n += 1
                                     await queries_to_run.put(child)
 
                             # Assign the error(s) to its dimension
+                            # TODO: Think about other cases here
                             else:
                                 dimension = query.dimensions[0]
                                 dimension.queried = True
