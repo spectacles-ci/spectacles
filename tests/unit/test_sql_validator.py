@@ -1,6 +1,7 @@
 import asyncio
 from typing import Optional
 from unittest.mock import Mock, patch
+import json
 import pytest
 import httpx
 import respx
@@ -573,3 +574,71 @@ async def test_search_handles_exceptions_raised_while_getting_query_results(
     task_names = (task.get_name() for task in asyncio.all_tasks())
     assert "run_query" not in task_names
     assert "get_query_results" not in task_names
+
+
+@pytest.mark.parametrize("fail_fast", (True, False))
+async def test_search_with_chunk_size_should_limit_queries(
+    fail_fast: bool,
+    mocked_api: respx.MockRouter,
+    validator: SqlValidator,
+    explore: Explore,
+    dimension: Dimension,
+):
+    chunk_size = 10
+    explore.dimensions = [dimension] * 100
+    explore_url = "https://spectacles.looker.com/x"
+
+    # Define some factories to make IDs sensible across requests
+    query_ids = []
+    query_task_ids = []
+
+    def create_query_factory(request, route) -> httpx.Response:
+        query_id = route.call_count + 1  # Use the call count for incrementing IDs
+        query_ids.append(query_id)
+        return httpx.Response(200, json={"id": query_id, "share_url": explore_url})
+
+    def create_query_task_factory(request) -> httpx.Response:
+        query_id = query_ids.pop()
+        query_task_id = f"abcdef{query_id}"
+        query_task_ids.append(query_task_id)
+        return httpx.Response(200, json={"id": query_task_id})
+
+    def get_query_results_factory(request) -> httpx.Response:
+        response = httpx.Response(
+            200,
+            json={
+                query_task_id: {
+                    "status": "complete",
+                    "data": {
+                        "id": query_task_id,
+                        "runtime": 0.0,
+                        "sql": "SELECT * FROM users",
+                    },
+                }
+                for query_task_id in query_task_ids
+            },
+        )
+        return response
+
+    mocked_api.post(
+        "queries", params={"fields": "id,share_url"}, name="create_query"
+    ).mock(side_effect=create_query_factory)
+    mocked_api.post(
+        "query_tasks",
+        params={"fields": "id", "cache": "false"},
+        name="create_query_task",
+    ).mock(side_effect=create_query_task_factory)
+    mocked_api.get("query_tasks/multi_results", name="get_query_results").mock(
+        side_effect=get_query_results_factory
+    )
+
+    await validator.search(
+        explores=(explore,), fail_fast=fail_fast, chunk_size=chunk_size
+    )
+    assert mocked_api["create_query"].call_count == 10
+    assert mocked_api["create_query_task"].call_count == 10
+    assert mocked_api["get_query_results"].call_count > 0
+    request: httpx.Request
+    for request, _ in mocked_api["create_query"].calls:
+        body = json.loads(request.content)
+        assert len(body["fields"]) == 10

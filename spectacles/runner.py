@@ -381,7 +381,7 @@ class Runner:
 
         async with self.branch_manager(ref=ref):
             await validator.search(
-                explores, fail_fast, profile=profile if fail_fast else False
+                explores, fail_fast, chunk_size, profile=profile if fail_fast else False
             )
 
         # Create dimension tests for the desired ref when explores errored
