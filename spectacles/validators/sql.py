@@ -174,7 +174,6 @@ class SqlValidator:
 
         try:
             for explore in explores:
-                # TODO: Think about fail fast
                 if len(explore.dimensions) <= chunk_size:
                     queries_to_run.put_nowait(Query(explore, tuple(explore.dimensions)))
                 else:
@@ -343,8 +342,7 @@ class SqlValidator:
                                     await queries_to_run.put(child)
 
                             # Assign the error(s) to its dimension
-                            # TODO: Think about other cases here
-                            else:
+                            elif len(query.dimensions) == 1:
                                 dimension = query.dimensions[0]
                                 dimension.queried = True
                                 for error in query_result.get_valid_errors():
@@ -365,6 +363,13 @@ class SqlValidator:
                                             explore_url=query.explore_url,
                                         )
                                     )
+
+                            else:
+                                raise ValueError(
+                                    "Query had an unexpected number of dimensions. "
+                                    "Queries must have at least one dimension, but "
+                                    f"{query!r} had {len(query.dimensions)} dimensions."
+                                )
 
                             # Indicate there are no more queries or subqueries to run
                             queries_to_run.task_done()
