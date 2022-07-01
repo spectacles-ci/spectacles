@@ -43,33 +43,6 @@ def test_query_with_one_dimension_should_not_divide(
         next(query.divide())
 
 
-def test_query_divide_with_chunk_size_interaction(
-    explore: Explore, dimension: Dimension
-):
-    # Chunk size > len(dimension) / 2? Divide in half
-    query = Query(
-        explore=explore,
-        dimensions=tuple([dimension] * 10),
-        chunk_size=100,
-        errored=True,
-    )
-    children = tuple(query.divide())
-    assert len(children) == 2
-    assert sorted([len(child.dimensions) for child in children]) == [5, 5]
-
-    # Chunk size < len(dimension) / 2? Divide into N chunks
-    query.chunk_size = 3
-    children = tuple(query.divide())
-    assert len(children) == 4
-    assert sorted([len(child.dimensions) for child in children]) == [1, 3, 3, 3]
-
-    # Chunk size == len(dimension) / 2? Divide into N chunks
-    query.chunk_size = 5
-    children = tuple(query.divide())
-    assert len(children) == 2
-    assert sorted([len(child.dimensions) for child in children]) == [5, 5]
-
-
 def test_query_should_not_divide_if_not_errored(explore: Explore, dimension: Dimension):
     query = Query(explore=explore, dimensions=(dimension, dimension))
     with pytest.raises(TypeError):
