@@ -2,7 +2,6 @@ import pytest
 from spectacles.lookml import Dimension, Explore
 from spectacles.validators.sql import Query
 from copy import deepcopy
-from unittest.mock import MagicMock, patch
 
 
 def test_query_dimensions_should_belong_to_own_explore(
@@ -18,23 +17,6 @@ def test_query_dimensions_should_belong_to_own_explore(
     explore.name = "not_eye_exam"
     with pytest.raises(ValueError):
         Query(explore=explore, dimensions=(dimension, dimension))
-
-
-@patch("spectacles.validators.sql.LookerClient", autospec=True)
-async def test_query_create_should_call_client(
-    mock_client: MagicMock, explore: Explore, dimension: Dimension
-):
-    query = Query(explore=explore, dimensions=(dimension, dimension))
-    query_id = 12345
-    explore_url = "https://spectacles.looker.com/x"
-    mock_client.create_query.return_value = {
-        "id": query_id,
-        "share_url": explore_url,
-    }
-    await query.create(client=mock_client)
-    assert query.query_id == query_id
-    assert query.explore_url == explore_url
-    mock_client.create_query.assert_awaited_once()
 
 
 def test_query_divide_with_different_numbers_of_dimensions(

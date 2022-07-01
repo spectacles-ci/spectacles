@@ -45,16 +45,6 @@ class Query:
     def __repr__(self) -> str:
         return f"Query(explore={self.explore.name} n={len(self.dimensions)})"
 
-    async def create(self, client: LookerClient) -> None:
-        result = await client.create_query(
-            model=self.dimensions[0].model_name,
-            explore=self.dimensions[0].explore_name,
-            dimensions=[dimension.name for dimension in self.dimensions],
-            fields=["id", "share_url"],
-        )
-        self.query_id = result["id"]
-        self.explore_url = result["share_url"]
-
     def divide(self) -> Iterator[Query]:
         if not self.errored:
             raise TypeError("Query.errored must be True to divide")
@@ -243,7 +233,14 @@ class SqlValidator:
             while (query := await queries_to_run.get()) is not None:
                 logger.debug("Waiting to acquire a query slot")
                 await query_slot.acquire()
-                await query.create(self.client)
+                result = await self.client.create_query(
+                    model=query.dimensions[0].model_name,
+                    explore=query.dimensions[0].explore_name,
+                    dimensions=[dimension.name for dimension in query.dimensions],
+                    fields=["id", "share_url"],
+                )
+                query.query_id = result["id"]
+                query.explore_url = result["share_url"]
                 logger.debug(f"Running query {query!r} [qid={query.query_id}]")
                 if query.query_id is None:
                     raise TypeError(
