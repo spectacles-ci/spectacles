@@ -1,9 +1,8 @@
 from __future__ import annotations
 import asyncio
-from collections import defaultdict
 from dataclasses import dataclass
 from tabulate import tabulate
-from typing import ClassVar, List, Optional, Tuple, Iterator
+from typing import List, Optional, Tuple, Iterator
 import pydantic
 from spectacles.client import LookerClient
 from spectacles.lookml import CompiledSql, Dimension, Explore
@@ -29,11 +28,8 @@ class Query:
     errored: bool | None = None
     chunk_size: int = DEFAULT_CHUNK_SIZE
     runtime: float | None = None
-    # TODO: Remove this later if we don't need it
-    count: ClassVar[dict] = defaultdict(lambda: defaultdict(int))
 
     def __post_init__(self) -> None:
-        Query.count[self.explore.name][len(self.dimensions)] += 1
         # Confirm that all dimensions are from the Explore associated here
         if len(set((d.model_name, d.explore_name) for d in self.dimensions)) > 1:
             raise ValueError("All Dimensions must be from the same model and explore")
