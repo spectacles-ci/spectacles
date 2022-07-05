@@ -494,13 +494,13 @@ async def build_project(
                 if is_selected(model.name, explore.name, filters)
             ]
 
-        tasks: List[asyncio.Task] = []
-        if include_dimensions:
-            for explore in model.explores:
-                task = asyncio.create_task(
-                    build_explore_dimensions(client, explore, ignore_hidden_fields)
-                )
-                tasks.append(task)
+            tasks: List[asyncio.Task] = []
+            if include_dimensions:
+                for explore in model.explores:
+                    task = asyncio.create_task(
+                        build_explore_dimensions(client, explore, ignore_hidden_fields)
+                    )
+                    tasks.append(task)
 
         await asyncio.gather(*tasks)
 
