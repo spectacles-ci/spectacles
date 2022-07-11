@@ -562,7 +562,11 @@ class LookerClient:
             params["model"] = model
         if test is not None:
             params["test"] = test
-        response = await self.get(url=url, params=params, timeout=TIMEOUT_SEC)
+        response = await self.get(
+            url=url,
+            params=params,
+            timeout=1800,  # 30m timeout for long-running tests
+        )
 
         try:
             response.raise_for_status()
