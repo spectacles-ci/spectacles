@@ -136,6 +136,7 @@ class LookerClient:
             f"using Looker API {self.api_version}"
         )
 
+    @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=2)
     async def request(self, method: str, url: str, *args, **kwargs) -> httpx.Response:
         if self.access_token and self.access_token.expired:
             logger.debug("Looker API access token has expired, requesting a new one")
@@ -645,7 +646,7 @@ class LookerClient:
 
         return response.json()["fields"]["dimensions"]
 
-    @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=10)
+    @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=5)
     async def create_query(
         self, model: str, explore: str, dimensions: List[str], fields: List = None
     ) -> Dict:
@@ -892,7 +893,7 @@ class LookerClient:
         result = response.json()
         return result
 
-    @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=10)
+    @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=5)
     async def run_query(self, query_id: int) -> str:
         """Returns the compiled SQL for a given query ID.
 

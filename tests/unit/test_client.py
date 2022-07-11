@@ -129,3 +129,17 @@ def test_get_looker_release_version_should_return_correct_version(
     )
     version = looker_client.get_looker_release_version()
     assert version == mock_api_version
+
+
+async def test_timeout_should_cause_backoff_and_retry(
+    looker_client: LookerClient, mocked_api: respx.MockRouter
+):
+    project = "eye_exam"
+    mocked_api.get(f"projects/{project}/lookml_tests/run", name="run_lookml_test").mock(
+        side_effect=(
+            httpx.TimeoutException,
+            httpx.Response(200, json={"some json": "hey!"}),
+        )
+    )
+    await looker_client.run_lookml_test(project=project)
+    assert mocked_api["run_lookml_test"].call_count == 2
