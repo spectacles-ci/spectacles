@@ -137,6 +137,76 @@ def test_should_not_be_able_to_set_errored_on_explore(explore: Explore):
         explore.errored = True
 
 
+def test_dimensions_can_be_sorted_by_name():
+    unsorted = [
+        Dimension(
+            name="b",
+            model_name="",
+            explore_name="",
+            type="",
+            tags=[],
+            sql="",
+            is_hidden=False,
+        ),
+        Dimension(
+            name="a",
+            model_name="",
+            explore_name="",
+            type="",
+            tags=[],
+            sql="",
+            is_hidden=False,
+        ),
+        Dimension(
+            name="c",
+            model_name="",
+            explore_name="",
+            type="",
+            tags=[],
+            sql="",
+            is_hidden=False,
+        ),
+    ]
+
+    assert sorted(unsorted) != unsorted
+    assert [dimension.name for dimension in sorted(unsorted)] == ["a", "b", "c"]
+
+
+def test_dimensions_can_be_sorted_by_explore_name():
+    unsorted = [
+        Dimension(
+            name="",
+            model_name="",
+            explore_name="b",
+            type="",
+            tags=[],
+            sql="",
+            is_hidden=False,
+        ),
+        Dimension(
+            name="",
+            model_name="",
+            explore_name="c",
+            type="",
+            tags=[],
+            sql="",
+            is_hidden=False,
+        ),
+        Dimension(
+            name="",
+            model_name="",
+            explore_name="a",
+            type="",
+            tags=[],
+            sql="",
+            is_hidden=False,
+        ),
+    ]
+
+    assert sorted(unsorted) != unsorted
+    assert [dimension.explore_name for dimension in sorted(unsorted)] == ["a", "b", "c"]
+
+
 def test_parent_queried_behavior_should_depend_on_its_child(
     explore: Explore, dimension: Dimension, model, project: Project
 ):
