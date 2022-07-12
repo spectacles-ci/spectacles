@@ -63,6 +63,16 @@ class Dimension(LookMlObject):
             and self.url == other.url
         )
 
+    def __lt__(self, other):
+        if not isinstance(other, Dimension):
+            return NotImplemented
+
+        return (self.model_name, self.explore_name, self.name) < (
+            other.model_name,
+            other.explore_name,
+            other.name,
+        )
+
     @property
     def errored(self):
         return bool(self.errors) if self.queried else None

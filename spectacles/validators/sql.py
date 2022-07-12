@@ -174,12 +174,14 @@ class SqlValidator:
 
         try:
             for explore in explores:
-                if len(explore.dimensions) <= chunk_size:
-                    queries_to_run.put_nowait(Query(explore, tuple(explore.dimensions)))
+                # Sorting makes it more likely to prune the tree faster in binsearch
+                dimensions = tuple(sorted(explore.dimensions))
+                if len(dimensions) <= chunk_size:
+                    queries_to_run.put_nowait(Query(explore, dimensions))
                 else:
-                    for i in range(0, len(explore.dimensions), chunk_size):
-                        chunk = explore.dimensions[i : i + chunk_size]
-                        query = Query(explore, tuple(chunk))
+                    for i in range(0, len(dimensions), chunk_size):
+                        chunk = dimensions[i : i + chunk_size]
+                        query = Query(explore, chunk)
                         queries_to_run.put_nowait(query)
 
             # Wait for all work to complete
