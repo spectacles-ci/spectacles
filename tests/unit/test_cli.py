@@ -450,7 +450,7 @@ def test_main_with_connect(
         client_id="CLIENT_ID_ENV_VAR",
         client_secret="CLIENT_SECRET_ENV_VAR",
         port=8080,
-        api_version=3.1,
+        api_version=4.0,
     )
 
 
@@ -468,7 +468,7 @@ def test_main_with_do_not_track(
         client_id="CLIENT_ID_ENV_VAR",
         client_secret="CLIENT_SECRET_ENV_VAR",
         port=8080,
-        api_version=3.1,
+        api_version=4.0,
     )
 
 

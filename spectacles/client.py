@@ -9,7 +9,7 @@ from spectacles.types import JsonDict
 from spectacles.logger import GLOBAL_LOGGER as logger
 from spectacles.exceptions import SpectaclesException, LookerApiError
 
-DEFAULT_API_VERSION = 3.1
+DEFAULT_API_VERSION = 4.0
 TIMEOUT_SEC = 300
 MAX_ASYNC_CONNECTIONS = 200
 BACKOFF_EXCEPTIONS = (
@@ -24,6 +24,7 @@ class AccessToken:
     access_token: str
     token_type: str
     expires_in: int
+    refresh_token: Optional[str]
     expires_at: float
 
     def __str__(self) -> str:
@@ -60,7 +61,7 @@ class LookerClient:
         api_version: float = DEFAULT_API_VERSION,
     ):
         self.async_client = async_client
-        supported_api_versions = [3.1]
+        supported_api_versions = [4.0]
         if api_version not in supported_api_versions:
             raise SpectaclesException(
                 name="unsupported-api-version",
@@ -702,9 +703,9 @@ class LookerClient:
             ) from error
 
         result = response.json()
-        query_id = result["id"]
+        query_id: str = result["id"]
         logger.debug(
-            "Query for %s/%s/%s created as query %d",
+            "Query for %s/%s/%s created as query %s",
             model,
             explore,
             "*" if len(dimensions) != 1 else dimensions[0],
@@ -712,7 +713,7 @@ class LookerClient:
         )
         return result
 
-    async def create_query_task(self, query_id: int) -> str:
+    async def create_query_task(self, query_id: str) -> str:
         """Runs a previously created query asynchronously and returns the query task ID.
 
         If a ClientError or TimeoutError is received, attempts to retry.
@@ -727,7 +728,7 @@ class LookerClient:
 
         """
         # Using old-style string formatting so that strings are formatted lazily
-        logger.debug("Starting query %d", query_id)
+        logger.debug("Starting query %s", query_id)
         body = {"query_id": query_id, "result_format": "json_detail"}
         params = {"fields": ["id"]}
         url = utils.compose_url(self.api_url, path=["query_tasks"], params=params)
@@ -752,7 +753,7 @@ class LookerClient:
 
         result = response.json()
         query_task_id = result["id"]
-        logger.debug("Query %d is running under query task %s", query_id, query_task_id)
+        logger.debug("Query %s is running under query task %s", query_id, query_task_id)
         return query_task_id
 
     async def get_query_task_multi_results(
@@ -898,7 +899,7 @@ class LookerClient:
         return result
 
     @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=5)
-    async def run_query(self, query_id: int) -> str:
+    async def run_query(self, query_id: str) -> str:
         """Returns the compiled SQL for a given query ID.
 
         The corresponding Looker API endpoint allows us to run queries with a variety

@@ -16,14 +16,14 @@ QUERY_TASK_LIMIT = 250
 DEFAULT_CHUNK_SIZE = 500
 DEFAULT_QUERY_CONCURRENCY = 10
 DEFAULT_RUNTIME_THRESHOLD = 5
-ProfilerTableRow = Tuple[str, float, int, str]
+ProfilerTableRow = Tuple[str, float, str, str]
 
 
 @dataclass
 class Query:
     explore: Explore
     dimensions: tuple[Dimension, ...]
-    query_id: int | None = None
+    query_id: str | None = None
     explore_url: str | None = None
     errored: bool | None = None
     runtime: float | None = None

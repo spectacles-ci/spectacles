@@ -15,6 +15,7 @@ def test_expired_access_token_should_be_expired():
         access_token="abc123",
         token_type="Bearer",
         expires_in=3600,
+        refresh_token=None,
         expires_at=time.time() - 1,
     )
     assert token.expired
@@ -45,7 +46,7 @@ def get_client_method_names() -> List[str]:
 @pytest.fixture
 def client_kwargs():
     return dict(
-        authenticate={"client_id": "", "client_secret": "", "api_version": 3.1},
+        authenticate={"client_id": "", "client_secret": "", "api_version": 4.0},
         get_looker_release_version={},
         get_workspace={},
         update_workspace={"workspace": "dev"},

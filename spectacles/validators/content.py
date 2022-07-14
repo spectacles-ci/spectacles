@@ -15,27 +15,27 @@ class ContentValidator:
     ):
         self.client = client
         self.exclude_personal = exclude_personal
-        self.include_folders = []
-        self.exclude_folders = []
+        self.include_folders: List[str] = []
+        self.exclude_folders: List[str] = []
 
         if folders:
             for folder_id in folders:
                 if folder_id.startswith("-"):
-                    self.exclude_folders.append(int(folder_id[1:]))
+                    self.exclude_folders.append(folder_id[1:])
                 else:
-                    self.include_folders.append(int(folder_id))
+                    self.include_folders.append(folder_id)
 
     async def validate(self, project: Project) -> List[ContentError]:
         personal_folders = (
             await self._get_personal_folders() if self.exclude_personal else []
         )
 
-        self.excluded_folders: List[int] = personal_folders + (
+        self.excluded_folders: List[str] = personal_folders + (
             await self._get_all_subfolders(self.exclude_folders)
             if self.exclude_folders
             else []
         )
-        self.included_folders: List[int] = (
+        self.included_folders: List[str] = (
             await self._get_all_subfolders(self.include_folders)
             if self.include_folders
             else []
@@ -77,7 +77,7 @@ class ContentValidator:
 
         return content_errors
 
-    async def _get_personal_folders(self) -> List[int]:
+    async def _get_personal_folders(self) -> List[str]:
         personal_folders = []
         result = await self.client.all_folders()
         for folder in result:
@@ -85,7 +85,7 @@ class ContentValidator:
                 personal_folders.append(folder["id"])
         return personal_folders
 
-    async def _get_all_subfolders(self, input_folders: List[int]) -> List[int]:
+    async def _get_all_subfolders(self, input_folders: List[str]) -> List[str]:
         result = []
         all_folders = await self.client.all_folders()
         for folder_id in input_folders:
@@ -98,7 +98,7 @@ class ContentValidator:
             result.extend(self._get_subfolders(folder_id, all_folders))
         return result
 
-    def _get_subfolders(self, folder_id: int, all_folders: List[JsonDict]) -> List[int]:
+    def _get_subfolders(self, folder_id: str, all_folders: List[JsonDict]) -> List[str]:
         subfolders = [folder_id]
         children = [
             child["id"] for child in all_folders if child["parent_id"] == folder_id
@@ -150,7 +150,6 @@ class ContentValidator:
                     field_name=error["field_name"],
                     content_type=content_type,
                     title=result[content_type]["title"],
-                    space=result[content_type]["space"]["name"],
                     url=f"{self.client.base_url}/{content_type}s/{content_id}",
                     tile_type=(
                         self._get_tile_type(result)

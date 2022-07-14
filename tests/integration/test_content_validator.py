@@ -45,7 +45,7 @@ async def test_error_from_excluded_folder_should_be_ignored(
     project = await build_project(
         validator.client, name="eye_exam", filters=["eye_exam/users__fail"]
     )
-    validator.exclude_folders.append(26)
+    validator.exclude_folders.append("26")
     validation_result: List[ContentError] = await validator.validate(project)
     assert len(validation_result) == 0
 
@@ -56,7 +56,7 @@ async def test_error_from_included_folder_should_be_returned(
     project = await build_project(
         validator.client, name="eye_exam", filters=["eye_exam/users__fail"]
     )
-    validator.include_folders.append(26)
+    validator.include_folders.append("26")
     validation_result: List[ContentError] = await validator.validate(project)
     assert len(validation_result) == 2
 
@@ -67,8 +67,8 @@ async def test_excluded_folder_should_take_priority_over_included_folder(
     project = await build_project(
         validator.client, name="eye_exam", filters=["eye_exam/users__fail"]
     )
-    validator.include_folders.append(26)
-    validator.exclude_folders.append(26)
+    validator.include_folders.append("26")
+    validator.exclude_folders.append("26")
     validation_result: List[ContentError] = await validator.validate(project)
     assert len(validation_result) == 0
 

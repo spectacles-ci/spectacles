@@ -8,7 +8,7 @@ from spectacles.client import LookerClient
 @pytest.fixture
 def mocked_api() -> Iterable[respx.MockRouter]:
     with respx.mock(
-        base_url="https://spectacles.looker.com:19999/api/3.1", assert_all_called=False
+        base_url="https://spectacles.looker.com:19999/api/4.0", assert_all_called=False
     ) as respx_mock:
         respx_mock.post("/login", name="login").mock(
             return_value=httpx.Response(
@@ -17,6 +17,7 @@ def mocked_api() -> Iterable[respx.MockRouter]:
                     "access_token": "<ACCESS TOKEN>",
                     "token_type": "Bearer",
                     "expires_in": 3600,
+                    "refresh_token": None,
                 },
             )
         )

@@ -40,7 +40,7 @@ def query_slot() -> asyncio.Semaphore:
 
 @pytest.fixture
 def query(explore: Explore, dimension: Dimension) -> Query:
-    return Query(explore, (dimension,), query_id=12345)
+    return Query(explore, (dimension,), query_id="12345")
 
 
 async def test_compile_explore_without_dimensions_should_not_work(

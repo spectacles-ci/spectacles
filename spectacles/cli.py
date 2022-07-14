@@ -424,7 +424,7 @@ def _build_base_subparser() -> argparse.ArgumentParser:
         action=EnvVarAction,
         env_var="LOOKER_API_VERSION",
         default=DEFAULT_API_VERSION,
-        help="The version of the Looker API to use. The default is version 3.1.",
+        help="The version of the Looker API to use. The default is version 4.0.",
     )
     base_subparser.add_argument(
         "-v",

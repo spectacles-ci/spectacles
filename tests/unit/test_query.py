@@ -60,7 +60,7 @@ def test_query_should_convert_to_profiler_format(
     explore: Explore, dimension: Dimension
 ):
     explore_url = "https://spectacles.looker.com/x"
-    query_id = 12345
+    query_id = "12345"
     runtime = 10.0
 
     query = Query(

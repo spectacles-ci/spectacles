@@ -48,6 +48,6 @@ async def test_create_query_without_dimensions_should_return_certain_fields(
     )
     assert set(("id", "share_url")) <= set(query.keys())
     assert int(query["limit"]) == 0
-    assert query["fields"] is None
+    assert not query["fields"]
     assert query["filter_expression"] == "1=2"
     assert query["model"] == "eye_exam"
