@@ -133,7 +133,7 @@ class LookerClient:
     @backoff.on_exception(
         backoff.expo,
         BACKOFF_EXCEPTIONS,
-        max_tries=2,
+        max_tries=3,
     )
     def request(self, method: str, url: str, *args, **kwargs) -> requests.Response:
         if self.access_token and self.access_token.expired:
@@ -558,7 +558,7 @@ class LookerClient:
             params["model"] = model
         if test is not None:
             params["test"] = test
-        response = self.session.get(url=url, params=params, timeout=TIMEOUT_SEC)
+        response = self.get(url=url, params=params, timeout=TIMEOUT_SEC)
 
         try:
             response.raise_for_status()
