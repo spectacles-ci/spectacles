@@ -171,3 +171,14 @@ def test_authenticate_should_set_session_headers(mock_post, monkeypatch):
     mock_post.return_value = mock_post_response
     client = LookerClient("base_url", "client_id", "client_secret")
     assert client.session.headers == {"Authorization": "token test_access_token"}
+
+
+@patch(
+    "spectacles.client.requests.Session.request",
+    side_effect=requests.exceptions.ReadTimeout,
+)
+def test_timeout_gets_handled_with_retries(mock_request, looker_client):
+    with pytest.raises(requests.exceptions.ReadTimeout):
+        looker_client.run_lookml_test(project="project_name")
+
+    assert mock_request.call_count == 3
