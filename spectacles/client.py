@@ -137,7 +137,7 @@ class LookerClient:
             f"using Looker API {self.api_version}"
         )
 
-    @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=2)
+    @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=3)
     async def request(self, method: str, url: str, *args, **kwargs) -> httpx.Response:
         if self.access_token and self.access_token.expired:
             logger.debug("Looker API access token has expired, requesting a new one")
