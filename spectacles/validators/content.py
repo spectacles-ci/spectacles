@@ -58,7 +58,7 @@ class ContentValidator:
             try:
                 content_type = self._get_content_type(content)
             except KeyError:
-                logger.warn(
+                logger.warning(
                     "Warning: Skipping some content because it does not seem to be a "
                     "Dashboard or a Look."
                 )
