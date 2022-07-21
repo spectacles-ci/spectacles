@@ -2,6 +2,7 @@ import asyncio
 from typing import Optional
 from unittest.mock import Mock, patch
 import json
+import logging
 import pytest
 import httpx
 import respx
@@ -642,3 +643,12 @@ async def test_search_with_chunk_size_should_limit_queries(
     for request, _ in mocked_api["create_query"].calls:
         body = json.loads(request.content)
         assert len(body["fields"]) == 10
+
+
+async def test_search_with_explore_without_dimensions_warns(
+    explore: Explore, validator: SqlValidator, caplog: pytest.LogCaptureFixture
+):
+    caplog.set_level(logging.WARNING)
+    explore.dimensions = []
+    await validator.search(explores=(explore,), fail_fast=False)
+    assert explore.name in caplog.text

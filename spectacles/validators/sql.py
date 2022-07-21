@@ -176,7 +176,12 @@ class SqlValidator:
             for explore in explores:
                 # Sorting makes it more likely to prune the tree faster in binsearch
                 dimensions = tuple(sorted(explore.dimensions))
-                if len(dimensions) <= chunk_size:
+                if len(dimensions) == 0:
+                    logger.warning(
+                        f"Warning: Explore '{explore.name}' does not have any non-ignored "
+                        "dimensions and will not be validated."
+                    )
+                elif len(dimensions) <= chunk_size:
                     queries_to_run.put_nowait(Query(explore, dimensions))
                 else:
                     for i in range(0, len(dimensions), chunk_size):
