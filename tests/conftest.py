@@ -1,51 +1,8 @@
-from typing import Iterable
-import os
-import json
-from github import Github as GitHub, Repository
 import pytest
-from spectacles.client import LookerClient
 from spectacles.exceptions import SqlError
 from spectacles.lookml import Project, Model, Explore, Dimension
-from utils import load_resource
-
-
-def filter_access_token(response):
-    if "access_token" in response["body"]["string"].decode():
-        body = json.loads(response["body"]["string"])
-        del body["access_token"]
-        response["body"]["string"] = json.dumps(body)
-    return response
-
-
-@pytest.fixture(scope="session")
-def vcr_config():
-    return {"filter_headers": ["Authorization"]}
-
-
-@pytest.mark.vcr(
-    filter_post_data_parameters=["client_id", "client_secret"],
-    record_mode="all",
-    before_record_response=filter_access_token,
-    decode_compressed_response=True,
-)
-@pytest.fixture(scope="session")
-def looker_client() -> Iterable[LookerClient]:
-    client = LookerClient(
-        base_url="https://spectacles.looker.com",
-        client_id=os.environ.get("LOOKER_CLIENT_ID", ""),
-        client_secret=os.environ.get("LOOKER_CLIENT_SECRET", ""),
-    )
-    client.update_workspace("production")
-    yield client
-
-
-@pytest.mark.vcr(decode_compressed_response=True)
-@pytest.fixture
-def remote_repo() -> Repository:
-    access_token = os.environ.get("GITHUB_ACCESS_TOKEN")
-    client = GitHub(access_token)
-    repo = client.get_repo("spectacles-ci/eye-exam")
-    yield repo
+from spectacles.types import JsonDict
+from tests.utils import load_resource
 
 
 @pytest.fixture
@@ -90,5 +47,5 @@ def sql_error():
 
 
 @pytest.fixture
-def schema():
+def schema() -> JsonDict:
     return load_resource("validation_schema.json")

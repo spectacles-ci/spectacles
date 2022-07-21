@@ -13,28 +13,34 @@ class ContentValidator:
         exclude_personal: bool = False,
         folders: List[str] = None,
     ):
-        include_folders = []
-        exclude_folders = []
+        self.client = client
+        self.exclude_personal = exclude_personal
+        self.include_folders: List[str] = []
+        self.exclude_folders: List[str] = []
+
         if folders:
             for folder_id in folders:
                 if folder_id.startswith("-"):
-                    exclude_folders.append(int(folder_id[1:]))
+                    self.exclude_folders.append(folder_id[1:])
                 else:
-                    include_folders.append(int(folder_id))
+                    self.include_folders.append(folder_id)
 
-        logger.debug(f"Including content in folders: {include_folders}")
-
-        self.client = client
-        personal_folders = self._get_personal_folders() if exclude_personal else []
-
-        self.excluded_folders: List[int] = personal_folders + (
-            self._get_all_subfolders(exclude_folders) if exclude_folders else []
-        )
-        self.included_folders: List[int] = (
-            self._get_all_subfolders(include_folders) if include_folders else []
+    async def validate(self, project: Project) -> List[ContentError]:
+        personal_folders = (
+            await self._get_personal_folders() if self.exclude_personal else []
         )
 
-    def validate(self, project: Project) -> List[ContentError]:
+        self.excluded_folders: List[str] = personal_folders + (
+            await self._get_all_subfolders(self.exclude_folders)
+            if self.exclude_folders
+            else []
+        )
+        self.included_folders: List[str] = (
+            await self._get_all_subfolders(self.include_folders)
+            if self.include_folders
+            else []
+        )
+
         def is_folder_selected(folder_id: Optional[str]) -> bool:
             if folder_id in self.excluded_folders:
                 return False
@@ -43,7 +49,7 @@ class ContentValidator:
             else:
                 return True
 
-        result = self.client.content_validation()
+        result = await self.client.content_validation()
         project.queried = True
 
         content_errors: List[ContentError] = []
@@ -52,7 +58,7 @@ class ContentValidator:
             try:
                 content_type = self._get_content_type(content)
             except KeyError:
-                logger.warn(
+                logger.warning(
                     "Warning: Skipping some content because it does not seem to be a "
                     "Dashboard or a Look."
                 )
@@ -71,17 +77,17 @@ class ContentValidator:
 
         return content_errors
 
-    def _get_personal_folders(self) -> List[int]:
+    async def _get_personal_folders(self) -> List[str]:
         personal_folders = []
-        result = self.client.all_folders()
+        result = await self.client.all_folders()
         for folder in result:
             if folder["is_personal"] or folder["is_personal_descendant"]:
                 personal_folders.append(folder["id"])
         return personal_folders
 
-    def _get_all_subfolders(self, input_folders: List[int]) -> List[int]:
+    async def _get_all_subfolders(self, input_folders: List[str]) -> List[str]:
         result = []
-        all_folders = self.client.all_folders()
+        all_folders = await self.client.all_folders()
         for folder_id in input_folders:
             if not any(folder["id"] == folder_id for folder in all_folders):
                 raise SpectaclesException(
@@ -92,7 +98,7 @@ class ContentValidator:
             result.extend(self._get_subfolders(folder_id, all_folders))
         return result
 
-    def _get_subfolders(self, folder_id: int, all_folders: List[JsonDict]) -> List[int]:
+    def _get_subfolders(self, folder_id: str, all_folders: List[JsonDict]) -> List[str]:
         subfolders = [folder_id]
         children = [
             child["id"] for child in all_folders if child["parent_id"] == folder_id
@@ -144,7 +150,6 @@ class ContentValidator:
                     field_name=error["field_name"],
                     content_type=content_type,
                     title=result[content_type]["title"],
-                    space=result[content_type]["space"]["name"],
                     url=f"{self.client.base_url}/{content_type}s/{content_id}",
                     tile_type=(
                         self._get_tile_type(result)

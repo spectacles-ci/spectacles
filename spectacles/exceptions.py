@@ -1,5 +1,5 @@
 from typing import Dict, Any, Optional
-import requests
+import httpx
 from spectacles.utils import details_from_http_error
 from spectacles.types import JsonDict
 
@@ -43,9 +43,9 @@ class LookerApiError(SpectaclesException):
         title: str,
         status: int,
         detail: str,
-        response: requests.Response,
+        response: httpx.Response,
     ):
-        request: requests.PreparedRequest = response.request
+        request: httpx.Request = response.request
         super().__init__("looker-api-errors/" + name, title, detail)
         self.status = status
         self.looker_api_response: Optional[JsonDict] = details_from_http_error(response)
@@ -182,7 +182,6 @@ class ContentError(ValidationError):
         field_name: str,
         content_type: str,
         title: str,
-        space: str,
         url: str,
         tile_type: Optional[str] = None,
         tile_title: Optional[str] = None,
@@ -191,7 +190,6 @@ class ContentError(ValidationError):
             "field_name": field_name,
             "content_type": content_type,
             "title": title,
-            "space": space,
             "url": url,
         }
         if tile_type and tile_title:

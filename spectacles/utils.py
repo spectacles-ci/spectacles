@@ -1,11 +1,12 @@
-from typing import List, Callable, Optional, Dict, Any, Iterable
+from __future__ import annotations
+import asyncio
+from typing import Callable, Coroutine, List, Optional, Dict, Any, Iterable, Tuple
 from urllib import parse
-from spectacles.logger import GLOBAL_LOGGER as logger
-import functools
-import requests
-import timeit
+import httpx
 import hashlib
 import time
+from spectacles.logger import GLOBAL_LOGGER as logger
+from spectacles.types import T
 
 
 def compose_url(base_url: str, path: List, params: Dict = {}) -> str:
@@ -25,7 +26,7 @@ def compose_url(base_url: str, path: List, params: Dict = {}) -> str:
     return url
 
 
-def details_from_http_error(response: requests.Response) -> Optional[Dict[str, Any]]:
+def details_from_http_error(response: httpx.Response) -> Optional[Dict[str, Any]]:
     try:
         details = response.json()
     # Requests raises a ValueError if the response is invalid JSON
@@ -52,15 +53,13 @@ def get_detail(fn_name: str):
     return detail_map.get(fn_name, "")
 
 
-def log_duration(fn: Callable):
-    functools.wraps(fn)
-
-    def timed_function(*args, **kwargs):
-        start_time = timeit.default_timer()
+def log_duration(fn: Callable[..., Coroutine]):
+    async def timed_function(*args, **kwargs):
+        start_time = time.time()
         try:
-            result = fn(*args, **kwargs)
+            result = await fn(*args, **kwargs)
         finally:
-            elapsed = timeit.default_timer() - start_time
+            elapsed = time.time() - start_time
             elapsed_str = human_readable(elapsed)
             message_detail = get_detail(fn.__name__)
 
@@ -80,3 +79,24 @@ def chunks(to_chunk: list, size: int) -> Iterable:
     """Yield successive n-sized chunks from the list."""
     for i in range(0, len(to_chunk), size):
         yield to_chunk[i : i + size]
+
+
+def consume_queue(
+    queue: asyncio.Queue[T], limit: Optional[int] = None
+) -> Tuple[T, ...]:
+    """Purge an async queue of all its contents, up to a limit, and return them."""
+    count = 0
+    contents: tuple[T, ...] = tuple()
+    while not queue.empty() and (limit is None or count <= limit):
+        contents += (queue.get_nowait(),)
+        count += 1
+    return contents
+
+
+def halt_queue(queue: asyncio.Queue) -> None:
+    """Inform a queue that all tasks are finished, unblocking any Queue.join calls."""
+    while True:
+        try:
+            queue.task_done()
+        except ValueError:  # ValueError raised when no unfinished tasks remain
+            break

@@ -1,3 +1,4 @@
+import asyncio
 from dataclasses import dataclass
 from typing import List, Optional
 from spectacles.client import LookerClient
@@ -53,8 +54,8 @@ class DataTestValidator:
     def __init__(self, client: LookerClient):
         self.client = client
 
-    def get_tests(self, project: Project) -> List[DataTest]:
-        all_tests = self.client.all_lookml_tests(project.name)
+    async def get_tests(self, project: Project) -> List[DataTest]:
+        all_tests = await self.client.all_lookml_tests(project.name)
 
         # Filter the list of tests to those that are selected
         selected_tests: List[DataTest] = []
@@ -90,10 +91,11 @@ class DataTestValidator:
 
         return selected_tests
 
-    def validate(self, tests: List[DataTest]) -> List[DataTestError]:
+    async def validate(self, tests: List[DataTest]) -> List[DataTestError]:
         data_test_errors: List[DataTestError] = []
-        for test in tests:
-            results = self.client.run_lookml_test(
+
+        async def run_test(test: DataTest) -> None:
+            results = await self.client.run_lookml_test(
                 test.project_name, model=test.explore.model_name, test=test.name
             )
             test.explore.queried = True
@@ -126,4 +128,5 @@ class DataTestValidator:
                     data_test_errors.append(error)
                     test.explore.errors.append(error)
 
+        await asyncio.gather(*(run_test(test) for test in tests))
         return data_test_errors

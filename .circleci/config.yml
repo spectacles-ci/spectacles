@@ -4,73 +4,89 @@
 #
 version: 2.1
 
+definitions:
+  docker: &python_image
+    - image: cimg/python:3.8.12
+  steps:
+    - restore_cache: &restore_cache
+        keys:
+          - v1-dependencies-{{ checksum "requirements-dev.txt" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
+    - run: &apt_get_install
+        name: Install non-Python dependencies
+        command: |
+          sudo apt-get update
+          sudo apt-get install libyaml-dev
+    - run: &install_spectacles
+        name: Install Spectacles
+        command: |
+          python3 -m venv venv --clear
+          . venv/bin/activate
+          pip install -U pip
+          pip install -r requirements-dev.txt
+          pip install .
+    - save_cache: &save_cache
+        paths:
+          - ./venv
+        key: v1-dependencies-{{ checksum "requirements-dev.txt" }}
+
 jobs:
-  test:
-    docker:
-      - image: circleci/python:3.7.0
-
-    working_directory: ~/Spectacles
-
+  unit:
+    docker: *python_image
     steps:
       - checkout
-
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "requirements-dev.txt" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
-
+      - restore_cache: *restore_cache
+      - run: *apt_get_install
+      - run: *install_spectacles
+      - save_cache: *save_cache
       - run:
-          name: install spectacles
-          command: |
-            sudo apt-get install libyaml-dev
-            python3 -m venv venv
-            . venv/bin/activate
-            pip install -r requirements-dev.txt
-            pip install .
-
-      - save_cache:
-          paths:
-            - ./venv
-          key: v1-dependencies-{{ checksum "requirements-dev.txt" }}
-
-      - run:
-          name: Check for secrets in cassettes
-          command: scripts/detect_cassette_secrets.bash tests/cassettes/**/*.yaml
-
-      - run:
-          name: mypy
+          name: Run mypy type checks
           command: |
             . venv/bin/activate
-            mypy spectacles
-
+            mypy spectacles tests
       - run:
-          name: flake8
+          name: Run flake8 style checks
           command: |
             . venv/bin/activate
             flake8 spectacles tests
-
       - run:
-          name: black
+          name: Run black formatting checks
           command: |
             . venv/bin/activate
             black --check spectacles tests
-
       - run:
-          name: bandit
+          name: Test for security vulnerabilities
           command: |
             . venv/bin/activate
             bandit -r spectacles
-
       - run:
-          name: pytest and coverage
+          name: Run unit tests
           command: |
             . venv/bin/activate
-            coverage run --source spectacles -m pytest --record-mode none --block-network
-            coverage report
+            pytest tests/unit
+  
+  integration:
+    docker: *python_image
+    steps:
+      - checkout
+      - restore_cache: *restore_cache
+      - run: *apt_get_install
+      - run: *install_spectacles
+      - save_cache: *save_cache
+      - run:
+          name: Run integration tests
+          command: |
+            . venv/bin/activate
+            pytest tests/integration
 
 workflows:
   version: 2
   test:
     jobs:
-      - test
+      - unit
+      - approve:
+          type: approval
+          requires: [unit]
+      - integration:
+          requires: [approve]

@@ -1,3 +1,4 @@
+import asyncio
 from pathlib import Path
 import sys
 import re
@@ -9,9 +10,10 @@ import argparse
 import logging
 import os
 from typing import Callable, List
+import httpx
 from spectacles import __version__
 from spectacles.runner import Runner
-from spectacles.client import LookerClient
+from spectacles.client import DEFAULT_API_VERSION, LookerClient
 from spectacles.exceptions import (
     LookerApiError,
     SpectaclesException,
@@ -217,10 +219,10 @@ def process_pin_imports(input: List[str]) -> dict:
 @handle_exceptions
 def main():
     """Runs main function. This is the entry point."""
-    if sys.version_info < (3, 7):
+    if sys.version_info < (3, 8):
         raise SpectaclesException(
             name="insufficient-python-version",
-            title="Spectacles requires Python 3.7 or higher.",
+            title="Spectacles requires Python 3.8 or higher.",
             detail="The current Python version is %s." % platform.python_version(),
         )
 
@@ -261,77 +263,87 @@ def main():
         )
 
     if args.command == "connect":
-        run_connect(
-            base_url=args.base_url,
-            client_id=args.client_id,
-            client_secret=args.client_secret,
-            port=args.port,
-            api_version=args.api_version,
+        asyncio.run(
+            run_connect(
+                base_url=args.base_url,
+                client_id=args.client_id,
+                client_secret=args.client_secret,
+                port=args.port,
+                api_version=args.api_version,
+            )
         )
     elif args.command == "sql":
-        run_sql(
-            log_dir=args.log_dir,
-            project=args.project,
-            ref=ref,
-            filters=[restore_dash(arg) for arg in args.explores],
-            base_url=args.base_url,
-            client_id=args.client_id,
-            client_secret=args.client_secret,
-            port=args.port,
-            api_version=args.api_version,
-            fail_fast=args.fail_fast,
-            incremental=args.incremental,
-            target=args.target,
-            remote_reset=args.remote_reset,
-            concurrency=args.concurrency,
-            profile=args.profile,
-            runtime_threshold=args.runtime_threshold,
-            chunk_size=args.chunk_size,
-            pin_imports=pin_imports,
-            ignore_hidden=args.ignore_hidden,
+        asyncio.run(
+            run_sql(
+                log_dir=args.log_dir,
+                project=args.project,
+                ref=ref,
+                filters=[restore_dash(arg) for arg in args.explores],
+                base_url=args.base_url,
+                client_id=args.client_id,
+                client_secret=args.client_secret,
+                port=args.port,
+                api_version=args.api_version,
+                fail_fast=args.fail_fast,
+                incremental=args.incremental,
+                target=args.target,
+                remote_reset=args.remote_reset,
+                concurrency=args.concurrency,
+                profile=args.profile,
+                runtime_threshold=args.runtime_threshold,
+                chunk_size=args.chunk_size,
+                pin_imports=pin_imports,
+                ignore_hidden=args.ignore_hidden,
+            )
         )
     elif args.command == "assert":
-        run_assert(
-            project=args.project,
-            ref=ref,
-            filters=[restore_dash(arg) for arg in args.explores],
-            base_url=args.base_url,
-            client_id=args.client_id,
-            client_secret=args.client_secret,
-            port=args.port,
-            api_version=args.api_version,
-            remote_reset=args.remote_reset,
-            pin_imports=pin_imports,
+        asyncio.run(
+            run_assert(
+                project=args.project,
+                ref=ref,
+                filters=[restore_dash(arg) for arg in args.explores],
+                base_url=args.base_url,
+                client_id=args.client_id,
+                client_secret=args.client_secret,
+                port=args.port,
+                api_version=args.api_version,
+                remote_reset=args.remote_reset,
+                pin_imports=pin_imports,
+            )
         )
     elif args.command == "content":
-        run_content(
-            project=args.project,
-            ref=ref,
-            filters=[restore_dash(arg) for arg in args.explores],
-            base_url=args.base_url,
-            client_id=args.client_id,
-            client_secret=args.client_secret,
-            port=args.port,
-            api_version=args.api_version,
-            remote_reset=args.remote_reset,
-            incremental=args.incremental,
-            target=args.target,
-            exclude_personal=args.exclude_personal,
-            folders=[restore_dash(arg) for arg in args.folders],
-            pin_imports=pin_imports,
+        asyncio.run(
+            run_content(
+                project=args.project,
+                ref=ref,
+                filters=[restore_dash(arg) for arg in args.explores],
+                base_url=args.base_url,
+                client_id=args.client_id,
+                client_secret=args.client_secret,
+                port=args.port,
+                api_version=args.api_version,
+                remote_reset=args.remote_reset,
+                incremental=args.incremental,
+                target=args.target,
+                exclude_personal=args.exclude_personal,
+                folders=[restore_dash(arg) for arg in args.folders],
+                pin_imports=pin_imports,
+            )
         )
     elif args.command == "lookml":
-        run_lookml(
-            project=args.project,
-            ref=ref,
-            base_url=args.base_url,
-            client_id=args.client_id,
-            client_secret=args.client_secret,
-            port=args.port,
-            api_version=args.api_version,
-            remote_reset=args.remote_reset,
-            severity=args.severity,
-            pin_imports=pin_imports,
+        asyncio.run(
+            run_lookml(
+                project=args.project,
+                ref=ref,
+                base_url=args.base_url,
+                client_id=args.client_id,
+                client_secret=args.client_secret,
+                port=args.port,
+                api_version=args.api_version,
+                remote_reset=args.remote_reset,
+                severity=args.severity,
+                pin_imports=pin_imports,
+            )
         )
 
     if not args.do_not_track:
@@ -411,8 +423,8 @@ def _build_base_subparser() -> argparse.ArgumentParser:
         type=float,
         action=EnvVarAction,
         env_var="LOOKER_API_VERSION",
-        default=3.1,
-        help="The version of the Looker API to use. The default is version 3.1.",
+        default=DEFAULT_API_VERSION,
+        help="The version of the Looker API to use. The default is version 4.0.",
     )
     base_subparser.add_argument(
         "-v",
@@ -709,15 +721,22 @@ def _build_content_subparser(
     _build_select_subparser(subparser_action, subparser)
 
 
-def run_connect(
+async def run_connect(
     base_url: str, client_id: str, client_secret: str, port: int, api_version: float
 ) -> None:
     """Tests the connection and credentials for the Looker API."""
-    LookerClient(base_url, client_id, client_secret, port, api_version)
+    try:
+        # Don't trust env to ignore .netrc credentials
+        async_client = httpx.AsyncClient(trust_env=False)
+        LookerClient(
+            async_client, base_url, client_id, client_secret, port, api_version
+        )
+    finally:
+        await async_client.aclose()
 
 
 @log_duration
-def run_lookml(
+async def run_lookml(
     project,
     ref,
     base_url,
@@ -729,9 +748,18 @@ def run_lookml(
     severity,
     pin_imports,
 ) -> None:
-    client = LookerClient(base_url, client_id, client_secret, port, api_version)
-    runner = Runner(client, project, remote_reset, pin_imports)
-    results = runner.validate_lookml(ref, severity)
+    try:
+        # Don't trust env to ignore .netrc credentials
+        async_client = httpx.AsyncClient(trust_env=False)
+        client = LookerClient(
+            async_client, base_url, client_id, client_secret, port, api_version
+        )
+        runner = Runner(client, project, remote_reset, pin_imports)
+
+        results = await runner.validate_lookml(ref, severity)
+    finally:
+        await async_client.aclose()
+
     errors = sorted(results["errors"], key=lambda x: x["metadata"]["file_path"] or "a")
     unique_files = sorted(
         set(
@@ -762,7 +790,7 @@ def run_lookml(
 
 
 @log_duration
-def run_content(
+async def run_content(
     project,
     ref,
     filters,
@@ -778,16 +806,24 @@ def run_content(
     folders,
     pin_imports,
 ) -> None:
-    client = LookerClient(base_url, client_id, client_secret, port, api_version)
-    runner = Runner(client, project, remote_reset, pin_imports)
-    results = runner.validate_content(
-        ref,
-        filters,
-        incremental,
-        target,
-        exclude_personal,
-        folders,
-    )
+    try:
+        # Don't trust env to ignore .netrc credentials
+        async_client = httpx.AsyncClient(trust_env=False)
+        client = LookerClient(
+            async_client, base_url, client_id, client_secret, port, api_version
+        )
+        runner = Runner(client, project, remote_reset, pin_imports)
+
+        results = await runner.validate_content(
+            ref,
+            filters,
+            incremental,
+            target,
+            exclude_personal,
+            folders,
+        )
+    finally:
+        await async_client.aclose()
 
     for test in sorted(results["tested"], key=lambda x: (x["model"], x["explore"])):
         message = f"{test['model']}.{test['explore']}"
@@ -817,7 +853,7 @@ def run_content(
 
 
 @log_duration
-def run_assert(
+async def run_assert(
     project,
     ref,
     filters,
@@ -829,10 +865,17 @@ def run_assert(
     remote_reset,
     pin_imports,
 ) -> None:
-    client = LookerClient(base_url, client_id, client_secret, port, api_version)
-    runner = Runner(client, project, remote_reset, pin_imports)
+    try:
+        # Don't trust env to ignore .netrc credentials
+        async_client = httpx.AsyncClient(trust_env=False)
+        client = LookerClient(
+            async_client, base_url, client_id, client_secret, port, api_version
+        )
+        runner = Runner(client, project, remote_reset, pin_imports)
 
-    results = runner.validate_data_tests(ref, filters)
+        results = await runner.validate_data_tests(ref, filters)
+    finally:
+        await async_client.aclose()
 
     for test in sorted(results["tested"], key=lambda x: (x["model"], x["explore"])):
         message = f"{test['model']}.{test['explore']}"
@@ -862,7 +905,7 @@ def run_assert(
 
 
 @log_duration
-def run_sql(
+async def run_sql(
     log_dir,
     project,
     ref,
@@ -884,21 +927,28 @@ def run_sql(
     ignore_hidden,
 ) -> None:
     """Runs and validates the SQL for each selected LookML dimension."""
-    client = LookerClient(base_url, client_id, client_secret, port, api_version)
-    runner = Runner(client, project, remote_reset, pin_imports)
+    try:
+        # Don't trust env to ignore .netrc credentials
+        async_client = httpx.AsyncClient(trust_env=False)
+        client = LookerClient(
+            async_client, base_url, client_id, client_secret, port, api_version
+        )
+        runner = Runner(client, project, remote_reset, pin_imports)
 
-    results = runner.validate_sql(
-        ref,
-        filters,
-        fail_fast,
-        incremental,
-        target,
-        concurrency,
-        profile,
-        runtime_threshold,
-        chunk_size,
-        ignore_hidden,
-    )
+        results = await runner.validate_sql(
+            ref,
+            filters,
+            fail_fast,
+            incremental,
+            target,
+            concurrency,
+            profile,
+            runtime_threshold,
+            chunk_size,
+            ignore_hidden,
+        )
+    finally:
+        await async_client.aclose()
 
     for test in sorted(results["tested"], key=lambda x: (x["model"], x["explore"])):
         message = f"{test['model']}.{test['explore']}"

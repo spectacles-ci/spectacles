@@ -1,3 +1,5 @@
+import asyncio
+from dataclasses import dataclass
 import re
 from typing import Dict, List, Sequence, Optional, Any, Iterable
 from spectacles.client import LookerClient
@@ -59,6 +61,16 @@ class Dimension(LookMlObject):
             and self.explore_name == other.explore_name
             and self.type == other.type
             and self.url == other.url
+        )
+
+    def __lt__(self, other):
+        if not isinstance(other, Dimension):
+            return NotImplemented
+
+        return (self.model_name, self.explore_name, self.name) < (
+            other.model_name,
+            other.explore_name,
+            other.name,
         )
 
     @property
@@ -165,6 +177,29 @@ class Explore(LookMlObject):
             return errors
         else:
             return 0
+
+
+@dataclass(eq=True, frozen=True)
+class CompiledSql:
+    model_name: str
+    explore_name: str
+    sql: str
+    dimension_name: Optional[str] = None
+
+    @classmethod
+    def from_explore(cls, explore: Explore, sql: str) -> "CompiledSql":
+        return CompiledSql(
+            model_name=explore.model_name, explore_name=explore.name, sql=sql
+        )
+
+    @classmethod
+    def from_dimension(cls, dimension: Dimension, sql: str) -> "CompiledSql":
+        return CompiledSql(
+            model_name=dimension.model_name,
+            explore_name=dimension.explore_name,
+            dimension_name=dimension.name,
+            sql=sql,
+        )
 
 
 class Model(LookMlObject):
@@ -407,24 +442,30 @@ class Project(LookMlObject):
         return sum([model.number_of_errors for model in self.models if model.errored])
 
 
-def build_dimensions(
+async def build_explore_dimensions(
     client: LookerClient,
-    model_name: str,
-    explore_name: str,
+    explore: Explore,
     ignore_hidden_fields: bool = False,
-) -> List[Dimension]:
+) -> None:
     """Creates Dimension objects for all dimensions in a given explore."""
-    dimensions_json = client.get_lookml_dimensions(model_name, explore_name)
+    dimensions_json = await client.get_lookml_dimensions(
+        explore.model_name, explore.name
+    )
+
     dimensions: List[Dimension] = []
     for dimension_json in dimensions_json:
-        dimension = Dimension.from_json(dimension_json, model_name, explore_name)
-        dimension.url = client.base_url + dimension.url
+        dimension: Dimension = Dimension.from_json(
+            dimension_json, explore.model_name, explore.name
+        )
+        if dimension.url is not None:
+            dimension.url = client.base_url + dimension.url
         if not dimension.ignore and not (dimension.is_hidden and ignore_hidden_fields):
             dimensions.append(dimension)
-    return dimensions
+
+    explore.dimensions = dimensions
 
 
-def build_project(
+async def build_project(
     client: LookerClient,
     name: str,
     filters: Optional[List[str]] = None,
@@ -438,7 +479,7 @@ def build_project(
 
     models = []
     fields = ["name", "project_name", "explores"]
-    for lookmlmodel in client.get_lookml_models(fields=fields):
+    for lookmlmodel in await client.get_lookml_models(fields=fields):
         model = Model.from_json(lookmlmodel)
         if model.project_name == name:
             models.append(model)
@@ -463,12 +504,15 @@ def build_project(
                 if is_selected(model.name, explore.name, filters)
             ]
 
-    if include_dimensions:
-        for model in models:
-            for explore in model.explores:
-                explore.dimensions = build_dimensions(
-                    client, model.name, explore.name, ignore_hidden_fields
-                )
+            tasks: List[asyncio.Task] = []
+            if include_dimensions:
+                for explore in model.explores:
+                    task = asyncio.create_task(
+                        build_explore_dimensions(client, explore, ignore_hidden_fields)
+                    )
+                    tasks.append(task)
+
+        await asyncio.gather(*tasks)
 
     # Include empty models when including all explores
     if include_all_explores:
