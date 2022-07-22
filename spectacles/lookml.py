@@ -497,18 +497,18 @@ async def build_project(
 
     # Prune to selected explores for non-content validators
     if not include_all_explores:
+        tasks: List[asyncio.Task] = []
         for model in models:
             model.explores = [
                 explore
                 for explore in model.explores
                 if is_selected(model.name, explore.name, filters)
             ]
-
-            tasks: List[asyncio.Task] = []
             if include_dimensions:
                 for explore in model.explores:
                     task = asyncio.create_task(
-                        build_explore_dimensions(client, explore, ignore_hidden_fields)
+                        build_explore_dimensions(client, explore, ignore_hidden_fields),
+                        name=f"build_explore_dimensions_{explore.name}",
                     )
                     tasks.append(task)
 
