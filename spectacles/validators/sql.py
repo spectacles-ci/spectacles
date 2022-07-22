@@ -124,7 +124,7 @@ class SqlValidator:
     async def compile_explore(self, explore: Explore) -> CompiledSql:
         if not explore.dimensions:
             raise AttributeError(
-                "Explore object is missing dimensions, "
+                f"Explore '{explore.name}' is missing dimensions, "
                 "meaning this query won't have fields and will error. "
                 "Often this happens because you didn't include dimensions "
                 "when you built the project."
