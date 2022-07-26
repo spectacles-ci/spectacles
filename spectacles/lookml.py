@@ -104,7 +104,7 @@ class Explore(LookMlObject):
         self.errors: List[ValidationError] = []
         self.successes: List[JsonDict] = []
         self.skipped = False
-        self._queried: bool = False
+        self.queried: bool = False
 
     def __eq__(self, other: Any):
         if not isinstance(other, Explore):
@@ -117,30 +117,16 @@ class Explore(LookMlObject):
         )
 
     @property
-    def queried(self):
-        if self.dimensions:
-            return any(dimension.queried for dimension in self.dimensions)
+    def errored(self) -> Optional[bool]:
+        dim_errors: list[bool] = [dimension.errored for dimension in self.dimensions]
+        if len(dim_errors) == 0 or None in dim_errors:
+            # Fallback to Explore level errors
+            if self.queried:
+                return bool(self.errors)
+            else:
+                return None
         else:
-            return self._queried
-
-    @queried.setter
-    def queried(self, value: bool):
-        if not isinstance(value, bool):
-            raise TypeError("Value for queried must be boolean.")
-        if self.dimensions:
-            for dimension in self.dimensions:
-                dimension.queried = value
-        else:
-            self._queried = value
-
-    @property
-    def errored(self):
-        if self.queried:
-            return bool(self.errors) or any(
-                dimension.errored for dimension in self.dimensions
-            )
-        else:
-            return None
+            return max(dim_errors)
 
     @errored.setter
     def errored(self, value: Any):
@@ -231,17 +217,6 @@ class Model(LookMlObject):
         else:
             return None
 
-    @errored.setter
-    def errored(self, value: bool):
-        if not isinstance(value, bool):
-            raise TypeError("Value for errored must be boolean.")
-        if not self.explores:
-            raise AttributeError(
-                "Cannot assign to 'errored' property because this model does not have any explores."
-            )
-        for explore in self.explores:
-            explore.errored = value
-
     @property
     def queried(self):
         return any(explore.queried for explore in self.explores)
@@ -326,17 +301,6 @@ class Project(LookMlObject):
             return any(model.errored for model in self.models)
         else:
             return None
-
-    @errored.setter
-    def errored(self, value: bool):
-        if not isinstance(value, bool):
-            raise TypeError("Value for errored must be boolean.")
-        if not self.models:
-            raise AttributeError(
-                "Cannot assign to 'errored' property because this project does not have any models."
-            )
-        for model in self.models:
-            model.errored = value
 
     @property
     def queried(self):
