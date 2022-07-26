@@ -27,6 +27,7 @@ class Query:
     explore_url: str | None = None
     errored: bool | None = None
     runtime: float | None = None
+    depth: int = 1
 
     def __post_init__(self) -> None:
         # Confirm that all dimensions are from the Explore associated here
@@ -47,8 +48,8 @@ class Query:
             raise ValueError("Query must have at least 2 dimensions to divide")
 
         midpoint = len(self.dimensions) // 2
-        yield Query(self.explore, self.dimensions[:midpoint])
-        yield Query(self.explore, self.dimensions[midpoint:])
+        yield Query(self.explore, self.dimensions[:midpoint], depth=self.depth + 1)
+        yield Query(self.explore, self.dimensions[midpoint:], depth=self.depth + 1)
 
     def to_profiler_format(self) -> ProfilerTableRow:
         if self.runtime is None:
