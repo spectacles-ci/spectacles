@@ -1,6 +1,7 @@
 from __future__ import annotations
 import asyncio
 from dataclasses import dataclass
+import itertools
 from tabulate import tabulate
 from typing import List, Optional, Tuple, Iterator
 import pydantic
@@ -161,6 +162,7 @@ class SqlValidator:
         query_slot = asyncio.Semaphore(self.concurrency)
 
         workers = (
+            asyncio.create_task(self._monitor(explores), name="query_monitor"),
             asyncio.create_task(
                 self._run_query(queries_to_run, running_queries, query_slot),
                 name="run_query",
@@ -230,6 +232,37 @@ class SqlValidator:
 
         if profile:
             print_profile_results(self._long_running_queries, self.runtime_threshold)
+
+    async def _monitor(self, explores: tuple[Explore, ...]):
+        while True:
+            dimensions = list(
+                itertools.chain.from_iterable(
+                    [explore.dimensions for explore in explores]
+                )
+            )
+
+            queried_explores = 0
+            errored_explores = 0
+            queried_dims = 0
+
+            for explore in explores:
+                explore.name
+                if explore.errored is not None:
+                    queried_explores += 1
+                    if explore.errored:
+                        queried_dims += len(
+                            [d for d in explore.dimensions if d.queried]
+                        )
+                        errored_explores += 1
+                    else:
+                        queried_dims += len(explore.dimensions)
+
+            logger.debug(
+                f"Validated {queried_explores}/{len(explores)} Explores "
+                f"({errored_explores} have errors) "
+                f"and {queried_dims}/{len(dimensions)} dimensions"
+            )
+            await asyncio.sleep(1)
 
     async def _run_query(
         self,
