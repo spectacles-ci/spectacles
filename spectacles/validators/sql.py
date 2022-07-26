@@ -273,7 +273,6 @@ class SqlValidator:
         try:
             # End execution if a sentinel is received from the queue
             while (query := await queries_to_run.get()) is not None:
-                logger.debug("Waiting to acquire a query slot")
                 await query_slot.acquire()
                 result = await self.client.create_query(
                     model=query.dimensions[0].model_name,
@@ -283,7 +282,6 @@ class SqlValidator:
                 )
                 query.query_id = result["id"]
                 query.explore_url = result["share_url"]
-                logger.debug(f"Running query {query!r} [qid={query.query_id}]")
                 if query.query_id is None:
                     raise TypeError(
                         "Query.query_id cannot be None, "
@@ -337,28 +335,26 @@ class SqlValidator:
                                 "response. The unexpected response has been logged."
                             ),
                         ) from validation_error
-                    logger.debug(
-                        f"Query task {task_id} status is: {query_result.status}"
-                    )
 
                     # Append long-running queries for the profiler
                     if query_result.status in ("complete", "error"):
                         query = self._task_to_query[task_id]
+                        query_slot.release()
+                        if query.depth == 1:
+                            query.explore.queried = True
                         if query_result.runtime > self.runtime_threshold:
                             self._long_running_queries.append(query)
+
                         if query_result.status == "complete":
-                            query_slot.release()
+                            for dimension in query.dimensions:
+                                dimension.queried = True
                             query.errored = False
-                            query.explore.queried = True
                             queries_to_run.task_done()
                         else:
-                            query_slot.release()
                             query.errored = True
-
-                            # Fail fast, assign the error(s) to its explore
-                            if fail_fast:
+                            # Assign the error(s) to its explore
+                            if query.depth == 1:
                                 explore = query.explore
-                                explore.queried = True
                                 for error in query_result.get_valid_errors():
                                     line_number = (
                                         error.sql_error_loc.line
@@ -377,40 +373,42 @@ class SqlValidator:
                                         )
                                     )
 
-                            # Make child queries and put them back on the queue
-                            elif len(query.dimensions) > 1:
-                                for child in query.divide():
-                                    await queries_to_run.put(child)
+                            if not fail_fast:
+                                # Make child queries and put them back on the queue
+                                if len(query.dimensions) > 1:
+                                    for child in query.divide():
+                                        await queries_to_run.put(child)
 
-                            # Assign the error(s) to its dimension
-                            elif len(query.dimensions) == 1:
-                                dimension = query.dimensions[0]
-                                dimension.queried = True
-                                for error in query_result.get_valid_errors():
-                                    line_number = (
-                                        error.sql_error_loc.line
-                                        if error.sql_error_loc
-                                        else None
-                                    )
-                                    dimension.errors.append(
-                                        SqlError(
-                                            model=dimension.model_name,
-                                            explore=dimension.explore_name,
-                                            dimension=dimension.name,
-                                            sql=query_result.sql,
-                                            message=error.full_message,
-                                            line_number=line_number,
-                                            lookml_url=dimension.url,
-                                            explore_url=query.explore_url,
+                                # Assign the error(s) to its dimension
+                                elif len(query.dimensions) == 1:
+                                    dimension = query.dimensions[0]
+                                    dimension.queried = True
+                                    for error in query_result.get_valid_errors():
+                                        line_number = (
+                                            error.sql_error_loc.line
+                                            if error.sql_error_loc
+                                            else None
                                         )
-                                    )
+                                        dimension.errors.append(
+                                            SqlError(
+                                                model=dimension.model_name,
+                                                explore=dimension.explore_name,
+                                                dimension=dimension.name,
+                                                sql=query_result.sql,
+                                                message=error.full_message,
+                                                line_number=line_number,
+                                                lookml_url=dimension.url,
+                                                explore_url=query.explore_url,
+                                            )
+                                        )
 
-                            else:
-                                raise ValueError(
-                                    "Query had an unexpected number of dimensions. "
-                                    "Queries must have at least one dimension, but "
-                                    f"{query!r} had {len(query.dimensions)} dimensions."
-                                )
+                                else:
+                                    raise ValueError(
+                                        "Query had an unexpected number of dimensions. "
+                                        "Queries must have at least one dimension, "
+                                        f"but {query!r} had {len(query.dimensions)} "
+                                        "dimensions."
+                                    )
 
                             # Indicate there are no more queries or subqueries to run
                             queries_to_run.task_done()

@@ -98,16 +98,7 @@ def test_comparison_to_mismatched_type_object_should_fail(
 def test_assign_to_errored_should_raise_attribute_error(project: Project):
     project.models = []
     with pytest.raises(AttributeError):
-        project.errored = True
-
-
-@pytest.mark.parametrize("obj_name", ("model", "project"))
-def test_non_bool_errored_should_raise_value_error(
-    request: pytest.FixtureRequest, obj_name: str
-):
-    lookml_obj = request.getfixturevalue(obj_name)
-    with pytest.raises(TypeError):
-        lookml_obj.errored = 1
+        project.errored = True  # type: ignore
 
 
 def test_dimensions_with_different_sql_can_be_equal(dimension: Dimension):
@@ -207,27 +198,6 @@ def test_dimensions_can_be_sorted_by_explore_name():
     assert [dimension.explore_name for dimension in sorted(unsorted)] == ["a", "b", "c"]
 
 
-def test_parent_queried_behavior_should_depend_on_its_child(
-    explore: Explore, dimension: Dimension, model, project: Project
-):
-    for parent, child, attr in [
-        (explore, dimension, "dimensions"),
-        (model, explore, "explores"),
-        (project, model, "models"),
-    ]:
-        child.queried = False
-        parent.queried = False
-        a = child
-        b = deepcopy(child)
-        children = getattr(parent, attr)
-        children.append(a)
-        assert parent.queried is False
-        a.queried = True
-        assert parent.queried is True
-        children.append(b)
-        assert parent.queried is True
-
-
 def test_comparison_to_mismatched_type_object_fails(
     dimension: Dimension, explore: Explore, model, project: Project
 ):
@@ -294,6 +264,7 @@ def test_model_number_of_errors_single_with_errors(
     dimension: Dimension, explore: Explore, model: Model, sql_error: SqlError
 ):
     dimension.errors = [sql_error]
+    dimension.queried = True
     explore.dimensions = [dimension, dimension]
     explore.queried = True
     model.explores = [explore, explore]
@@ -312,7 +283,7 @@ def test_model_number_of_errors_single_with_no_errors(
 def test_model_cannot_assign_errored_without_explorse(model: Model):
     model.explores = []
     with pytest.raises(AttributeError):
-        model.errored = True
+        model.errored = True  # type: ignore
 
 
 def test_model_get_errored_explores_returns_the_correct_explore(
@@ -359,6 +330,7 @@ def test_project_number_of_errors_single_with_errors(
     sql_error: SqlError,
 ):
     dimension.errors = [sql_error]
+    dimension.queried = True
     explore.dimensions = [dimension, dimension]
     explore.queried = True
     model.explores = [explore, explore]
