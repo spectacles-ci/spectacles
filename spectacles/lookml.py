@@ -106,7 +106,7 @@ class Explore(LookMlObject):
         self.skipped = False
         self._queried: bool = False
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any):
         if not isinstance(other, Explore):
             return NotImplemented
 
@@ -143,7 +143,7 @@ class Explore(LookMlObject):
             return None
 
     @errored.setter
-    def errored(self, value):
+    def errored(self, value: Any):
         raise AttributeError(
             "Cannot assign to 'errored' property of an Explore instance. "
             "For an explore to be considered errored, it must have a ValidationError "
@@ -156,7 +156,7 @@ class Explore(LookMlObject):
                 yield dimension
 
     @classmethod
-    def from_json(cls, json_dict, model_name):
+    def from_json(cls, json_dict: dict, model_name: str):
         name = json_dict["name"]
         return cls(name, model_name)
 
