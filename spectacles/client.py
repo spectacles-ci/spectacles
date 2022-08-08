@@ -665,12 +665,12 @@ class LookerClient:
 
         """
         # Using old-style string formatting so that strings are formatted lazily
-        logger.debug(
-            "Creating async query for %s/%s/%s",
-            model,
-            explore,
-            "*" if len(dimensions) != 1 else dimensions[0],
-        )
+        # logger.debug(
+        #     "Creating async query for %s/%s/%s",
+        #     model,
+        #     explore,
+        #     "*" if len(dimensions) != 1 else dimensions[0],
+        # )
         body = {
             "model": model,
             "view": explore,
@@ -703,14 +703,14 @@ class LookerClient:
             ) from error
 
         result = response.json()
-        query_id: str = result["id"]
-        logger.debug(
-            "Query for %s/%s/%s created as query %s",
-            model,
-            explore,
-            "*" if len(dimensions) != 1 else dimensions[0],
-            query_id,
-        )
+        # query_id: str = result["id"]
+        # logger.debug(
+        #     "Query for %s/%s/%s created as query %s",
+        #     model,
+        #     explore,
+        #     "*" if len(dimensions) != 1 else dimensions[0],
+        #     query_id,
+        # )
         return result
 
     async def create_query_task(self, query_id: str) -> str:
@@ -728,7 +728,7 @@ class LookerClient:
 
         """
         # Using old-style string formatting so that strings are formatted lazily
-        logger.debug("Starting query %s", query_id)
+        # logger.debug("Starting query %s", query_id)
         body = {"query_id": query_id, "result_format": "json_detail"}
         params = {"fields": ["id"]}
         url = utils.compose_url(self.api_url, path=["query_tasks"], params=params)
@@ -753,7 +753,7 @@ class LookerClient:
 
         result = response.json()
         query_task_id = result["id"]
-        logger.debug("Query %s is running under query task %s", query_id, query_task_id)
+        # logger.debug("Query %s is running under query task %s", query_id, query_task_id)
         return query_task_id
 
     async def get_query_task_multi_results(
@@ -771,9 +771,9 @@ class LookerClient:
 
         """
         # Using old-style string formatting so that strings are formatted lazily
-        logger.debug(
-            "Attempting to get results for %d query tasks", len(query_task_ids)
-        )
+        # logger.debug(
+        #     "Attempting to get results for %d query tasks", len(query_task_ids)
+        # )
         url = utils.compose_url(self.api_url, path=["query_tasks", "multi_results"])
         response = await self.get(
             url=url,
