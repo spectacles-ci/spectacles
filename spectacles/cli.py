@@ -842,7 +842,7 @@ async def run_content(
                 error["metadata"]["content_type"],
                 error["metadata"].get("tile_type"),
                 error["metadata"].get("tile_title"),
-                error["metadata"]["space"],
+                error["metadata"]["folder"],
                 error["metadata"]["title"],
                 error["metadata"]["url"],
             )

@@ -110,12 +110,24 @@ class ContentValidator:
 
     @staticmethod
     def _get_content_type(content: Dict[str, Any]) -> str:
-        if content["dashboard"]:
-            return "dashboard"
-        elif content["look"]:
-            return "look"
-        else:
-            raise KeyError("Content type not found. Valid keys are 'look', 'dashboard'")
+        CONTENT_TYPES = (
+            "look",
+            "dashboard",
+            "dashboard_element",
+            "dashboard_filter",
+            "scheduled_plan",
+            "alert",
+            "lookml_dashboard",
+            "lookml_dashboard_element",
+        )
+        for content_type in CONTENT_TYPES:
+            if content.get(content_type):
+                return content_type
+
+        # If none of the content types are found
+        raise KeyError(
+            f"Content type not found. Valid keys are: {', '.join(CONTENT_TYPES)}"
+        )
 
     @staticmethod
     def _get_tile_type(content: Dict[str, Any]) -> str:
@@ -150,6 +162,7 @@ class ContentValidator:
                     field_name=error["field_name"],
                     content_type=content_type,
                     title=result[content_type]["title"],
+                    folder=result[content_type]["folder"]["name"],
                     url=f"{self.client.base_url}/{content_type}s/{content_id}",
                     tile_type=(
                         self._get_tile_type(result)

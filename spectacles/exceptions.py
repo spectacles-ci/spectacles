@@ -182,6 +182,7 @@ class ContentError(ValidationError):
         field_name: str,
         content_type: str,
         title: str,
+        folder: str,
         url: str,
         tile_type: Optional[str] = None,
         tile_title: Optional[str] = None,
@@ -190,6 +191,7 @@ class ContentError(ValidationError):
             "field_name": field_name,
             "content_type": content_type,
             "title": title,
+            "folder": folder,
             "url": url,
         }
         if tile_type and tile_title:
