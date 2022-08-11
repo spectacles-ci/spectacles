@@ -182,7 +182,7 @@ class ContentError(ValidationError):
         field_name: str,
         content_type: str,
         title: str,
-        folder: str,
+        folder: Optional[str],
         url: str,
         tile_type: Optional[str] = None,
         tile_title: Optional[str] = None,

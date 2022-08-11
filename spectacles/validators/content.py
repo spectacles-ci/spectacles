@@ -155,6 +155,8 @@ class ContentValidator:
             # Skip errors that are not associated with selected explores or existing models
             if explore or model:
                 content_id = result[content_type]["id"]
+                folder = result[content_type].get("folder")
+                folder_name: Optional[str] = folder.get("name") if folder else None
                 content_error = ContentError(
                     model=model_name,
                     explore=explore_name,
@@ -162,7 +164,7 @@ class ContentValidator:
                     field_name=error["field_name"],
                     content_type=content_type,
                     title=result[content_type]["title"],
-                    folder=result[content_type]["folder"]["name"],
+                    folder=folder_name,
                     url=f"{self.client.base_url}/{content_type}s/{content_id}",
                     tile_type=(
                         self._get_tile_type(result)
