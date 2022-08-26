@@ -163,7 +163,7 @@ class ContentValidator:
                     message=error["message"],
                     field_name=error["field_name"],
                     content_type=content_type,
-                    title=result[content_type]["title"],
+                    title=result[content_type].get("title"),
                     folder=folder_name,
                     url=f"{self.client.base_url}/{content_type}s/{content_id}",
                     tile_type=(
