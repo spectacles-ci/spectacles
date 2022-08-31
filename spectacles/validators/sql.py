@@ -2,7 +2,7 @@ from __future__ import annotations
 import asyncio
 from dataclasses import dataclass
 from tabulate import tabulate
-from typing import List, Optional, Tuple, Iterator
+from typing import List, Optional, Tuple, Iterator, Union, cast
 import pydantic
 from spectacles.client import LookerClient
 from spectacles.lookml import CompiledSql, Dimension, Explore
@@ -10,7 +10,7 @@ from spectacles.exceptions import SpectaclesException, SqlError
 from spectacles.logger import GLOBAL_LOGGER as logger
 from spectacles.printer import print_header
 from spectacles.utils import consume_queue, halt_queue
-from spectacles.types import QueryResult
+from spectacles.types import QueryResult, CompletedQueryResult, ErrorQueryResult
 
 QUERY_TASK_LIMIT = 250
 DEFAULT_CHUNK_SIZE = 500
@@ -290,7 +290,7 @@ class SqlValidator:
                 raw = await self.client.get_query_task_multi_results(task_ids)
                 for task_id, result in raw.items():
                     try:
-                        query_result = QueryResult.parse_obj(result)
+                        query_result = QueryResult.parse_obj(result).__root__
                     except pydantic.ValidationError as validation_error:
                         logger.debug(
                             f"Unable to parse unexpected Looker API response format: {result}"
@@ -309,6 +309,9 @@ class SqlValidator:
 
                     # Append long-running queries for the profiler
                     if query_result.status in ("complete", "error"):
+                        query_result = cast(
+                            Union[CompletedQueryResult, ErrorQueryResult], query_result
+                        )
                         query = self._task_to_query[task_id]
                         if query_result.runtime > self.runtime_threshold:
                             self._long_running_queries.append(query)

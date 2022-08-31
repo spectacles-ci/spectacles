@@ -1,17 +1,8 @@
-from enum import Enum
-from typing import Dict, Any, TypeVar, Optional, Tuple, Union
-from pydantic import BaseModel
+from typing import Dict, Any, TypeVar, Optional, Tuple, Union, Literal
+from pydantic import BaseModel, Field
 
 JsonDict = Dict[str, Any]
 T = TypeVar("T")
-
-
-class QueryStatusEnum(str, Enum):
-    added = "added"
-    running = "running"
-    expired = "expired"
-    complete = "complete"
-    error = "error"
 
 
 class ErrorSqlLocation(BaseModel):
@@ -33,46 +24,52 @@ class QueryError(BaseModel):
         return " ".join(filter(None, (self.message, self.message_details)))
 
 
-class QueryResultData(BaseModel):
-    id: str
-    runtime: float
-    sql: str
-    errors: Optional[Tuple[QueryError, ...]]
+class PendingQueryResult(BaseModel):
+    status: Literal["added", "running"]
 
 
-class ExpiredQueryResultData(BaseModel):
-    error: str
+class ExpiredQueryResult(BaseModel):
+    class QueryResultData(BaseModel):
+        error: str
+
+    status: Literal["expired"]
+    data: QueryResultData
 
 
-class QueryResult(BaseModel, use_enum_values=True):
-    """Stores ID, query status, and error details for a completed query task."""
+class CompletedQueryResult(BaseModel):
+    class QueryResultData(BaseModel):
+        id: str
+        runtime: float
 
-    status: QueryStatusEnum
-    data: Union[QueryResultData, ExpiredQueryResultData, None]
-
-    @property
-    def task_id(self) -> str:
-        if not isinstance(self.data, QueryResultData):
-            raise TypeError("This query result doesn't contain any data")
-        return self.data.id
+    status: Literal["complete"]
+    data: QueryResultData
 
     @property
     def runtime(self) -> float:
-        if not isinstance(self.data, QueryResultData):
-            raise TypeError("This query result doesn't contain any data")
+        return self.data.runtime
+
+
+class ErrorQueryResult(BaseModel):
+    class QueryResultData(BaseModel):
+        id: str
+        runtime: float
+        sql: str
+        errors: Optional[Tuple[QueryError, ...]]
+
+    status: Literal["error"]
+    data: QueryResultData
+
+    @property
+    def runtime(self) -> float:
         return self.data.runtime
 
     @property
     def sql(self) -> str:
-        if not isinstance(self.data, QueryResultData):
-            raise TypeError("This query result doesn't contain any data")
         return self.data.sql
 
     @property
     def errors(self) -> Tuple[QueryError, ...]:
-        if not isinstance(self.data, QueryResultData):
-            raise TypeError("This query result doesn't contain any data")
-        elif self.data.errors is None:
+        if self.data.errors is None:
             raise TypeError("No errors contained in this query result")
         return self.data.errors
 
@@ -88,3 +85,11 @@ class QueryResult(BaseModel, use_enum_values=True):
             ),
         )
         return tuple(error for error in self.errors if error.message not in WARNINGS)
+
+
+class QueryResult(BaseModel):
+    """Container model to allow discriminated union on status."""
+
+    __root__: Union[
+        PendingQueryResult, ExpiredQueryResult, CompletedQueryResult, ErrorQueryResult
+    ] = Field(..., discriminator="status")
