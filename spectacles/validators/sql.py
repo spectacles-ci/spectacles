@@ -394,10 +394,14 @@ class SqlValidator:
                 "Encountered an exception while retrieving results:", exc_info=True
             )
             # Put a sentinel on the run query queue to shut it down
+            consume_queue(queries_to_run)
             queries_to_run.put_nowait(None)
             # Wait until the sentinel has been consumed and handled
             while not queries_to_run.empty():
                 logger.debug("Waiting for the queries_to_run queue to clear")
+                # _run_query can get bogged down waiting for query slots, so free them
+                if query_slot.locked:
+                    query_slot.release()
                 await asyncio.sleep(1)
             raise
         finally:
