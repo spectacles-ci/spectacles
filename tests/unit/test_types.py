@@ -1,4 +1,5 @@
-from spectacles.types import QueryResult, QueryError
+from typing import cast
+from spectacles.types import QueryResult, QueryError, ErrorQueryResult
 from pydantic import ValidationError
 import pytest
 
@@ -6,7 +7,9 @@ import pytest
 def test_message_and_message_details_are_concatenated():
     message = "An error ocurrred."
     message_details = "We were unable to look up the query requested."
-    error = QueryError(message=message, message_details=message_details)
+    error = QueryError(
+        message=message, message_details=message_details, sql_error_loc=None
+    )
     assert error.full_message == message + " " + message_details
 
 
@@ -48,7 +51,7 @@ def test_query_results_with_no_message_details_works():
             "sql": "SELECT * FROM orders",
         },
     }
-    query_result = QueryResult.parse_obj(response_json)
+    query_result = cast(ErrorQueryResult, QueryResult.parse_obj(response_json).__root__)
     valid_errors = query_result.get_valid_errors()
     assert valid_errors[0].message == message
     assert valid_errors[0].full_message == message
@@ -89,7 +92,7 @@ def test_get_valid_errors_should_return_errors():
             "sql": sql,
         },
     }
-    query_result = QueryResult.parse_obj(response_json)
+    query_result = cast(ErrorQueryResult, QueryResult.parse_obj(response_json).__root__)
     valid_errors = query_result.get_valid_errors()
     assert valid_errors
     assert valid_errors[0].message == error_message
@@ -112,7 +115,8 @@ def test_get_valid_errors_should_ignore_warnings():
             "sql": sql,
         },
     }
-    valid_errors = QueryResult.parse_obj(response_json).get_valid_errors()
+    query_result = cast(ErrorQueryResult, QueryResult.parse_obj(response_json).__root__)
+    valid_errors = query_result.get_valid_errors()
     assert not valid_errors
 
     # This is the original version of this warning message text.
@@ -122,5 +126,6 @@ def test_get_valid_errors_should_ignore_warnings():
         "Query results in Production Mode might be different."
     )
     response_json["data"]["errors"][0]["message"] = warning_message
-    valid_errors = QueryResult.parse_obj(response_json).get_valid_errors()
+    query_result = cast(ErrorQueryResult, QueryResult.parse_obj(response_json).__root__)
+    valid_errors = query_result.get_valid_errors()
     assert not valid_errors

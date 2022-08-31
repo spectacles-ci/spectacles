@@ -350,7 +350,7 @@ def main():
         tracking.track_invocation_end(
             args.base_url,
             args.command,
-            invocation_id,
+            invocation_id,  # pyright: ignore[reportUnboundVariable]
             args.project if args.command != "connect" else None,
         )
 
@@ -725,9 +725,9 @@ async def run_connect(
     base_url: str, client_id: str, client_secret: str, port: int, api_version: float
 ) -> None:
     """Tests the connection and credentials for the Looker API."""
+    # Don't trust env to ignore .netrc credentials
+    async_client = httpx.AsyncClient(trust_env=False)
     try:
-        # Don't trust env to ignore .netrc credentials
-        async_client = httpx.AsyncClient(trust_env=False)
         LookerClient(
             async_client, base_url, client_id, client_secret, port, api_version
         )
@@ -748,9 +748,9 @@ async def run_lookml(
     severity,
     pin_imports,
 ) -> None:
+    # Don't trust env to ignore .netrc credentials
+    async_client = httpx.AsyncClient(trust_env=False)
     try:
-        # Don't trust env to ignore .netrc credentials
-        async_client = httpx.AsyncClient(trust_env=False)
         client = LookerClient(
             async_client, base_url, client_id, client_secret, port, api_version
         )
@@ -806,9 +806,9 @@ async def run_content(
     folders,
     pin_imports,
 ) -> None:
+    # Don't trust env to ignore .netrc credentials
+    async_client = httpx.AsyncClient(trust_env=False)
     try:
-        # Don't trust env to ignore .netrc credentials
-        async_client = httpx.AsyncClient(trust_env=False)
         client = LookerClient(
             async_client, base_url, client_id, client_secret, port, api_version
         )
@@ -865,9 +865,9 @@ async def run_assert(
     remote_reset,
     pin_imports,
 ) -> None:
+    # Don't trust env to ignore .netrc credentials
+    async_client = httpx.AsyncClient(trust_env=False)
     try:
-        # Don't trust env to ignore .netrc credentials
-        async_client = httpx.AsyncClient(trust_env=False)
         client = LookerClient(
             async_client, base_url, client_id, client_secret, port, api_version
         )
@@ -927,9 +927,9 @@ async def run_sql(
     ignore_hidden,
 ) -> None:
     """Runs and validates the SQL for each selected LookML dimension."""
+    # Don't trust env to ignore .netrc credentials
+    async_client = httpx.AsyncClient(trust_env=False)
     try:
-        # Don't trust env to ignore .netrc credentials
-        async_client = httpx.AsyncClient(trust_env=False)
         client = LookerClient(
             async_client, base_url, client_id, client_secret, port, api_version
         )

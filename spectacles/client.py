@@ -530,7 +530,7 @@ class LookerClient:
         return response.json()
 
     async def run_lookml_test(
-        self, project: str, model: str = None, test: str = None
+        self, project: str, model: Optional[str] = None, test: Optional[str] = None
     ) -> List[JsonDict]:
         """Runs all LookML/data tests for a given project and model (optional)
 
@@ -653,7 +653,11 @@ class LookerClient:
 
     @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=5)
     async def create_query(
-        self, model: str, explore: str, dimensions: List[str], fields: List = None
+        self,
+        model: str,
+        explore: str,
+        dimensions: List[str],
+        fields: Optional[List] = None,
     ) -> Dict:
         """Creates a Looker async query for one or more specified dimensions.
 

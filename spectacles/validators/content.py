@@ -11,7 +11,7 @@ class ContentValidator:
         self,
         client: LookerClient,
         exclude_personal: bool = False,
-        folders: List[str] = None,
+        folders: Optional[List[str]] = None,
     ):
         self.client = client
         self.exclude_personal = exclude_personal
