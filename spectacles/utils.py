@@ -60,7 +60,7 @@ def log_duration(fn: Callable[..., Coroutine]):
             result = await fn(*args, **kwargs)
         finally:
             elapsed = time.time() - start_time
-            elapsed_str = human_readable(elapsed)
+            elapsed_str = human_readable(int(elapsed))
             message_detail = get_detail(fn.__name__)
 
             logger.info(f"Completed {message_detail}validation in {elapsed_str}.\n")
