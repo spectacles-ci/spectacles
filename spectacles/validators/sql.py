@@ -262,7 +262,7 @@ class SqlValidator:
             logger.debug("Received sentinel, shutting down")
 
         except Exception:
-            logger.debug(
+            logger.error(
                 "Encountered an exception while running a query:", exc_info=True
             )
             raise
@@ -390,7 +390,7 @@ class SqlValidator:
 
                 await asyncio.sleep(0.5)
         except Exception:
-            logger.debug(
+            logger.error(
                 "Encountered an exception while retrieving results:", exc_info=True
             )
             # Put a sentinel on the run query queue to shut it down
