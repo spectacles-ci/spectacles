@@ -172,6 +172,11 @@ class LookerBranchManager:
         logger.debug(message)
 
         if self.is_temp_branch:
+            if self.branch is None:
+                raise TypeError(
+                    "Unable to clean up temporary branch, LookerBranchManager.branch "
+                    "is None"
+                )
             dev_state = self.history.pop()
             await self.client.checkout_branch(self.project, dev_state.branch)
             await self.client.delete_branch(self.project, self.branch)
@@ -424,7 +429,7 @@ class Runner:
     async def validate_data_tests(
         self,
         ref: Optional[str] = None,
-        filters: List[str] = None,
+        filters: Optional[List[str]] = None,
     ) -> JsonDict:
         if filters is None:
             filters = ["*/*"]
@@ -458,11 +463,11 @@ class Runner:
     async def validate_content(
         self,
         ref: Optional[str] = None,
-        filters: List[str] = None,
+        filters: Optional[List[str]] = None,
         incremental: bool = False,
         target: Optional[str] = None,
         exclude_personal: bool = False,
-        folders: List[str] = None,
+        folders: Optional[List[str]] = None,
     ) -> JsonDict:
         if filters is None:
             filters = ["*/*"]

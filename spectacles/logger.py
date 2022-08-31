@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, cast
 from pathlib import Path
 import textwrap
 import logging
@@ -62,7 +62,7 @@ class IndentedLogger(logging.Logger):
 
 
 logging.setLoggerClass(IndentedLogger)
-logger = logging.getLogger("spectacles")
+logger = cast(IndentedLogger, logging.getLogger("spectacles"))
 logger.setLevel(logging.DEBUG)
 
 ch = logging.StreamHandler()
