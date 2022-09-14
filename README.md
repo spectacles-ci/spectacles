@@ -15,7 +15,7 @@ From the command line, you can run the following validators as subcommands (e.g.
 
 ✅ [**Content** validation](https://docs.spectacles.dev/cli/tutorials/validators#the-content-validator) - tests for errors in Looks and Dashboards
 
-✅ **Linting** _(coming soon)_
+✅ [**LookML** validation](https://docs.spectacles.dev/cli/tutorials/validators/#the-lookml-validator) - runs [LookML validator](https://cloud.google.com/looker/docs/lookml-validation)
 
 ## Installation
 
