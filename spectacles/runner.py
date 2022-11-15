@@ -146,7 +146,13 @@ class LookerBranchManager:
             logger.debug("Creating temporary branches in imported projects")
             previously_imported = {mgr.project for mgr in self.import_managers}
             for project in self.imports:
-                if project not in previously_imported:
+                if project == self.project:
+                    raise SpectaclesException(
+                        name="/errors/circular-project-import",
+                        title="Circular project import",
+                        detail=f"Project '{self.project}' imports itself",
+                    )
+                elif project not in previously_imported:
                     import_ref = self.pin_imports.get(project, None)
                     manager = LookerBranchManager(
                         self.client, project, pin_imports=self.pin_imports
@@ -160,6 +166,7 @@ class LookerBranchManager:
                     logger.debug(
                         f"Skipping project '{project}', which is already imported"
                     )
+
         logger.indent(-1)
         logger.debug("")
 
