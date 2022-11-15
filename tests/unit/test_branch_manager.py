@@ -4,13 +4,17 @@ from spectacles.runner import LookerBranchManager
 from spectacles.client import LookerClient
 from spectacles.exceptions import SpectaclesException
 
-# Test the scenario where the user is testing Project A
-# with these imports: A imports B & C; B imports C;
-# Thus, C should not be imported twice
+
 @patch.object(LookerBranchManager, "get_project_imports")
 async def test_redundant_project_imports_are_skipped(
     get_project_imports: AsyncMock,
 ) -> None:
+    """Test that redundant project imports are skipped correctly.
+
+    Test the scenario where the user is testing Project A
+    with these imports: A imports B & C; B imports C;
+    Thus, C should not be imported twice
+    """
     # Mock calls for project A, then B, then C
     get_project_imports.side_effect = (["B", "C"], ["C"], [])
     mock_client = MagicMock(spec=LookerClient)
