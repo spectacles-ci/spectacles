@@ -110,16 +110,7 @@ class ContentValidator:
 
     @staticmethod
     def _get_content_type(content: Dict[str, Any]) -> str:
-        CONTENT_TYPES = (
-            "look",
-            "dashboard",
-            "dashboard_element",
-            "dashboard_filter",
-            "scheduled_plan",
-            "alert",
-            "lookml_dashboard",
-            "lookml_dashboard_element",
-        )
+        CONTENT_TYPES = ("look", "dashboard")
         for content_type in CONTENT_TYPES:
             if content.get(content_type):
                 return content_type
