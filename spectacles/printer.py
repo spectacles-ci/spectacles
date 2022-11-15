@@ -150,6 +150,8 @@ def print_validation_result(status: str, source: str):
         message = red(source)
     elif status == "skipped":
         message = dim(source)
+    else:
+        raise ValueError(f"Unexpected value for status '{status}'")
     logger.info(f"{bullet} {message} {status}")
 
 

@@ -9,6 +9,8 @@ from spectacles.select import is_selected
 
 
 class LookMlObject:
+    name: str
+
     def __repr__(self):
         return f"{self.__class__.__name__}(name={self.name})"
 
@@ -97,7 +99,9 @@ class Dimension(LookMlObject):
 
 
 class Explore(LookMlObject):
-    def __init__(self, name: str, model_name: str, dimensions: List[Dimension] = None):
+    def __init__(
+        self, name: str, model_name: str, dimensions: Optional[List[Dimension]] = None
+    ):
         self.name = name
         self.model_name = model_name
         self.dimensions = [] if dimensions is None else dimensions
@@ -391,7 +395,9 @@ class Project(LookMlObject):
 
             for explore in model.explores:
                 if filters is not None and not is_selected(
-                    model.name, explore.name, filters
+                    model.name,
+                    explore.name,
+                    filters,  # pyright: ignore[reportGeneralTypeIssues]
                 ):
                     continue
                 status = "passed"
