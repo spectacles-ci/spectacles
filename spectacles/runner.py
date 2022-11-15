@@ -144,7 +144,7 @@ class LookerBranchManager:
             )
         else:
             logger.debug("Creating temporary branches in imported projects")
-            previously_imported = tuple(mgr.project for mgr in self.import_managers)
+            previously_imported = {mgr.project for mgr in self.import_managers}
             for project in self.imports:
                 if project not in previously_imported:
                     import_ref = self.pin_imports.get(project, None)
@@ -152,6 +152,9 @@ class LookerBranchManager:
                         self.client, project, pin_imports=self.pin_imports
                     )
                     await manager(ref=import_ref, ephemeral=True).__aenter__()
+                    previously_imported.update(
+                        {child.project for child in manager.import_managers}
+                    )
                     self.import_managers.append(manager)
                 else:
                     logger.debug(
