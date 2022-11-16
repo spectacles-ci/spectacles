@@ -13,10 +13,19 @@ async def test_redundant_project_imports_are_skipped(
 
     Test the scenario where the user is testing Project A
     with these imports: A imports B & C; B imports C;
-    Thus, C should not be imported twice
+    BranchManager[A] should not import C
+
+    Next, reverse the order of the imports:
+    A imports C & B, B imports C;
+    BranchManager[B] should not import C
     """
     # Mock calls for project A, then B, then C
-    get_project_imports.side_effect = (["B", "C"], ["C"], [])
+    get_project_imports.side_effect = (
+        ["B", "C"],
+        ["C"],
+        [],
+        IndexError("`get_project_imports` mock called too many times, this test fails"),
+    )
     mock_client = MagicMock(spec=LookerClient)
     manager = LookerBranchManager(mock_client, project="A")
     await manager(ref="dev-branch").__aenter__()
@@ -29,6 +38,26 @@ async def test_redundant_project_imports_are_skipped(
     project_b_manager = manager.import_managers[0]
     assert len(project_b_manager.import_managers) == 1
     assert project_b_manager.import_managers[0].project == "C"
+
+    # Next, reverse the order of the project imports
+    # Mock calls for project A, then C, then B
+    get_project_imports.side_effect = (
+        ["C", "B"],
+        [],
+        ["C"],
+        IndexError("`get_project_imports` mock called too many times, this test fails"),
+    )
+    mock_client = MagicMock(spec=LookerClient)
+    manager = LookerBranchManager(mock_client, project="A")
+    await manager(ref="dev-branch").__aenter__()
+
+    # Project A should have imported both projects
+    assert len(manager.import_managers) == 2
+    assert [child.project for child in manager.import_managers] == ["C", "B"]
+
+    # Project B should not contain an import (C is already imported)
+    project_b_manager = manager.import_managers[1]
+    assert not project_b_manager.import_managers
 
 
 @patch.object(LookerBranchManager, "get_project_imports")
