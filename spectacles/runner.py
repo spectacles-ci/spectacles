@@ -44,6 +44,7 @@ class LookerBranchManager:
         project: str,
         remote_reset: bool = False,
         pin_imports: Optional[Dict[str, str]] = None,
+        skip_imports: Optional[List[str]] = None,
     ):
         """Context manager for Git branch checkout, creation, and deletion."""
         logger.debug(f"Setting up branch manager in project '{project}'")
@@ -57,6 +58,7 @@ class LookerBranchManager:
         self.branch: Optional[str] = None
         self.is_temp_branch: bool = False
         self.import_managers: List[LookerBranchManager] = []
+        self.skip_imports: List[str] = [] if skip_imports is None else skip_imports
 
     def __call__(self, ref: Optional[str] = None, ephemeral: Optional[bool] = None):
         logger.debug("")
@@ -144,19 +146,29 @@ class LookerBranchManager:
             )
         else:
             logger.debug("Creating temporary branches in imported projects")
-            previously_imported = tuple(mgr.project for mgr in self.import_managers)
             for project in self.imports:
-                if project not in previously_imported:
+                if project == self.project:
+                    raise SpectaclesException(
+                        name="/errors/circular-project-import",
+                        title="Circular project import",
+                        detail=f"Project '{self.project}' imports itself",
+                    )
+                elif project not in self.skip_imports:
                     import_ref = self.pin_imports.get(project, None)
                     manager = LookerBranchManager(
-                        self.client, project, pin_imports=self.pin_imports
+                        self.client,
+                        project,
+                        pin_imports=self.pin_imports,
+                        skip_imports=self.skip_imports,
                     )
                     await manager(ref=import_ref, ephemeral=True).__aenter__()
                     self.import_managers.append(manager)
+                    self.skip_imports.append(project)
                 else:
                     logger.debug(
                         f"Skipping project '{project}', which is already imported"
                     )
+
         logger.indent(-1)
         logger.debug("")
 
