@@ -61,6 +61,15 @@ class IndentedLogger(logging.Logger):
                 handler.formatter.indent(amount)
 
 
+class BackoffFilter(logging.Filter):
+    """Force all logs from the backoff package to be emitted at DEBUG level."""
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        if record.levelno >= logging.DEBUG:
+            record.levelno = logging.DEBUG
+        return True
+
+
 logging.setLoggerClass(IndentedLogger)
 logger = cast(IndentedLogger, logging.getLogger("spectacles"))
 logger.setLevel(logging.DEBUG)
@@ -72,6 +81,8 @@ ch.setLevel(logging.INFO)
 logger.addHandler(ch)
 
 GLOBAL_LOGGER = logger
+
+logging.getLogger("backoff").addFilter(BackoffFilter())
 
 
 def set_file_handler(log_dir: str) -> None:
