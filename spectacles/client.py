@@ -651,7 +651,7 @@ class LookerClient:
 
         return response.json()["fields"]["dimensions"]
 
-    @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=5)
+    @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=8)
     async def create_query(
         self,
         model: str,
@@ -717,6 +717,7 @@ class LookerClient:
         )
         return result
 
+    @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=8)
     async def create_query_task(self, query_id: str) -> str:
         """Runs a previously created query asynchronously and returns the query task ID.
 
