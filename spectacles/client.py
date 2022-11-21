@@ -172,7 +172,9 @@ class LookerClient:
 
         url = utils.compose_url(self.api_url, path=["versions"])
 
-        response = httpx.get(url=url, timeout=TIMEOUT_SEC)
+        response = httpx.get(
+            url=url, timeout=TIMEOUT_SEC, headers=self.async_client.headers
+        )
         try:
             response.raise_for_status()
         except httpx.HTTPStatusError as error:
