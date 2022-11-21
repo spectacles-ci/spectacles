@@ -652,3 +652,66 @@ async def test_search_with_explore_without_dimensions_warns(
     explore.dimensions = []
     await validator.search(explores=(explore,), fail_fast=False)
     assert explore.name in caplog.text
+
+
+async def test_looker_api_error_with_queries_in_flight_shuts_down_gracefully(
+    mocked_api: respx.MockRouter,
+    validator: SqlValidator,
+    explore: Explore,
+    dimension: Dimension,
+):
+    chunk_size = 10
+    explore.dimensions = [dimension] * 1000
+    explore_url = "https://spectacles.looker.com/x"
+
+    # Define some factories to make IDs sensible across requests
+    query_ids = []
+    query_task_ids = []
+
+    def create_query_factory(request, route) -> httpx.Response:
+        query_id = route.call_count + 1  # Use the call count for incrementing IDs
+        query_ids.append(query_id)
+        return httpx.Response(200, json={"id": query_id, "share_url": explore_url})
+
+    def create_query_task_factory(request) -> httpx.Response:
+        query_id = query_ids.pop()
+        if query_id == 26:
+            return httpx.Response(502, text="502: Bad Gateway")
+        else:
+            query_task_id = f"abcdef{query_id}"
+            query_task_ids.append(query_task_id)
+            return httpx.Response(200, json={"id": query_task_id})
+
+    def get_query_results_factory(request) -> httpx.Response:
+        response = httpx.Response(
+            200,
+            json={
+                query_task_id: {
+                    "status": "complete",
+                    "data": {
+                        "id": query_task_id,
+                        "runtime": 0.0,
+                        "sql": "SELECT * FROM users",
+                    },
+                }
+                for query_task_id in query_task_ids
+            },
+        )
+        return response
+
+    mocked_api.post(
+        "queries", params={"fields": "id,share_url"}, name="create_query"
+    ).mock(side_effect=create_query_factory)
+    mocked_api.post(
+        "query_tasks",
+        params={"fields": "id", "cache": "false"},
+        name="create_query_task",
+    ).mock(side_effect=create_query_task_factory)
+    mocked_api.get("query_tasks/multi_results", name="get_query_results").mock(
+        side_effect=get_query_results_factory
+    )
+
+    with pytest.raises(LookerApiError):
+        await validator.search(
+            explores=(explore,), fail_fast=False, chunk_size=chunk_size
+        )
