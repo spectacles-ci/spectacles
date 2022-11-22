@@ -168,9 +168,9 @@ async def test_run_query_handles_exceptions_raised_within(
     ).mock(
         side_effect=tuple(
             [httpx.Response(200, json={"id": query.query_id, "share_url": explore_url})]
-            + [
-                httpx.Response(404) for _ in range(10)
-            ]  # Can't figure out exactly what the right number of 404s is
+            # Because of Async logic, we need to provide it a
+            # semi-infinite number of 404s to avoid StopIteration error
+            + [httpx.Response(404) for _ in range(10)]
         )
     )
 
