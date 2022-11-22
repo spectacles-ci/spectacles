@@ -166,9 +166,11 @@ async def test_run_query_handles_exceptions_raised_within(
     mocked_api.post(
         "queries", params={"fields": "id,share_url"}, name="create_query"
     ).mock(
-        side_effect=(
-            httpx.Response(200, json={"id": query.query_id, "share_url": explore_url}),
-            httpx.Response(404),
+        side_effect=tuple(
+            [httpx.Response(200, json={"id": query.query_id, "share_url": explore_url})]
+            + [
+                httpx.Response(404) for _ in range(10)
+            ]  # Can't figure out exactly what the right number of 404s is
         )
     )
 
@@ -364,7 +366,7 @@ async def test_get_query_results_handles_exceptions_raised_within(
     with pytest.raises(LookerApiError):
         await asyncio.gather(task)
 
-    mocked_api["get_query_results"].calls.assert_called_once()
+    assert mocked_api["get_query_results"].call_count == 3
 
 
 @pytest.mark.parametrize("fail_fast", (True, False))
@@ -535,7 +537,7 @@ async def test_search_handles_exceptions_raised_while_running_queries(
 
     mocked_api.post(
         "queries", params={"fields": "id,share_url"}, name="create_query"
-    ).mock(side_effect=(httpx.Response(404),))
+    ).respond(404)
 
     with pytest.raises(LookerApiError):
         await validator.search(explores, fail_fast)
@@ -674,10 +676,11 @@ async def test_looker_api_error_with_queries_in_flight_shuts_down_gracefully(
         return httpx.Response(200, json={"id": query_id, "share_url": explore_url})
 
     def create_query_task_factory(request) -> httpx.Response:
-        query_id = query_ids.pop()
+        query_id = query_ids[0]
         if query_id == 26:
             return httpx.Response(502, text="502: Bad Gateway")
         else:
+            query_ids.pop()
             query_task_id = f"abcdef{query_id}"
             query_task_ids.append(query_task_id)
             return httpx.Response(200, json={"id": query_task_id})
