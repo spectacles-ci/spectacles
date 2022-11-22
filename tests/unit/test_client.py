@@ -5,7 +5,7 @@ import httpx
 import respx
 import inspect
 import pytest
-from unittest.mock import AsyncMock, patch, MagicMock
+from unittest.mock import AsyncMock, patch
 from spectacles.client import LookerClient, AccessToken
 from spectacles.exceptions import LookerApiError
 
@@ -152,16 +152,8 @@ async def test_bad_http_status_should_cause_backoff_and_retry(
     project = "eye_exam"
     mocked_api.get(f"projects/{project}/lookml_tests/run", name="run_lookml_test").mock(
         side_effect=(
-            httpx.HTTPStatusError(
-                "502: Bad Gateway",
-                request=MagicMock(spec=httpx.Request),
-                response=MagicMock(spec=httpx.Response),
-            ),
-            httpx.HTTPStatusError(
-                "502: Bad Gateway",
-                request=MagicMock(spec=httpx.Request),
-                response=MagicMock(spec=httpx.Response),
-            ),
+            httpx.Response(502),
+            httpx.Response(502),
             httpx.Response(200, json={"some json": "hey!"}),
         )
     )
