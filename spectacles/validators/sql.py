@@ -265,9 +265,8 @@ class SqlValidator:
             logger.error(
                 "Encountered an exception while running a query:", exc_info=True
             )
-            while not running_queries.empty():
-                logger.debug("Waiting for the running_queries queue to clear")
-                await asyncio.sleep(1)
+            logger.debug("Waiting for the running_queries queue to clear")
+            await running_queries.join()
             raise
         finally:
             # This only gets called if a sentinel is received or exception is raised.
