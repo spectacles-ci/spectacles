@@ -187,6 +187,7 @@ async def test_run_query_handles_exceptions_raised_within(
     queries_to_run.put_nowait(query)  # This will succeed
     queries_to_run.put_nowait(query)  # This will fail with 404
     await running_queries.get()  # Retrieve the successfully query
+    running_queries.task_done()
 
     # Normally these steps are handled by _get_query_results
     queries_to_run.task_done()
