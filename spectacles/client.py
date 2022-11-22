@@ -16,6 +16,7 @@ BACKOFF_EXCEPTIONS = (
     TimeoutException,
     HTTPStatusError,
     ConnectError,
+    LookerApiError,
 )
 
 
@@ -531,6 +532,7 @@ class LookerClient:
 
         return response.json()
 
+    @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=3)
     async def run_lookml_test(
         self, project: str, model: Optional[str] = None, test: Optional[str] = None
     ) -> List[JsonDict]:
