@@ -863,7 +863,7 @@ class LookerClient:
     async def lookml_validation(self, project) -> JsonDict:
         logger.debug(f"Validating LookML for project '{project}'")
         url = utils.compose_url(self.api_url, path=["projects", project, "validate"])
-        response = await self.post(url=url, timeout=TIMEOUT_SEC)
+        response = await self.post(url=url, timeout=1800)
 
         try:
             response.raise_for_status()
@@ -883,7 +883,7 @@ class LookerClient:
     async def cached_lookml_validation(self, project) -> Optional[JsonDict]:
         logger.debug(f"Getting cached LookML validation results for '{project}'")
         url = utils.compose_url(self.api_url, path=["projects", project, "validate"])
-        response = await self.get(url=url, timeout=TIMEOUT_SEC)
+        response = await self.get(url=url, timeout=1800)
 
         try:
             response.raise_for_status()
