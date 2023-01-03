@@ -93,40 +93,44 @@ class DataTestValidator:
 
     async def validate(self, tests: List[DataTest]) -> List[DataTestError]:
         data_test_errors: List[DataTestError] = []
+        query_slot = asyncio.Semaphore(
+            15
+        )  # This is the per-user query limit in Looker for most instances
 
-        async def run_test(test: DataTest) -> None:
-            results = await self.client.run_lookml_test(
-                test.project_name, model=test.explore.model_name, test=test.name
-            )
-            test.explore.queried = True
-            result = results[0]  # For a single test, list with length 1
-
-            if result["success"]:
-                test.passed = True
-                test.explore.successes.append(
-                    {
-                        "model": test.explore.model_name,
-                        "explore": test.explore.name,
-                        "metadata": {
-                            "test_name": result["test_name"],
-                            "lookml_url": test.lookml_url,
-                            "explore_url": test.explore_url,
-                        },
-                    }
+        async def run_test(test: DataTest, query_slot: asyncio.Semaphore) -> None:
+            async with query_slot:
+                results = await self.client.run_lookml_test(
+                    test.project_name, model=test.explore.model_name, test=test.name
                 )
-            else:
-                test.passed = False
-                for error in result["errors"]:
-                    error = DataTestError(
-                        model=error["model_id"],
-                        explore=error["explore"],
-                        message=error["message"],
-                        test_name=result["test_name"],
-                        lookml_url=test.lookml_url,
-                        explore_url=test.explore_url,
-                    )
-                    data_test_errors.append(error)
-                    test.explore.errors.append(error)
+                test.explore.queried = True
+                result = results[0]  # For a single test, list with length 1
 
-        await asyncio.gather(*(run_test(test) for test in tests))
+                if result["success"]:
+                    test.passed = True
+                    test.explore.successes.append(
+                        {
+                            "model": test.explore.model_name,
+                            "explore": test.explore.name,
+                            "metadata": {
+                                "test_name": result["test_name"],
+                                "lookml_url": test.lookml_url,
+                                "explore_url": test.explore_url,
+                            },
+                        }
+                    )
+                else:
+                    test.passed = False
+                    for error in result["errors"]:
+                        error = DataTestError(
+                            model=error["model_id"],
+                            explore=error["explore"],
+                            message=error["message"],
+                            test_name=result["test_name"],
+                            lookml_url=test.lookml_url,
+                            explore_url=test.explore_url,
+                        )
+                        data_test_errors.append(error)
+                        test.explore.errors.append(error)
+
+        await asyncio.gather(*(run_test(test, query_slot) for test in tests))
         return data_test_errors
