@@ -93,7 +93,6 @@ class LookerBranchManager:
 
         self.is_temp_branch = False
         self.import_managers = []
-        self.skip_imports = []
         return self
 
     async def __aenter__(self):
@@ -196,6 +195,8 @@ class LookerBranchManager:
 
         for manager in self.import_managers:
             await manager.__aexit__()
+
+        self.skip_imports = []
 
         if self.init_state.workspace == "production":
             await self.update_workspace("production")
