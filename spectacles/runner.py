@@ -196,6 +196,8 @@ class LookerBranchManager:
         for manager in self.import_managers:
             await manager.__aexit__()
 
+        self.skip_imports = []
+
         if self.init_state.workspace == "production":
             await self.update_workspace("production")
         else:
