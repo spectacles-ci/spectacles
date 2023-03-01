@@ -37,7 +37,7 @@ def project():
 @pytest.fixture
 def sql_error():
     return SqlError(
-        dimension="users.age",
+        field="users.age",
         explore="users",
         model="eye_exam",
         sql="SELECT age FROM users WHERE 1=2 LIMIT 1",

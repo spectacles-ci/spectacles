@@ -22,33 +22,35 @@ ProfilerTableRow = Tuple[str, str, float, str, str]
 @dataclass
 class Query:
     explore: Explore
-    dimensions: tuple[LookMlField, ...]
+    fields: tuple[LookMlField, ...]
     query_id: str | None = None
     explore_url: str | None = None
     errored: bool | None = None
     runtime: float | None = None
 
     def __post_init__(self) -> None:
-        # Confirm that all dimensions are from the Explore associated here
-        if len(set((d.model_name, d.explore_name) for d in self.dimensions)) > 1:
-            raise ValueError("All Dimensions must be from the same model and explore")
-        elif self.dimensions[0].explore_name != self.explore.name:
-            raise ValueError("Dimension.explore_name must equal Query.explore.name")
-        elif self.dimensions[0].model_name != self.explore.model_name:
-            raise ValueError("Dimension.model_name must equal Query.explore.model_name")
+        # Confirm that all fields are from the Explore associated here
+        if len(set((d.model_name, d.explore_name) for d in self.fields)) > 1:
+            raise ValueError("All LookMlFields must be from the same model and explore")
+        elif self.fields[0].explore_name != self.explore.name:
+            raise ValueError("LookMlField.explore_name must equal Query.explore.name")
+        elif self.fields[0].model_name != self.explore.model_name:
+            raise ValueError(
+                "LookMlField.model_name must equal Query.explore.model_name"
+            )
 
     def __repr__(self) -> str:
-        return f"Query(explore={self.explore.name} n={len(self.dimensions)})"
+        return f"Query(explore={self.explore.name} n={len(self.fields)})"
 
     def divide(self) -> Iterator[Query]:
         if not self.errored:
             raise TypeError("Query.errored must be True to divide")
-        if len(self.dimensions) < 2:
-            raise ValueError("Query must have at least 2 dimensions to divide")
+        if len(self.fields) < 2:
+            raise ValueError("Query must have at least 2 fields to divide")
 
-        midpoint = len(self.dimensions) // 2
-        yield Query(self.explore, self.dimensions[:midpoint])
-        yield Query(self.explore, self.dimensions[midpoint:])
+        midpoint = len(self.fields) // 2
+        yield Query(self.explore, self.fields[:midpoint])
+        yield Query(self.explore, self.fields[midpoint:])
 
     def to_profiler_format(self) -> ProfilerTableRow:
         if self.runtime is None:
@@ -131,29 +133,29 @@ class SqlValidator:
     async def compile_explore(self, explore: Explore) -> CompiledSql:
         if not explore.fields:
             raise AttributeError(
-                f"Explore '{explore.name}' is missing dimensions, "
+                f"Explore '{explore.name}' is missing fields, "
                 "meaning this query won't have fields and will error. "
-                "Often this happens because you didn't include dimensions "
+                "Often this happens because you didn't include fields "
                 "when you built the project."
             )
-        dimensions = [dimension.name for dimension in explore.fields]
-        # Create a query that includes all dimensions
+        fields = [field.name for field in explore.fields]
+        # Create a query that includes all fields
         query = await self.client.create_query(
-            explore.model_name, explore.name, dimensions, fields=["id"]
+            explore.model_name, explore.name, fields, fields=["id"]
         )
         sql = await self.client.run_query(query["id"])
         return CompiledSql.from_explore(explore, sql)
 
-    async def compile_field(self, dimension: LookMlField) -> CompiledSql:
-        # Create a query for the dimension
+    async def compile_field(self, field: LookMlField) -> CompiledSql:
+        # Create a query for the field
         query = await self.client.create_query(
-            dimension.model_name,
-            dimension.explore_name,
-            [dimension.name],
+            field.model_name,
+            field.explore_name,
+            [field.name],
             fields=["id"],
         )
         sql = await self.client.run_query(query["id"])
-        return CompiledSql.from_field(dimension, sql)
+        return CompiledSql.from_field(field, sql)
 
     async def search(
         self,
@@ -182,17 +184,17 @@ class SqlValidator:
         try:
             for explore in explores:
                 # Sorting makes it more likely to prune the tree faster in binsearch
-                dimensions = tuple(sorted(explore.fields))
-                if len(dimensions) == 0:
+                fields = tuple(sorted(explore.fields))
+                if len(fields) == 0:
                     logger.warning(
                         f"Warning: Explore '{explore.name}' does not have any non-ignored "
-                        "dimensions and will not be validated."
+                        "fields and will not be validated."
                     )
-                elif len(dimensions) <= chunk_size:
-                    queries_to_run.put_nowait(Query(explore, dimensions))
+                elif len(fields) <= chunk_size:
+                    queries_to_run.put_nowait(Query(explore, fields))
                 else:
-                    for i in range(0, len(dimensions), chunk_size):
-                        chunk = dimensions[i : i + chunk_size]
+                    for i in range(0, len(fields), chunk_size):
+                        chunk = fields[i : i + chunk_size]
                         query = Query(explore, chunk)
                         queries_to_run.put_nowait(query)
 
@@ -249,9 +251,9 @@ class SqlValidator:
                 logger.debug("Waiting to acquire a query slot")
                 await query_slot.acquire()
                 result = await self.client.create_query(
-                    model=query.dimensions[0].model_name,
-                    explore=query.dimensions[0].explore_name,
-                    dimensions=[dimension.name for dimension in query.dimensions],
+                    model=query.fields[0].model_name,
+                    explore=query.fields[0].explore_name,
+                    dimensions=[dimension.name for dimension in query.fields],
                     fields=["id", "share_url"],
                 )
                 query.query_id = result["id"]
@@ -348,7 +350,7 @@ class SqlValidator:
                                         SqlError(
                                             model=explore.model_name,
                                             explore=explore.name,
-                                            dimension=None,
+                                            field=None,
                                             sql=query_result.sql,
                                             message=error.full_message,
                                             line_number=line_number,
@@ -357,38 +359,38 @@ class SqlValidator:
                                     )
 
                             # Make child queries and put them back on the queue
-                            elif len(query.dimensions) > 1:
+                            elif len(query.fields) > 1:
                                 for child in query.divide():
                                     await queries_to_run.put(child)
 
                             # Assign the error(s) to its dimension
-                            elif len(query.dimensions) == 1:
-                                dimension = query.dimensions[0]
-                                dimension.queried = True
+                            elif len(query.fields) == 1:
+                                field = query.fields[0]
+                                field.queried = True
                                 for error in query_result.get_valid_errors():
                                     line_number = (
                                         error.sql_error_loc.line
                                         if error.sql_error_loc
                                         else None
                                     )
-                                    dimension.errors.append(
+                                    field.errors.append(
                                         SqlError(
-                                            model=dimension.model_name,
-                                            explore=dimension.explore_name,
-                                            dimension=dimension.name,
+                                            model=field.model_name,
+                                            explore=field.explore_name,
+                                            field=field.name,
                                             sql=query_result.sql,
                                             message=error.full_message,
                                             line_number=line_number,
-                                            lookml_url=dimension.url,
+                                            lookml_url=field.url,
                                             explore_url=query.explore_url,
                                         )
                                     )
 
                             else:
                                 raise ValueError(
-                                    "Query had an unexpected number of dimensions. "
-                                    "Queries must have at least one dimension, but "
-                                    f"{query!r} had {len(query.dimensions)} dimensions."
+                                    "Query had an unexpected number of fields. "
+                                    "Queries must have at least one field, but "
+                                    f"{query!r} had {len(query.fields)} fields."
                                 )
 
                             # Indicate there are no more queries or subqueries to run

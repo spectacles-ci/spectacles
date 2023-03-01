@@ -134,7 +134,7 @@ class SqlError(ValidationError):
         self,
         model: str,
         explore: str,
-        dimension: Optional[str],
+        field: Optional[str],
         sql: str,
         message: str,
         line_number: Optional[int] = None,
@@ -142,7 +142,7 @@ class SqlError(ValidationError):
         lookml_url: Optional[str] = None,
     ):
         metadata = {
-            "dimension": dimension,
+            "dimension": field,
             "sql": sql,
             "line_number": line_number,
             "explore_url": explore_url,

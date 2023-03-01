@@ -262,7 +262,7 @@ async def test_get_query_results_error_query_is_divided(
         },
     )
     # Need more than one dimension so the query will be divided
-    query.dimensions = (query.dimensions[0], query.dimensions[0])
+    query.fields = (query.fields[0], query.fields[0])
     validator._task_to_query[query_task_id] = query
 
     task = asyncio.create_task(
