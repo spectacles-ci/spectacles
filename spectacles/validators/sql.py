@@ -141,7 +141,7 @@ class SqlValidator:
         fields = [field.name for field in explore.fields]
         # Create a query that includes all fields
         query = await self.client.create_query(
-            explore.model_name, explore.name, fields, fields=["id"]
+            explore.model_name, explore.name, fields, request_fields=["id"]
         )
         sql = await self.client.run_query(query["id"])
         return CompiledSql.from_explore(explore, sql)
@@ -152,7 +152,7 @@ class SqlValidator:
             field.model_name,
             field.explore_name,
             [field.name],
-            fields=["id"],
+            request_fields=["id"],
         )
         sql = await self.client.run_query(query["id"])
         return CompiledSql.from_field(field, sql)
@@ -254,7 +254,7 @@ class SqlValidator:
                     model=query.fields[0].model_name,
                     explore=query.fields[0].explore_name,
                     fields=[field.name for field in query.fields],
-                    fields=["id", "share_url"],
+                    request_fields=["id", "share_url"],
                 )
                 query.query_id = result["id"]
                 query.explore_url = result["share_url"]
