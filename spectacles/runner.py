@@ -403,7 +403,7 @@ class Runner:
 
         # Create dimension tests for the desired ref when explores errored
         if not fail_fast and incremental:
-            errored_dimensions = project.iter_dimensions(errored=True)
+            errored_dimensions = project.iter_fields(errored=True)
             # For errored dimensions, create dimension tests for the target ref
             async with self.branch_manager(ref=target, ephemeral=True):
                 target_ref = self.branch_manager.ref
@@ -411,7 +411,7 @@ class Runner:
                 compiled_dimensions = await asyncio.gather(
                     *(
                         validator.compile_dimension(dimension)
-                        for dimension in project.iter_dimensions(errored=True)
+                        for dimension in project.iter_fields(errored=True)
                     )
                 )
                 target_dimensions = set(compiled_dimensions)

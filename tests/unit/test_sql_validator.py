@@ -7,7 +7,7 @@ import pytest
 import httpx
 import respx
 from spectacles.validators.sql import Query, SqlValidator
-from spectacles.lookml import Explore, Dimension
+from spectacles.lookml import Explore, LookMlField
 from spectacles.exceptions import LookerApiError
 from spectacles.client import LookerClient
 
@@ -40,7 +40,7 @@ def query_slot() -> asyncio.Semaphore:
 
 
 @pytest.fixture
-def query(explore: Explore, dimension: Dimension) -> Query:
+def query(explore: Explore, dimension: LookMlField) -> Query:
     return Query(explore, (dimension,), query_id="12345")
 
 
@@ -54,12 +54,12 @@ async def test_compile_explore_without_dimensions_should_not_work(
 async def test_compile_explore_compiles_sql(
     mocked_api: respx.MockRouter,
     explore: Explore,
-    dimension: Dimension,
+    dimension: LookMlField,
     validator: SqlValidator,
 ):
     query_id = 12345
     sql = "SELECT * FROM users"
-    explore.dimensions = [dimension]
+    explore.fields = [dimension]
     mocked_api.post("queries", params={"fields": "id"}, name="create_query").respond(
         200, json={"id": query_id}
     )
@@ -70,14 +70,14 @@ async def test_compile_explore_compiles_sql(
     assert compiled.explore_name == explore.name
     assert compiled.model_name == explore.model_name
     assert compiled.sql == sql
-    assert compiled.dimension_name is None
+    assert compiled.field_name is None
     mocked_api["create_query"].calls.assert_called_once()
     mocked_api["run_query"].calls.assert_called_once()
 
 
 async def test_compile_dimension_compiles_sql(
     mocked_api: respx.MockRouter,
-    dimension: Dimension,
+    dimension: LookMlField,
     validator: SqlValidator,
 ):
     query_id = 12345
@@ -92,7 +92,7 @@ async def test_compile_dimension_compiles_sql(
     assert compiled.explore_name == dimension.explore_name
     assert compiled.model_name == dimension.model_name
     assert compiled.sql == sql
-    assert compiled.dimension_name is dimension.name
+    assert compiled.field_name is dimension.name
     mocked_api["create_query"].calls.assert_called_once()
     mocked_api["run_query"].calls.assert_called_once()
 
@@ -376,9 +376,9 @@ async def test_search_works_with_passing_query(
     mocked_api: respx.MockRouter,
     validator: SqlValidator,
     explore: Explore,
-    dimension: Dimension,
+    dimension: LookMlField,
 ):
-    explore.dimensions = [dimension, dimension]
+    explore.fields = [dimension, dimension]
     explores = (explore,)
 
     query_id = 12345
@@ -420,9 +420,9 @@ async def test_search_works_with_error_query(
     mocked_api: respx.MockRouter,
     validator: SqlValidator,
     explore: Explore,
-    dimension: Dimension,
+    dimension: LookMlField,
 ):
-    explore.dimensions = [dimension, dimension]
+    explore.fields = [dimension, dimension]
     explores = (explore,)
 
     explore_url = "https://spectacles.looker.com/x"
@@ -522,7 +522,7 @@ async def test_search_works_with_error_query(
     if fail_fast:
         assert explore.errors[0].message == message
     else:
-        assert all(d.errors[0].message == message for d in explore.dimensions)
+        assert all(d.errors[0].message == message for d in explore.fields)
 
 
 @pytest.mark.parametrize("fail_fast", (True, False))
@@ -531,9 +531,9 @@ async def test_search_handles_exceptions_raised_while_running_queries(
     mocked_api: respx.MockRouter,
     validator: SqlValidator,
     explore: Explore,
-    dimension: Dimension,
+    dimension: LookMlField,
 ):
-    explore.dimensions = [dimension, dimension]
+    explore.fields = [dimension, dimension]
     explores = (explore,)
 
     mocked_api.post(
@@ -554,9 +554,9 @@ async def test_search_handles_exceptions_raised_while_getting_query_results(
     mocked_api: respx.MockRouter,
     validator: SqlValidator,
     explore: Explore,
-    dimension: Dimension,
+    dimension: LookMlField,
 ):
-    explore.dimensions = [dimension, dimension]
+    explore.fields = [dimension, dimension]
     explores = (explore,)
     query_id = 12345
     query_task_id = "abcdef12345"
@@ -586,10 +586,10 @@ async def test_search_with_chunk_size_should_limit_queries(
     mocked_api: respx.MockRouter,
     validator: SqlValidator,
     explore: Explore,
-    dimension: Dimension,
+    dimension: LookMlField,
 ):
     chunk_size = 10
-    explore.dimensions = [dimension] * 100
+    explore.fields = [dimension] * 100
     explore_url = "https://spectacles.looker.com/x"
 
     # Define some factories to make IDs sensible across requests
@@ -652,7 +652,7 @@ async def test_search_with_explore_without_dimensions_warns(
     explore: Explore, validator: SqlValidator, caplog: pytest.LogCaptureFixture
 ):
     caplog.set_level(logging.WARNING)
-    explore.dimensions = []
+    explore.fields = []
     await validator.search(explores=(explore,), fail_fast=False)
     assert explore.name in caplog.text
 
@@ -661,10 +661,10 @@ async def test_looker_api_error_with_queries_in_flight_shuts_down_gracefully(
     mocked_api: respx.MockRouter,
     validator: SqlValidator,
     explore: Explore,
-    dimension: Dimension,
+    dimension: LookMlField,
 ):
     chunk_size = 10
-    explore.dimensions = [dimension] * 1000
+    explore.fields = [dimension] * 1000
     explore_url = "https://spectacles.looker.com/x"
 
     # Define some factories to make IDs sensible across requests

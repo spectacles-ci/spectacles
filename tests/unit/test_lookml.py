@@ -1,6 +1,6 @@
 from copy import deepcopy
 import pytest
-from spectacles.lookml import Model, Explore, Dimension, Project
+from spectacles.lookml import Model, Explore, LookMlField, Project
 from spectacles.exceptions import SqlError
 from tests.utils import load_resource
 
@@ -19,14 +19,14 @@ def test_explore_from_json():
     explore = Explore.from_json(json_dict[0]["explores"][0], model_name)
     assert explore.name == "test_explore_one"
     assert explore.model_name == model_name
-    assert explore.dimensions == []
+    assert explore.fields == []
 
 
 def test_dimension_from_json():
     model_name = "eye_exam"
     explore_name = "users"
     json_dict = load_resource("response_dimensions.json")
-    dimension = Dimension.from_json(json_dict[0], model_name, explore_name)
+    dimension = LookMlField.from_json(json_dict[0], model_name, explore_name)
     assert dimension.name == "test_view.dimension_one"
     assert dimension.model_name == model_name
     assert dimension.explore_name == explore_name
@@ -45,7 +45,7 @@ def test_ignored_dimension_with_whitespace():
     url = "/projects/spectacles/files/test_view.view.lkml?line=340"
     sql = " -- spectacles: ignore\n${TABLE}.dimension_one "
     is_hidden = False
-    dimension = Dimension(
+    dimension = LookMlField(
         name, model_name, explore_name, dimension_type, tags, sql, url, is_hidden
     )
     assert dimension.ignore
@@ -60,7 +60,7 @@ def test_ignored_dimension_with_no_whitespace():
     url = "/projects/spectacles/files/test_view.view.lkml?line=340"
     sql = "--spectacles:ignore\n${TABLE}.dimension_one "
     is_hidden = False
-    dimension = Dimension(
+    dimension = LookMlField(
         name, model_name, explore_name, dimension_type, tags, sql, url, is_hidden
     )
     assert dimension.ignore
@@ -75,7 +75,7 @@ def test_ignored_dimension_with_tags():
     url = "/projects/spectacles/files/test_view.view.lkml?line=340"
     sql = "${TABLE}.dimension_one "
     is_hidden = False
-    dimension = Dimension(
+    dimension = LookMlField(
         name, model_name, explore_name, dimension_type, tags, sql, url, is_hidden
     )
     assert dimension.ignore
@@ -110,7 +110,7 @@ def test_non_bool_errored_should_raise_value_error(
         lookml_obj.errored = 1
 
 
-def test_dimensions_with_different_sql_can_be_equal(dimension: Dimension):
+def test_dimensions_with_different_sql_can_be_equal(dimension: LookMlField):
     a = dimension
     b = deepcopy(a)
     b.sql = "${TABLE}.another_column"
@@ -118,7 +118,7 @@ def test_dimensions_with_different_sql_can_be_equal(dimension: Dimension):
 
 
 def test_dimension_should_not_be_errored_if_not_queried(
-    dimension: Dimension, sql_error: SqlError
+    dimension: LookMlField, sql_error: SqlError
 ):
     assert dimension.errored is None
     dimension.errors = [sql_error]
@@ -127,7 +127,7 @@ def test_dimension_should_not_be_errored_if_not_queried(
     assert dimension.errored is True
 
 
-def test_should_not_be_able_to_set_errored_on_dimension(dimension: Dimension):
+def test_should_not_be_able_to_set_errored_on_dimension(dimension: LookMlField):
     with pytest.raises(AttributeError):
         dimension.errored = True
 
@@ -139,7 +139,7 @@ def test_should_not_be_able_to_set_errored_on_explore(explore: Explore):
 
 def test_dimensions_can_be_sorted_by_name():
     unsorted = [
-        Dimension(
+        LookMlField(
             name="b",
             model_name="",
             explore_name="",
@@ -148,7 +148,7 @@ def test_dimensions_can_be_sorted_by_name():
             sql="",
             is_hidden=False,
         ),
-        Dimension(
+        LookMlField(
             name="a",
             model_name="",
             explore_name="",
@@ -157,7 +157,7 @@ def test_dimensions_can_be_sorted_by_name():
             sql="",
             is_hidden=False,
         ),
-        Dimension(
+        LookMlField(
             name="c",
             model_name="",
             explore_name="",
@@ -174,7 +174,7 @@ def test_dimensions_can_be_sorted_by_name():
 
 def test_dimensions_can_be_sorted_by_explore_name():
     unsorted = [
-        Dimension(
+        LookMlField(
             name="",
             model_name="",
             explore_name="b",
@@ -183,7 +183,7 @@ def test_dimensions_can_be_sorted_by_explore_name():
             sql="",
             is_hidden=False,
         ),
-        Dimension(
+        LookMlField(
             name="",
             model_name="",
             explore_name="c",
@@ -192,7 +192,7 @@ def test_dimensions_can_be_sorted_by_explore_name():
             sql="",
             is_hidden=False,
         ),
-        Dimension(
+        LookMlField(
             name="",
             model_name="",
             explore_name="a",
@@ -208,7 +208,7 @@ def test_dimensions_can_be_sorted_by_explore_name():
 
 
 def test_parent_queried_behavior_should_depend_on_its_child(
-    explore: Explore, dimension: Dimension, model, project: Project
+    explore: Explore, dimension: LookMlField, model, project: Project
 ):
     for parent, child, attr in [
         (explore, dimension, "dimensions"),
@@ -229,7 +229,7 @@ def test_parent_queried_behavior_should_depend_on_its_child(
 
 
 def test_comparison_to_mismatched_type_object_fails(
-    dimension: Dimension, explore: Explore, model, project: Project
+    dimension: LookMlField, explore: Explore, model, project: Project
 ):
     assert dimension != 1
     assert explore != 1
@@ -238,43 +238,43 @@ def test_comparison_to_mismatched_type_object_fails(
 
 
 def test_explore_number_of_errors_batch_with_errors(
-    dimension: Dimension, explore: Explore, sql_error: SqlError
+    dimension: LookMlField, explore: Explore, sql_error: SqlError
 ):
-    explore.dimensions = [dimension]
+    explore.fields = [dimension]
     explore.queried = True
     explore.errors = [sql_error]
     assert explore.number_of_errors == 1
 
 
 def test_explore_number_of_errors_batch_with_no_errors(
-    dimension: Dimension, explore: Explore
+    dimension: LookMlField, explore: Explore
 ):
-    explore.dimensions = [dimension]
+    explore.fields = [dimension]
     explore.queried = True
     assert explore.number_of_errors == 0
 
 
 def test_explore_number_of_errors_single_with_errors(
-    dimension: Dimension, explore: Explore, sql_error: SqlError
+    dimension: LookMlField, explore: Explore, sql_error: SqlError
 ):
     dimension.errors = [sql_error]
     dimension.queried = True
-    explore.dimensions = [dimension, dimension]
+    explore.fields = [dimension, dimension]
     assert explore.number_of_errors == 2
 
 
 def test_explore_number_of_errors_single_with_no_errors(
-    dimension: Dimension, explore: Explore
+    dimension: LookMlField, explore: Explore
 ):
     dimension.queried = True
-    explore.dimensions = [dimension, dimension]
+    explore.fields = [dimension, dimension]
     assert explore.number_of_errors == 0
 
 
 def test_model_number_of_errors_batch_with_errors(
-    dimension: Dimension, explore: Explore, model: Model, sql_error: SqlError
+    dimension: LookMlField, explore: Explore, model: Model, sql_error: SqlError
 ):
-    explore.dimensions = [dimension]
+    explore.fields = [dimension]
     explore.queried = True
     explore.errors = [sql_error]
     model.explores = [explore, explore]
@@ -282,28 +282,28 @@ def test_model_number_of_errors_batch_with_errors(
 
 
 def test_model_number_of_errors_batch_with_no_errors(
-    dimension: Dimension, explore: Explore, model: Model
+    dimension: LookMlField, explore: Explore, model: Model
 ):
-    explore.dimensions = [dimension]
+    explore.fields = [dimension]
     explore.queried = True
     model.explores = [explore, explore]
     assert model.number_of_errors == 0
 
 
 def test_model_number_of_errors_single_with_errors(
-    dimension: Dimension, explore: Explore, model: Model, sql_error: SqlError
+    dimension: LookMlField, explore: Explore, model: Model, sql_error: SqlError
 ):
     dimension.errors = [sql_error]
-    explore.dimensions = [dimension, dimension]
+    explore.fields = [dimension, dimension]
     explore.queried = True
     model.explores = [explore, explore]
     assert model.number_of_errors == 4
 
 
 def test_model_number_of_errors_single_with_no_errors(
-    dimension: Dimension, explore: Explore, model: Model
+    dimension: LookMlField, explore: Explore, model: Model
 ):
-    explore.dimensions = [dimension, dimension]
+    explore.fields = [dimension, dimension]
     explore.queried = True
     model.explores = [explore, explore]
     assert model.number_of_errors == 0
@@ -327,13 +327,13 @@ def test_model_get_errored_explores_returns_the_correct_explore(
 
 
 def test_project_number_of_errors_batch_with_errors(
-    dimension: Dimension,
+    dimension: LookMlField,
     explore: Explore,
     model: Model,
     project: Project,
     sql_error: SqlError,
 ):
-    explore.dimensions = [dimension]
+    explore.fields = [dimension]
     explore.queried = True
     explore.errors = [sql_error]
     model.explores = [explore, explore]
@@ -342,9 +342,9 @@ def test_project_number_of_errors_batch_with_errors(
 
 
 def test_project_number_of_errors_batch_with_no_errors(
-    dimension: Dimension, explore: Explore, model: Model, project: Project
+    dimension: LookMlField, explore: Explore, model: Model, project: Project
 ):
-    explore.dimensions = [dimension]
+    explore.fields = [dimension]
     explore.queried = True
     model.explores = [explore, explore]
     project.models = [model]
@@ -352,14 +352,14 @@ def test_project_number_of_errors_batch_with_no_errors(
 
 
 def test_project_number_of_errors_single_with_errors(
-    dimension: Dimension,
+    dimension: LookMlField,
     explore: Explore,
     model: Model,
     project: Project,
     sql_error: SqlError,
 ):
     dimension.errors = [sql_error]
-    explore.dimensions = [dimension, dimension]
+    explore.fields = [dimension, dimension]
     explore.queried = True
     model.explores = [explore, explore]
     project.models = [model, model]
@@ -367,9 +367,9 @@ def test_project_number_of_errors_single_with_errors(
 
 
 def test_project_number_of_errors_single_with_no_errors(
-    dimension: Dimension, explore: Explore, model: Model, project: Project
+    dimension: LookMlField, explore: Explore, model: Model, project: Project
 ):
-    explore.dimensions = [dimension, dimension]
+    explore.fields = [dimension, dimension]
     explore.queried = True
     model.explores = [explore, explore]
     project.models = [model, model]

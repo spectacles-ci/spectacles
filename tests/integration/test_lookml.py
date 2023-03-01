@@ -1,6 +1,6 @@
 import pytest
 from spectacles.client import LookerClient
-from spectacles.lookml import Explore, build_project, build_explore_dimensions
+from spectacles.lookml import Explore, build_project, build_explore_fields
 from spectacles.exceptions import SpectaclesException
 
 
@@ -16,7 +16,7 @@ class TestBuildProject:
         )
         assert len(project.models) == 1
         assert len(project.models[0].explores) == 1
-        dimensions = project.models[0].explores[0].dimensions
+        dimensions = project.models[0].explores[0].fields
         assert len(dimensions) == 6
         assert "users.city" in [dim.name for dim in dimensions]
         assert not project.errored
@@ -48,7 +48,7 @@ class TestBuildProject:
             include_fields=True,
             ignore_hidden_fields=True,
         )
-        assert len(project.models[0].explores[0].dimensions) == 5
+        assert len(project.models[0].explores[0].fields) == 5
 
 
 class TestBuildUnconfiguredProject:
@@ -66,15 +66,15 @@ class TestBuildDimensions:
     async def test_dimension_count_should_match(
         self, looker_client: LookerClient, explore: Explore
     ):
-        await build_explore_dimensions(looker_client, explore)
-        assert len(explore.dimensions) == 6
+        await build_explore_fields(looker_client, explore)
+        assert len(explore.fields) == 6
 
     async def test_hidden_dimension_should_be_excluded_with_ignore_hidden(
         self, looker_client: LookerClient, explore: Explore
     ):
-        await build_explore_dimensions(
+        await build_explore_fields(
             looker_client,
             explore,
             ignore_hidden_fields=True,
         )
-        assert len(explore.dimensions) == 5
+        assert len(explore.fields) == 5

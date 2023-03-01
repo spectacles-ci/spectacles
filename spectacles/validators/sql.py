@@ -5,7 +5,7 @@ from tabulate import tabulate
 from typing import List, Optional, Tuple, Iterator, Union, cast
 import pydantic
 from spectacles.client import LookerClient
-from spectacles.lookml import CompiledSql, Dimension, Explore
+from spectacles.lookml import CompiledSql, LookMlField, Explore
 from spectacles.exceptions import SpectaclesException, SqlError
 from spectacles.logger import GLOBAL_LOGGER as logger
 from spectacles.printer import print_header
@@ -22,7 +22,7 @@ ProfilerTableRow = Tuple[str, str, float, str, str]
 @dataclass
 class Query:
     explore: Explore
-    dimensions: tuple[Dimension, ...]
+    dimensions: tuple[LookMlField, ...]
     query_id: str | None = None
     explore_url: str | None = None
     errored: bool | None = None
@@ -129,14 +129,14 @@ class SqlValidator:
         self._long_running_queries: List[Query] = []
 
     async def compile_explore(self, explore: Explore) -> CompiledSql:
-        if not explore.dimensions:
+        if not explore.fields:
             raise AttributeError(
                 f"Explore '{explore.name}' is missing dimensions, "
                 "meaning this query won't have fields and will error. "
                 "Often this happens because you didn't include dimensions "
                 "when you built the project."
             )
-        dimensions = [dimension.name for dimension in explore.dimensions]
+        dimensions = [dimension.name for dimension in explore.fields]
         # Create a query that includes all dimensions
         query = await self.client.create_query(
             explore.model_name, explore.name, dimensions, fields=["id"]
@@ -144,7 +144,7 @@ class SqlValidator:
         sql = await self.client.run_query(query["id"])
         return CompiledSql.from_explore(explore, sql)
 
-    async def compile_dimension(self, dimension: Dimension) -> CompiledSql:
+    async def compile_dimension(self, dimension: LookMlField) -> CompiledSql:
         # Create a query for the dimension
         query = await self.client.create_query(
             dimension.model_name,
@@ -153,7 +153,7 @@ class SqlValidator:
             fields=["id"],
         )
         sql = await self.client.run_query(query["id"])
-        return CompiledSql.from_dimension(dimension, sql)
+        return CompiledSql.from_field(dimension, sql)
 
     async def search(
         self,
@@ -182,7 +182,7 @@ class SqlValidator:
         try:
             for explore in explores:
                 # Sorting makes it more likely to prune the tree faster in binsearch
-                dimensions = tuple(sorted(explore.dimensions))
+                dimensions = tuple(sorted(explore.fields))
                 if len(dimensions) == 0:
                     logger.warning(
                         f"Warning: Explore '{explore.name}' does not have any non-ignored "
