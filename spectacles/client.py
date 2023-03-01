@@ -635,19 +635,19 @@ class LookerClient:
         return response.json()
 
     @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
-    async def get_lookml_dimensions(self, model: str, explore: str) -> List[str]:
-        """Gets all dimensions for an explore from the LookmlModel endpoint.
+    async def get_lookml_fields(self, model: str, explore: str) -> List[str]:
+        """Gets all fields for an explore from the LookmlModel endpoint.
 
         Args:
             model: Name of LookML model to query.
             explore: Name of LookML explore to query.
 
         Returns:
-            List[str]: Names of all the dimensions in the specified explore. Dimension
-                names are returned in the format 'explore_name.dimension_name'.
+            List[str]: Names of all the fields in the specified explore. Field
+                names are returned in the format 'explore_name.field_na'.
 
         """
-        logger.debug(f"Getting all dimensions from explore {model}/{explore}")
+        logger.debug(f"Getting all fields from explore {model}/{explore}")
         params = {"fields": ["fields"]}
         url = utils.compose_url(
             self.api_url,
@@ -660,16 +660,19 @@ class LookerClient:
         except httpx.HTTPStatusError as error:
             raise LookerApiError(
                 name="unable-to-get-dimension-lookml",
-                title="Couldn't retrieve dimensions.",
+                title="Couldn't retrieve LookML fields.",
                 status=response.status_code,
                 detail=(
-                    "Unable to retrieve dimension LookML details "
+                    "Unable to retrieve LookML field details "
                     f"for explore '{model}/{explore}'. Please try again."
                 ),
                 response=response,
             ) from error
 
-        return response.json()["fields"]["dimensions"]
+        return (
+            response.json()["fields"]["dimensions"]
+            + response.json()["fields"]["measures"]
+        )
 
     @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=5)
     async def create_query(

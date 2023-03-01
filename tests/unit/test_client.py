@@ -55,7 +55,7 @@ def client_kwargs():
         all_lookml_tests={"project": "project_name"},
         run_lookml_test={"project": "project_name"},
         get_lookml_models={},
-        get_lookml_dimensions={"model": "model_name", "explore": "explore_name"},
+        get_lookml_fields={"model": "model_name", "explore": "explore_name"},
         create_query={
             "model": "model_name",
             "explore": "explore_name",

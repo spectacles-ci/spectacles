@@ -24,7 +24,7 @@ async def explores(
         validator.client,
         name="eye_exam",
         filters=[f"eye_exam/{explore_name}"],
-        include_dimensions=True,
+        include_fields=True,
     )
     explores = tuple(project.iter_explores())
     await validator.search(explores, fail_fast=False)

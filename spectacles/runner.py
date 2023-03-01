@@ -320,7 +320,7 @@ class Runner:
                 self.client,
                 name=self.project,
                 filters=filters,
-                include_dimensions=True,
+                include_fields=True,
                 ignore_hidden_fields=ignore_hidden_fields,
             )
             base_explores: Set[CompiledSql] = set()
@@ -353,7 +353,7 @@ class Runner:
                     self.client,
                     name=self.project,
                     filters=filters,
-                    include_dimensions=True,
+                    include_fields=True,
                     ignore_hidden_fields=ignore_hidden_fields,
                 )
                 target_explores: Set[CompiledSql] = set()

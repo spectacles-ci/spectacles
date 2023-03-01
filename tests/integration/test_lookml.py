@@ -12,7 +12,7 @@ class TestBuildProject:
             looker_client,
             name="eye_exam",
             filters=["eye_exam/users"],
-            include_dimensions=True,
+            include_fields=True,
         )
         assert len(project.models) == 1
         assert len(project.models[0].explores) == 1
@@ -45,7 +45,7 @@ class TestBuildProject:
             looker_client,
             name="eye_exam",
             filters=["eye_exam/users"],
-            include_dimensions=True,
+            include_fields=True,
             ignore_hidden_fields=True,
         )
         assert len(project.models[0].explores[0].dimensions) == 5

@@ -454,9 +454,7 @@ async def build_explore_dimensions(
     ignore_hidden_fields: bool = False,
 ) -> None:
     """Creates Dimension objects for all dimensions in a given explore."""
-    dimensions_json = await client.get_lookml_dimensions(
-        explore.model_name, explore.name
-    )
+    dimensions_json = await client.get_lookml_fields(explore.model_name, explore.name)
 
     dimensions: List[Dimension] = []
     for dimension_json in dimensions_json:
@@ -475,7 +473,7 @@ async def build_project(
     client: LookerClient,
     name: str,
     filters: Optional[List[str]] = None,
-    include_dimensions: bool = False,
+    include_fields: bool = False,
     ignore_hidden_fields: bool = False,
     include_all_explores: bool = False,
 ) -> Project:
@@ -510,7 +508,7 @@ async def build_project(
                 for explore in model.explores
                 if is_selected(model.name, explore.name, filters)
             ]
-            if include_dimensions:
+            if include_fields:
                 for explore in model.explores:
                     task = asyncio.create_task(
                         build_explore_dimensions(client, explore, ignore_hidden_fields),
