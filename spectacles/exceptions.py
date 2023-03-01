@@ -120,7 +120,7 @@ class LookMLError(ValidationError):
         metadata = {
             "line_number": line_number,
             "lookml_url": lookml_url,
-            "dimension": field_name,
+            "field": field_name,
             "file_path": file_path,
             "severity": severity,
         }
@@ -142,7 +142,7 @@ class SqlError(ValidationError):
         lookml_url: Optional[str] = None,
     ):
         metadata = {
-            "dimension": field,
+            "field": field,
             "sql": sql,
             "line_number": line_number,
             "explore_url": explore_url,
