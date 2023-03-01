@@ -103,7 +103,7 @@ def print_profile_results(queries: List[Query], runtime_threshold: int) -> None:
 
 
 class SqlValidator:
-    """Runs and validates the SQL for each selected LookML dimension.
+    """Runs and validates the SQL for each selected LookML field.
 
     Args:
         client: Looker API client.
@@ -253,7 +253,7 @@ class SqlValidator:
                 result = await self.client.create_query(
                     model=query.fields[0].model_name,
                     explore=query.fields[0].explore_name,
-                    dimensions=[dimension.name for dimension in query.fields],
+                    fields=[field.name for field in query.fields],
                     fields=["id", "share_url"],
                 )
                 query.query_id = result["id"]
@@ -363,7 +363,7 @@ class SqlValidator:
                                 for child in query.divide():
                                     await queries_to_run.put(child)
 
-                            # Assign the error(s) to its dimension
+                            # Assign the error(s) to its fields
                             elif len(query.fields) == 1:
                                 field = query.fields[0]
                                 field.queried = True

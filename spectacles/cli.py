@@ -597,7 +597,7 @@ def _build_sql_subparser(
         "--fail-fast",
         action="store_true",
         help=(
-            "Test explore-by-explore instead of dimension-by-dimension. "
+            "Test explore-by-explore instead of field-by-field. "
             "This means that validation takes less time but only returns the first "
             "error identified in each explore. "
         ),
@@ -646,7 +646,7 @@ def _build_sql_subparser(
         "--chunk-size",
         type=int,
         default=500,
-        help="Limit the size of explore-level queries by this number of dimensions.",
+        help="Limit the size of explore-level queries by this number of fields.",
     )
     subparser.add_argument(
         "--ignore-hidden",
@@ -926,7 +926,7 @@ async def run_sql(
     pin_imports,
     ignore_hidden,
 ) -> None:
-    """Runs and validates the SQL for each selected LookML dimension."""
+    """Runs and validates the SQL for each selected LookML field."""
     # Don't trust env to ignore .netrc credentials
     async_client = httpx.AsyncClient(trust_env=False)
     try:
@@ -956,7 +956,7 @@ async def run_sql(
 
     errors = sorted(
         results["errors"],
-        key=lambda x: (x["model"], x["explore"], x["metadata"].get("dimension")),
+        key=lambda x: (x["model"], x["explore"], x["metadata"].get("field")),
     )
 
     if errors:
@@ -967,13 +967,13 @@ async def run_sql(
                 message=error["message"],
                 sql=error["metadata"]["sql"],
                 log_dir=log_dir,
-                dimension=error["metadata"].get("dimension"),
+                field=error["metadata"].get("field"),
                 lookml_url=error["metadata"].get("lookml_url"),
             )
         if fail_fast:
             logger.info(
                 printer.dim(
-                    "\n\nTo determine the exact dimensions responsible for "
+                    "\n\nTo determine the exact fields responsible for "
                     f"{'this error' if len(errors) == 1 else 'these errors'}, "
                     "you can rerun \nSpectacles without --fail-fast."
                 )

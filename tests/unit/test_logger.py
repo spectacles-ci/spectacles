@@ -3,7 +3,7 @@ from spectacles.logger import log_sql_error
 
 
 def test_logging_failing_explore_sql(tmpdir, sql_error):
-    sql_error.metadata["dimension"] = None
+    sql_error.metadata["field"] = None
     expected_directory = Path(tmpdir) / "queries"
     expected_directory.mkdir(exist_ok=True)
 
@@ -12,7 +12,7 @@ def test_logging_failing_explore_sql(tmpdir, sql_error):
         sql_error.explore,
         sql_error.metadata["sql"],
         tmpdir,
-        sql_error.metadata["dimension"],
+        sql_error.metadata["field"],
     )
     expected_path = expected_directory / "eye_exam__users.sql"
 
@@ -22,7 +22,7 @@ def test_logging_failing_explore_sql(tmpdir, sql_error):
     assert content == "SELECT age FROM users WHERE 1=2 LIMIT 1"
 
 
-def test_logging_failing_dimension_sql(tmpdir, sql_error):
+def test_logging_failing_field_sql(tmpdir, sql_error):
     expected_directory = Path(tmpdir) / "queries"
     expected_directory.mkdir(exist_ok=True)
 
@@ -31,7 +31,7 @@ def test_logging_failing_dimension_sql(tmpdir, sql_error):
         sql_error.explore,
         sql_error.metadata["sql"],
         tmpdir,
-        sql_error.metadata["dimension"],
+        sql_error.metadata["field"],
     )
     expected_path = expected_directory / "eye_exam__users__users_age.sql"
 

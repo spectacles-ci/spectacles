@@ -44,6 +44,6 @@ def test_explores_errored_should_be_set_correctly(explores: Tuple[Explore, ...])
         assert explore.errored
 
 
-def test_ignored_dimensions_should_not_be_queried(explores: Tuple[Explore, ...]):
+def test_ignored_fields_should_not_be_queried(explores: Tuple[Explore, ...]):
     for explore in explores:
         assert not any(dim.queried for dim in explore.fields if dim.ignore is True)

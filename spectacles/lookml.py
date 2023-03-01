@@ -82,8 +82,8 @@ class LookMlField(LookMlObject):
     @errored.setter
     def errored(self, value):
         raise AttributeError(
-            "Cannot assign to 'errored' property of a Dimension instance. "
-            "For a dimension to be considered errored, it must have a ValidationError "
+            "Cannot assign to 'errored' property of a LookMlField instance. "
+            "For a field to be considered errored, it must have a ValidationError "
             "in its 'errors' attribute."
         )
 
@@ -149,7 +149,7 @@ class Explore(LookMlObject):
         raise AttributeError(
             "Cannot assign to 'errored' property of an Explore instance. "
             "For an explore to be considered errored, it must have a ValidationError "
-            "in its 'errors' attribute or contain dimensions in an errored state."
+            "in its 'errors' attribute or contain fields in an errored state."
         )
 
     def get_errored_fields(self):
@@ -406,12 +406,12 @@ class Project(LookMlObject):
                     status = "failed"
                     errors.append(explore.errors[0].to_dict())
                 elif explore.errored:
-                    dimension_errors = [e for d in explore.fields for e in d.errors]
-                    # If an explore has explore-level errors but not dimension-level
+                    field_errors = [e for d in explore.fields for e in d.errors]
+                    # If an explore has explore-level errors but not field-level
                     # errors, return those instead. Skip anything marked as ignored.
                     relevant_errors = [
                         e.to_dict()
-                        for e in (dimension_errors or explore.errors)
+                        for e in (field_errors or explore.errors)
                         if not e.ignore
                     ]
                     if relevant_errors:
@@ -452,7 +452,7 @@ async def build_explore_fields(
     """Creates LookmlField objects for all fields in a given explore."""
     fields_json = await client.get_lookml_fields(explore.model_name, explore.name)
 
-    dimensions: List[LookMlField] = []
+    fields: List[LookMlField] = []
     for field_json in fields_json:
         field: LookMlField = LookMlField.from_json(
             field_json, explore.model_name, explore.name
@@ -460,9 +460,9 @@ async def build_explore_fields(
         if field.url is not None:
             field.url = client.base_url + field.url
         if not field.ignore and not (field.is_hidden and ignore_hidden_fields):
-            dimensions.append(field)
+            fields.append(field)
 
-    explore.fields = dimensions
+    explore.fields = fields
 
 
 async def build_project(

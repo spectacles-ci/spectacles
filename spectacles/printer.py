@@ -123,12 +123,12 @@ def print_sql_error(
     message: str,
     sql: str,
     log_dir: str,
-    dimension: Optional[str] = None,
+    field: Optional[str] = None,
     lookml_url: Optional[str] = None,
 ) -> None:
     path = model + "/"
-    if dimension:
-        path += dimension
+    if field:
+        path += field
     else:
         path += explore
     print_header(red(path), LINE_WIDTH + COLOR_CODE_LENGTH)
@@ -138,7 +138,7 @@ def print_sql_error(
     if lookml_url:
         logger.info("\n" + f"LookML: {lookml_url}")
 
-    file_path = log_sql_error(model, explore, sql, log_dir, dimension)
+    file_path = log_sql_error(model, explore, sql, log_dir, field)
     logger.info("\n" + f"Test SQL: {file_path}")
 
 

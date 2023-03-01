@@ -6,7 +6,7 @@ from tests.utils import load_resource
 
 
 @pytest.fixture
-def dimension():
+def field():
     return LookMlField(
         name="age",
         model_name="eye_exam",

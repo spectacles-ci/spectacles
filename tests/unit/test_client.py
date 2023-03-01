@@ -59,7 +59,7 @@ def client_kwargs():
         create_query={
             "model": "model_name",
             "explore": "explore_name",
-            "dimensions": ["dimension_a", "dimension_b"],
+            "fields": ["dimension_a", "dimension_b"],
         },
         create_query_task={"query_id": 13041},
         get_query_task_multi_results={"query_task_ids": ["ajsdkgj", "askkwk"]},
