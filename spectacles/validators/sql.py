@@ -144,7 +144,7 @@ class SqlValidator:
         sql = await self.client.run_query(query["id"])
         return CompiledSql.from_explore(explore, sql)
 
-    async def compile_dimension(self, dimension: LookMlField) -> CompiledSql:
+    async def compile_field(self, dimension: LookMlField) -> CompiledSql:
         # Create a query for the dimension
         query = await self.client.create_query(
             dimension.model_name,

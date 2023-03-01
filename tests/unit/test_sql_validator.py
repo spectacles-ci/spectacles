@@ -88,7 +88,7 @@ async def test_compile_dimension_compiles_sql(
     mocked_api.get(f"queries/{query_id}/run/sql", name="run_query").respond(
         200, text=sql
     )
-    compiled = await validator.compile_dimension(dimension)
+    compiled = await validator.compile_field(dimension)
     assert compiled.explore_name == dimension.explore_name
     assert compiled.model_name == dimension.model_name
     assert compiled.sql == sql

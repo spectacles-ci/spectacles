@@ -401,20 +401,20 @@ class Runner:
         async with self.branch_manager(ref=ref):
             await validator.search(explores, fail_fast, chunk_size, profile=profile)
 
-        # Create dimension tests for the desired ref when explores errored
+        # Create field tests for the desired ref when explores errored
         if not fail_fast and incremental:
-            errored_dimensions = project.iter_fields(errored=True)
-            # For errored dimensions, create dimension tests for the target ref
+            errored_fields = project.iter_fields(errored=True)
+            # For errored fields, create field tests for the target ref
             async with self.branch_manager(ref=target, ephemeral=True):
                 target_ref = self.branch_manager.ref
-                logger.debug("Compiling SQL for dimensions at the target ref")
-                compiled_dimensions = await asyncio.gather(
+                logger.debug("Compiling SQL for fields at the target ref")
+                compiled_fields = await asyncio.gather(
                     *(
-                        validator.compile_dimension(dimension)
-                        for dimension in project.iter_fields(errored=True)
+                        validator.compile_field(field)
+                        for field in project.iter_fields(errored=True)
                     )
                 )
-                target_dimensions = set(compiled_dimensions)
+                target_fields = set(compiled_fields)
 
             # Keep only the errors that don't exist on the target branch
             logger.debug(
@@ -422,16 +422,15 @@ class Runner:
                 f"@ {target or 'production'}"
             )
 
-            # Namespace SQL with the dimension name, just in case
+            # Namespace SQL with the field name, just in case
             target_sql = tuple(
-                (compiled.dimension_name, compiled.sql)
-                for compiled in target_dimensions
+                (compiled.field_name, compiled.sql) for compiled in target_fields
             )
-            for dimension in errored_dimensions:
-                for error in dimension.errors:
+            for field in errored_fields:
+                for error in field.errors:
                     if (
                         isinstance(error, SqlError)
-                        and (dimension.name, error.metadata["sql"]) in target_sql
+                        and (field.name, error.metadata["sql"]) in target_sql
                     ):
                         error.ignore = True
 
