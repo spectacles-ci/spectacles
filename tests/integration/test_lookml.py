@@ -17,7 +17,7 @@ class TestBuildProject:
         assert len(project.models) == 1
         assert len(project.models[0].explores) == 1
         fields = project.models[0].explores[0].fields
-        assert len(fields) == 6
+        assert len(fields) == 7
         assert "users.city" in [dim.name for dim in fields]
         assert not project.errored
         assert project.queried is False
@@ -48,7 +48,7 @@ class TestBuildProject:
             include_fields=True,
             ignore_hidden_fields=True,
         )
-        assert len(project.models[0].explores[0].fields) == 5
+        assert len(project.models[0].explores[0].fields) == 6
 
 
 class TestBuildUnconfiguredProject:
@@ -67,7 +67,7 @@ class TestBuildFields:
         self, looker_client: LookerClient, explore: Explore
     ):
         await build_explore_fields(looker_client, explore)
-        assert len(explore.fields) == 6
+        assert len(explore.fields) == 7
 
     async def test_hidden_fields_should_be_excluded_with_ignore_hidden(
         self, looker_client: LookerClient, explore: Explore
@@ -77,4 +77,4 @@ class TestBuildFields:
             explore,
             ignore_hidden_fields=True,
         )
-        assert len(explore.fields) == 5
+        assert len(explore.fields) == 6
