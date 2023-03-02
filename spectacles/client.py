@@ -635,7 +635,9 @@ class LookerClient:
         return response.json()
 
     @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
-    async def get_lookml_fields(self, model: str, explore: str) -> List[str]:
+    async def get_lookml_fields(
+        self, model: str, explore: str, ignore_measures: bool = False
+    ) -> List[str]:
         """Gets all fields for an explore from the LookmlModel endpoint.
 
         Args:
@@ -669,10 +671,12 @@ class LookerClient:
                 response=response,
             ) from error
 
-        return (
-            response.json()["fields"]["dimensions"]
-            + response.json()["fields"]["measures"]
-        )
+        fields = response.json()["fields"]["dimensions"]
+
+        if not ignore_measures:
+            fields += response.json()["fields"]["measures"]
+
+        return fields
 
     @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=5)
     async def create_query(

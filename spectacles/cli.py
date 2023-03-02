@@ -294,6 +294,7 @@ def main():
                 chunk_size=args.chunk_size,
                 pin_imports=pin_imports,
                 ignore_hidden=args.ignore_hidden,
+                ignore_measures=args.ignore_measures,
             )
         )
     elif args.command == "assert":
@@ -653,6 +654,11 @@ def _build_sql_subparser(
         action="store_true",
         help=("Exclude hidden fields from validation."),
     )
+    subparser.add_argument(
+        "--ignore-measures",
+        action="store_true",
+        help=("Exclude measure fields from validation."),
+    )
     _build_validator_subparser(subparser_action, subparser)
     _build_select_subparser(subparser_action, subparser)
 
@@ -925,6 +931,7 @@ async def run_sql(
     chunk_size,
     pin_imports,
     ignore_hidden,
+    ignore_measures,
 ) -> None:
     """Runs and validates the SQL for each selected LookML field."""
     # Don't trust env to ignore .netrc credentials
@@ -946,6 +953,7 @@ async def run_sql(
             runtime_threshold,
             chunk_size,
             ignore_hidden,
+            ignore_measures,
         )
     finally:
         await async_client.aclose()

@@ -447,9 +447,12 @@ async def build_explore_fields(
     client: LookerClient,
     explore: Explore,
     ignore_hidden_fields: bool = False,
+    ignore_measures: bool = False,
 ) -> None:
     """Creates LookmlField objects for all fields in a given explore."""
-    fields_json = await client.get_lookml_fields(explore.model_name, explore.name)
+    fields_json = await client.get_lookml_fields(
+        explore.model_name, explore.name, ignore_measures
+    )
 
     fields: List[LookMlField] = []
     for field_json in fields_json:
@@ -470,6 +473,7 @@ async def build_project(
     filters: Optional[List[str]] = None,
     include_fields: bool = False,
     ignore_hidden_fields: bool = False,
+    ignore_measures: bool = False,
     include_all_explores: bool = False,
 ) -> Project:
     """Creates an object (tree) representation of a LookML project."""
@@ -506,7 +510,9 @@ async def build_project(
             if include_fields:
                 for explore in model.explores:
                     task = asyncio.create_task(
-                        build_explore_fields(client, explore, ignore_hidden_fields),
+                        build_explore_fields(
+                            client, explore, ignore_hidden_fields, ignore_measures
+                        ),
                         name=f"build_explore_fields_{explore.name}",
                     )
                     tasks.append(task)

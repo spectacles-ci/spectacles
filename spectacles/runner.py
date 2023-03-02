@@ -307,6 +307,7 @@ class Runner:
         runtime_threshold: int = DEFAULT_RUNTIME_THRESHOLD,
         chunk_size: int = DEFAULT_CHUNK_SIZE,
         ignore_hidden_fields: bool = False,
+        ignore_measures: bool = False,
     ) -> JsonDict:
         if filters is None:
             filters = ["*/*"]
@@ -322,6 +323,7 @@ class Runner:
                 filters=filters,
                 include_fields=True,
                 ignore_hidden_fields=ignore_hidden_fields,
+                ignore_measures=ignore_measures,
             )
             base_explores: Set[CompiledSql] = set()
             if incremental:
@@ -355,6 +357,7 @@ class Runner:
                     filters=filters,
                     include_fields=True,
                     ignore_hidden_fields=ignore_hidden_fields,
+                    ignore_measures=ignore_measures,
                 )
                 target_explores: Set[CompiledSql] = set()
                 if incremental:
