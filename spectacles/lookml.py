@@ -23,7 +23,7 @@ class LookMlField(LookMlObject):
         explore_name: str,
         type: str,
         tags: List[str],
-        sql: str,
+        sql: Optional[str],
         is_hidden: bool,
         url: Optional[str] = None,
     ):
@@ -38,10 +38,9 @@ class LookMlField(LookMlObject):
         self.queried: bool = False
         self.errors: List[ValidationError] = []
 
-        if (
-            re.search(r"spectacles\s*:\s*ignore", sql, re.IGNORECASE)
-            or "spectacles: ignore" in tags
-        ):
+        if sql and re.search(r"spectacles\s*:\s*ignore", sql, re.IGNORECASE):
+            self.ignore = True
+        elif "spectacles: ignore" in tags:
             self.ignore = True
         else:
             self.ignore = False
