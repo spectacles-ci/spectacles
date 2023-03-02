@@ -50,6 +50,18 @@ class TestBuildProject:
         )
         assert len(project.models[0].explores[0].fields) == 6
 
+    async def test_measure_field_should_be_excluded_with_measures_hidden(
+        self, looker_client: LookerClient
+    ):
+        project = await build_project(
+            looker_client,
+            name="eye_exam",
+            filters=["eye_exam/users"],
+            include_fields=True,
+            ignore_measures=True,
+        )
+        assert len(project.models[0].explores[0].fields) == 6
+
 
 class TestBuildUnconfiguredProject:
     """Test for a build error when building an unconfigured LookML project."""
@@ -76,5 +88,15 @@ class TestBuildFields:
             looker_client,
             explore,
             ignore_hidden_fields=True,
+        )
+        assert len(explore.fields) == 6
+
+    async def test_measure_fields_should_be_excluded_with_measures_hidden(
+        self, looker_client: LookerClient, explore: Explore
+    ):
+        await build_explore_fields(
+            looker_client,
+            explore,
+            ignore_measures=True,
         )
         assert len(explore.fields) == 6
