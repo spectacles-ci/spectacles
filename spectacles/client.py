@@ -646,7 +646,7 @@ class LookerClient:
 
         Returns:
             List[str]: Names of all the fields in the specified explore. Field
-                names are returned in the format 'explore_name.field_na'.
+                names are returned in the format 'explore_name.field_name'.
 
         """
         logger.debug(f"Getting all fields from explore {model}/{explore}")
