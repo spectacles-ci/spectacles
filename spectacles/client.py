@@ -386,8 +386,8 @@ class LookerClient:
                 status=response.status_code,
                 detail=(
                     f"Unable to get active branch for project '{project}'. "
-                    "Please check that the project exists and that your user "
-                    "has the correct permissions and try again."
+                    "Please check that the project exists, is configured, "
+                    "and that your user has the correct permissions and try again."
                 ),
                 response=response,
             ) from error
