@@ -34,7 +34,10 @@ class LookMLValidator:
         severity_level: int = NAME_TO_LEVEL[severity]
         validation_results = await self.client.cached_lookml_validation(project)
         if not validation_results or validation_results.get("stale"):
-            validation_results = await self.client.lookml_validation(project)
+            try:
+                validation_results = await self.client.new_lookml_validation(project)
+            except:  # noqa
+                validation_results = await self.client.lookml_validation(project)
         errors = []
         lookml_url: Optional[str] = None
         for error in validation_results["errors"]:

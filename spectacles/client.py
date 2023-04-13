@@ -907,6 +907,32 @@ class LookerClient:
         return result
 
     @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
+    async def new_lookml_validation(self, project) -> Optional[JsonDict]:
+        logger.debug(
+            f"Getting LookML validation results for altered files for '{project}'"
+        )
+        url = utils.compose_url(
+            self.api_url, path=["projects", project, "validate_new_lookml_only"]
+        )
+        response = await self.post(url=url, timeout=1800)
+
+        try:
+            response.raise_for_status()
+        except httpx.HTTPStatusError as error:
+            raise LookerApiError(
+                name="unable-to-get-new-lookml-validation",
+                title=f"Couldn't get new LookML validation results in project '{project}'.",
+                status=response.status_code,
+                detail=(
+                    "Failed to get new LookML valiation results. Please try again."
+                ),
+                response=response,
+            ) from error
+
+        result = response.json()
+        return result
+
+    @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
     async def all_folders(self) -> List[JsonDict]:
         logger.debug("Getting information about all folders")
         url = utils.compose_url(self.api_url, path=["folders"])
