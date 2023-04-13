@@ -907,7 +907,7 @@ class LookerClient:
         return result
 
     @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
-    async def new_lookml_validation(self, project) -> Optional[JsonDict]:
+    async def partial_lookml_validation(self, project) -> JsonDict:
         logger.debug(
             f"Getting LookML validation results for altered files for '{project}'"
         )

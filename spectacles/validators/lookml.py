@@ -1,6 +1,7 @@
 from typing import Dict, Any, Optional
 from spectacles.client import LookerClient
 from spectacles.exceptions import LookMLError
+import httpx
 
 # Define constants for severity levels
 SUCCESS = 0
@@ -35,9 +36,17 @@ class LookMLValidator:
         validation_results = await self.client.cached_lookml_validation(project)
         if not validation_results or validation_results.get("stale"):
             try:
-                validation_results = await self.client.new_lookml_validation(project)
-            except:  # noqa
-                validation_results = await self.client.lookml_validation(project)
+                validation_results = await self.client.partial_lookml_validation(
+                    project
+                )
+            # If Looker ever removes this undocumented endpoint,
+            # fallback to full validation
+            except httpx.HTTPStatusError as http_error:
+                if http_error.response.status_code == 404:
+                    validation_results = await self.client.lookml_validation(project)
+                else:
+                    raise http_error
+
         errors = []
         lookml_url: Optional[str] = None
         for error in validation_results["errors"]:
