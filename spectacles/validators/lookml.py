@@ -1,6 +1,7 @@
 from typing import Dict, Any, Optional
 from spectacles.client import LookerClient
 from spectacles.exceptions import LookMLError
+from spectacles.logger import GLOBAL_LOGGER as logger
 import httpx
 
 # Define constants for severity levels
@@ -43,6 +44,10 @@ class LookMLValidator:
             # fallback to full validation
             except httpx.HTTPStatusError as http_error:
                 if http_error.response.status_code == 404:
+                    logger.debug(
+                        "Partial LookML validation not found. "
+                        "Falling back to full validation."
+                    )
                     validation_results = await self.client.lookml_validation(project)
                 else:
                     raise http_error
