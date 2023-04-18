@@ -315,6 +315,7 @@ class SqlValidator:
                             Union[CompletedQueryResult, ErrorQueryResult], query_result
                         )
                         query = self._task_to_query[task_id]
+                        query.runtime = query_result.runtime
                         if query_result.runtime > self.runtime_threshold:
                             self._long_running_queries.append(query)
                         if query_result.status == "complete":
