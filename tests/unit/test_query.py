@@ -70,4 +70,25 @@ def test_query_should_convert_to_profiler_format(
         query_id=query_id,
         explore_url=explore_url,
     )
-    assert query.to_profiler_format() == (explore.name, runtime, query_id, explore_url)
+    assert query.to_profiler_format() == (
+        explore.name,
+        "*",
+        runtime,
+        query_id,
+        explore_url,
+    )
+
+    query = Query(
+        explore=explore,
+        dimensions=(dimension,),
+        runtime=runtime,
+        query_id=query_id,
+        explore_url=explore_url,
+    )
+    assert query.to_profiler_format() == (
+        explore.name,
+        dimension.name,
+        runtime,
+        query_id,
+        explore_url,
+    )

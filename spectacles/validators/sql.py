@@ -16,7 +16,7 @@ QUERY_TASK_LIMIT = 250
 DEFAULT_CHUNK_SIZE = 500
 DEFAULT_QUERY_CONCURRENCY = 10
 DEFAULT_RUNTIME_THRESHOLD = 5
-ProfilerTableRow = Tuple[str, float, str, str]
+ProfilerTableRow = Tuple[str, str, float, str, str]
 
 
 @dataclass
@@ -62,7 +62,13 @@ class Query:
                 "Query.explore_url cannot be None, "
                 "run Query.create to get an explore URL"
             )
-        return (self.explore.name, self.runtime, self.query_id, self.explore_url)
+        return (
+            self.explore.name,
+            self.dimensions[0].name if len(self.dimensions) == 1 else "*",
+            self.runtime,
+            self.query_id,
+            self.explore_url,
+        )
 
 
 def print_profile_results(queries: List[Query], runtime_threshold: int) -> None:
@@ -79,6 +85,7 @@ def print_profile_results(queries: List[Query], runtime_threshold: int) -> None:
             [query.to_profiler_format() for query in queries_by_runtime],
             headers=[
                 "Explore",
+                "Dimension(s)",
                 "Runtime (s)",
                 "Query ID",
                 "Explore From Here",
@@ -315,6 +322,7 @@ class SqlValidator:
                             Union[CompletedQueryResult, ErrorQueryResult], query_result
                         )
                         query = self._task_to_query[task_id]
+                        query.runtime = query_result.runtime
                         if query_result.runtime > self.runtime_threshold:
                             self._long_running_queries.append(query)
                         if query_result.status == "complete":

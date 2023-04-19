@@ -191,3 +191,11 @@ async def test_incremental_sql_with_diff_explores_and_invalid_existing_sql_shoul
     assert result["tested"][1]["explore"] == "users__fail"
     assert result["tested"][1]["status"] == "passed"
     assert len(result["errors"]) == 0
+
+
+async def test_validate_sql_with_query_profiler_should_work(
+    looker_client: LookerClient, caplog: pytest.LogCaptureFixture
+):
+    runner = Runner(looker_client, "eye_exam")
+    await runner.validate_sql(fail_fast=True, profile=True, runtime_threshold=0)
+    assert "Query profiler results" in caplog.text
