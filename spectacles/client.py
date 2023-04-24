@@ -2,6 +2,7 @@ from typing import List, Dict, Optional, Tuple
 import time
 from dataclasses import dataclass
 import backoff  # type: ignore
+from httpcore._exceptions import RemoteProtocolError
 import httpx
 from httpx import HTTPStatusError, ConnectError, TimeoutException
 import spectacles.utils as utils
@@ -18,6 +19,7 @@ BACKOFF_EXCEPTIONS = (
     HTTPStatusError,
     ConnectError,
     LookerApiError,
+    RemoteProtocolError,
 )
 
 
