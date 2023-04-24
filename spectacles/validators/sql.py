@@ -66,7 +66,7 @@ class Query:
             )
         return (
             self.explore.name,
-            self.dimensions[0].name if len(self.dimensions) == 1 else "*",
+            self.fields[0].name if len(self.fields) == 1 else "*",
             self.runtime,
             self.query_id,
             self.explore_url,
@@ -87,7 +87,7 @@ def print_profile_results(queries: List[Query], runtime_threshold: int) -> None:
             [query.to_profiler_format() for query in queries_by_runtime],
             headers=[
                 "Explore",
-                "Dimension(s)",
+                "Field(s)",
                 "Runtime (s)",
                 "Query ID",
                 "Explore From Here",
