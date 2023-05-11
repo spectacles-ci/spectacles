@@ -865,7 +865,7 @@ class LookerClient:
     async def lookml_validation(self, project) -> JsonDict:
         logger.debug(f"Validating LookML for project '{project}'")
         url = utils.compose_url(self.api_url, path=["projects", project, "validate"])
-        response = await self.post(url=url, timeout=1800)
+        response = await self.post(url=url, timeout=7200)
 
         try:
             response.raise_for_status()
