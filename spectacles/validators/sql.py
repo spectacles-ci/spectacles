@@ -1,6 +1,7 @@
 from __future__ import annotations
 import asyncio
 from dataclasses import dataclass
+import time
 from tabulate import tabulate
 from typing import List, Optional, Tuple, Iterator, Union, cast
 import pydantic
@@ -16,6 +17,8 @@ QUERY_TASK_LIMIT = 250
 DEFAULT_CHUNK_SIZE = 500
 DEFAULT_QUERY_CONCURRENCY = 10
 DEFAULT_RUNTIME_THRESHOLD = 5
+EXPIRED_QUERY_WAIT_TIME = 30
+EXPIRED_RETRY_LIMIT = 2
 ProfilerTableRow = Tuple[str, str, float, str, str]
 
 
@@ -27,6 +30,8 @@ class Query:
     explore_url: str | None = None
     errored: bool | None = None
     runtime: float | None = None
+    expired_at: float | None = None
+    expired_retries: int = 0
 
     def __post_init__(self) -> None:
         # Confirm that all dimensions are from the Explore associated here
@@ -410,6 +415,48 @@ class SqlValidator:
                         )
                         query_slot.release()
                         queries_to_run.task_done()
+
+                    elif query_result.status == "expired":
+                        query = self._task_to_query[task_id]
+                        query.expired_at = query.expired_at or time.time()
+                        expired_for = time.time() - query.expired_at
+                        if expired_for > EXPIRED_QUERY_WAIT_TIME:
+                            # Stop waiting for query, decide if we should retry
+                            if query.expired_retries <= EXPIRED_RETRY_LIMIT:
+                                logger.debug(
+                                    f"Query task {task_id} expired for "
+                                    f"over {EXPIRED_QUERY_WAIT_TIME} seconds. "
+                                    "Trying again."
+                                )
+                                query.expired_at = None
+                                query.expired_retries += 1
+                                await queries_to_run.put(query)
+                            else:
+                                logger.debug(
+                                    f"Query task {task_id} keeps expiring, "
+                                    f"even after {EXPIRED_RETRY_LIMIT + 1} tries. "
+                                    "Giving up on it."
+                                )
+                                explore = query.explore
+                                explore.errors.append(
+                                    SqlError(
+                                        model=explore.model_name,
+                                        explore=explore.name,
+                                        dimension=None,
+                                        sql="",
+                                        message=(
+                                            "Couldn't finish testing "
+                                            f"{explore.model_name}.{explore.name} "
+                                            "because queries repeatedly expired "
+                                            "in Looker. "
+                                        ),
+                                        explore_url=query.explore_url,
+                                    )
+                                )
+                            query_slot.release()
+                            queries_to_run.task_done()
+                        else:
+                            await running_queries.put(task_id)
 
                     else:
                         # Query still running, put the task back on the queue
