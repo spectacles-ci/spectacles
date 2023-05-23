@@ -188,6 +188,7 @@ class SqlValidator:
                         f"Warning: Explore '{explore.name}' does not have any non-ignored "
                         "dimensions and will not be validated."
                     )
+                    explore.skipped = True
                 elif len(dimensions) <= chunk_size:
                     queries_to_run.put_nowait(Query(explore, dimensions))
                 else:
