@@ -357,14 +357,14 @@ class Runner:
                     ignore_hidden_fields=ignore_hidden_fields,
                 )
                 target_explores: Set[CompiledSql] = set()
-                if incremental:
-                    compiled_explores = await asyncio.gather(
-                        *(
-                            validator.compile_explore(explore)
-                            for explore in target_project.iter_explores()
-                        )
+
+                compiled_explores = await asyncio.gather(
+                    *(
+                        validator.compile_explore(explore)
+                        for explore in target_project.iter_explores()
                     )
-                    target_explores = set(compiled_explores)
+                )
+                target_explores = set(compiled_explores)
 
             # Determine which explore tests are identical between target and base
             # Iterate instead of set operations so we have control of which test, and
