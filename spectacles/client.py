@@ -2,9 +2,8 @@ from typing import List, Dict, Optional, Tuple
 import time
 from dataclasses import dataclass
 import backoff  # type: ignore
-from httpcore._exceptions import RemoteProtocolError
 import httpx
-from httpx import HTTPStatusError, ConnectError, TimeoutException
+from httpx import HTTPStatusError, ConnectError, TimeoutException, RemoteProtocolError
 import spectacles.utils as utils
 from spectacles.types import JsonDict
 from spectacles.logger import GLOBAL_LOGGER as logger
