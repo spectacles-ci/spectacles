@@ -391,7 +391,7 @@ class Runner:
             explores = tuple(project.iter_explores())
 
         n_tested_explores = len([e for e in explores if not e.skipped])
-        n_total_explores = len(base_explores)
+        n_total_explores = len(base_explores or explores)
         print_header(
             f"Testing {n_tested_explores}/{n_total_explores} explores "
             + ("[fail fast] " if fail_fast else "")

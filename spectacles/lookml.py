@@ -3,7 +3,7 @@ from dataclasses import dataclass
 import re
 from typing import Dict, List, Sequence, Optional, Any, Iterable
 from spectacles.client import LookerClient
-from spectacles.exceptions import ValidationError, LookMlNotFound
+from spectacles.exceptions import ValidationError, LookMlNotFound, SpectaclesWarning
 from spectacles.logger import GLOBAL_LOGGER as logger
 from spectacles.types import JsonDict
 from spectacles.select import is_selected
@@ -107,6 +107,7 @@ class Explore(LookMlObject):
         self.model_name = model_name
         self.dimensions = [] if dimensions is None else dimensions
         self.errors: List[ValidationError] = []
+        self.warnings: List[SpectaclesWarning] = []
         self.successes: List[JsonDict] = []
         self.skipped = False
         self._queried: bool = False
@@ -213,6 +214,7 @@ class Model(LookMlObject):
         self.project_name = project_name
         self.explores = explores
         self.errors: List[ValidationError] = []
+        self.warnings: List[SpectaclesWarning] = []
 
     def __repr__(self):
         return f"{self.__class__.__name__}(name={self.name}, explores={self.explores})"
@@ -371,6 +373,7 @@ class Project(LookMlObject):
         filters: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
         errors: List[Dict[str, Any]] = []
+        warnings: List[Dict[str, Any]] = []
         successes: List[Dict[str, Any]] = []
         tested = []
 
@@ -388,6 +391,9 @@ class Project(LookMlObject):
                 distinct_explores.add(error.explore)
                 errors.append(error.to_dict())
 
+            for warning in model.warnings:
+                warnings.append(warning.to_dict())
+
             model_tested = [
                 {"model": model.name, "explore": e, "status": "failed"}
                 for e in distinct_explores
@@ -401,6 +407,10 @@ class Project(LookMlObject):
                     filters,  # pyright: ignore[reportGeneralTypeIssues]
                 ):
                     continue
+
+                for warning in explore.warnings:
+                    warnings.append(warning.to_dict())
+
                 status = "passed"
                 if explore.skipped:
                     status = "skipped"
@@ -422,6 +432,7 @@ class Project(LookMlObject):
                     if relevant_errors:
                         status = "failed"
                         errors.extend(relevant_errors)
+
                 test: Dict[str, Any] = {
                     "model": model.name,
                     "explore": explore.name,
@@ -438,6 +449,7 @@ class Project(LookMlObject):
             "status": "passed" if passed else "failed",
             "tested": tested,
             "errors": errors,
+            "warnings": warnings,
             "successes": successes,
         }
 
@@ -474,6 +486,16 @@ async def build_explore_dimensions(
         logger.warning(
             f"Warning: Explore '{explore.name}' does not have any non-ignored "
             "dimensions and will not be validated."
+        )
+        explore.warnings.append(
+            SpectaclesWarning(
+                name="explore-missing-dimensions",
+                title="Explore missing dimensions.",
+                detail=(
+                    f"Explore '{explore.name}' does not have any non-ignored dimensions "
+                    "and was not validated."
+                ),
+            )
         )
         explore.skipped = True
 

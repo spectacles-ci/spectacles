@@ -18,6 +18,16 @@ class SpectaclesException(Exception):
     def __str__(self) -> str:
         return self.title + " " + self.detail
 
+    def to_dict(self) -> dict:
+        """Returns a dictionary representation, scrubbed of private attributes"""
+        return {k: v for k, v in self.__dict__.items() if not k.startswith("_")}
+
+
+class SpectaclesWarning(SpectaclesException):
+    def __init__(self, name: str, title: str, detail: str):
+        super().__init__(name, title, detail)
+        self.type = "/warnings/" + name
+
 
 class LookMlNotFound(SpectaclesException):
     ...
@@ -99,10 +109,6 @@ class ValidationError(GenericValidationError):
     @ignore.setter
     def ignore(self, value: bool) -> None:
         self._ignore = value
-
-    def to_dict(self) -> dict:
-        """Returns a dictionary representation, scrubbed of private attributes"""
-        return {k: v for k, v in self.__dict__.items() if not k.startswith("_")}
 
 
 class LookMLError(ValidationError):
