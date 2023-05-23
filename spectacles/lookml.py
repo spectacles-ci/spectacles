@@ -4,6 +4,7 @@ import re
 from typing import Dict, List, Sequence, Optional, Any, Iterable
 from spectacles.client import LookerClient
 from spectacles.exceptions import ValidationError, LookMlNotFound
+from spectacles.logger import GLOBAL_LOGGER as logger
 from spectacles.types import JsonDict
 from spectacles.select import is_selected
 
@@ -469,6 +470,12 @@ async def build_explore_dimensions(
             dimensions.append(dimension)
 
     explore.dimensions = dimensions
+    if len(explore.dimensions) == 0:
+        logger.warning(
+            f"Warning: Explore '{explore.name}' does not have any non-ignored "
+            "dimensions and will not be validated."
+        )
+        explore.skipped = True
 
 
 async def build_project(

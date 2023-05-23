@@ -129,19 +129,16 @@ class SqlValidator:
         self._long_running_queries: List[Query] = []
 
     async def compile_explore(self, explore: Explore) -> CompiledSql:
-        if not explore.dimensions:
-            raise AttributeError(
-                f"Explore '{explore.name}' is missing dimensions, "
-                "meaning this query won't have fields and will error. "
-                "Often this happens because you didn't include dimensions "
-                "when you built the project."
+        if explore.skipped:
+            sql = ""
+        else:
+            dimensions = [dimension.name for dimension in explore.dimensions]
+            # Create a query that includes all dimensions
+            query = await self.client.create_query(
+                explore.model_name, explore.name, dimensions, fields=["id"]
             )
-        dimensions = [dimension.name for dimension in explore.dimensions]
-        # Create a query that includes all dimensions
-        query = await self.client.create_query(
-            explore.model_name, explore.name, dimensions, fields=["id"]
-        )
-        sql = await self.client.run_query(query["id"])
+            sql = await self.client.run_query(query["id"])
+
         return CompiledSql.from_explore(explore, sql)
 
     async def compile_dimension(self, dimension: Dimension) -> CompiledSql:
@@ -183,12 +180,8 @@ class SqlValidator:
             for explore in explores:
                 # Sorting makes it more likely to prune the tree faster in binsearch
                 dimensions = tuple(sorted(explore.dimensions))
-                if len(dimensions) == 0:
-                    logger.warning(
-                        f"Warning: Explore '{explore.name}' does not have any non-ignored "
-                        "dimensions and will not be validated."
-                    )
-                    explore.skipped = True
+                if explore.skipped:
+                    continue
                 elif len(dimensions) <= chunk_size:
                     queries_to_run.put_nowait(Query(explore, dimensions))
                 else:

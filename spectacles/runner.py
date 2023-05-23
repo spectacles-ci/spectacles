@@ -390,10 +390,10 @@ class Runner:
         else:
             explores = tuple(project.iter_explores())
 
-        explore_count = len(explores)
+        n_tested_explores = len([e for e in explores if not e.skipped])
+        n_total_explores = len(base_explores)
         print_header(
-            f"Testing {explore_count} "
-            f"{'explore' if explore_count == 1 else 'explores'} "
+            f"Testing {n_tested_explores}/{n_total_explores} explores "
             + ("[fail fast] " if fail_fast else "")
             + f"[concurrency = {concurrency}]"
         )
