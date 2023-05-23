@@ -34,11 +34,11 @@ class PendingQueryResult(BaseModel):
     status: Literal["added", "running"]
 
 
-class ExpiredQueryResult(BaseModel):
+class InterruptedQueryResult(BaseModel):
     class QueryResultData(BaseModel):
         error: str
 
-    status: Literal["expired"]
+    status: Literal["expired", "killed"]
     data: QueryResultData
 
 
@@ -97,5 +97,8 @@ class QueryResult(BaseModel):
     """Container model to allow discriminated union on status."""
 
     __root__: Union[
-        PendingQueryResult, ExpiredQueryResult, CompletedQueryResult, ErrorQueryResult
+        PendingQueryResult,
+        InterruptedQueryResult,
+        CompletedQueryResult,
+        ErrorQueryResult,
     ] = Field(..., discriminator="status")

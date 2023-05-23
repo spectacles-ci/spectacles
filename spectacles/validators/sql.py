@@ -387,6 +387,27 @@ class SqlValidator:
 
                             # Indicate there are no more queries or subqueries to run
                             queries_to_run.task_done()
+
+                    elif query_result.status == "killed":
+                        query = self._task_to_query[task_id]
+                        explore = query.explore
+                        explore.errors.append(
+                            SqlError(
+                                model=explore.model_name,
+                                explore=explore.name,
+                                dimension=None,
+                                sql="",
+                                message=(
+                                    "Couldn't finish testing "
+                                    f"{explore.model_name}.{explore.name} "
+                                    "because the test query was killed in Looker. "
+                                ),
+                                explore_url=query.explore_url,
+                            )
+                        )
+                        query_slot.release()
+                        queries_to_run.task_done()
+
                     else:
                         # Query still running, put the task back on the queue
                         await running_queries.put(task_id)
