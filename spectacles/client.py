@@ -634,19 +634,21 @@ class LookerClient:
         return response.json()
 
     @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
-    async def get_lookml_dimensions(self, model: str, explore: str) -> List[str]:
-        """Gets all dimensions for an explore from the LookmlModel endpoint.
+    async def get_lookml_fields(
+        self, model: str, explore: str, ignore_measures: bool = False
+    ) -> List[str]:
+        """Gets all fields for an explore from the LookmlModel endpoint.
 
         Args:
             model: Name of LookML model to query.
             explore: Name of LookML explore to query.
 
         Returns:
-            List[str]: Names of all the dimensions in the specified explore. Dimension
-                names are returned in the format 'explore_name.dimension_name'.
+            List[str]: Names of all the fields in the specified explore. Field
+                names are returned in the format 'explore_name.field_name'.
 
         """
-        logger.debug(f"Getting all dimensions from explore {model}/{explore}")
+        logger.debug(f"Getting all fields from explore {model}/{explore}")
         params = {"fields": ["fields"]}
         url = utils.compose_url(
             self.api_url,
@@ -658,31 +660,36 @@ class LookerClient:
             response.raise_for_status()
         except httpx.HTTPStatusError as error:
             raise LookerApiError(
-                name="unable-to-get-dimension-lookml",
-                title="Couldn't retrieve dimensions.",
+                name="unable-to-get-field-lookml",
+                title="Couldn't retrieve LookML fields.",
                 status=response.status_code,
                 detail=(
-                    "Unable to retrieve dimension LookML details "
+                    "Unable to retrieve LookML field details "
                     f"for explore '{model}/{explore}'. Please try again."
                 ),
                 response=response,
             ) from error
 
-        return response.json()["fields"]["dimensions"]
+        fields = response.json()["fields"]["dimensions"]
+
+        if not ignore_measures:
+            fields += response.json()["fields"]["measures"]
+
+        return fields
 
     @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=5)
     async def create_query(
         self,
         model: str,
         explore: str,
-        dimensions: List[str],
-        fields: Optional[List] = None,
+        fields: List[str],
+        request_fields: Optional[List] = None,
     ) -> Dict:
-        """Creates a Looker async query for one or more specified dimensions.
+        """Creates a Looker async query for one or more specified fields.
 
-        The query created is a SELECT query, selecting all dimensions specified for a
+        The query created is a SELECT query, selecting all fields specified for a
         certain model and explore. Looker builds the query using the `sql` field in the
-        LookML for each dimension.
+        LookML for each field.
 
         If a Timeout exception is received, attempts to retry.
 
@@ -692,21 +699,21 @@ class LookerClient:
             "Creating async query for %s/%s/%s",
             model,
             explore,
-            "*" if len(dimensions) != 1 else dimensions[0],
+            "*" if len(fields) != 1 else fields[0],
         )
         body = {
             "model": model,
             "view": explore,
-            "fields": dimensions,
+            "fields": fields,
             "limit": 0,
             "filter_expression": "1=2",
         }
 
         params: Dict[str, list] = {}
-        if fields is None:
+        if request_fields is None:
             params["fields"] = []
         else:
-            params["fields"] = fields
+            params["fields"] = request_fields
 
         url = utils.compose_url(self.api_url, path=["queries"], params=params)
         response = await self.post(url=url, json=body, timeout=TIMEOUT_SEC)
@@ -719,7 +726,7 @@ class LookerClient:
                 status=response.status_code,
                 detail=(
                     f"Failed to create query for {model}/{explore}/"
-                    f'{"*" if len(dimensions) > 1 else dimensions[0]}. '
+                    f'{"*" if len(fields) > 1 else fields[0]}. '
                     "Please try again."
                 ),
                 response=response,
@@ -731,7 +738,7 @@ class LookerClient:
             "Query for %s/%s/%s created as query %s",
             model,
             explore,
-            "*" if len(dimensions) != 1 else dimensions[0],
+            "*" if len(fields) != 1 else fields[0],
             query_id,
         )
         return result

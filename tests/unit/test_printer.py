@@ -44,7 +44,7 @@ def test_mark_line_even_number_of_lines():
 def test_sql_error_prints_with_relevant_info(mock_log, sql_error, caplog):
     model = "model_a"
     explore = "explore_a"
-    dimension = "view_a.dimension_a"
+    field = "view_a.dimension_a"
     message = "A super important error occurred."
 
     printer.print_sql_error(
@@ -58,7 +58,7 @@ def test_sql_error_prints_with_relevant_info(mock_log, sql_error, caplog):
     assert model in caplog.text
     assert explore in caplog.text
     assert message in caplog.text
-    assert dimension not in caplog.text
+    assert field not in caplog.text
 
     printer.print_sql_error(
         model=model,

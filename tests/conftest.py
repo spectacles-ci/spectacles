@@ -1,13 +1,13 @@
 import pytest
 from spectacles.exceptions import SqlError
-from spectacles.lookml import Project, Model, Explore, Dimension
+from spectacles.lookml import Project, Model, Explore, LookMlField
 from spectacles.types import JsonDict
 from tests.utils import load_resource
 
 
 @pytest.fixture
-def dimension():
-    return Dimension(
+def field():
+    return LookMlField(
         name="age",
         model_name="eye_exam",
         explore_name="users",
@@ -37,7 +37,7 @@ def project():
 @pytest.fixture
 def sql_error():
     return SqlError(
-        dimension="users.age",
+        field="users.age",
         explore="users",
         model="eye_exam",
         sql="SELECT age FROM users WHERE 1=2 LIMIT 1",

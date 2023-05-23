@@ -109,11 +109,11 @@ def delete_color_codes(text: str) -> str:
 
 
 def log_sql_error(
-    model: str, explore: str, sql: str, log_dir: str, dimension: Optional[str] = None
+    model: str, explore: str, sql: str, log_dir: str, field: Optional[str] = None
 ) -> Path:
-    file_name = (
-        model + "__" + explore + ("__" + dimension if dimension else "")
-    ).replace(".", "_")
+    file_name = (model + "__" + explore + ("__" + field if field else "")).replace(
+        ".", "_"
+    )
     file_name += ".sql"
     file_path = Path(log_dir) / "queries" / file_name
 

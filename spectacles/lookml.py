@@ -15,7 +15,7 @@ class LookMlObject:
         return f"{self.__class__.__name__}(name={self.name})"
 
 
-class Dimension(LookMlObject):
+class LookMlField(LookMlObject):
     def __init__(
         self,
         name: str,
@@ -23,7 +23,7 @@ class Dimension(LookMlObject):
         explore_name: str,
         type: str,
         tags: List[str],
-        sql: str,
+        sql: Optional[str],
         is_hidden: bool,
         url: Optional[str] = None,
     ):
@@ -38,10 +38,9 @@ class Dimension(LookMlObject):
         self.queried: bool = False
         self.errors: List[ValidationError] = []
 
-        if (
-            re.search(r"spectacles\s*:\s*ignore", sql, re.IGNORECASE)
-            or "spectacles: ignore" in tags
-        ):
+        if sql and re.search(r"spectacles\s*:\s*ignore", sql, re.IGNORECASE):
+            self.ignore = True
+        elif "spectacles: ignore" in tags:
             self.ignore = True
         else:
             self.ignore = False
@@ -54,7 +53,7 @@ class Dimension(LookMlObject):
         )
 
     def __eq__(self, other):
-        if not isinstance(other, Dimension):
+        if not isinstance(other, LookMlField):
             return NotImplemented
 
         return (
@@ -66,7 +65,7 @@ class Dimension(LookMlObject):
         )
 
     def __lt__(self, other):
-        if not isinstance(other, Dimension):
+        if not isinstance(other, LookMlField):
             return NotImplemented
 
         return (self.model_name, self.explore_name, self.name) < (
@@ -82,8 +81,8 @@ class Dimension(LookMlObject):
     @errored.setter
     def errored(self, value):
         raise AttributeError(
-            "Cannot assign to 'errored' property of a Dimension instance. "
-            "For a dimension to be considered errored, it must have a ValidationError "
+            "Cannot assign to 'errored' property of a LookMlField instance. "
+            "For a field to be considered errored, it must have a ValidationError "
             "in its 'errors' attribute."
         )
 
@@ -100,11 +99,11 @@ class Dimension(LookMlObject):
 
 class Explore(LookMlObject):
     def __init__(
-        self, name: str, model_name: str, dimensions: Optional[List[Dimension]] = None
+        self, name: str, model_name: str, fields: Optional[List[LookMlField]] = None
     ):
         self.name = name
         self.model_name = model_name
-        self.dimensions = [] if dimensions is None else dimensions
+        self.fields = [] if fields is None else fields
         self.errors: List[ValidationError] = []
         self.successes: List[JsonDict] = []
         self.skipped = False
@@ -117,13 +116,13 @@ class Explore(LookMlObject):
         return (
             self.name == other.name
             and self.model_name == other.model_name
-            and self.dimensions == other.dimensions
+            and self.fields == other.fields
         )
 
     @property
     def queried(self):
-        if self.dimensions:
-            return any(dimension.queried for dimension in self.dimensions)
+        if self.fields:
+            return any(field.queried for field in self.fields)
         else:
             return self._queried
 
@@ -131,18 +130,16 @@ class Explore(LookMlObject):
     def queried(self, value: bool):
         if not isinstance(value, bool):
             raise TypeError("Value for queried must be boolean.")
-        if self.dimensions:
-            for dimension in self.dimensions:
-                dimension.queried = value
+        if self.fields:
+            for field in self.fields:
+                field.queried = value
         else:
             self._queried = value
 
     @property
     def errored(self):
         if self.queried:
-            return bool(self.errors) or any(
-                dimension.errored for dimension in self.dimensions
-            )
+            return bool(self.errors) or any(field.errored for field in self.fields)
         else:
             return None
 
@@ -151,21 +148,21 @@ class Explore(LookMlObject):
         raise AttributeError(
             "Cannot assign to 'errored' property of an Explore instance. "
             "For an explore to be considered errored, it must have a ValidationError "
-            "in its 'errors' attribute or contain dimensions in an errored state."
+            "in its 'errors' attribute or contain fields in an errored state."
         )
 
-    def get_errored_dimensions(self):
-        for dimension in self.dimensions:
-            if dimension.errored:
-                yield dimension
+    def get_errored_fields(self):
+        for field in self.fields:
+            if field.errored:
+                yield field
 
     @classmethod
     def from_json(cls, json_dict, model_name):
         name = json_dict["name"]
         return cls(name, model_name)
 
-    def add_dimension(self, dimension: Dimension):
-        self.dimensions.append(dimension)
+    def add_field(self, field: LookMlField):
+        self.fields.append(field)
 
     @property
     def number_of_errors(self):
@@ -174,9 +171,7 @@ class Explore(LookMlObject):
                 errors = len(self.errors)
             else:
                 errors = sum(
-                    len(dimension.errors)
-                    for dimension in self.dimensions
-                    if dimension.errored
+                    len(field.errors) for field in self.fields if field.errored
                 )
             return errors
         else:
@@ -188,7 +183,7 @@ class CompiledSql:
     model_name: str
     explore_name: str
     sql: str
-    dimension_name: Optional[str] = None
+    field_name: Optional[str] = None
 
     @classmethod
     def from_explore(cls, explore: Explore, sql: str) -> "CompiledSql":
@@ -197,11 +192,11 @@ class CompiledSql:
         )
 
     @classmethod
-    def from_dimension(cls, dimension: Dimension, sql: str) -> "CompiledSql":
+    def from_field(cls, field: LookMlField, sql: str) -> "CompiledSql":
         return CompiledSql(
-            model_name=dimension.model_name,
-            explore_name=dimension.explore_name,
-            dimension_name=dimension.name,
+            model_name=field.model_name,
+            explore_name=field.explore_name,
+            field_name=field.name,
             sql=sql,
         )
 
@@ -315,14 +310,14 @@ class Project(LookMlObject):
                 else:
                     yield explore
 
-    def iter_dimensions(self, errored: bool = False) -> Iterable[Dimension]:
+    def iter_fields(self, errored: bool = False) -> Iterable[LookMlField]:
         for explore in self.iter_explores():
-            for dimension in explore.dimensions:
+            for field in explore.fields:
                 if errored:
-                    if dimension.errored:
-                        yield dimension
+                    if field.errored:
+                        yield field
                 else:
-                    yield dimension
+                    yield field
 
     @property
     def errored(self):
@@ -410,12 +405,12 @@ class Project(LookMlObject):
                     status = "failed"
                     errors.append(explore.errors[0].to_dict())
                 elif explore.errored:
-                    dimension_errors = [e for d in explore.dimensions for e in d.errors]
-                    # If an explore has explore-level errors but not dimension-level
+                    field_errors = [e for d in explore.fields for e in d.errors]
+                    # If an explore has explore-level errors but not field-level
                     # errors, return those instead. Skip anything marked as ignored.
                     relevant_errors = [
                         e.to_dict()
-                        for e in (dimension_errors or explore.errors)
+                        for e in (field_errors or explore.errors)
                         if not e.ignore
                     ]
                     if relevant_errors:
@@ -448,35 +443,37 @@ class Project(LookMlObject):
         return sum([model.number_of_errors for model in self.models if model.errored])
 
 
-async def build_explore_dimensions(
+async def build_explore_fields(
     client: LookerClient,
     explore: Explore,
     ignore_hidden_fields: bool = False,
+    ignore_measures: bool = False,
 ) -> None:
-    """Creates Dimension objects for all dimensions in a given explore."""
-    dimensions_json = await client.get_lookml_dimensions(
-        explore.model_name, explore.name
+    """Creates LookmlField objects for all fields in a given explore."""
+    fields_json = await client.get_lookml_fields(
+        explore.model_name, explore.name, ignore_measures
     )
 
-    dimensions: List[Dimension] = []
-    for dimension_json in dimensions_json:
-        dimension: Dimension = Dimension.from_json(
-            dimension_json, explore.model_name, explore.name
+    fields: List[LookMlField] = []
+    for field_json in fields_json:
+        field: LookMlField = LookMlField.from_json(
+            field_json, explore.model_name, explore.name
         )
-        if dimension.url is not None:
-            dimension.url = client.base_url + dimension.url
-        if not dimension.ignore and not (dimension.is_hidden and ignore_hidden_fields):
-            dimensions.append(dimension)
+        if field.url is not None:
+            field.url = client.base_url + field.url
+        if not field.ignore and not (field.is_hidden and ignore_hidden_fields):
+            fields.append(field)
 
-    explore.dimensions = dimensions
+    explore.fields = fields
 
 
 async def build_project(
     client: LookerClient,
     name: str,
     filters: Optional[List[str]] = None,
-    include_dimensions: bool = False,
+    include_fields: bool = False,
     ignore_hidden_fields: bool = False,
+    ignore_measures: bool = False,
     include_all_explores: bool = False,
 ) -> Project:
     """Creates an object (tree) representation of a LookML project."""
@@ -510,11 +507,13 @@ async def build_project(
                 for explore in model.explores
                 if is_selected(model.name, explore.name, filters)
             ]
-            if include_dimensions:
+            if include_fields:
                 for explore in model.explores:
                     task = asyncio.create_task(
-                        build_explore_dimensions(client, explore, ignore_hidden_fields),
-                        name=f"build_explore_dimensions_{explore.name}",
+                        build_explore_fields(
+                            client, explore, ignore_hidden_fields, ignore_measures
+                        ),
+                        name=f"build_explore_fields_{explore.name}",
                     )
                     tasks.append(task)
 

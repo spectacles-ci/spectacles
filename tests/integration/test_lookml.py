@@ -1,24 +1,24 @@
 import pytest
 from spectacles.client import LookerClient
-from spectacles.lookml import Explore, build_project, build_explore_dimensions
+from spectacles.lookml import Explore, build_project, build_explore_fields
 from spectacles.exceptions import SpectaclesException
 
 
 class TestBuildProject:
-    async def test_model_explore_dimension_counts_should_match(
+    async def test_model_explore_field_counts_should_match(
         self, looker_client: LookerClient
     ):
         project = await build_project(
             looker_client,
             name="eye_exam",
             filters=["eye_exam/users"],
-            include_dimensions=True,
+            include_fields=True,
         )
         assert len(project.models) == 1
         assert len(project.models[0].explores) == 1
-        dimensions = project.models[0].explores[0].dimensions
-        assert len(dimensions) == 6
-        assert "users.city" in [dim.name for dim in dimensions]
+        fields = project.models[0].explores[0].fields
+        assert len(fields) == 7
+        assert "users.city" in [dim.name for dim in fields]
         assert not project.errored
         assert project.queried is False
 
@@ -38,17 +38,29 @@ class TestBuildProject:
         )
         assert len(project.models) == 1
 
-    async def test_hidden_dimension_should_be_excluded_with_ignore_hidden(
+    async def test_hidden_field_should_be_excluded_with_ignore_hidden(
         self, looker_client: LookerClient
     ):
         project = await build_project(
             looker_client,
             name="eye_exam",
             filters=["eye_exam/users"],
-            include_dimensions=True,
+            include_fields=True,
             ignore_hidden_fields=True,
         )
-        assert len(project.models[0].explores[0].dimensions) == 5
+        assert len(project.models[0].explores[0].fields) == 6
+
+    async def test_measure_field_should_be_excluded_with_measures_hidden(
+        self, looker_client: LookerClient
+    ):
+        project = await build_project(
+            looker_client,
+            name="eye_exam",
+            filters=["eye_exam/users"],
+            include_fields=True,
+            ignore_measures=True,
+        )
+        assert len(project.models[0].explores[0].fields) == 6
 
 
 class TestBuildUnconfiguredProject:
@@ -62,19 +74,29 @@ class TestBuildUnconfiguredProject:
             await build_project(looker_client, name="eye_exam_unconfigured")
 
 
-class TestBuildDimensions:
-    async def test_dimension_count_should_match(
+class TestBuildFields:
+    async def test_field_count_should_match(
         self, looker_client: LookerClient, explore: Explore
     ):
-        await build_explore_dimensions(looker_client, explore)
-        assert len(explore.dimensions) == 6
+        await build_explore_fields(looker_client, explore)
+        assert len(explore.fields) == 7
 
-    async def test_hidden_dimension_should_be_excluded_with_ignore_hidden(
+    async def test_hidden_fields_should_be_excluded_with_ignore_hidden(
         self, looker_client: LookerClient, explore: Explore
     ):
-        await build_explore_dimensions(
+        await build_explore_fields(
             looker_client,
             explore,
             ignore_hidden_fields=True,
         )
-        assert len(explore.dimensions) == 5
+        assert len(explore.fields) == 6
+
+    async def test_measure_fields_should_be_excluded_with_measures_hidden(
+        self, looker_client: LookerClient, explore: Explore
+    ):
+        await build_explore_fields(
+            looker_client,
+            explore,
+            ignore_measures=True,
+        )
+        assert len(explore.fields) == 6
