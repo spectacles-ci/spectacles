@@ -423,7 +423,7 @@ class Project(LookMlObject):
                     # errors, return those instead. Skip anything marked as ignored.
                     relevant_errors = [
                         e.to_dict()
-                        for e in (dimension_errors or explore.errors)
+                        for e in dimension_errors + explore.errors
                         if not e.ignore
                     ]
                     if relevant_errors:
