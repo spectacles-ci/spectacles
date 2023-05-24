@@ -422,11 +422,11 @@ class SqlValidator:
                         expired_for = time.time() - query.expired_at
                         if expired_for > EXPIRED_QUERY_WAIT_TIME:
                             # Stop waiting for query, decide if we should retry
-                            if query.expired_retries <= EXPIRED_RETRY_LIMIT:
+                            if query.expired_retries < EXPIRED_RETRY_LIMIT:
                                 logger.debug(
                                     f"Query task {task_id} expired for "
                                     f"over {EXPIRED_QUERY_WAIT_TIME} seconds. "
-                                    "Trying again."
+                                    "Creating a new query task to try again."
                                 )
                                 query.expired_at = None
                                 query.expired_retries += 1
@@ -437,7 +437,9 @@ class SqlValidator:
                                     f"even after {EXPIRED_RETRY_LIMIT + 1} tries. "
                                     "Giving up on it."
                                 )
+                                query.errored = True
                                 explore = query.explore
+                                explore.queried = True  # Not exactly, but close enough
                                 explore.errors.append(
                                     SqlError(
                                         model=explore.model_name,
@@ -448,7 +450,7 @@ class SqlValidator:
                                             "Couldn't finish testing "
                                             f"{explore.model_name}.{explore.name} "
                                             "because queries repeatedly expired "
-                                            "in Looker. "
+                                            "in Looker."
                                         ),
                                         explore_url=query.explore_url,
                                     )
