@@ -402,7 +402,8 @@ class SqlValidator:
                                 message=(
                                     "Couldn't finish testing "
                                     f"{explore.model_name}.{explore.name} "
-                                    "because the test query was killed in Looker. "
+                                    "because the test query was killed "
+                                    "in the database. "
                                 ),
                                 explore_url=query.explore_url,
                             )
