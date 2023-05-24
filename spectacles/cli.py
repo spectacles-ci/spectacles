@@ -952,7 +952,9 @@ async def run_sql(
 
     for test in sorted(results["tested"], key=lambda x: (x["model"], x["explore"])):
         message = f"{test['model']}.{test['explore']}"
-        printer.print_validation_result(status=test["status"], source=message)
+        printer.print_validation_result(
+            status=test["status"], skip_reason=test.get("skip_reason"), source=message
+        )
 
     errors = sorted(
         results["errors"],
