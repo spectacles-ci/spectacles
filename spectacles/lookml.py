@@ -410,7 +410,7 @@ class Project(LookMlObject):
 
                 if explore.skipped:
                     test["status"] = "skipped"
-                    test["skip_reason"] = str(explore.skipped)
+                    test["skip_reason"] = explore.skipped.value
                 elif explore.errored and validator != "sql":
                     test["status"] = "failed"
                     errors.extend([e.to_dict() for e in explore.errors])
