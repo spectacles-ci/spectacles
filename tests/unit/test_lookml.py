@@ -374,3 +374,61 @@ def test_project_number_of_errors_single_with_no_errors(
     model.explores = [explore, explore]
     project.models = [model, model]
     assert project.number_of_errors == 0
+
+
+@pytest.mark.parametrize("fail_fast", (True, False))
+def test_project_get_results_can_return_explore_and_dimension_level_errors(
+    fail_fast: bool,
+):
+    dimension = Dimension(
+        name="dimension",
+        model_name="model",
+        explore_name="explore",
+        type="string",
+        tags=[],
+        is_hidden=False,
+        sql="select 1",
+    )
+    if not fail_fast:
+        dimension.errors.append(
+            SqlError(
+                model="model",
+                explore="explore",
+                dimension="dimension",
+                sql="select 1",
+                message="this is a dimension-level error",
+                line_number=1,
+            )
+        )
+        dimension.queried = True
+    explore = Explore(
+        name="explore",
+        model_name="model",
+        dimensions=[dimension],
+    )
+    explore.errors.append(
+        SqlError(
+            model="model",
+            explore="explore",
+            dimension=None,
+            sql="select 1",
+            message="this is a explore-level error",
+            line_number=1,
+        )
+    )
+    explore.queried = True
+    project = Project(
+        name="project",
+        models=[
+            Model(
+                name="model",
+                project_name="project",
+                explores=[explore],
+            )
+        ],
+    )
+    results = project.get_results(validator="sql", fail_fast=fail_fast)
+    if fail_fast:
+        assert len(results["errors"]) == 1
+    else:
+        assert len(results["errors"]) == 2
