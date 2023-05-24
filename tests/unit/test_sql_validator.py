@@ -9,6 +9,7 @@ from spectacles.validators.sql import Query, SqlValidator
 from spectacles.lookml import Explore, Dimension
 from spectacles.exceptions import LookerApiError
 from spectacles.client import LookerClient
+from spectacles.types import InterruptedQueryResult
 
 
 @pytest.fixture
@@ -360,6 +361,47 @@ async def test_get_query_results_handles_exceptions_raised_within(
         await asyncio.gather(task)
 
     assert mocked_api["get_query_results"].call_count == 3
+
+
+@pytest.mark.parametrize("fail_fast", (True, False))
+async def test_get_query_results_gives_up_after_killed_query(
+    fail_fast: bool,
+    mocked_api: respx.MockRouter,
+    query: Query,
+    validator: SqlValidator,
+    queries_to_run: asyncio.Queue,
+    running_queries: asyncio.Queue,
+    query_slot: asyncio.Semaphore,
+):
+    """Test the case where Looker returns a legitimate expired query status
+    but Spectacles has already exceeded the retry limit."""
+    query_task_id = "abcdef12345"
+    mocked_api.get("query_tasks/multi_results", name="get_query_results").respond(
+        200,
+        json={query_task_id: InterruptedQueryResult(status="killed").dict()},
+    )
+
+    validator._task_to_query[query_task_id] = query
+
+    task = asyncio.create_task(
+        validator._get_query_results(
+            queries_to_run, running_queries, fail_fast, query_slot
+        )
+    )
+
+    await queries_to_run.put(query)
+    # A little silly, but we have to mimic what the create_query task would be doing
+    await queries_to_run.get()
+    await running_queries.put(query_task_id)
+    await running_queries.join()
+    task.cancel()
+
+    with pytest.raises(asyncio.CancelledError):
+        await asyncio.gather(task)
+
+    assert queries_to_run.empty()  # Shouldn't retry anything
+    assert query.errored
+    assert query.explore.errored
 
 
 @pytest.mark.parametrize("fail_fast", (True, False))

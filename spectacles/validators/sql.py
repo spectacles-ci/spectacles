@@ -390,7 +390,9 @@ class SqlValidator:
 
                     elif query_result.status == "killed":
                         query = self._task_to_query[task_id]
+                        query.errored = True
                         explore = query.explore
+                        explore.queried = True
                         explore.errors.append(
                             SqlError(
                                 model=explore.model_name,

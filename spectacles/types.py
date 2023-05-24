@@ -35,11 +35,7 @@ class PendingQueryResult(BaseModel):
 
 
 class InterruptedQueryResult(BaseModel):
-    class QueryResultData(BaseModel):
-        error: str
-
     status: Literal["expired", "killed"]
-    data: QueryResultData
 
 
 class CompletedQueryResult(BaseModel):
