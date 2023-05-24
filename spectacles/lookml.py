@@ -4,7 +4,8 @@ import re
 from typing import Dict, List, Sequence, Optional, Any, Iterable
 from spectacles.client import LookerClient
 from spectacles.exceptions import ValidationError, LookMlNotFound
-from spectacles.types import JsonDict
+from spectacles.logger import GLOBAL_LOGGER as logger
+from spectacles.types import JsonDict, SkipReason
 from spectacles.select import is_selected
 
 
@@ -107,7 +108,7 @@ class Explore(LookMlObject):
         self.dimensions = [] if dimensions is None else dimensions
         self.errors: List[ValidationError] = []
         self.successes: List[JsonDict] = []
-        self.skipped = False
+        self.skipped: Optional[SkipReason] = None
         self._queried: bool = False
 
     def __eq__(self, other):
@@ -400,14 +401,21 @@ class Project(LookMlObject):
                     filters,  # pyright: ignore[reportGeneralTypeIssues]
                 ):
                     continue
-                status = "passed"
+
+                test: Dict[str, Any] = {
+                    "model": model.name,
+                    "explore": explore.name,
+                    "status": "passed",  # To be overwritten if needed
+                }
+
                 if explore.skipped:
-                    status = "skipped"
+                    test["status"] = "skipped"
+                    test["skip_reason"] = explore.skipped.value
                 elif explore.errored and validator != "sql":
-                    status = "failed"
+                    test["status"] = "failed"
                     errors.extend([e.to_dict() for e in explore.errors])
                 elif explore.errored and fail_fast is True:
-                    status = "failed"
+                    test["status"] = "failed"
                     errors.append(explore.errors[0].to_dict())
                 elif explore.errored:
                     dimension_errors = [e for d in explore.dimensions for e in d.errors]
@@ -419,13 +427,9 @@ class Project(LookMlObject):
                         if not e.ignore
                     ]
                     if relevant_errors:
-                        status = "failed"
+                        test["status"] = "failed"
                         errors.extend(relevant_errors)
-                test: Dict[str, Any] = {
-                    "model": model.name,
-                    "explore": explore.name,
-                    "status": status,
-                }
+
                 if explore.successes:
                     successes.extend([success for success in explore.successes])
 
@@ -469,6 +473,12 @@ async def build_explore_dimensions(
             dimensions.append(dimension)
 
     explore.dimensions = dimensions
+    if len(explore.dimensions) == 0:
+        logger.warning(
+            f"Warning: Explore '{explore.name}' does not have any non-ignored "
+            "dimensions and will not be validated."
+        )
+        explore.skipped = SkipReason.NO_DIMENSIONS
 
 
 async def build_project(

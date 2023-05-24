@@ -11,7 +11,7 @@ from spectacles.validators import (
     ContentValidator,
     LookMLValidator,
 )
-from spectacles.types import JsonDict
+from spectacles.types import JsonDict, SkipReason
 from spectacles.validators.sql import (
     DEFAULT_CHUNK_SIZE,
     DEFAULT_QUERY_CONCURRENCY,
@@ -357,14 +357,14 @@ class Runner:
                     ignore_hidden_fields=ignore_hidden_fields,
                 )
                 target_explores: Set[CompiledSql] = set()
-                if incremental:
-                    compiled_explores = await asyncio.gather(
-                        *(
-                            validator.compile_explore(explore)
-                            for explore in target_project.iter_explores()
-                        )
+
+                compiled_explores = await asyncio.gather(
+                    *(
+                        validator.compile_explore(explore)
+                        for explore in target_project.iter_explores()
                     )
-                    target_explores = set(compiled_explores)
+                )
+                target_explores = set(compiled_explores)
 
             # Determine which explore tests are identical between target and base
             # Iterate instead of set operations so we have control of which test, and
@@ -381,7 +381,7 @@ class Runner:
                     )
                 if compiled in target_explores:
                     # Mark explores with the same compiled SQL (test) as skipped
-                    explore.skipped = True
+                    explore.skipped = SkipReason.UNMODIFIED
                 else:
                     # Test explores with unique SQL for base ref
                     explores += (explore,)
@@ -390,10 +390,10 @@ class Runner:
         else:
             explores = tuple(project.iter_explores())
 
-        explore_count = len(explores)
+        n_tested_explores = len([e for e in explores if not e.skipped])
+        n_total_explores = len(base_explores or explores)
         print_header(
-            f"Testing {explore_count} "
-            f"{'explore' if explore_count == 1 else 'explores'} "
+            f"Testing {n_tested_explores}/{n_total_explores} explores "
             + ("[fail fast] " if fail_fast else "")
             + f"[concurrency = {concurrency}]"
         )

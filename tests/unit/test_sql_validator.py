@@ -2,7 +2,6 @@ import asyncio
 from typing import Optional
 from unittest.mock import Mock, patch
 import json
-import logging
 import pytest
 import httpx
 import respx
@@ -42,13 +41,6 @@ def query_slot() -> asyncio.Semaphore:
 @pytest.fixture
 def query(explore: Explore, dimension: Dimension) -> Query:
     return Query(explore, (dimension,), query_id="12345")
-
-
-async def test_compile_explore_without_dimensions_should_not_work(
-    explore: Explore, validator: SqlValidator
-):
-    with pytest.raises(AttributeError):
-        await validator.compile_explore(explore)
 
 
 async def test_compile_explore_compiles_sql(
@@ -646,15 +638,6 @@ async def test_search_with_chunk_size_should_limit_queries(
     for request, _ in mocked_api["create_query"].calls:
         body = json.loads(request.content)
         assert len(body["fields"]) == 10
-
-
-async def test_search_with_explore_without_dimensions_warns(
-    explore: Explore, validator: SqlValidator, caplog: pytest.LogCaptureFixture
-):
-    caplog.set_level(logging.WARNING)
-    explore.dimensions = []
-    await validator.search(explores=(explore,), fail_fast=False)
-    assert explore.name in caplog.text
 
 
 async def test_looker_api_error_with_queries_in_flight_shuts_down_gracefully(

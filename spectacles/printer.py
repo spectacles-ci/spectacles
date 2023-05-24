@@ -142,13 +142,19 @@ def print_sql_error(
     logger.info("\n" + f"Test SQL: {file_path}")
 
 
-def print_validation_result(status: str, source: str):
+def print_validation_result(
+    status: str, source: str, skip_reason: Optional[str] = None
+):
     bullet = "✗" if status == "failed" else "✓"
     if status == "passed":
         message = green(source)
     elif status == "failed":
         message = red(source)
     elif status == "skipped":
+        if skip_reason is None:
+            raise TypeError("Skipped Explores must state a reason for skipping")
+        skip_reason = skip_reason.replace("_", " ")
+        status = f"skipped ({skip_reason})"
         message = dim(source)
     else:
         raise ValueError(f"Unexpected value for status '{status}'")

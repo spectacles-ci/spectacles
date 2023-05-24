@@ -1,6 +1,7 @@
 from unittest.mock import patch
 from spectacles import printer
 from spectacles.logger import delete_color_codes
+from spectacles.types import SkipReason
 
 
 def test_extract_sql_context():
@@ -126,4 +127,6 @@ def test_data_test_error_prints_with_relevant_info(sql_error, caplog):
 def test_print_validation_result_should_work():
     printer.print_validation_result(status="passed", source="model.explore")
     printer.print_validation_result(status="failed", source="model.explore")
-    printer.print_validation_result(status="skipped", source="model.explore")
+    printer.print_validation_result(
+        status="skipped", source="model.explore", skip_reason=SkipReason.UNMODIFIED
+    )
