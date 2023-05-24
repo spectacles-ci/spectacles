@@ -196,25 +196,6 @@
             },
             "uniqueItems": true
         },
-        "warnings": {
-            "type": "array",
-            "items": {
-                "type": "object",
-                "additionalProperties": false,
-                "properties": {
-                    "type": {
-                        "type": "string"
-                    },
-                    "title": {
-                        "type": "string"
-                    },
-                    "detail": {
-                        "type": "string"
-                    }
-                }
-            },
-            "uniqueItems": true
-        },
         "successes": {
             "type": "array",
             "items": {

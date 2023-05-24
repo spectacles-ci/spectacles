@@ -1,8 +1,14 @@
+from enum import Enum
 from typing import Dict, Any, TypeVar, Optional, Tuple, Union, Literal
 from pydantic import BaseModel, Field
 
 JsonDict = Dict[str, Any]
 T = TypeVar("T")
+
+
+class SkipReason(str, Enum):
+    NO_DIMENSIONS = "no_dimensions"
+    UNMODIFIED = "unmodified"
 
 
 class ErrorSqlLocation(BaseModel):

@@ -23,12 +23,6 @@ class SpectaclesException(Exception):
         return {k: v for k, v in self.__dict__.items() if not k.startswith("_")}
 
 
-class SpectaclesWarning(SpectaclesException):
-    def __init__(self, name: str, title: str, detail: str):
-        super().__init__(name, title, detail)
-        self.type = "/warnings/" + name
-
-
 class LookMlNotFound(SpectaclesException):
     ...
 

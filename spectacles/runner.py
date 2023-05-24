@@ -11,7 +11,7 @@ from spectacles.validators import (
     ContentValidator,
     LookMLValidator,
 )
-from spectacles.types import JsonDict
+from spectacles.types import JsonDict, SkipReason
 from spectacles.validators.sql import (
     DEFAULT_CHUNK_SIZE,
     DEFAULT_QUERY_CONCURRENCY,
@@ -381,7 +381,7 @@ class Runner:
                     )
                 if compiled in target_explores:
                     # Mark explores with the same compiled SQL (test) as skipped
-                    explore.skipped = True
+                    explore.skipped = SkipReason.UNMODIFIED
                 else:
                     # Test explores with unique SQL for base ref
                     explores += (explore,)
