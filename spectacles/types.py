@@ -52,14 +52,20 @@ class CompletedQueryResult(BaseModel):
 
 
 class ErrorQueryResult(BaseModel):
-    class QueryResultData(BaseModel):
+    class ErrorData(BaseModel):
+        id: str
+        error: str
+        runtime = 0.0
+        sql = ""
+
+    class MultiErrorData(BaseModel):
         id: str
         runtime: float
         sql: str
         errors: Optional[Tuple[QueryError, ...]]
 
     status: Literal["error"]
-    data: QueryResultData
+    data: Union[ErrorData, MultiErrorData]
 
     @property
     def runtime(self) -> float:
@@ -71,9 +77,18 @@ class ErrorQueryResult(BaseModel):
 
     @property
     def errors(self) -> Tuple[QueryError, ...]:
-        if self.data.errors is None:
-            raise TypeError("No errors contained in this query result")
-        return self.data.errors
+        if isinstance(self.data, self.ErrorData):
+            return (
+                QueryError(
+                    message=self.data.error, message_details=None, sql_error_loc=None
+                ),
+            )
+        elif isinstance(self.data, self.MultiErrorData):
+            if self.data.errors is None:
+                raise TypeError("No errors contained in this query result")
+            return self.data.errors
+        else:
+            raise TypeError("Unexpected type for ErrorQueryResult.data")
 
     def get_valid_errors(self) -> Tuple[QueryError, ...]:
         WARNINGS = (

@@ -129,3 +129,21 @@ def test_get_valid_errors_should_ignore_warnings():
     query_result = cast(ErrorQueryResult, QueryResult.parse_obj(response_json).__root__)
     valid_errors = query_result.get_valid_errors()
     assert not valid_errors
+
+
+def test_can_parse_string_errors():
+    response = {
+        "status": "error",
+        "result_source": None,
+        "data": {
+            "from_cache": True,
+            "id": "67120bd3c7d23eb81f72692be9581c4a",
+            "error": "View Not Found",
+        },
+    }
+
+    result = QueryResult.parse_obj(response).__root__
+    assert isinstance(result, ErrorQueryResult)
+    assert result.errors[0].message == "View Not Found"
+    assert result.runtime == 0.0
+    assert result.sql == ""
