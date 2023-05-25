@@ -3,7 +3,7 @@ import asyncio
 from dataclasses import dataclass
 import time
 from tabulate import tabulate
-from typing import List, Optional, Tuple, Iterator, Union, cast
+from typing import List, Optional, Tuple, Iterator
 import pydantic
 from spectacles.client import LookerClient
 from spectacles.lookml import CompiledSql, Dimension, Explore
@@ -11,7 +11,12 @@ from spectacles.exceptions import SpectaclesException, SqlError
 from spectacles.logger import GLOBAL_LOGGER as logger
 from spectacles.printer import print_header
 from spectacles.utils import consume_queue, halt_queue
-from spectacles.types import QueryResult, CompletedQueryResult, ErrorQueryResult
+from spectacles.types import (
+    QueryResult,
+    CompletedQueryResult,
+    ErrorQueryResult,
+    InterruptedQueryResult,
+)
 
 QUERY_TASK_LIMIT = 250
 DEFAULT_CHUNK_SIZE = 500
@@ -316,10 +321,9 @@ class SqlValidator:
                     )
 
                     # Append long-running queries for the profiler
-                    if query_result.status in ("complete", "error"):
-                        query_result = cast(
-                            Union[CompletedQueryResult, ErrorQueryResult], query_result
-                        )
+                    if isinstance(
+                        query_result, (CompletedQueryResult, ErrorQueryResult)
+                    ):
                         query = self._task_to_query[task_id]
                         query.runtime = query_result.runtime
                         if query_result.runtime > self.runtime_threshold:
@@ -393,7 +397,10 @@ class SqlValidator:
                             # Indicate there are no more queries or subqueries to run
                             queries_to_run.task_done()
 
-                    elif query_result.status == "killed":
+                    elif (
+                        isinstance(query_result, InterruptedQueryResult)
+                        and query_result.status == "killed"
+                    ):
                         query = self._task_to_query[task_id]
                         query.errored = True
                         explore = query.explore
@@ -416,7 +423,10 @@ class SqlValidator:
                         query_slot.release()
                         queries_to_run.task_done()
 
-                    elif query_result.status == "expired":
+                    elif (
+                        isinstance(query_result, InterruptedQueryResult)
+                        and query_result.status == "expired"
+                    ):
                         query = self._task_to_query[task_id]
                         query.expired_at = query.expired_at or time.time()
                         expired_for = time.time() - query.expired_at

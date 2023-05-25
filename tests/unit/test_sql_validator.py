@@ -439,7 +439,7 @@ async def test_get_query_results_handles_bogus_expired_queries(
             json={
                 query_task_id: ErrorQueryResult(
                     status="error",
-                    data=ErrorQueryResult.QueryResultData(
+                    data=ErrorQueryResult.MultiErrorData(
                         id="",
                         runtime=1.0,
                         sql="",
