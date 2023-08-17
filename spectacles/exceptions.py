@@ -135,7 +135,7 @@ class SqlError(ValidationError):
         model: str,
         explore: str,
         dimension: Optional[str],
-        sql: str,
+        sql: Optional[str],
         message: str,
         line_number: Optional[int] = None,
         explore_url: Optional[str] = None,

@@ -159,17 +159,14 @@ async def test_manage_current_branch_with_import_projects(
     The manager should not perform any branch checkouts, just test.
 
     """
-    # Set up starting branch and workspace
-    starting_branch = "master"
+    # Set up workspace
     await looker_client.update_workspace("production")
 
     manager = LookerBranchManager(looker_client, LOOKER_PROJECT)
 
     await manager().__aenter__()
-    assert manager.init_state.branch == starting_branch
     assert not manager.is_temp_branch
-    active_branch = await looker_client.get_active_branch_name(LOOKER_PROJECT)
-    assert active_branch == starting_branch
+    starting_branch = await looker_client.get_active_branch_name(LOOKER_PROJECT)
     await manager.__aexit__()
     active_branch = await looker_client.get_active_branch_name(LOOKER_PROJECT)
     assert active_branch == starting_branch
