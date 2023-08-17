@@ -61,7 +61,7 @@ class ErrorQueryResult(BaseModel):
     class MultiErrorData(BaseModel):
         id: str
         runtime: float
-        sql: str
+        sql: Optional[str]
         errors: Optional[Tuple[QueryError, ...]]
 
     status: Literal["error"]
@@ -72,7 +72,7 @@ class ErrorQueryResult(BaseModel):
         return self.data.runtime
 
     @property
-    def sql(self) -> str:
+    def sql(self) -> Optional[str]:
         return self.data.sql
 
     @property
