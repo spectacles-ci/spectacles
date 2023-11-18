@@ -343,6 +343,7 @@ def main():
                 remote_reset=args.remote_reset,
                 severity=args.severity,
                 pin_imports=pin_imports,
+                print_json=args.json
             )
         )
 
@@ -570,6 +571,13 @@ def _build_lookml_subparser(
             "validator to fail. The default is 'warning'."
         ),
     )
+    subparser.add_argument(
+        "--json",
+        action="store_true",
+        help=(
+            "Output the results as a json"
+        )
+    )
     _build_validator_subparser(subparser_action, subparser)
 
 
@@ -747,6 +755,7 @@ async def run_lookml(
     remote_reset,
     severity,
     pin_imports,
+    print_json = False
 ) -> None:
     # Don't trust env to ignore .netrc credentials
     async_client = httpx.AsyncClient(trust_env=False)
@@ -760,7 +769,13 @@ async def run_lookml(
     finally:
         await async_client.aclose()
 
+    if print_json:
+        logger.info(json.dumps(results,None,2))
+        return
+
     errors = sorted(results["errors"], key=lambda x: x["metadata"]["file_path"] or "a")
+
+
     unique_files = sorted(
         set(
             error["metadata"]["file_path"]

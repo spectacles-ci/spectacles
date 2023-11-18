@@ -6,7 +6,7 @@ Follow [these standard instructions](https://opensource.guide/how-to-contribute/
 * Fork the repository on GitHub
 * Clone your fork to your local machine
 * Create a new local branch off `master` using the `feature/feature-name` branch naming convention
-* Create a Python virtual environment and install dependencies with `pip install -r requirements.txt`
+* Create a Python virtual environment and install dependencies with `pip install -r dev-requirements.txt`
 
 Once your local repository is set up, develop away on your feature! Double-check that you've included the following:
 
