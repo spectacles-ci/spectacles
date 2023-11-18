@@ -774,8 +774,6 @@ async def run_lookml(
         return
 
     errors = sorted(results["errors"], key=lambda x: x["metadata"]["file_path"] or "a")
-
-
     unique_files = sorted(
         set(
             error["metadata"]["file_path"]
