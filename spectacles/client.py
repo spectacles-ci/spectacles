@@ -4,6 +4,7 @@ from dataclasses import dataclass
 import backoff  # type: ignore
 import httpx
 from httpx import HTTPStatusError, ConnectError, TimeoutException, RemoteProtocolError
+from functools import cache
 import spectacles.utils as utils
 from spectacles.types import JsonDict
 from spectacles.logger import GLOBAL_LOGGER as logger
@@ -332,6 +333,7 @@ class LookerClient:
                 response=response,
             ) from error
 
+    @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
     async def get_manifest(self, project: str) -> JsonDict:
         """Gets all the dependent LookML projects defined in the manifest file.
 
@@ -907,6 +909,7 @@ class LookerClient:
         result = response.json()
         return result
 
+    @cache
     @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
     async def all_folders(self) -> List[JsonDict]:
         logger.debug("Getting information about all folders")
