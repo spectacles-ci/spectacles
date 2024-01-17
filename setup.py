@@ -17,7 +17,7 @@ setup(
     package_data={"spectacles": ["py.typed"]},
     include_package_data=True,
     install_requires=[
-        "async-lru",
+        "aiocache",
         "httpx",
         "httpcore",
         "PyYAML",

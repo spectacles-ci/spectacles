@@ -32,12 +32,7 @@ async def test_create_query_with_dimensions_should_return_certain_fields(
     looker_client: LookerClient,
 ):
     query = await looker_client.create_query(
-        model="eye_exam",
-        explore="users",
-        dimensions=(
-            "id",
-            "age",
-        ),
+        model="eye_exam", explore="users", dimensions=["id", "age"]
     )
     assert set(("id", "share_url")) <= set(query.keys())
     assert int(query["limit"]) == 0
@@ -49,7 +44,7 @@ async def test_create_query_without_dimensions_should_return_certain_fields(
     looker_client: LookerClient,
 ):
     query = await looker_client.create_query(
-        model="eye_exam", explore="users", dimensions=tuple()
+        model="eye_exam", explore="users", dimensions=[]
     )
     assert set(("id", "share_url")) <= set(query.keys())
     assert int(query["limit"]) == 0
