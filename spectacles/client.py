@@ -4,7 +4,7 @@ from dataclasses import dataclass
 import backoff  # type: ignore
 import httpx
 from httpx import HTTPStatusError, ConnectError, TimeoutException, RemoteProtocolError
-from async_lru import alru_cache
+from aiocache import Cache, cached, serializers
 import spectacles.utils as utils
 from spectacles.types import JsonDict
 from spectacles.logger import GLOBAL_LOGGER as logger
@@ -672,14 +672,14 @@ class LookerClient:
 
         return response.json()["fields"]["dimensions"]
 
-    @alru_cache(maxsize=None)
+    @cached(cache=Cache.MEMORY, serializer=serializers.PickleSerializer())
     @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=5)
     async def create_query(
         self,
         model: str,
         explore: str,
-        dimensions: Tuple[str],
-        fields: Optional[Tuple[str]] = None,
+        dimensions: list[str],
+        fields: Optional[list] = None,
     ) -> Dict:
         """Creates a Looker async query for one or more specified dimensions.
 
@@ -709,7 +709,7 @@ class LookerClient:
         if fields is None:
             params["fields"] = []
         else:
-            params["fields"] = list(fields)
+            params["fields"] = fields
 
         url = utils.compose_url(self.api_url, path=["queries"], params=params)
         response = await self.post(url=url, json=body, timeout=TIMEOUT_SEC)
@@ -910,7 +910,7 @@ class LookerClient:
         result = response.json()
         return result
 
-    @alru_cache(maxsize=None)
+    @cached(cache=Cache.MEMORY, serializer=serializers.PickleSerializer)
     @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
     async def all_folders(self) -> List[JsonDict]:
         logger.debug("Getting information about all folders")

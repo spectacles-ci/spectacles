@@ -145,7 +145,7 @@ class SqlValidator:
             dimensions = [dimension.name for dimension in explore.dimensions]
             # Create a query that includes all dimensions
             query = await self.client.create_query(
-                explore.model_name, explore.name, tuple(dimensions), fields=("id",)
+                explore.model_name, explore.name, dimensions, fields=["id"]
             )
             sql = await self.client.run_query(query["id"])
 
@@ -156,8 +156,8 @@ class SqlValidator:
         query = await self.client.create_query(
             dimension.model_name,
             dimension.explore_name,
-            (dimension.name,),
-            fields=("id",),
+            [dimension.name],
+            fields=["id"],
         )
         sql = await self.client.run_query(query["id"])
         return CompiledSql.from_dimension(dimension, sql)
@@ -255,11 +255,8 @@ class SqlValidator:
                 result = await self.client.create_query(
                     model=query.dimensions[0].model_name,
                     explore=query.dimensions[0].explore_name,
-                    dimensions=tuple(dimension.name for dimension in query.dimensions),
-                    fields=(
-                        "id",
-                        "share_url",
-                    ),
+                    dimensions=[dimension.name for dimension in query.dimensions],
+                    fields=["id", "share_url"],
                 )
                 query.query_id = result["id"]
                 query.explore_url = result["share_url"]
