@@ -1,4 +1,5 @@
 import asyncio
+from copy import deepcopy
 from typing import Optional
 from unittest.mock import Mock, patch
 import json
@@ -611,7 +612,9 @@ async def test_search_works_with_error_query(
     explore: Explore,
     dimension: Dimension,
 ):
-    explore.dimensions = [dimension, dimension]
+    other_dimension = deepcopy(dimension)
+    other_dimension.name = "other_dimension"
+    explore.dimensions = [dimension, other_dimension]
     explores = (explore,)
 
     explore_url = "https://spectacles.looker.com/x"
