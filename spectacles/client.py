@@ -4,7 +4,7 @@ from dataclasses import dataclass
 import backoff  # type: ignore
 import httpx
 from httpx import HTTPStatusError, ConnectError, TimeoutException, RemoteProtocolError
-from aiocache import Cache, cached, serializers
+from aiocache import Cache, cached, serializers  # type: ignore
 import spectacles.utils as utils
 from spectacles.types import JsonDict
 from spectacles.logger import GLOBAL_LOGGER as logger
