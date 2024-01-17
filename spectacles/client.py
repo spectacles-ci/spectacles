@@ -678,8 +678,8 @@ class LookerClient:
         self,
         model: str,
         explore: str,
-        dimensions: list[str],
-        fields: Optional[list] = None,
+        dimensions: List[str],
+        fields: Optional[List] = None,
     ) -> Dict:
         """Creates a Looker async query for one or more specified dimensions.
 
