@@ -4,7 +4,7 @@ from dataclasses import dataclass
 import backoff  # type: ignore
 import httpx
 from httpx import HTTPStatusError, ConnectError, TimeoutException, RemoteProtocolError
-from functools import cache
+from async_lru import alru_cache
 import spectacles.utils as utils
 from spectacles.types import JsonDict
 from spectacles.logger import GLOBAL_LOGGER as logger
@@ -672,13 +672,14 @@ class LookerClient:
 
         return response.json()["fields"]["dimensions"]
 
+    @alru_cache(maxsize=None)
     @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=5)
     async def create_query(
         self,
         model: str,
         explore: str,
-        dimensions: List[str],
-        fields: Optional[List] = None,
+        dimensions: Tuple[str],
+        fields: Optional[Tuple[str]] = None,
     ) -> Dict:
         """Creates a Looker async query for one or more specified dimensions.
 
@@ -708,7 +709,7 @@ class LookerClient:
         if fields is None:
             params["fields"] = []
         else:
-            params["fields"] = fields
+            params["fields"] = list(fields)
 
         url = utils.compose_url(self.api_url, path=["queries"], params=params)
         response = await self.post(url=url, json=body, timeout=TIMEOUT_SEC)
@@ -909,7 +910,7 @@ class LookerClient:
         result = response.json()
         return result
 
-    @cache
+    @alru_cache(maxsize=None)
     @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
     async def all_folders(self) -> List[JsonDict]:
         logger.debug("Getting information about all folders")
