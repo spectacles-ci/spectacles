@@ -183,8 +183,13 @@ async def test_run_query_handles_exceptions_raised_within(
         validator._run_query(queries_to_run, running_queries, query_slot)
     )
 
+    second_query = deepcopy(query)
+    second_dimension = deepcopy(query.dimensions[0])
+    second_dimension.name = "second_dimension"
+    second_query.dimensions = (second_dimension,)
+
     queries_to_run.put_nowait(query)  # This will succeed
-    queries_to_run.put_nowait(query)  # This will fail with 404
+    queries_to_run.put_nowait(second_query)  # This will fail with 404
     await running_queries.get()  # Retrieve the successfully query
     running_queries.task_done()
 
@@ -781,7 +786,10 @@ async def test_search_with_chunk_size_should_limit_queries(
     dimension: Dimension,
 ):
     chunk_size = 10
-    explore.dimensions = [dimension] * 100
+    for i in range(100):
+        new_dimension = deepcopy(dimension)
+        new_dimension.name = f"dimension_{i}"
+        explore.dimensions.append(new_dimension)
     explore_url = "https://spectacles.looker.com/x"
 
     # Define some factories to make IDs sensible across requests
@@ -847,7 +855,10 @@ async def test_looker_api_error_with_queries_in_flight_shuts_down_gracefully(
     dimension: Dimension,
 ):
     chunk_size = 10
-    explore.dimensions = [dimension] * 1000
+    for i in range(1000):
+        new_dimension = deepcopy(dimension)
+        new_dimension.name = f"dimension_{i}"
+        explore.dimensions.append(new_dimension)
     explore_url = "https://spectacles.looker.com/x"
 
     # Define some factories to make IDs sensible across requests
