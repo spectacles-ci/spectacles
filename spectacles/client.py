@@ -909,7 +909,7 @@ class LookerClient:
         result = response.json()
         return result
 
-    @cached(cache=Cache.MEMORY, serializer=serializers.PickleSerializer)
+    @cached(cache=Cache.MEMORY, serializer=serializers.PickleSerializer())
     @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
     async def all_folders(self) -> List[JsonDict]:
         logger.debug("Getting information about all folders")
