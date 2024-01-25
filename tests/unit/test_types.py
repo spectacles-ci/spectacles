@@ -16,7 +16,7 @@ def test_message_and_message_details_are_concatenated():
 def test_extract_error_details_error_other():
     response_json = {"status": "error", "data": "some string"}
     with pytest.raises(ValidationError):
-        QueryResult.parse_obj(response_json)
+        QueryResult.model_validate(response_json)
 
 
 def test_extract_error_details_should_error_on_non_str_message_details():
@@ -37,7 +37,7 @@ def test_extract_error_details_should_error_on_non_str_message_details():
         },
     }
     with pytest.raises(ValidationError):
-        QueryResult.parse_obj(response_json)
+        QueryResult.model_validate(response_json)
 
 
 def test_query_results_with_no_message_details_works():
@@ -51,7 +51,9 @@ def test_query_results_with_no_message_details_works():
             "sql": "SELECT * FROM orders",
         },
     }
-    query_result = cast(ErrorQueryResult, QueryResult.parse_obj(response_json).__root__)
+    query_result = cast(
+        ErrorQueryResult, QueryResult.model_validate(response_json).root
+    )
     valid_errors = query_result.get_valid_errors()
     assert valid_errors[0].message == message
     assert valid_errors[0].full_message == message
@@ -69,7 +71,7 @@ def test_query_results_sql_loc_character_only_works():
             "sql": sql,
         },
     }
-    assert QueryResult.parse_obj(response_json)
+    assert QueryResult.model_validate(response_json)
 
 
 def test_get_valid_errors_should_return_errors():
@@ -92,7 +94,9 @@ def test_get_valid_errors_should_return_errors():
             "sql": sql,
         },
     }
-    query_result = cast(ErrorQueryResult, QueryResult.parse_obj(response_json).__root__)
+    query_result = cast(
+        ErrorQueryResult, QueryResult.model_validate(response_json).root
+    )
     valid_errors = query_result.get_valid_errors()
     assert valid_errors
     assert valid_errors[0].message == error_message
@@ -115,7 +119,9 @@ def test_get_valid_errors_should_ignore_warnings():
             "sql": sql,
         },
     }
-    query_result = cast(ErrorQueryResult, QueryResult.parse_obj(response_json).__root__)
+    query_result = cast(
+        ErrorQueryResult, QueryResult.model_validate(response_json).root
+    )
     valid_errors = query_result.get_valid_errors()
     assert not valid_errors
 
@@ -126,7 +132,9 @@ def test_get_valid_errors_should_ignore_warnings():
         "Query results in Production Mode might be different."
     )
     response_json["data"]["errors"][0]["message"] = warning_message
-    query_result = cast(ErrorQueryResult, QueryResult.parse_obj(response_json).__root__)
+    query_result = cast(
+        ErrorQueryResult, QueryResult.model_validate(response_json).root
+    )
     valid_errors = query_result.get_valid_errors()
     assert not valid_errors
 
@@ -142,7 +150,7 @@ def test_can_parse_string_errors():
         },
     }
 
-    result = QueryResult.parse_obj(response).__root__
+    result = QueryResult.model_validate(response).root
     assert isinstance(result, ErrorQueryResult)
     assert result.errors[0].message == "View Not Found"
     assert result.runtime == 0.0

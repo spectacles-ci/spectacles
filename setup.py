@@ -26,7 +26,7 @@ setup(
         "analytics-python",
         "typing-extensions",
         "tabulate",
-        "pydantic<2.0.0",
+        "pydantic",
     ],
     tests_require=[
         "black",

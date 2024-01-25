@@ -1,6 +1,6 @@
 from enum import Enum
-from typing import Dict, Any, TypeVar, Optional, Tuple, Union, Literal
-from pydantic import BaseModel, Field
+from typing import Dict, Any, TypeVar, Optional, Tuple, Union, Literal, Annotated
+from pydantic import BaseModel, Field, RootModel
 
 JsonDict = Dict[str, Any]
 T = TypeVar("T")
@@ -14,16 +14,17 @@ class SkipReason(str, Enum):
 class ErrorSqlLocation(BaseModel):
     """Stores the line and column within a SQL query where an error occurred."""
 
-    line: Optional[int]
-    column: Optional[int]
+    line: Optional[int] = None
+    column: Optional[int] = None
+    character: Optional[int] = None
 
 
 class QueryError(BaseModel):
     """Stores the details for a SQL query error returned from the Looker API."""
 
     message: str
-    message_details: Optional[str]
-    sql_error_loc: Optional[ErrorSqlLocation]
+    message_details: Optional[str] = None
+    sql_error_loc: Optional[ErrorSqlLocation] = None
 
     @property
     def full_message(self) -> str:
@@ -55,8 +56,8 @@ class ErrorQueryResult(BaseModel):
     class ErrorData(BaseModel):
         id: str
         error: str
-        runtime = 0.0
-        sql = ""
+        runtime: float = 0.0
+        sql: str = ""
 
     class MultiErrorData(BaseModel):
         id: str
@@ -104,12 +105,14 @@ class ErrorQueryResult(BaseModel):
         return tuple(error for error in self.errors if error.message not in WARNINGS)
 
 
-class QueryResult(BaseModel):
-    """Container model to allow discriminated union on status."""
-
-    __root__: Union[
-        PendingQueryResult,
-        InterruptedQueryResult,
-        CompletedQueryResult,
-        ErrorQueryResult,
-    ] = Field(..., discriminator="status")
+QueryResult = RootModel[
+    Annotated[
+        Union[
+            PendingQueryResult,
+            InterruptedQueryResult,
+            CompletedQueryResult,
+            ErrorQueryResult,
+        ],
+        Field(..., discriminator="status"),
+    ]
+]

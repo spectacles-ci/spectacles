@@ -303,7 +303,7 @@ class SqlValidator:
                 raw = await self.client.get_query_task_multi_results(task_ids)
                 for task_id, result in raw.items():
                     try:
-                        query_result = QueryResult.parse_obj(result).__root__
+                        query_result = QueryResult.model_validate(result).root
                     except pydantic.ValidationError as validation_error:
                         logger.debug(
                             f"Unable to parse unexpected Looker API response format: {result}"
@@ -490,7 +490,7 @@ class SqlValidator:
             while not queries_to_run.empty():
                 logger.debug("Waiting for the queries_to_run queue to clear")
                 # _run_query can get bogged down waiting for query slots, so free them
-                if query_slot.locked:
+                if query_slot.locked():
                     query_slot.release()
                 await asyncio.sleep(1)
             raise
