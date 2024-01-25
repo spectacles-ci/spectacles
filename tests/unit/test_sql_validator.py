@@ -201,7 +201,7 @@ async def test_run_query_handles_exceptions_raised_within(
     with pytest.raises(LookerApiError):
         await asyncio.gather(task)
 
-    assert running_queries.empty
+    assert running_queries.empty()
     mocked_api["create_query"].calls.assert_called()
 
 
