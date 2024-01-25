@@ -6,7 +6,7 @@ version: 2.1
 
 definitions:
   docker: &python_image
-    - image: cimg/python:3.8.12
+    - image: cimg/python:3.9.18
   steps:
     - restore_cache: &restore_cache
         keys:
