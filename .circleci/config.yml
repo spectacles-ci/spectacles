@@ -9,27 +9,21 @@ definitions:
     - image: cimg/python:3.9.18
   steps:
     - restore_cache: &restore_cache
-        keys:
-          - v1-dependencies-{{ checksum "requirements-dev.txt" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
+        key: v1-dependencies-{{ checksum "poetry.lock" }}
     - run: &apt_get_install
         name: Install non-Python dependencies
         command: |
           sudo apt-get update
           sudo apt-get install libyaml-dev
     - run: &install_spectacles
-        name: Install Spectacles
+        name: Install package dependencies
         command: |
-          python3 -m venv venv --clear
-          . venv/bin/activate
-          pip install -U pip
-          pip install -r requirements-dev.txt
-          pip install .
+          poetry config --no-ansi virtualenvs.in-project true
+          poetry install --no-ansi --verbose
     - save_cache: &save_cache
+        key: v1-dependencies-{{ checksum "poetry.lock" }}
         paths:
-          - ./venv
-        key: v1-dependencies-{{ checksum "requirements-dev.txt" }}
+          - .venv
 
 jobs:
   unit:
@@ -41,30 +35,18 @@ jobs:
       - run: *install_spectacles
       - save_cache: *save_cache
       - run:
-          name: Run mypy type checks
-          command: |
-            . venv/bin/activate
-            mypy spectacles tests
-      - run:
-          name: Run flake8 style checks
-          command: |
-            . venv/bin/activate
-            flake8 spectacles tests
-      - run:
-          name: Run black formatting checks
-          command: |
-            . venv/bin/activate
-            black --check spectacles tests
+          name: Run pre-commit checks
+          command: poetry run --no-ansi pre-commit run --all-files
       - run:
           name: Test for security vulnerabilities
-          command: |
-            . venv/bin/activate
-            bandit -r spectacles
+          command: poetry run --no-ansi bandit -r spectacles
       - run:
           name: Run unit tests
           command: |
-            . venv/bin/activate
-            pytest tests/unit
+            mkdir test-results
+            poetry run --no-ansi pytest --verbose --junitxml=test-results/junit.xml tests/unit
+      - store_test_results:
+          path: test-results
   
   integration:
     docker: *python_image
@@ -77,11 +59,12 @@ jobs:
       - run:
           name: Run integration tests
           command: |
-            . venv/bin/activate
-            pytest tests/integration
+            mkdir test-results
+            poetry run --no-ansi pytest --verbose --junitxml=test-results/junit.xml tests/integration
+      - store_test_results:
+          path: test-results
 
 workflows:
-  version: 2
   test:
     jobs:
       - unit
