@@ -1,12 +1,13 @@
 import pytest
+
 from spectacles.exceptions import SqlError
-from spectacles.lookml import Project, Model, Explore, Dimension
-from spectacles.types import JsonDict
+from spectacles.lookml import Dimension, Explore, Model, Project
+from spectacles.models import JsonDict
 from tests.utils import load_resource
 
 
 @pytest.fixture
-def dimension():
+def dimension() -> Dimension:
     return Dimension(
         name="age",
         model_name="eye_exam",
@@ -20,22 +21,22 @@ def dimension():
 
 
 @pytest.fixture
-def explore():
+def explore() -> Explore:
     return Explore(name="users", model_name="eye_exam")
 
 
 @pytest.fixture
-def model():
+def model() -> Model:
     return Model(name="eye_exam", project_name="eye_exam", explores=[])
 
 
 @pytest.fixture
-def project():
+def project() -> Project:
     return Project(name="eye_exam", models=[])
 
 
 @pytest.fixture
-def sql_error():
+def sql_error() -> SqlError:
     return SqlError(
         dimension="users.age",
         explore="users",
@@ -48,4 +49,4 @@ def sql_error():
 
 @pytest.fixture
 def schema() -> JsonDict:
-    return load_resource("validation_schema.json")
+    return load_resource("validation_schema.json")  # type: ignore

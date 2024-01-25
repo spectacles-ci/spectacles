@@ -1,9 +1,12 @@
-from unittest.mock import patch, Mock, MagicMock, AsyncMock
+from typing import Any, Dict, List
+from unittest.mock import AsyncMock, MagicMock, Mock, patch
+
 import jsonschema
-from spectacles.lookml import Project, Model, Explore
-from spectacles.types import JsonDict
+
 from spectacles.client import LookerClient
 from spectacles.exceptions import ContentError
+from spectacles.lookml import Explore, Model, Project
+from spectacles.models import JsonDict
 from spectacles.runner import Runner
 from tests.utils import build_validation
 
@@ -19,10 +22,10 @@ async def test_validate_content_returns_valid_schema(
     model: Model,
     explore: Explore,
     schema: JsonDict,
-):
+) -> None:
     error_message = "An error ocurred"
 
-    def add_error_to_project(tests):
+    def add_error_to_project(_: Any) -> None:
         project.models[0].explores[0].queried = True
         project.models[0].explores[0].errors = [
             ContentError("", "", error_message, "", "", "", "", "")
@@ -39,7 +42,7 @@ async def test_validate_content_returns_valid_schema(
     jsonschema.validate(result, schema)
 
 
-def test_incremental_same_results_should_not_have_errors():
+def test_incremental_same_results_should_not_have_errors() -> None:
     base = build_validation("content")
     target = build_validation("content")
     diff = Runner._incremental_results(base, target)
@@ -52,7 +55,7 @@ def test_incremental_same_results_should_not_have_errors():
     ]
 
 
-def test_incremental_with_fewer_errors_than_target():
+def test_incremental_with_fewer_errors_than_target() -> None:
     base = build_validation("content")
     target = build_validation("content")
     base["tested"][2]["status"] = "passed"
@@ -67,11 +70,11 @@ def test_incremental_with_fewer_errors_than_target():
     ]
 
 
-def test_incremental_with_more_errors_than_target():
+def test_incremental_with_more_errors_than_target() -> None:
     base = build_validation("content")
     target = build_validation("content")
     base["tested"][1]["status"] = "failed"
-    extra_errors = [
+    extra_errors: List[Dict[Any, Any]] = [
         dict(
             model="ecommerce",
             explore="users",
@@ -98,11 +101,11 @@ def test_incremental_with_more_errors_than_target():
     ]
 
 
-def test_incremental_with_fewer_tested_explores_than_target():
+def test_incremental_with_fewer_tested_explores_than_target() -> None:
     base = build_validation("content")
     target = build_validation("content")
     _ = base["tested"].pop(0)
-    extra_error = dict(
+    extra_error: dict[Any, Any] = dict(
         model="ecommerce",
         explore="users",
         test=None,

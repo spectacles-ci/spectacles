@@ -1,9 +1,11 @@
 from typing import List, Tuple
+
 import pytest
+
 from spectacles.client import LookerClient
+from spectacles.exceptions import ContentError, SpectaclesException
 from spectacles.lookml import build_project
 from spectacles.validators import ContentValidator
-from spectacles.exceptions import SpectaclesException, ContentError
 
 
 @pytest.fixture
@@ -15,7 +17,7 @@ def validator(looker_client: LookerClient) -> ContentValidator:
 async def validation_result(
     request: pytest.FixtureRequest, validator: ContentValidator
 ) -> Tuple[ContentError, ...]:
-    if request.param == "no_errors":  # type: ignore[attr-defined]
+    if request.param == "no_errors":
         explore_name = "users"
     else:
         explore_name = "users__fail"
@@ -27,7 +29,9 @@ async def validation_result(
     return errors
 
 
-def test_correct_number_of_errors_returned(validation_result: Tuple[ContentError, ...]):
+def test_correct_number_of_errors_returned(
+    validation_result: Tuple[ContentError, ...]
+) -> None:
     # Errors should only come from the failing Explore
     if validation_result:
         assert len(validation_result) == 2
@@ -41,7 +45,7 @@ def test_correct_number_of_errors_returned(validation_result: Tuple[ContentError
 
 async def test_error_from_excluded_folder_should_be_ignored(
     validator: ContentValidator,
-):
+) -> None:
     project = await build_project(
         validator.client, name="eye_exam", filters=["eye_exam/users__fail"]
     )
@@ -52,7 +56,7 @@ async def test_error_from_excluded_folder_should_be_ignored(
 
 async def test_error_from_included_folder_should_be_returned(
     validator: ContentValidator,
-):
+) -> None:
     project = await build_project(
         validator.client, name="eye_exam", filters=["eye_exam/users__fail"]
     )
@@ -63,7 +67,7 @@ async def test_error_from_included_folder_should_be_returned(
 
 async def test_excluded_folder_should_take_priority_over_included_folder(
     validator: ContentValidator,
-):
+) -> None:
     project = await build_project(
         validator.client, name="eye_exam", filters=["eye_exam/users__fail"]
     )
@@ -75,7 +79,7 @@ async def test_excluded_folder_should_take_priority_over_included_folder(
 
 async def test_error_from_deleted_explore_should_be_present(
     validator: ContentValidator,
-):
+) -> None:
     filters = ["eye_exam/*"]
     project = await build_project(
         validator.client,
@@ -90,7 +94,7 @@ async def test_error_from_deleted_explore_should_be_present(
 
 async def test_non_existing_excluded_folder_should_raise_exception(
     looker_client: LookerClient,
-):
+) -> None:
     validator = ContentValidator(
         looker_client,
         exclude_personal=True,
@@ -105,7 +109,7 @@ async def test_non_existing_excluded_folder_should_raise_exception(
 
 async def test_non_existing_included_folder_should_raise_exception(
     looker_client: LookerClient,
-):
+) -> None:
     validator = ContentValidator(
         looker_client,
         exclude_personal=True,

@@ -1,13 +1,15 @@
 import re
 import string
-import pytest
 from unittest.mock import MagicMock, patch
+
+import pytest
+
 from spectacles.client import LookerClient
 from spectacles.runner import Runner
 
 
 @pytest.fixture(autouse=True)
-async def cleanup_tmp_branches(looker_client: LookerClient):
+async def cleanup_tmp_branches(looker_client: LookerClient) -> None:
     for project in ("eye_exam", "looker-demo"):
         await looker_client.update_workspace("dev")
         branches = await looker_client.get_all_branches(project)
@@ -34,7 +36,7 @@ async def cleanup_tmp_branches(looker_client: LookerClient):
 @patch("spectacles.runner.time_hash", side_effect=tuple(string.ascii_lowercase))
 async def test_validate_sql_should_work(
     mock_time_hash: MagicMock, looker_client: LookerClient, fail_fast: bool
-):
+) -> None:
     runner = Runner(looker_client, "eye_exam", remote_reset=True)
     result = await runner.validate_sql(
         ref="pytest",
@@ -53,7 +55,7 @@ async def test_validate_sql_should_work(
 @patch("spectacles.runner.time_hash", side_effect=tuple(string.ascii_lowercase))
 async def test_validate_content_should_work(
     mock_time_hash: MagicMock, looker_client: LookerClient
-):
+) -> None:
     runner = Runner(looker_client, "eye_exam")
     result = await runner.validate_content(
         filters=["eye_exam/users", "eye_exam/users__fail"]
@@ -67,7 +69,7 @@ async def test_validate_content_should_work(
 @patch("spectacles.runner.time_hash", side_effect=tuple(string.ascii_lowercase))
 async def test_validate_data_tests_should_work(
     mock_time_hash: MagicMock, looker_client: LookerClient
-):
+) -> None:
     runner = Runner(looker_client, "eye_exam")
     result = await runner.validate_data_tests(
         filters=["eye_exam/users", "eye_exam/users__fail"]
@@ -81,7 +83,7 @@ async def test_validate_data_tests_should_work(
 @patch("spectacles.runner.time_hash", side_effect=tuple(string.ascii_lowercase))
 async def test_incremental_sql_with_equal_explores_should_not_error(
     mock_time_hash: MagicMock, looker_client: LookerClient
-):
+) -> None:
     """Case where all explores compile to the same SQL.
 
     We expect all explores to be skipped, returning no errors.
@@ -100,7 +102,7 @@ async def test_incremental_sql_with_equal_explores_should_not_error(
 @patch("spectacles.runner.time_hash", side_effect=tuple(string.ascii_lowercase))
 async def test_incremental_sql_with_diff_explores_and_valid_sql_should_not_error(
     mock_time_hash: MagicMock, looker_client: LookerClient
-):
+) -> None:
     """Case where one explore differs in SQL and has valid SQL.
 
     We expect the differing explore to be tested and return no errors.
@@ -123,7 +125,7 @@ async def test_incremental_sql_with_diff_explores_and_valid_sql_should_not_error
 @patch("spectacles.runner.time_hash", side_effect=tuple(string.ascii_lowercase))
 async def test_incremental_sql_with_diff_explores_and_invalid_sql_should_error(
     mock_time_hash: MagicMock, looker_client: LookerClient
-):
+) -> None:
     """Case where one explore differs in SQL and has one SQL error.
 
     We expect the differing explore to be tested and return one error.
@@ -146,7 +148,7 @@ async def test_incremental_sql_with_diff_explores_and_invalid_sql_should_error(
 @patch("spectacles.runner.time_hash", side_effect=tuple(string.ascii_lowercase))
 async def test_incremental_sql_with_diff_explores_and_invalid_diff_sql_should_error(
     mock_time_hash: MagicMock, looker_client: LookerClient
-):
+) -> None:
     """Case where one explore differs in SQL and has two SQL errors, one present in
     the target branch, one not present in the target branch.
 
@@ -170,7 +172,7 @@ async def test_incremental_sql_with_diff_explores_and_invalid_diff_sql_should_er
 @patch("spectacles.runner.time_hash", side_effect=tuple(string.ascii_lowercase))
 async def test_incremental_sql_with_diff_explores_and_invalid_existing_sql_should_error(
     mock_time_hash: MagicMock, looker_client: LookerClient
-):
+) -> None:
     """Case where the target branch has many errors, one of which is fixed on the base
     branch.
 
@@ -195,7 +197,7 @@ async def test_incremental_sql_with_diff_explores_and_invalid_existing_sql_shoul
 
 async def test_validate_sql_with_query_profiler_should_work(
     looker_client: LookerClient, caplog: pytest.LogCaptureFixture
-):
+) -> None:
     runner = Runner(looker_client, "eye_exam")
     await runner.validate_sql(fail_fast=True, profile=True, runtime_threshold=0)
     assert "Query profiler results" in caplog.text

@@ -1,5 +1,6 @@
 import re
 from typing import List
+
 from spectacles.exceptions import SpectaclesException
 
 

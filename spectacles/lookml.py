@@ -1,19 +1,28 @@
 import asyncio
-from dataclasses import dataclass
 import re
-from typing import Dict, List, Sequence, Optional, Any, Iterable
+from dataclasses import dataclass
+from typing import Any, Dict, Generator, Iterable, List, Optional, Sequence
+
 from spectacles.client import LookerClient
-from spectacles.exceptions import ValidationError, LookMlNotFound
+from spectacles.exceptions import LookMlNotFound, ValidationError
 from spectacles.logger import GLOBAL_LOGGER as logger
-from spectacles.types import JsonDict, SkipReason
-from spectacles.select import is_selected
+from spectacles.models import JsonDict, SkipReason
+from spectacles.project_select import is_selected
 
 
 class LookMlObject:
     name: str
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.__class__.__name__}(name={self.name})"
+
+    @property
+    def queried(self) -> bool:
+        raise NotImplementedError
+
+    @queried.setter
+    def queried(self, value: bool) -> None:
+        raise NotImplementedError
 
 
 class Dimension(LookMlObject):
@@ -36,7 +45,7 @@ class Dimension(LookMlObject):
         self.sql = sql
         self.url = url
         self.is_hidden = is_hidden
-        self.queried: bool = False
+        self._queried: bool = False
         self.errors: List[ValidationError] = []
 
         if (
@@ -47,14 +56,22 @@ class Dimension(LookMlObject):
         else:
             self.ignore = False
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (
             f"{self.__class__.__name__}(name={self.name}, "
             f"type={self.type}, "
             f"errored={self.errored})"
         )
 
-    def __eq__(self, other):
+    @property
+    def queried(self) -> bool:
+        return self._queried
+
+    @queried.setter
+    def queried(self, value: bool) -> None:
+        self._queried = value
+
+    def __eq__(self, other: Any) -> bool:
         if not isinstance(other, Dimension):
             return NotImplemented
 
@@ -66,7 +83,7 @@ class Dimension(LookMlObject):
             and self.url == other.url
         )
 
-    def __lt__(self, other):
+    def __lt__(self, other: Any) -> bool:
         if not isinstance(other, Dimension):
             return NotImplemented
 
@@ -77,11 +94,11 @@ class Dimension(LookMlObject):
         )
 
     @property
-    def errored(self):
+    def errored(self) -> Optional[bool]:
         return bool(self.errors) if self.queried else None
 
     @errored.setter
-    def errored(self, value):
+    def errored(self, value: bool) -> None:
         raise AttributeError(
             "Cannot assign to 'errored' property of a Dimension instance. "
             "For a dimension to be considered errored, it must have a ValidationError "
@@ -89,7 +106,9 @@ class Dimension(LookMlObject):
         )
 
     @classmethod
-    def from_json(cls, json_dict, model_name, explore_name):
+    def from_json(
+        cls, json_dict: Dict[str, Any], model_name: str, explore_name: str
+    ) -> "Dimension":
         name = json_dict["name"]
         type = json_dict["type"]
         tags = json_dict["tags"]
@@ -111,7 +130,7 @@ class Explore(LookMlObject):
         self.skipped: Optional[SkipReason] = None
         self._queried: bool = False
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any) -> bool:
         if not isinstance(other, Explore):
             return NotImplemented
 
@@ -122,14 +141,14 @@ class Explore(LookMlObject):
         )
 
     @property
-    def queried(self):
+    def queried(self) -> bool:
         if self.dimensions:
             return any(dimension.queried for dimension in self.dimensions)
         else:
             return self._queried
 
     @queried.setter
-    def queried(self, value: bool):
+    def queried(self, value: bool) -> None:
         if not isinstance(value, bool):
             raise TypeError("Value for queried must be boolean.")
         if self.dimensions:
@@ -139,7 +158,7 @@ class Explore(LookMlObject):
             self._queried = value
 
     @property
-    def errored(self):
+    def errored(self) -> Optional[bool]:
         if self.queried:
             return bool(self.errors) or any(
                 dimension.errored for dimension in self.dimensions
@@ -148,28 +167,28 @@ class Explore(LookMlObject):
             return None
 
     @errored.setter
-    def errored(self, value):
+    def errored(self, value: bool) -> None:
         raise AttributeError(
             "Cannot assign to 'errored' property of an Explore instance. "
             "For an explore to be considered errored, it must have a ValidationError "
             "in its 'errors' attribute or contain dimensions in an errored state."
         )
 
-    def get_errored_dimensions(self):
+    def get_errored_dimensions(self) -> Generator[Dimension, None, None]:
         for dimension in self.dimensions:
             if dimension.errored:
                 yield dimension
 
     @classmethod
-    def from_json(cls, json_dict, model_name):
+    def from_json(cls, json_dict: Dict[str, Any], model_name: str) -> "Explore":
         name = json_dict["name"]
         return cls(name, model_name)
 
-    def add_dimension(self, dimension: Dimension):
+    def add_dimension(self, dimension: Dimension) -> None:
         self.dimensions.append(dimension)
 
     @property
-    def number_of_errors(self):
+    def number_of_errors(self) -> int:
         if self.errored:
             if self.errors:
                 errors = len(self.errors)
@@ -214,10 +233,10 @@ class Model(LookMlObject):
         self.explores = explores
         self.errors: List[ValidationError] = []
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.__class__.__name__}(name={self.name}, explores={self.explores})"
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any) -> bool:
         if not isinstance(other, Model):
             return NotImplemented
 
@@ -228,7 +247,7 @@ class Model(LookMlObject):
         )
 
     @property
-    def errored(self):
+    def errored(self) -> Optional[bool]:
         if self.queried:
             return bool(self.errors) or any(
                 explore.errored for explore in self.explores
@@ -237,7 +256,7 @@ class Model(LookMlObject):
             return None
 
     @errored.setter
-    def errored(self, value: bool):
+    def errored(self, value: bool) -> None:
         if not isinstance(value, bool):
             raise TypeError("Value for errored must be boolean.")
         if not self.explores:
@@ -248,11 +267,11 @@ class Model(LookMlObject):
             explore.errored = value
 
     @property
-    def queried(self):
+    def queried(self) -> bool:
         return any(explore.queried for explore in self.explores)
 
     @queried.setter
-    def queried(self, value: bool):
+    def queried(self, value: bool) -> None:
         if not isinstance(value, bool):
             raise TypeError("Value for queried must be boolean.")
         for explore in self.explores:
@@ -263,13 +282,13 @@ class Model(LookMlObject):
             (explore for explore in self.explores if explore.name == name), None
         )
 
-    def get_errored_explores(self):
+    def get_errored_explores(self) -> Generator[Explore, None, None]:
         for explore in self.explores:
             if explore.errored:
                 yield explore
 
     @classmethod
-    def from_json(cls, json_dict):
+    def from_json(cls, json_dict: Dict[str, Any]) -> "Model":
         name = json_dict["name"]
         project = json_dict["project_name"]
         explores = [
@@ -278,18 +297,18 @@ class Model(LookMlObject):
         return cls(name, project, explores)
 
     @property
-    def number_of_errors(self):
+    def number_of_errors(self) -> int:
         return len(self.errors) + sum(
             [explore.number_of_errors for explore in self.explores if explore.errored]
         )
 
 
 class Project(LookMlObject):
-    def __init__(self, name, models: Sequence[Model]):
+    def __init__(self, name: str, models: Sequence[Model]) -> None:
         self.name = name
         self.models = models
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any) -> bool:
         if not isinstance(other, Project):
             return NotImplemented
 
@@ -326,14 +345,14 @@ class Project(LookMlObject):
                     yield dimension
 
     @property
-    def errored(self):
+    def errored(self) -> Optional[bool]:
         if self.queried:
             return any(model.errored for model in self.models)
         else:
             return None
 
     @errored.setter
-    def errored(self, value: bool):
+    def errored(self, value: bool) -> None:
         if not isinstance(value, bool):
             raise TypeError("Value for errored must be boolean.")
         if not self.models:
@@ -344,11 +363,11 @@ class Project(LookMlObject):
             model.errored = value
 
     @property
-    def queried(self):
+    def queried(self) -> bool:
         return any(model.queried for model in self.models)
 
     @queried.setter
-    def queried(self, value: bool):
+    def queried(self, value: bool) -> None:
         if not isinstance(value, bool):
             raise TypeError("Value for queried must be boolean.")
         for model in self.models:
@@ -444,11 +463,11 @@ class Project(LookMlObject):
             "successes": successes,
         }
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.__class__.__name__}(name={self.name}, models={self.models})"
 
     @property
-    def number_of_errors(self):
+    def number_of_errors(self) -> int:
         return sum([model.number_of_errors for model in self.models if model.errored])
 
 
@@ -513,7 +532,7 @@ async def build_project(
 
     # Prune to selected explores for non-content validators
     if not include_all_explores:
-        tasks: List[asyncio.Task] = []
+        tasks: List[asyncio.Task[Any]] = []
         for model in models:
             model.explores = [
                 explore

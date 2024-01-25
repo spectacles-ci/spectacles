@@ -1,4 +1,5 @@
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
+
 from spectacles.client import LookerClient
 from spectacles.exceptions import LookMLError
 

@@ -1,0 +1,7 @@
+[flake8]
+exclude = .git,__pycache__,docs,build,dist
+builtins = unicode
+tee = True
+select = C,E,F,W,B,B950
+ignore = E203,E501,W503
+max-line-length = 88

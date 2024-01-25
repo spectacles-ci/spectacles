@@ -1,10 +1,12 @@
 from typing import cast
-from spectacles.types import QueryResult, QueryError, ErrorQueryResult
-from pydantic import ValidationError
+
 import pytest
+from pydantic import ValidationError
+
+from spectacles.models import ErrorQueryResult, QueryError, QueryResult
 
 
-def test_message_and_message_details_are_concatenated():
+def test_message_and_message_details_are_concatenated() -> None:
     message = "An error ocurrred."
     message_details = "We were unable to look up the query requested."
     error = QueryError(
@@ -13,13 +15,13 @@ def test_message_and_message_details_are_concatenated():
     assert error.full_message == message + " " + message_details
 
 
-def test_extract_error_details_error_other():
+def test_extract_error_details_error_other() -> None:
     response_json = {"status": "error", "data": "some string"}
     with pytest.raises(ValidationError):
         QueryResult.model_validate(response_json)
 
 
-def test_extract_error_details_should_error_on_non_str_message_details():
+def test_extract_error_details_should_error_on_non_str_message_details() -> None:
     response_json = {
         "status": "error",
         "data": {
@@ -40,7 +42,7 @@ def test_extract_error_details_should_error_on_non_str_message_details():
         QueryResult.model_validate(response_json)
 
 
-def test_query_results_with_no_message_details_works():
+def test_query_results_with_no_message_details_works() -> None:
     message = "An error message."
     response_json = {
         "status": "error",
@@ -59,7 +61,7 @@ def test_query_results_with_no_message_details_works():
     assert valid_errors[0].full_message == message
 
 
-def test_query_results_sql_loc_character_only_works():
+def test_query_results_sql_loc_character_only_works() -> None:
     message = "An error message."
     sql = "SELECT x FROM orders"
     response_json = {
@@ -74,7 +76,7 @@ def test_query_results_sql_loc_character_only_works():
     assert QueryResult.model_validate(response_json)
 
 
-def test_get_valid_errors_should_return_errors():
+def test_get_valid_errors_should_return_errors() -> None:
     # The current version of this warning message text
     error_message = "An error message."
     warning_message = (
@@ -103,7 +105,7 @@ def test_get_valid_errors_should_return_errors():
     assert query_result.sql == sql
 
 
-def test_get_valid_errors_should_ignore_warnings():
+def test_get_valid_errors_should_ignore_warnings() -> None:
     # The current version of this warning message text
     warning_message = (
         "Note: This query contains derived tables with Development Mode filters. "
@@ -131,7 +133,7 @@ def test_get_valid_errors_should_ignore_warnings():
         "Note: This query contains derived tables with conditional SQL for Development Mode. "
         "Query results in Production Mode might be different."
     )
-    response_json["data"]["errors"][0]["message"] = warning_message
+    response_json["data"]["errors"][0]["message"] = warning_message  # type: ignore
     query_result = cast(
         ErrorQueryResult, QueryResult.model_validate(response_json).root
     )
@@ -139,7 +141,7 @@ def test_get_valid_errors_should_ignore_warnings():
     assert not valid_errors
 
 
-def test_can_parse_string_errors():
+def test_can_parse_string_errors() -> None:
     response = {
         "status": "error",
         "result_source": None,

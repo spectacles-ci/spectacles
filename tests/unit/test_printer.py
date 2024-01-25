@@ -1,31 +1,34 @@
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
+
+import pytest
+
 from spectacles import printer
 from spectacles.logger import delete_color_codes
-from spectacles.types import SkipReason
+from spectacles.models import SkipReason
 
 
-def test_extract_sql_context():
+def test_extract_sql_context() -> None:
     text = "\n".join([f"{n}" for n in range(1, 21)])
     expected_result = "| 4\n| 5\n* 6\n| 7\n| 8"
     result = printer.extract_sql_context(sql=text, line_number=6, window_size=2)
     assert delete_color_codes(result) == expected_result
 
 
-def test_extract_sql_context_line_number_close_to_end():
+def test_extract_sql_context_line_number_close_to_end() -> None:
     text = "\n".join([f"{n}" for n in range(1, 21)])
     expected_result = "| 17\n| 18\n* 19\n| 20"
     result = printer.extract_sql_context(sql=text, line_number=19, window_size=2)
     assert delete_color_codes(result) == expected_result
 
 
-def test_extract_sql_context_line_number_close_to_beginning():
+def test_extract_sql_context_line_number_close_to_beginning() -> None:
     text = "\n".join([f"{n}" for n in range(1, 21)])
     expected_result = "| 1\n* 2\n| 3\n| 4"
     result = printer.extract_sql_context(sql=text, line_number=2, window_size=2)
     assert delete_color_codes(result) == expected_result
 
 
-def test_mark_line_odd_number_of_lines():
+def test_mark_line_odd_number_of_lines() -> None:
     text = [f"{n}" for n in range(1, 6)]
     expected_result = ["| 1", "| 2", "* 3", "| 4", "| 5"]
     result = printer.mark_line(lines=text, line_number=3)
@@ -33,7 +36,7 @@ def test_mark_line_odd_number_of_lines():
     assert result == expected_result
 
 
-def test_mark_line_even_number_of_lines():
+def test_mark_line_even_number_of_lines() -> None:
     text = [f"{n}" for n in range(1, 5)]
     expected_result = ["| 1", "* 2", "| 3", "| 4"]
     result = printer.mark_line(lines=text, line_number=2)
@@ -42,7 +45,9 @@ def test_mark_line_even_number_of_lines():
 
 
 @patch("spectacles.printer.log_sql_error", return_value="path_to_sql_file")
-def test_sql_error_prints_with_relevant_info(mock_log, sql_error, caplog):
+def test_sql_error_prints_with_relevant_info(
+    mock_log: MagicMock, caplog: pytest.LogCaptureFixture
+) -> None:
     model = "model_a"
     explore = "explore_a"
     dimension = "view_a.dimension_a"
@@ -66,13 +71,15 @@ def test_sql_error_prints_with_relevant_info(mock_log, sql_error, caplog):
         explore=explore,
         message=message,
         sql="SELECT * FROM test",
-        log_dir=None,
+        log_dir="",
         lookml_url="https://spectacles.looker.com",
     )
     assert "LookML:" in caplog.text
 
 
-def test_content_error_prints_with_relevant_info(sql_error, caplog):
+def test_content_error_prints_with_relevant_info(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
     model = "model_a"
     explore = "explore_a"
     content_type = "dashboard"
@@ -103,7 +110,9 @@ def test_content_error_prints_with_relevant_info(sql_error, caplog):
     assert title in caplog.text
 
 
-def test_data_test_error_prints_with_relevant_info(sql_error, caplog):
+def test_data_test_error_prints_with_relevant_info(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
     model = "model_a"
     explore = "explore_a"
     test_name = "assert_metric_is_positive"
@@ -124,7 +133,7 @@ def test_data_test_error_prints_with_relevant_info(sql_error, caplog):
     assert lookml_url in caplog.text
 
 
-def test_print_validation_result_should_work():
+def test_print_validation_result_should_work() -> None:
     printer.print_validation_result(status="passed", source="model.explore")
     printer.print_validation_result(status="failed", source="model.explore")
     printer.print_validation_result(

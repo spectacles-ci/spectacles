@@ -1,8 +1,9 @@
-from typing import Optional, cast
-from pathlib import Path
-import textwrap
 import logging
-import colorama  # type: ignore
+import textwrap
+from pathlib import Path
+from typing import Optional, cast
+
+import colorama
 
 LOG_FILENAME = "spectacles.log"
 COLORS = {
@@ -31,7 +32,7 @@ class IndentedFormatter(logging.Formatter):
         else:
             return ""
 
-    def format(self, record) -> str:
+    def format(self, record: logging.LogRecord) -> str:
         message = super().format(record=record)
         # Only wrap for debug logs, info+ logs can be wrapped in the record itself
         if record.levelno == logging.DEBUG and not record.exc_info:
@@ -48,7 +49,7 @@ class IndentedFormatter(logging.Formatter):
 
 
 class FileFormatter(IndentedFormatter):
-    def format(self, record):
+    def format(self, record: logging.LogRecord) -> str:
         message = super().format(record=record)
         formatted = delete_color_codes(message)
         return formatted

@@ -1,15 +1,18 @@
 from __future__ import annotations
+
 import asyncio
-from typing import Callable, Coroutine, List, Optional, Dict, Any, Iterable, Tuple
-from urllib import parse
-import httpx
 import hashlib
 import time
+from typing import Any, Callable, Coroutine, Dict, Iterable, List, Optional, Tuple
+from urllib import parse
+
+import httpx
+
 from spectacles.logger import GLOBAL_LOGGER as logger
-from spectacles.types import T
+from spectacles.models import T
 
 
-def compose_url(base_url: str, path: List, params: Dict = {}) -> str:
+def compose_url(base_url: str, path: List[str], params: Dict[str, Any] = {}) -> str:
     if not isinstance(path, list):
         raise TypeError("URL path must be a list")
     path_parts = [base_url] + path
@@ -32,10 +35,10 @@ def details_from_http_error(response: httpx.Response) -> Optional[Dict[str, Any]
     # Requests raises a ValueError if the response is invalid JSON
     except ValueError:
         details = None
-    return details
+    return details  # type: ignore[no-any-return]
 
 
-def human_readable(elapsed: int):
+def human_readable(elapsed: float) -> str:
     minutes, seconds = divmod(elapsed, 60)
     num_mins = f"{minutes:.0f} minute{'s' if minutes > 1 else ''}"
     num_secs = f"{seconds:.0f} second{'s' if round(seconds) != 1 else ''}"
@@ -44,7 +47,7 @@ def human_readable(elapsed: int):
     return f"{num_mins if minutes else ''}{separator}{num_secs if seconds else ''}"
 
 
-def get_detail(fn_name: str):
+def get_detail(fn_name: str) -> str:
     detail_map = {
         "run_sql": "SQL ",
         "run_assert": "data test ",
@@ -53,8 +56,10 @@ def get_detail(fn_name: str):
     return detail_map.get(fn_name, "")
 
 
-def log_duration(fn: Callable[..., Coroutine]):
-    async def timed_function(*args, **kwargs):
+def log_duration(
+    fn: Callable[..., Coroutine[Any, Any, Any]]
+) -> Callable[..., Coroutine[Any, Any, Any]]:
+    async def timed_function(*args: Any, **kwargs: Any) -> Any:
         start_time = time.time()
         try:
             result = await fn(*args, **kwargs)
@@ -75,7 +80,7 @@ def time_hash() -> str:
     return hash.hexdigest()[:10]
 
 
-def chunks(to_chunk: list, size: int) -> Iterable:
+def chunks(to_chunk: list[T], size: int) -> Iterable[list[T]]:
     """Yield successive n-sized chunks from the list."""
     for i in range(0, len(to_chunk), size):
         yield to_chunk[i : i + size]
@@ -93,7 +98,7 @@ def consume_queue(
     return contents
 
 
-def halt_queue(queue: asyncio.Queue) -> None:
+def halt_queue(queue: asyncio.Queue[Any]) -> None:
     """Inform a queue that all tasks are finished, unblocking any Queue.join calls."""
     while True:
         try:

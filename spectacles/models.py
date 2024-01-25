@@ -1,5 +1,6 @@
 from enum import Enum
-from typing import Dict, Any, TypeVar, Optional, Tuple, Union, Literal, Annotated
+from typing import Annotated, Any, Dict, Literal, Optional, Tuple, TypeVar, Union
+
 from pydantic import BaseModel, Field, RootModel
 
 JsonDict = Dict[str, Any]

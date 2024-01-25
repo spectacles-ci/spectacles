@@ -1,22 +1,25 @@
 from __future__ import annotations
+
 import asyncio
-from dataclasses import dataclass
 import time
-from tabulate import tabulate
-from typing import List, Optional, Tuple, Iterator
+from dataclasses import dataclass
+from typing import Iterator, List, Optional, Tuple
+
 import pydantic
+from tabulate import tabulate
+
 from spectacles.client import LookerClient
-from spectacles.lookml import CompiledSql, Dimension, Explore
 from spectacles.exceptions import SpectaclesException, SqlError
 from spectacles.logger import GLOBAL_LOGGER as logger
-from spectacles.printer import print_header
-from spectacles.utils import consume_queue, halt_queue
-from spectacles.types import (
-    QueryResult,
+from spectacles.lookml import CompiledSql, Dimension, Explore
+from spectacles.models import (
     CompletedQueryResult,
     ErrorQueryResult,
     InterruptedQueryResult,
+    QueryResult,
 )
+from spectacles.printer import print_header
+from spectacles.utils import consume_queue, halt_queue
 
 QUERY_TASK_LIMIT = 250
 DEFAULT_CHUNK_SIZE = 500

@@ -1,7 +1,8 @@
-import analytics  # type: ignore
 import hashlib
 import uuid
 from typing import Optional
+
+import analytics
 
 analytics.write_key = "QnqzXWlqkmgDSm7X2qFDrxx3LGCW7Rba"
 
@@ -34,7 +35,7 @@ def track_invocation_start(
 
 def track_invocation_end(
     base_url: str, command: str, invocation_id: str, project: Optional[str] = None
-):
+) -> None:
     url_hash = anonymise(base_url.rstrip("/"))
     project_hash = anonymise(project) if project else None
     analytics.track(

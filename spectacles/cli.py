@@ -1,34 +1,46 @@
-import asyncio
-from pathlib import Path
-import sys
-import re
-import platform
-import yaml
-import json
-from yaml.parser import ParserError
 import argparse
+import asyncio
+import importlib.metadata
+import json
 import logging
 import os
-from typing import Callable, List
+import platform
+import re
+import sys
+from argparse import ArgumentParser, Namespace
+from pathlib import Path
+from typing import Any, Callable, Dict, List, Optional, Sequence, Union, cast
+
 import httpx
-from spectacles import __version__
-from spectacles.runner import Runner
-from spectacles.client import DEFAULT_API_VERSION, LookerClient
-from spectacles.exceptions import (
-    LookerApiError,
-    SpectaclesException,
-    GenericValidationError,
-)
-from spectacles.logger import GLOBAL_LOGGER as logger, set_file_handler
+import yaml
+from yaml.parser import ParserError
+
 import spectacles.printer as printer
 import spectacles.tracking as tracking
+from spectacles.client import DEFAULT_API_VERSION, LookerClient
+from spectacles.exceptions import (
+    GenericValidationError,
+    LookerApiError,
+    SpectaclesException,
+)
+from spectacles.logger import GLOBAL_LOGGER as logger
+from spectacles.logger import set_file_handler
+from spectacles.runner import Runner
 from spectacles.utils import log_duration
+
+__version__ = importlib.metadata.version("spectacles")
 
 
 class ConfigFileAction(argparse.Action):
     """Parses an arbitrary config file and assigns its values as arg defaults."""
 
-    def __call__(self, parser, namespace, values, option_string):
+    def __call__(
+        self,
+        parser: ArgumentParser,
+        namespace: Namespace,
+        values: Union[str, Sequence[Any], None],
+        option_string: Optional[str] = None,
+    ) -> None:
         """Populates argument defaults with values from the config file.
 
         Args:
@@ -38,7 +50,7 @@ class ConfigFileAction(argparse.Action):
             option_string: Argument string, e.g. "--optional".
 
         """
-        config = self.parse_config(path=values)
+        config = self.parse_config(path=values)  # type: ignore
         for dest, value in config.items():
             for action in parser._actions:
                 if dest == action.dest:
@@ -59,7 +71,7 @@ class ConfigFileAction(argparse.Action):
                 )
         parser.set_defaults(**config)
 
-    def parse_config(self, path) -> dict:
+    def parse_config(self, path: str) -> Dict[str, Any]:
         """Base method for parsing an arbitrary config format."""
         raise NotImplementedError()
 
@@ -67,7 +79,7 @@ class ConfigFileAction(argparse.Action):
 class YamlConfigAction(ConfigFileAction):
     """Parses a YAML config file and assigns its values as argument defaults."""
 
-    def parse_config(self, path: str) -> dict:
+    def parse_config(self, path: str) -> Dict[str, Any]:
         """Loads a YAML config file, returning its dictionary format.
 
         Args:
@@ -79,7 +91,7 @@ class YamlConfigAction(ConfigFileAction):
         """
         try:
             with Path(path).open("r") as file:
-                return yaml.safe_load(file)
+                return cast(Dict[str, Any], yaml.safe_load(file))
         except (FileNotFoundError, ParserError) as error:
             raise argparse.ArgumentError(self, str(error))
 
@@ -95,7 +107,13 @@ class EnvVarAction(argparse.Action):
 
     """
 
-    def __init__(self, env_var, required=False, default=None, **kwargs):
+    def __init__(
+        self,
+        env_var: str,
+        required: bool = False,
+        default: Optional[str] = None,
+        **kwargs: Any,
+    ):
         self.env_var = env_var
         if env_var in os.environ:
             default = os.environ[env_var]
@@ -103,7 +121,13 @@ class EnvVarAction(argparse.Action):
             required = False
         super().__init__(default=default, required=required, **kwargs)
 
-    def __call__(self, parser, namespace, values, option_string=None):
+    def __call__(
+        self,
+        parser: ArgumentParser,
+        namespace: Namespace,
+        values: Union[str, Sequence[Any], None],
+        option_string: Optional[str] = None,
+    ) -> None:
         """Sets the argument value to the namespace during parsing.
 
         Args:
@@ -117,7 +141,9 @@ class EnvVarAction(argparse.Action):
 
 
 class EnvVarStoreTrueAction(argparse._StoreTrueAction):
-    def __init__(self, env_var, required=False, default=False, **kwargs):
+    def __init__(
+        self, env_var: str, required: bool = False, default: bool = False, **kwargs: Any
+    ):
         self.env_var = env_var
         if env_var in os.environ:
             value = os.environ[env_var].lower()
@@ -135,11 +161,17 @@ class EnvVarStoreTrueAction(argparse._StoreTrueAction):
             required = False
         super().__init__(default=default, required=required, **kwargs)
 
-    def __call__(self, parser, namespace, values, option_string=None):
+    def __call__(
+        self,
+        parser: ArgumentParser,
+        namespace: Namespace,
+        values: Union[str, Sequence[Any], None],
+        option_string: Optional[str] = None,
+    ) -> None:
         setattr(namespace, self.dest, True)
 
 
-def handle_exceptions(function: Callable) -> Callable:
+def handle_exceptions(function: Callable[..., Any]) -> Callable[..., Any]:
     """Wrapper for handling custom exceptions by logging them.
 
     Args:
@@ -150,7 +182,7 @@ def handle_exceptions(function: Callable) -> Callable:
 
     """
 
-    def wrapper(*args, **kwargs):
+    def wrapper(*args: Any, **kwargs: Any) -> Any:
         try:
             return function(*args, **kwargs)
         except GenericValidationError as error:
@@ -212,24 +244,24 @@ def restore_dash(arg: str) -> str:
     return re.sub(r"^~", "-", arg)
 
 
-def process_pin_imports(input: List[str]) -> dict:
+def process_pin_imports(input: List[str]) -> dict[str, str]:
     return dict(arg.split(":") for arg in input)
 
 
 @handle_exceptions
-def main():
+def main() -> None:
     """Runs main function. This is the entry point."""
-    if sys.version_info < (3, 8):
+    if sys.version_info < (3, 9):
         raise SpectaclesException(
             name="insufficient-python-version",
-            title="Spectacles requires Python 3.8 or higher.",
+            title="Spectacles requires Python 3.9 or higher.",
             detail="The current Python version is %s." % platform.python_version(),
         )
 
     # Convert leading `-` to `~` so they don't break `parse_args`
-    args = [preprocess_dash(arg) for arg in sys.argv[1:]]
+    inputs = [preprocess_dash(arg) for arg in sys.argv[1:]]
     parser = create_parser()
-    args = parser.parse_args(args)
+    args = parser.parse_args(inputs)
 
     branch = getattr(args, "branch", None)
     commit_ref = getattr(args, "commit_ref", None)
@@ -350,19 +382,19 @@ def main():
         tracking.track_invocation_end(
             args.base_url,
             args.command,
-            invocation_id,  # pyright: ignore[reportUnboundVariable]
+            invocation_id,  # pyright: ignore[reportUnboundVariable, reportPossiblyUnboundVariable]
             args.project if args.command != "connect" else None,
         )
 
 
-def create_parser() -> argparse.ArgumentParser:
+def create_parser() -> ArgumentParser:
     """Creates the top-level argument parser.
 
     Returns:
-        argparse.ArgumentParser: Top-level argument parser.
+        ArgumentParser: Top-level argument parser.
 
     """
-    parser = argparse.ArgumentParser(prog="spectacles")
+    parser = ArgumentParser(prog="spectacles")
     parser.add_argument("--version", action="version", version=__version__)
     subparser_action = parser.add_subparsers(
         title="Available sub-commands", dest="command"
@@ -376,14 +408,14 @@ def create_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def _build_base_subparser() -> argparse.ArgumentParser:
+def _build_base_subparser() -> ArgumentParser:
     """Returns the base subparser with arguments required for every subparser.
 
     Returns:
-        argparse.ArgumentParser: Base subparser with url and auth arguments.
+        ArgumentParser: Base subparser with url and auth arguments.
 
     """
-    base_subparser = argparse.ArgumentParser(add_help=False)
+    base_subparser = ArgumentParser(add_help=False)
     base_subparser.add_argument(
         "--config-file",
         action=YamlConfigAction,
@@ -454,8 +486,8 @@ def _build_base_subparser() -> argparse.ArgumentParser:
 
 
 def _build_connect_subparser(
-    subparser_action: argparse._SubParsersAction,
-    base_subparser: argparse.ArgumentParser,
+    subparser_action: argparse._SubParsersAction,  # type: ignore[type-arg]
+    base_subparser: ArgumentParser,
 ) -> None:
     """Returns the subparser for the subcommand `connect`.
 
@@ -475,13 +507,13 @@ def _build_connect_subparser(
 
 
 def _build_validator_subparser(
-    subparser_action: argparse._SubParsersAction,
-    base_subparser: argparse.ArgumentParser,
-) -> argparse.ArgumentParser:
+    subparser_action: argparse._SubParsersAction,  # type: ignore[type-arg]
+    base_subparser: ArgumentParser,
+) -> ArgumentParser:
     """Returns the base subparser with arguments required for every validator.
 
     Returns:
-        argparse.ArgumentParser: validator subparser with project, branch, remote reset and import projects arguments.
+        ArgumentParser: validator subparser with project, branch, remote reset and import projects arguments.
 
     """
     base_subparser.add_argument(
@@ -525,9 +557,9 @@ def _build_validator_subparser(
 
 
 def _build_select_subparser(
-    subparser_action: argparse._SubParsersAction,
-    base_subparser: argparse.ArgumentParser,
-) -> argparse.ArgumentParser:
+    subparser_action: argparse._SubParsersAction,  # type: ignore[type-arg]
+    base_subparser: ArgumentParser,
+) -> ArgumentParser:
     base_subparser.add_argument(
         "--explores",
         nargs="+",
@@ -541,8 +573,8 @@ def _build_select_subparser(
 
 
 def _build_lookml_subparser(
-    subparser_action: argparse._SubParsersAction,
-    base_subparser: argparse.ArgumentParser,
+    subparser_action: argparse._SubParsersAction,  # type: ignore[type-arg]
+    base_subparser: ArgumentParser,
 ) -> None:
     """Returns the subparser for the subcommand `lookml`.
 
@@ -574,8 +606,8 @@ def _build_lookml_subparser(
 
 
 def _build_sql_subparser(
-    subparser_action: argparse._SubParsersAction,
-    base_subparser: argparse.ArgumentParser,
+    subparser_action: argparse._SubParsersAction,  # type: ignore[type-arg]
+    base_subparser: ArgumentParser,
 ) -> None:
     """Returns the subparser for the subcommand `sql`.
 
@@ -658,8 +690,8 @@ def _build_sql_subparser(
 
 
 def _build_assert_subparser(
-    subparser_action: argparse._SubParsersAction,
-    base_subparser: argparse.ArgumentParser,
+    subparser_action: argparse._SubParsersAction,  # type: ignore[type-arg]
+    base_subparser: ArgumentParser,
 ) -> None:
     """Returns the subparser for the subcommand `assert`.
 
@@ -679,8 +711,8 @@ def _build_assert_subparser(
 
 
 def _build_content_subparser(
-    subparser_action: argparse._SubParsersAction,
-    base_subparser: argparse.ArgumentParser,
+    subparser_action: argparse._SubParsersAction,  # type: ignore[type-arg]
+    base_subparser: ArgumentParser,
 ) -> None:
     subparser = subparser_action.add_parser(
         "content", parents=[base_subparser], help="Run Looker content validation."
@@ -737,16 +769,16 @@ async def run_connect(
 
 @log_duration
 async def run_lookml(
-    project,
-    ref,
-    base_url,
-    client_id,
-    client_secret,
-    port,
-    api_version,
-    remote_reset,
-    severity,
-    pin_imports,
+    project: str,
+    ref: str,
+    base_url: str,
+    client_id: str,
+    client_secret: str,
+    port: int,
+    api_version: float,
+    remote_reset: bool,
+    severity: str,
+    pin_imports: Dict[str, str],
 ) -> None:
     # Don't trust env to ignore .netrc credentials
     async_client = httpx.AsyncClient(trust_env=False)
@@ -791,20 +823,20 @@ async def run_lookml(
 
 @log_duration
 async def run_content(
-    project,
-    ref,
-    filters,
-    base_url,
-    client_id,
-    client_secret,
-    port,
-    api_version,
-    remote_reset,
-    incremental,
-    target,
-    exclude_personal,
-    folders,
-    pin_imports,
+    project: str,
+    ref: str,
+    filters: List[str],
+    base_url: str,
+    client_id: str,
+    client_secret: str,
+    port: int,
+    api_version: float,
+    remote_reset: bool,
+    incremental: bool,
+    target: str,
+    exclude_personal: bool,
+    folders: List[str],
+    pin_imports: Dict[str, str],
 ) -> None:
     # Don't trust env to ignore .netrc credentials
     async_client = httpx.AsyncClient(trust_env=False)
@@ -854,16 +886,16 @@ async def run_content(
 
 @log_duration
 async def run_assert(
-    project,
-    ref,
-    filters,
-    base_url,
-    client_id,
-    client_secret,
-    port,
-    api_version,
-    remote_reset,
-    pin_imports,
+    project: str,
+    ref: str,
+    filters: List[str],
+    base_url: str,
+    client_id: str,
+    client_secret: str,
+    port: int,
+    api_version: float,
+    remote_reset: bool,
+    pin_imports: Dict[str, str],
 ) -> None:
     # Don't trust env to ignore .netrc credentials
     async_client = httpx.AsyncClient(trust_env=False)
@@ -906,25 +938,25 @@ async def run_assert(
 
 @log_duration
 async def run_sql(
-    log_dir,
-    project,
-    ref,
-    filters,
-    base_url,
-    client_id,
-    client_secret,
-    port,
-    api_version,
-    fail_fast,
-    incremental,
-    target,
-    remote_reset,
-    concurrency,
-    profile,
-    runtime_threshold,
-    chunk_size,
-    pin_imports,
-    ignore_hidden,
+    log_dir: str,
+    project: str,
+    ref: str,
+    filters: List[str],
+    base_url: str,
+    client_id: str,
+    client_secret: str,
+    port: int,
+    api_version: float,
+    fail_fast: bool,
+    incremental: bool,
+    target: str,
+    remote_reset: bool,
+    concurrency: int,
+    profile: bool,
+    runtime_threshold: int,
+    chunk_size: int,
+    pin_imports: Dict[str, str],
+    ignore_hidden: bool,
 ) -> None:
     """Runs and validates the SQL for each selected LookML dimension."""
     # Don't trust env to ignore .netrc credentials

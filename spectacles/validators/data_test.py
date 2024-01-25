@@ -1,9 +1,10 @@
 import asyncio
 from dataclasses import dataclass
 from typing import List, Optional
+
 from spectacles.client import LookerClient
+from spectacles.exceptions import DataTestError, SpectaclesException
 from spectacles.lookml import Explore, Project
-from spectacles.exceptions import SpectaclesException, DataTestError
 
 QUERY_SLOT_LIMIT = 15  # This is the per-user query limit in Looker for most instances
 
@@ -19,7 +20,7 @@ class DataTest:
     line: int
     passed: Optional[bool] = None
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         try:
             self.file_path = self.file.split("/", 1)[1]
         except IndexError:
@@ -30,7 +31,7 @@ class DataTest:
             )
 
     @property
-    def explore_url(self):
+    def explore_url(self) -> str:
         return (
             f"{self.base_url}/explore/{self.explore.model_name}"
             f"/{self.explore.name}?{self.query_url_params}"

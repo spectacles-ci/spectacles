@@ -1,7 +1,9 @@
 from typing import AsyncIterable, Iterable
-import pytest
+
 import httpx
+import pytest
 import respx
+
 from spectacles.client import LookerClient
 
 
