@@ -1,19 +1,37 @@
 repos:
-  - repo: https://github.com/ambv/black
-    rev: 22.3.0
+  - repo: local
     hooks:
       - id: black
-  - repo: https://github.com/PyCQA/flake8
-    rev: 4.0.1
-    hooks:
+        name: black
+        entry: black --check
+        language: system
+        types: [python]
+
       - id: flake8
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v0.961
-    hooks:
+        name: flake8
+        entry: flake8
+        language: system
+        types: [python]
+
+      - id: isort
+        name: isort
+        entry: isort --check-only --diff
+        language: system
+        types: [python]
+
       - id: mypy
-        args: [--ignore-missing-imports]
-        additional_dependencies:
-          - "types-requests==2.25.11"
-          - "types-tabulate==0.8.3"
-          - "types-PyYAML==6.0.0"
-          - "pydantic==1.9.0"
+        name: mypy
+        entry: mypy
+        language: system
+        types: [python]
+        args: ["--ignore-missing-imports", "--scripts-are-modules"]
+        require_serial: true
+
+      - id: poetry-check
+        name: poetry-check
+        entry: poetry check
+        language: system
+        pass_filenames: false
+        args:
+          - "--lock"
+        files: ^(.*/)?(poetry\.lock|pyproject\.toml)$

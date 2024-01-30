@@ -1,12 +1,17 @@
+import asyncio
 import os
-import pytest
 from typing import AsyncIterable
+
 import httpx
+import pytest
+
 from spectacles.client import LookerClient
 
 
 @pytest.fixture
-async def looker_client(event_loop) -> AsyncIterable[LookerClient]:
+async def looker_client(
+    event_loop: asyncio.AbstractEventLoop,
+) -> AsyncIterable[LookerClient]:
     async with httpx.AsyncClient(trust_env=False) as async_client:
         client = LookerClient(
             async_client=async_client,

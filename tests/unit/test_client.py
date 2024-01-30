@@ -1,16 +1,18 @@
 import asyncio
-from typing import List, Tuple, Callable, Any, Dict
-import time
-import httpx
-import respx
 import inspect
-import pytest
+import time
+from typing import Any, Callable, Dict, List, Tuple
 from unittest.mock import AsyncMock, patch
-from spectacles.client import LookerClient, AccessToken
+
+import httpx
+import pytest
+import respx
+
+from spectacles.client import AccessToken, LookerClient
 from spectacles.exceptions import LookerApiError
 
 
-def test_expired_access_token_should_be_expired():
+def test_expired_access_token_should_be_expired() -> None:
     token = AccessToken(
         access_token="abc123",
         token_type="Bearer",
@@ -23,7 +25,7 @@ def test_expired_access_token_should_be_expired():
 
 def get_client_method_names() -> List[str]:
     """Extracts method names from LookerClient to test for bad responses"""
-    client_members: List[Tuple[str, Callable]] = inspect.getmembers(
+    client_members: List[Tuple[str, Callable[..., Any]]] = inspect.getmembers(
         LookerClient, predicate=inspect.isroutine
     )
     client_methods: List[str] = [
@@ -44,7 +46,7 @@ def get_client_method_names() -> List[str]:
 
 
 @pytest.fixture
-def client_kwargs():
+def client_kwargs() -> Dict[str, Dict[str, Any]]:
     return dict(
         authenticate={"client_id": "", "client_secret": "", "api_version": 4.0},
         get_looker_release_version={},
@@ -93,7 +95,7 @@ async def test_bad_requests_should_raise_looker_api_errors(
     method_name: str,
     looker_client: LookerClient,
     client_kwargs: Dict[str, Dict[str, Any]],
-):
+) -> None:
     """Tests each method of LookerClient for how it handles a 401 response"""
     response = httpx.Response(
         401, request=httpx.Request("POST", "https://spectacles.looker.com")
@@ -112,7 +114,9 @@ async def test_bad_requests_should_raise_looker_api_errors(
             client_method(**client_kwargs[method_name])
 
 
-async def test_authenticate_should_set_session_headers(mocked_api):
+async def test_authenticate_should_set_session_headers(
+    mocked_api: respx.MockRouter,
+) -> None:
     async with httpx.AsyncClient(trust_env=False) as async_client:
         client = LookerClient(
             async_client, "https://spectacles.looker.com", "client_id", "client_secret"
@@ -123,7 +127,7 @@ async def test_authenticate_should_set_session_headers(mocked_api):
 def test_get_looker_release_version_should_return_correct_version(
     looker_client: LookerClient,
     mocked_api: respx.MockRouter,
-):
+) -> None:
     mock_api_version = "22.8.32"
     mocked_api.get("versions").respond(
         200, json={"looker_release_version": mock_api_version}
@@ -134,7 +138,7 @@ def test_get_looker_release_version_should_return_correct_version(
 
 async def test_timeout_should_cause_backoff_and_retry(
     looker_client: LookerClient, mocked_api: respx.MockRouter
-):
+) -> None:
     project = "eye_exam"
     mocked_api.get(f"projects/{project}/lookml_tests/run", name="run_lookml_test").mock(
         side_effect=(
@@ -148,7 +152,7 @@ async def test_timeout_should_cause_backoff_and_retry(
 
 async def test_bad_http_status_should_cause_backoff_and_retry(
     looker_client: LookerClient, mocked_api: respx.MockRouter
-):
+) -> None:
     project = "eye_exam"
     mocked_api.get(f"projects/{project}/lookml_tests/run", name="run_lookml_test").mock(
         side_effect=(

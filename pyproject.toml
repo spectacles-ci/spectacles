@@ -1,0 +1,94 @@
+[tool.poetry]
+name = "spectacles"
+version = "2.4.0"
+description = "A command-line, continuous integration tool for Looker and LookML."
+authors = ["Spectacles <hello@spectacles.dev>"]
+license = "MIT"
+readme = "README.md"
+keywords = [
+    "Looker",
+    "LookML",
+    "CI",
+    "continuous integration",
+    "testing",
+    "validation",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Software Development :: Quality Assurance",
+    "Topic :: Software Development :: Testing",
+    "Topic :: Utilities",
+]
+
+[tool.poetry.urls]
+Homepage = "https://spectacles.dev"
+Documentation = "https://docs.spectacles.dev/cli/tutorials/getting-started"
+Repository = "https://github.com/spectacles-ci/spectacles"
+
+[tool.poetry.scripts]
+spectacles = "spectacles.cli:main"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+aiocache = "^0.12.2"
+backoff = "^2.1"
+colorama = "^0.4.6"
+httpx = "^0.26.0"
+pydantic = "^2.5.3"
+PyYAML = "^6.0.1"
+segment-analytics-python = "^2.2.3"
+tabulate = "^0.9.0"
+typing-extensions = "^4.9.0"
+
+[tool.poetry.group.dev.dependencies]
+bandit = "^1.7.7"
+black = "^23.12.1"
+flake8 = "^7.0.0"
+isort = "^5.13.2"
+jsonschema = "^4.21.1"
+mypy = "^1.8.0"
+pre-commit = "^3.6.0"
+pydocstyle = { extras = ["toml"], version = "^6.3.0" }
+PyGithub = "^2.1.1"
+pytest = "^7.4.4"
+pytest-asyncio = "^0.23.3"
+pytest-randomly = "^3.15.0"
+respx = "^0.20.2"
+tox = "^4.12.1"
+types-colorama = "^0.4.15.20240106"
+types-jsonschema = "^4.21.0.20240118"
+types-PyYAML = "^6.0.12.12"
+types-requests = "^2.31.0.20240125"
+types-tabulate = "^0.9.0.20240106"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+python_files = "tests/*.py"
+asyncio_mode = "auto"
+pythonpath = ["."]
+
+[tool.mypy]
+mypy_path = "./spectacles:./tests"
+plugins = 'pydantic.mypy'
+strict = true
+ignore_missing_imports = true
+disallow_untyped_defs = true
+disallow_untyped_calls = false
+disallow_incomplete_defs = true
+check_untyped_defs = true
+no_implicit_optional = true
+warn_unused_ignores = true
+
+[tool.isort]
+profile = "black"
+
+[tool.coverage.report]
+exclude_lines = ["pragma: no cover", "logger.", "__repr__"]

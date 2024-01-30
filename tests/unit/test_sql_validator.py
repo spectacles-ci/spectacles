@@ -1,21 +1,23 @@
 import asyncio
+import json
 from copy import deepcopy
 from typing import Optional
 from unittest.mock import Mock, patch
-import json
-import pytest
+
 import httpx
+import pytest
 import respx
-from spectacles.validators.sql import Query, SqlValidator
-from spectacles.lookml import Explore, Dimension
-from spectacles.exceptions import LookerApiError
+
 from spectacles.client import LookerClient
-from spectacles.types import (
+from spectacles.exceptions import LookerApiError
+from spectacles.lookml import Dimension, Explore
+from spectacles.models import (
+    ErrorQueryResult,
     InterruptedQueryResult,
     PendingQueryResult,
-    ErrorQueryResult,
     QueryError,
 )
+from spectacles.validators.sql import Query, SqlValidator
 
 
 @pytest.fixture
@@ -55,7 +57,7 @@ async def test_compile_explore_compiles_sql(
     explore: Explore,
     dimension: Dimension,
     validator: SqlValidator,
-):
+) -> None:
     query_id = 12345
     sql = "SELECT * FROM users"
     explore.dimensions = [dimension]
@@ -78,7 +80,7 @@ async def test_compile_dimension_compiles_sql(
     mocked_api: respx.MockRouter,
     dimension: Dimension,
     validator: SqlValidator,
-):
+) -> None:
     query_id = 12345
     sql = "SELECT * FROM users"
     mocked_api.post("queries", params={"fields": "id"}, name="create_query").respond(
@@ -100,10 +102,10 @@ async def test_run_query_works(
     mocked_api: respx.MockRouter,
     query: Query,
     validator: SqlValidator,
-    queries_to_run: asyncio.Queue,
-    running_queries: asyncio.Queue,
+    queries_to_run: asyncio.Queue[Optional[Query]],
+    running_queries: asyncio.Queue[str],
     query_slot: asyncio.Semaphore,
-):
+) -> None:
     query_task_id = "abcdef12345"
     explore_url = "https://spectacles.looker.com/x"
 
@@ -138,10 +140,10 @@ async def test_run_query_works(
 
 async def test_run_query_shuts_down_on_sentinel(
     validator: SqlValidator,
-    queries_to_run: asyncio.Queue,
-    running_queries: asyncio.Queue,
+    queries_to_run: asyncio.Queue[Optional[Query]],
+    running_queries: asyncio.Queue[str],
     query_slot: asyncio.Semaphore,
-):
+) -> None:
     task = asyncio.create_task(
         validator._run_query(queries_to_run, running_queries, query_slot)
     )
@@ -155,10 +157,10 @@ async def test_run_query_handles_exceptions_raised_within(
     mocked_api: respx.MockRouter,
     query: Query,
     validator: SqlValidator,
-    queries_to_run: asyncio.Queue,
-    running_queries: asyncio.Queue,
+    queries_to_run: asyncio.Queue[Optional[Query]],
+    running_queries: asyncio.Queue[str],
     query_slot: asyncio.Semaphore,
-):
+) -> None:
     query_task_id = "abcdef12345"
     explore_url = "https://spectacles.looker.com/x"
 
@@ -201,7 +203,7 @@ async def test_run_query_handles_exceptions_raised_within(
     with pytest.raises(LookerApiError):
         await asyncio.gather(task)
 
-    assert running_queries.empty
+    assert running_queries.empty()
     mocked_api["create_query"].calls.assert_called()
 
 
@@ -210,10 +212,10 @@ async def test_get_query_results_works(
     fail_fast: bool,
     mocked_api: respx.MockRouter,
     validator: SqlValidator,
-    queries_to_run: asyncio.Queue,
-    running_queries: asyncio.Queue,
+    queries_to_run: asyncio.Queue[Optional[Query]],
+    running_queries: asyncio.Queue[str],
     query_slot: asyncio.Semaphore,
-):
+) -> None:
     mocked_api.get("query_tasks/multi_results", name="get_query_results").respond(
         200, json={}
     )
@@ -243,10 +245,10 @@ async def test_get_query_results_error_query_is_divided(
     mocked_api: respx.MockRouter,
     query: Query,
     validator: SqlValidator,
-    queries_to_run: asyncio.Queue,
-    running_queries: asyncio.Queue,
+    queries_to_run: asyncio.Queue[Optional[Query]],
+    running_queries: asyncio.Queue[str],
     query_slot: asyncio.Semaphore,
-):
+) -> None:
     query_task_id = "abcdef12345"
     message = "The users table does not exist"
     mocked_api.get("query_tasks/multi_results", name="get_query_results").respond(
@@ -303,10 +305,10 @@ async def test_get_query_results_passing_query_is_not_divided(
     mocked_api: respx.MockRouter,
     query: Query,
     validator: SqlValidator,
-    queries_to_run: asyncio.Queue,
-    running_queries: asyncio.Queue,
+    queries_to_run: asyncio.Queue[Optional[Query]],
+    running_queries: asyncio.Queue[str],
     query_slot: asyncio.Semaphore,
-):
+) -> None:
     query_task_id = "abcdef12345"
     mocked_api.get("query_tasks/multi_results", name="get_query_results").respond(
         200,
@@ -349,10 +351,10 @@ async def test_get_query_results_handles_exceptions_raised_within(
     fail_fast: bool,
     mocked_api: respx.MockRouter,
     validator: SqlValidator,
-    queries_to_run: asyncio.Queue,
-    running_queries: asyncio.Queue,
+    queries_to_run: asyncio.Queue[Optional[Query]],
+    running_queries: asyncio.Queue[str],
     query_slot: asyncio.Semaphore,
-):
+) -> None:
     query_task_id = "abcdef12345"
     mocked_api.get("query_tasks/multi_results", name="get_query_results").respond(404)
 
@@ -380,16 +382,16 @@ async def test_get_query_results_gives_up_after_killed_query(
     mocked_api: respx.MockRouter,
     query: Query,
     validator: SqlValidator,
-    queries_to_run: asyncio.Queue,
-    running_queries: asyncio.Queue,
+    queries_to_run: asyncio.Queue[Optional[Query]],
+    running_queries: asyncio.Queue[str],
     query_slot: asyncio.Semaphore,
-):
+) -> None:
     """Test the case where Looker returns a killed query status."""
 
     query_task_id = "abcdef12345"
     mocked_api.get("query_tasks/multi_results", name="get_query_results").respond(
         200,
-        json={query_task_id: InterruptedQueryResult(status="killed").dict()},
+        json={query_task_id: InterruptedQueryResult(status="killed").model_dump()},
     )
     validator._task_to_query[query_task_id] = query
 
@@ -420,10 +422,10 @@ async def test_get_query_results_handles_bogus_expired_queries(
     mocked_api: respx.MockRouter,
     query: Query,
     validator: SqlValidator,
-    queries_to_run: asyncio.Queue,
-    running_queries: asyncio.Queue,
+    queries_to_run: asyncio.Queue[Optional[Query]],
+    running_queries: asyncio.Queue[str],
     query_slot: asyncio.Semaphore,
-):
+) -> None:
     """Test the case where Looker briefly returns an incorrectly expired status before
     finally returning an error status."""
 
@@ -434,11 +436,11 @@ async def test_get_query_results_handles_bogus_expired_queries(
     # that we'll mark as errored, and the third is an errored query
     route.side_effect = [
         httpx.Response(
-            200, json={query_task_id: PendingQueryResult(status="running").dict()}
+            200, json={query_task_id: PendingQueryResult(status="running").model_dump()}
         ),
         httpx.Response(
             200,
-            json={query_task_id: InterruptedQueryResult(status="expired").dict()},
+            json={query_task_id: InterruptedQueryResult(status="expired").model_dump()},
         ),
         httpx.Response(
             200,
@@ -455,7 +457,7 @@ async def test_get_query_results_handles_bogus_expired_queries(
                             ),
                         ),
                     ),
-                ).dict()
+                ).model_dump()
             },
         ),
     ]
@@ -489,15 +491,15 @@ async def test_get_query_results_retries_actually_expired_queries(
     mocked_api: respx.MockRouter,
     query: Query,
     validator: SqlValidator,
-    queries_to_run: asyncio.Queue,
-    running_queries: asyncio.Queue,
+    queries_to_run: asyncio.Queue[Optional[Query]],
+    running_queries: asyncio.Queue[str],
     query_slot: asyncio.Semaphore,
-):
+) -> None:
     """Test the case where Looker returns a legitimate expired query status."""
     query_task_id = "abcdef12345"
     mocked_api.get("query_tasks/multi_results", name="get_query_results").respond(
         200,
-        json={query_task_id: InterruptedQueryResult(status="expired").dict()},
+        json={query_task_id: InterruptedQueryResult(status="expired").model_dump()},
     )
 
     validator._task_to_query[query_task_id] = query
@@ -519,6 +521,7 @@ async def test_get_query_results_retries_actually_expired_queries(
     # The create query task isn't actually running, so pull the retry query
     # off the queue manually
     retry_query = await queries_to_run.get()
+    assert retry_query
     assert retry_query.expired_retries == 1
 
 
@@ -529,16 +532,16 @@ async def test_get_query_results_gives_up_after_retrying_expired_queries(
     mocked_api: respx.MockRouter,
     query: Query,
     validator: SqlValidator,
-    queries_to_run: asyncio.Queue,
-    running_queries: asyncio.Queue,
+    queries_to_run: asyncio.Queue[Optional[Query]],
+    running_queries: asyncio.Queue[str],
     query_slot: asyncio.Semaphore,
-):
+) -> None:
     """Test the case where Looker returns a legitimate expired query status
     but Spectacles has already exceeded the retry limit."""
     query_task_id = "abcdef12345"
     mocked_api.get("query_tasks/multi_results", name="get_query_results").respond(
         200,
-        json={query_task_id: InterruptedQueryResult(status="expired").dict()},
+        json={query_task_id: InterruptedQueryResult(status="expired").model_dump()},
     )
 
     query.expired_retries = 2
@@ -572,7 +575,7 @@ async def test_search_works_with_passing_query(
     validator: SqlValidator,
     explore: Explore,
     dimension: Dimension,
-):
+) -> None:
     explore.dimensions = [dimension, dimension]
     explores = (explore,)
 
@@ -616,7 +619,7 @@ async def test_search_works_with_error_query(
     validator: SqlValidator,
     explore: Explore,
     dimension: Dimension,
-):
+) -> None:
     other_dimension = deepcopy(dimension)
     other_dimension.name = "other_dimension"
     explore.dimensions = [dimension, other_dimension]
@@ -729,7 +732,7 @@ async def test_search_handles_exceptions_raised_while_running_queries(
     validator: SqlValidator,
     explore: Explore,
     dimension: Dimension,
-):
+) -> None:
     explore.dimensions = [dimension, dimension]
     explores = (explore,)
 
@@ -752,7 +755,7 @@ async def test_search_handles_exceptions_raised_while_getting_query_results(
     validator: SqlValidator,
     explore: Explore,
     dimension: Dimension,
-):
+) -> None:
     explore.dimensions = [dimension, dimension]
     explores = (explore,)
     query_id = 12345
@@ -784,7 +787,7 @@ async def test_search_with_chunk_size_should_limit_queries(
     validator: SqlValidator,
     explore: Explore,
     dimension: Dimension,
-):
+) -> None:
     chunk_size = 10
     for i in range(100):
         new_dimension = deepcopy(dimension)
@@ -796,18 +799,20 @@ async def test_search_with_chunk_size_should_limit_queries(
     query_ids = []
     query_task_ids = []
 
-    def create_query_factory(request, route) -> httpx.Response:
+    def create_query_factory(
+        request: httpx.Request, route: respx.Route
+    ) -> httpx.Response:
         query_id = route.call_count + 1  # Use the call count for incrementing IDs
         query_ids.append(query_id)
         return httpx.Response(200, json={"id": query_id, "share_url": explore_url})
 
-    def create_query_task_factory(request) -> httpx.Response:
+    def create_query_task_factory(request: httpx.Request) -> httpx.Response:
         query_id = query_ids.pop()
         query_task_id = f"abcdef{query_id}"
         query_task_ids.append(query_task_id)
         return httpx.Response(200, json={"id": query_task_id})
 
-    def get_query_results_factory(request) -> httpx.Response:
+    def get_query_results_factory(request: httpx.Request) -> httpx.Response:
         response = httpx.Response(
             200,
             json={
@@ -853,7 +858,7 @@ async def test_looker_api_error_with_queries_in_flight_shuts_down_gracefully(
     validator: SqlValidator,
     explore: Explore,
     dimension: Dimension,
-):
+) -> None:
     chunk_size = 10
     for i in range(1000):
         new_dimension = deepcopy(dimension)
@@ -865,12 +870,14 @@ async def test_looker_api_error_with_queries_in_flight_shuts_down_gracefully(
     query_ids = []
     query_task_ids = []
 
-    def create_query_factory(request, route) -> httpx.Response:
+    def create_query_factory(
+        request: httpx.Request, route: respx.Route
+    ) -> httpx.Response:
         query_id = route.call_count + 1  # Use the call count for incrementing IDs
         query_ids.append(query_id)
         return httpx.Response(200, json={"id": query_id, "share_url": explore_url})
 
-    def create_query_task_factory(request) -> httpx.Response:
+    def create_query_task_factory(request: httpx.Request) -> httpx.Response:
         query_id = query_ids[0]
         if query_id == 26:
             return httpx.Response(502, text="502: Bad Gateway")
@@ -880,7 +887,7 @@ async def test_looker_api_error_with_queries_in_flight_shuts_down_gracefully(
             query_task_ids.append(query_task_id)
             return httpx.Response(200, json={"id": query_task_id})
 
-    def get_query_results_factory(request) -> httpx.Response:
+    def get_query_results_factory(request: httpx.Request) -> httpx.Response:
         response = httpx.Response(
             200,
             json={

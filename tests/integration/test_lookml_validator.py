@@ -1,4 +1,5 @@
 import pytest
+
 from spectacles.client import LookerClient
 from spectacles.validators import LookMLValidator
 
@@ -8,7 +9,9 @@ def validator(looker_client: LookerClient) -> LookMLValidator:
     return LookMLValidator(looker_client)
 
 
-async def test_lookml_validator_passes_with_no_errors(validator: LookMLValidator):
+async def test_lookml_validator_passes_with_no_errors(
+    validator: LookMLValidator,
+) -> None:
     await validator.client.update_workspace("production")
     results = await validator.validate(project="eye_exam")
 
@@ -16,7 +19,7 @@ async def test_lookml_validator_passes_with_no_errors(validator: LookMLValidator
     assert len(results["errors"]) == 0
 
 
-async def test_lookml_validator_fails_with_errors(validator: LookMLValidator):
+async def test_lookml_validator_fails_with_errors(validator: LookMLValidator) -> None:
     await validator.client.update_workspace("dev")
     await validator.client.checkout_branch("eye_exam", "pytest-fail-lookml")
     results = await validator.validate(project="eye_exam")

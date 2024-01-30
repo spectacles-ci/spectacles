@@ -1,9 +1,10 @@
-from typing import List, Optional, Any, Dict
+from typing import Any, Dict, List, Optional
+
 from spectacles.client import LookerClient
 from spectacles.exceptions import ContentError, SpectaclesException
-from spectacles.lookml import Explore, Project, Model
 from spectacles.logger import GLOBAL_LOGGER as logger
-from spectacles.types import JsonDict
+from spectacles.lookml import Explore, Model, Project
+from spectacles.models import JsonDict
 
 
 class ContentValidator:
@@ -132,7 +133,7 @@ class ContentValidator:
             )
 
     def _get_errors_from_result(
-        self, project: Project, result: Dict, content_type: str
+        self, project: Project, result: Dict[str, Any], content_type: str
     ) -> List[ContentError]:
         content_errors: List[ContentError] = []
         for error in result["errors"]:

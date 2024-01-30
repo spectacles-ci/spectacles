@@ -1,8 +1,10 @@
+from unittest.mock import AsyncMock, MagicMock, patch
+
 import pytest
-from unittest.mock import patch, AsyncMock, MagicMock
-from spectacles.runner import LookerBranchManager
+
 from spectacles.client import LookerClient
 from spectacles.exceptions import SpectaclesException
+from spectacles.runner import LookerBranchManager
 
 
 @patch.object(LookerBranchManager, "get_project_imports")

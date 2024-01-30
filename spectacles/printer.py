@@ -1,8 +1,12 @@
 import os
 import textwrap
 from typing import List, Optional
-import colorama  # type: ignore
-from spectacles.logger import GLOBAL_LOGGER as logger, log_sql_error, COLORS
+
+import colorama
+
+from spectacles.logger import COLORS
+from spectacles.logger import GLOBAL_LOGGER as logger
+from spectacles.logger import log_sql_error
 
 LINE_WIDTH = 80
 COLOR_CODE_LENGTH = len(colorama.Fore.RED) + len(colorama.Style.RESET_ALL)
@@ -57,7 +61,7 @@ def print_content_error(
     space: str,
     title: str,
     url: str,
-):
+) -> None:
     path = f"{title} [{space}]"
     print_header(red(path), LINE_WIDTH + COLOR_CODE_LENGTH)
 
@@ -144,7 +148,7 @@ def print_sql_error(
 
 def print_validation_result(
     status: str, source: str, skip_reason: Optional[str] = None
-):
+) -> None:
     bullet = "✗" if status == "failed" else "✓"
     if status == "passed":
         message = green(source)

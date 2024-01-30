@@ -1,14 +1,16 @@
-from typing import List, Dict, Optional, Tuple
 import time
 from dataclasses import dataclass
-import backoff  # type: ignore
+from typing import Any, Dict, List, Optional, Tuple
+
+import backoff
 import httpx
-from httpx import HTTPStatusError, ConnectError, TimeoutException, RemoteProtocolError
-from aiocache import Cache, cached, serializers  # type: ignore
+from aiocache import Cache, cached, serializers
+from httpx import ConnectError, HTTPStatusError, RemoteProtocolError, TimeoutException
+
 import spectacles.utils as utils
-from spectacles.types import JsonDict
+from spectacles.exceptions import LookerApiError, SpectaclesException
 from spectacles.logger import GLOBAL_LOGGER as logger
-from spectacles.exceptions import SpectaclesException, LookerApiError
+from spectacles.models import JsonDict
 
 DEFAULT_API_VERSION = 4.0
 TIMEOUT_SEC = 300
@@ -141,7 +143,9 @@ class LookerClient:
             f"using Looker API {self.api_version}"
         )
 
-    async def request(self, method: str, url: str, *args, **kwargs) -> httpx.Response:
+    async def request(
+        self, method: str, url: str, *args: Any, **kwargs: Any
+    ) -> httpx.Response:
         if self.access_token and self.access_token.expired:
             logger.debug("Looker API access token has expired, requesting a new one")
             self.authenticate()
@@ -149,19 +153,19 @@ class LookerClient:
                 await self.update_workspace("dev")
         return await self.async_client.request(method, url, *args, **kwargs)
 
-    async def get(self, url, *args, **kwargs) -> httpx.Response:
+    async def get(self, url: str, *args: Any, **kwargs: Any) -> httpx.Response:
         return await self.request("GET", url, *args, **kwargs)
 
-    async def post(self, url, *args, **kwargs) -> httpx.Response:
+    async def post(self, url: str, *args: Any, **kwargs: Any) -> httpx.Response:
         return await self.request("POST", url, *args, **kwargs)
 
-    async def patch(self, url, *args, **kwargs) -> httpx.Response:
+    async def patch(self, url: str, *args: Any, **kwargs: Any) -> httpx.Response:
         return await self.request("PATCH", url, *args, **kwargs)
 
-    async def put(self, url, *args, **kwargs) -> httpx.Response:
+    async def put(self, url: str, *args: Any, **kwargs: Any) -> httpx.Response:
         return await self.request("PUT", url, *args, **kwargs)
 
-    async def delete(self, url, *args, **kwargs) -> httpx.Response:
+    async def delete(self, url: str, *args: Any, **kwargs: Any) -> httpx.Response:
         return await self.request("DELETE", url, *args, **kwargs)
 
     @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
@@ -193,7 +197,7 @@ class LookerClient:
                 response=response,
             ) from error
 
-        return response.json()["looker_release_version"]
+        return response.json()["looker_release_version"]  # type: ignore[no-any-return]
 
     @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
     async def get_workspace(self) -> str:
@@ -221,7 +225,7 @@ class LookerClient:
                 ),
                 response=response,
             ) from error
-        return response.json()["workspace_id"]
+        return response.json()["workspace_id"]  # type: ignore[no-any-return]
 
     @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
     async def update_workspace(self, workspace: str) -> None:
@@ -363,7 +367,7 @@ class LookerClient:
 
         manifest = response.json()
 
-        return manifest
+        return manifest  # type: ignore[no-any-return]
 
     @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
     async def get_active_branch(self, project: str) -> JsonDict:
@@ -397,13 +401,13 @@ class LookerClient:
         branch_name = response.json()["name"]
         logger.debug(f"The active branch is '{branch_name}'")
 
-        return response.json()
+        return response.json()  # type: ignore[no-any-return]
 
     @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
     async def get_active_branch_name(self, project: str) -> str:
         """Helper method to return only the branch name."""
         full_response = await self.get_active_branch(project)
-        return full_response["name"]
+        return full_response["name"]  # type: ignore[no-any-return]
 
     @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
     async def create_branch(
@@ -485,7 +489,7 @@ class LookerClient:
             ) from error
 
     @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
-    async def delete_branch(self, project: str, branch: str):
+    async def delete_branch(self, project: str, branch: str) -> None:
         """Deletes a branch in the given project.
 
         Args:
@@ -544,7 +548,7 @@ class LookerClient:
                 response=response,
             ) from error
 
-        return response.json()
+        return response.json()  # type: ignore[no-any-return]
 
     @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
     async def run_lookml_test(
@@ -601,10 +605,12 @@ class LookerClient:
                 response=response,
             ) from error
 
-        return response.json()
+        return response.json()  # type: ignore[no-any-return]
 
     @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
-    async def get_lookml_models(self, fields: Optional[List] = None) -> List[JsonDict]:
+    async def get_lookml_models(
+        self, fields: Optional[List[str]] = None
+    ) -> List[JsonDict]:
         """Gets all models and explores from the LookmlModel endpoint.
 
         Returns:
@@ -615,7 +621,7 @@ class LookerClient:
         if fields is None:
             fields = []
 
-        params = {}
+        params: Dict[str, Any] = {}
         if fields:
             params["fields"] = fields
 
@@ -632,21 +638,13 @@ class LookerClient:
                 response=response,
             ) from error
 
-        return response.json()
+        return response.json()  # type: ignore[no-any-return]
 
     @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
-    async def get_lookml_dimensions(self, model: str, explore: str) -> List[str]:
-        """Gets all dimensions for an explore from the LookmlModel endpoint.
-
-        Args:
-            model: Name of LookML model to query.
-            explore: Name of LookML explore to query.
-
-        Returns:
-            List[str]: Names of all the dimensions in the specified explore. Dimension
-                names are returned in the format 'explore_name.dimension_name'.
-
-        """
+    async def get_lookml_dimensions(
+        self, model: str, explore: str
+    ) -> List[Dict[str, Any]]:
+        """Gets all dimensions for an explore from the LookmlModel endpoint."""
         logger.debug(f"Getting all dimensions from explore {model}/{explore}")
         params = {"fields": ["fields"]}
         url = utils.compose_url(
@@ -669,17 +667,17 @@ class LookerClient:
                 response=response,
             ) from error
 
-        return response.json()["fields"]["dimensions"]
+        return response.json()["fields"]["dimensions"]  # type: ignore[no-any-return]
 
-    @cached(cache=Cache.MEMORY, serializer=serializers.PickleSerializer())
+    @cached(cache=Cache.MEMORY, serializer=serializers.PickleSerializer())  # type: ignore
     @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=5)
     async def create_query(
         self,
         model: str,
         explore: str,
         dimensions: List[str],
-        fields: Optional[List] = None,
-    ) -> Dict:
+        fields: Optional[List[str]] = None,
+    ) -> JsonDict:
         """Creates a Looker async query for one or more specified dimensions.
 
         The query created is a SELECT query, selecting all dimensions specified for a
@@ -704,7 +702,7 @@ class LookerClient:
             "filter_expression": "1=2",
         }
 
-        params: Dict[str, list] = {}
+        params: Dict[str, List[str]] = {}
         if fields is None:
             params["fields"] = []
         else:
@@ -736,7 +734,7 @@ class LookerClient:
             "*" if len(dimensions) != 1 else dimensions[0],
             query_id,
         )
-        return result
+        return result  # type: ignore[no-any-return]
 
     @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=5)
     async def create_query_task(self, query_id: str) -> str:
@@ -780,7 +778,7 @@ class LookerClient:
         result = response.json()
         query_task_id = result["id"]
         logger.debug("Query %s is running under query task %s", query_id, query_task_id)
-        return query_task_id
+        return query_task_id  # type: ignore[no-any-return]
 
     @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
     async def get_query_task_multi_results(
@@ -824,7 +822,7 @@ class LookerClient:
             ) from error
 
         result = response.json()
-        return result
+        return result  # type: ignore[no-any-return]
 
     @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
     async def cancel_query_task(self, query_task_id: str) -> None:
@@ -860,10 +858,10 @@ class LookerClient:
             ) from error
 
         result = response.json()
-        return result
+        return result  # type: ignore[no-any-return]
 
     @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
-    async def lookml_validation(self, project) -> JsonDict:
+    async def lookml_validation(self, project: str) -> JsonDict:
         logger.debug(f"Validating LookML for project '{project}'")
         url = utils.compose_url(self.api_url, path=["projects", project, "validate"])
         response = await self.post(url=url, timeout=7200)
@@ -880,10 +878,10 @@ class LookerClient:
             ) from error
 
         result = response.json()
-        return result
+        return result  # type: ignore[no-any-return]
 
     @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
-    async def cached_lookml_validation(self, project) -> Optional[JsonDict]:
+    async def cached_lookml_validation(self, project: str) -> Optional[JsonDict]:
         logger.debug(f"Getting cached LookML validation results for '{project}'")
         url = utils.compose_url(self.api_url, path=["projects", project, "validate"])
         response = await self.get(url=url, timeout=1800)
@@ -907,9 +905,9 @@ class LookerClient:
             return None
 
         result = response.json()
-        return result
+        return result  # type: ignore[no-any-return]
 
-    @cached(cache=Cache.MEMORY, serializer=serializers.PickleSerializer())
+    @cached(cache=Cache.MEMORY, serializer=serializers.PickleSerializer())  # type: ignore
     @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
     async def all_folders(self) -> List[JsonDict]:
         logger.debug("Getting information about all folders")
@@ -928,7 +926,7 @@ class LookerClient:
             ) from error
 
         result = response.json()
-        return result
+        return result  # type: ignore[no-any-return]
 
     @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
     async def run_query(self, query_id: str) -> str:

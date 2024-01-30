@@ -1,27 +1,27 @@
 import asyncio
-import re
-from spectacles.exceptions import LookerApiError, SqlError
-from typing import Dict, List, Optional, Tuple, Set
-from dataclasses import dataclass
 import itertools
+import re
+from dataclasses import dataclass
+from typing import Any, Dict, List, Optional, Set, Tuple
+
 from spectacles.client import LookerClient
+from spectacles.exceptions import LookerApiError, SpectaclesException, SqlError
+from spectacles.logger import GLOBAL_LOGGER as logger
+from spectacles.lookml import CompiledSql, Explore, build_project
+from spectacles.models import JsonDict, SkipReason
+from spectacles.printer import print_header
+from spectacles.utils import time_hash
 from spectacles.validators import (
-    SqlValidator,
-    DataTestValidator,
     ContentValidator,
+    DataTestValidator,
     LookMLValidator,
+    SqlValidator,
 )
-from spectacles.types import JsonDict, SkipReason
 from spectacles.validators.sql import (
     DEFAULT_CHUNK_SIZE,
     DEFAULT_QUERY_CONCURRENCY,
     DEFAULT_RUNTIME_THRESHOLD,
 )
-from spectacles.exceptions import SpectaclesException
-from spectacles.utils import time_hash
-from spectacles.lookml import CompiledSql, build_project, Explore
-from spectacles.logger import GLOBAL_LOGGER as logger
-from spectacles.printer import print_header
 
 
 @dataclass
@@ -60,7 +60,9 @@ class LookerBranchManager:
         self.import_managers: List[LookerBranchManager] = []
         self.skip_imports: List[str] = [] if skip_imports is None else skip_imports
 
-    def __call__(self, ref: Optional[str] = None, ephemeral: Optional[bool] = None):
+    def __call__(
+        self, ref: Optional[str] = None, ephemeral: Optional[bool] = None
+    ) -> "LookerBranchManager":
         logger.debug("")
         logger.debug(
             f"Setting Git state for project '{self.project}' "
@@ -95,7 +97,7 @@ class LookerBranchManager:
         self.import_managers = []
         return self
 
-    async def __aenter__(self):
+    async def __aenter__(self) -> None:
         logger.indent(1)
 
         state: ProjectState = await self.get_project_state()
@@ -172,7 +174,7 @@ class LookerBranchManager:
         logger.indent(-1)
         logger.debug("")
 
-    async def __aexit__(self, *args):
+    async def __aexit__(self, *args: Any) -> None:
         logger.debug("")
         logger.debug(f"Cleaning up Git state in '{self.project}'")
         logger.indent(1)
@@ -225,7 +227,7 @@ class LookerBranchManager:
         else:
             return self.branch
 
-    async def update_workspace(self, workspace: str):
+    async def update_workspace(self, workspace: str) -> None:
         if workspace not in ("dev", "production"):
             raise ValueError("Workspace can only be set to 'dev' or 'production'")
         if self.workspace != workspace:
@@ -555,7 +557,7 @@ class Runner:
             test = dict(model=error["model"], explore=error["explore"], status=status)
             tests.append(test)
 
-        def key_by(x):
+        def key_by(x: dict[str, Any]) -> Tuple[str, str]:
             return (x["model"], x["explore"])
 
         if tests:

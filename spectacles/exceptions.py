@@ -1,7 +1,9 @@
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
+
 import httpx
+
+from spectacles.models import JsonDict
 from spectacles.utils import details_from_http_error
-from spectacles.types import JsonDict
 
 
 class SpectaclesException(Exception):
@@ -18,7 +20,7 @@ class SpectaclesException(Exception):
     def __str__(self) -> str:
         return self.title + " " + self.detail
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         """Returns a dictionary representation, scrubbed of private attributes"""
         return {k: v for k, v in self.__dict__.items() if not k.startswith("_")}
 
@@ -59,7 +61,7 @@ class LookerApiError(SpectaclesException):
 class GenericValidationError(SpectaclesException):
     exit_code = 102
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(
             name="validation-error",
             title="A validation error occurred.",
@@ -70,7 +72,7 @@ class GenericValidationError(SpectaclesException):
 class ValidationError(GenericValidationError):
     def __init__(
         self, model: str, explore: str, message: str, metadata: Dict[str, Any]
-    ):
+    ) -> None:
         MAX_WORDS = 100
         words = message.split(" ")
         # On some warehouses, these error messages are prohibitively long
@@ -86,13 +88,13 @@ class ValidationError(GenericValidationError):
         self._ignore: bool = False
         super().__init__()
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any) -> bool:
         if not isinstance(other, self.__class__):
             return NotImplemented
 
         return self.__dict__ == other.__dict__
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return self.message
 
     @property
@@ -116,7 +118,7 @@ class LookMLError(ValidationError):
         lookml_url: Optional[str],
         file_path: Optional[str],
         line_number: Optional[int] = None,
-    ):
+    ) -> None:
         metadata = {
             "line_number": line_number,
             "lookml_url": lookml_url,

@@ -1,9 +1,11 @@
 import os
 from typing import Iterable
 from unittest.mock import AsyncMock, MagicMock, patch
+
 import pytest
 from github import Github as GitHub
 from github.Repository import Repository
+
 from spectacles.client import LookerClient
 from spectacles.runner import LookerBranchManager
 
@@ -20,7 +22,7 @@ def remote_repo() -> Iterable[Repository]:
 
 
 @pytest.fixture(scope="module", autouse=True)
-def test_remote_branch(remote_repo) -> Iterable[None]:
+def test_remote_branch(remote_repo: Repository) -> Iterable[None]:
     """Creates a test branch off master, waits for test execution, then cleans up."""
     branch = remote_repo.get_branch("master")
     remote_repo.create_git_ref(
@@ -33,7 +35,7 @@ def test_remote_branch(remote_repo) -> Iterable[None]:
 @patch("spectacles.runner.LookerBranchManager.get_project_imports", return_value=[])
 async def test_should_return_to_initial_state_prod(
     mock_get_imports: AsyncMock, looker_client: LookerClient
-):
+) -> None:
     # Set up starting branch and workspace
     await looker_client.update_workspace("production")
 
@@ -49,7 +51,7 @@ async def test_should_return_to_initial_state_prod(
 @patch("spectacles.runner.LookerBranchManager.get_project_imports", return_value=[])
 async def test_should_return_to_initial_state_dev(
     mock_get_imports: AsyncMock, looker_client: LookerClient
-):
+) -> None:
     # Set up starting branch and workspace
     await looker_client.update_workspace("dev")
 
@@ -65,7 +67,7 @@ async def test_should_return_to_initial_state_dev(
 @patch("spectacles.runner.LookerBranchManager.get_project_imports", return_value=[])
 async def test_manage_current_branch(
     mock_get_imports: AsyncMock, looker_client: LookerClient
-):
+) -> None:
     """User is on branch A, checkout branch A and test.
 
     The manager should not perform any branch checkouts, just test.
@@ -89,7 +91,7 @@ async def test_manage_current_branch(
 @patch("spectacles.runner.LookerBranchManager.get_project_imports", return_value=[])
 async def test_manage_other_branch(
     mock_get_imports: AsyncMock, looker_client: LookerClient
-):
+) -> None:
     """User is on branch A, checkout branch B and test.
 
     The manager should checkout branch B, test, then checkout branch A.
@@ -117,7 +119,7 @@ async def test_manage_other_branch(
 @patch("spectacles.runner.time_hash", return_value="abc123")
 async def test_manage_current_branch_with_ref(
     mock_time_hash: MagicMock, mock_get_imports: AsyncMock, looker_client: LookerClient
-):
+) -> None:
     """User is on branch A, checkout branch A with a commit ref and test.
 
     The manager should create a new temp branch based on branch A, checkout the temp
@@ -150,7 +152,7 @@ async def test_manage_current_branch_with_ref(
 @patch("spectacles.runner.time_hash", return_value="abc123")
 async def test_manage_current_branch_with_import_projects(
     mock_time_hash: MagicMock, looker_client: LookerClient
-):
+) -> None:
     """User is on branch A, checkout branch A and test.
 
     We should not import any temp branches because we are staying in the production
@@ -175,7 +177,7 @@ async def test_manage_current_branch_with_import_projects(
 @patch("spectacles.runner.time_hash", return_value="abc123")
 async def test_manage_other_branch_with_import_projects(
     mock_time_hash: MagicMock, looker_client: LookerClient
-):
+) -> None:
     """User is on branch A, checkout branch B and test.
 
     The manager should checkout branch B, test, then checkout branch A.
@@ -216,7 +218,7 @@ async def test_manage_other_branch_with_import_projects(
 @patch("spectacles.runner.LookerBranchManager.get_project_imports", return_value=[])
 async def test_manage_prod_with_advanced_deploy(
     mock_get_imports: AsyncMock, looker_client: LookerClient
-):
+) -> None:
     # Set up starting branch and workspace
     project = "spectacles-advanced-deploy"
     await looker_client.update_workspace("production")
@@ -234,7 +236,7 @@ async def test_manage_prod_with_advanced_deploy(
 @patch("spectacles.runner.time_hash", return_value="abc123")
 async def test_manage_with_ref_import_projects(
     mock_time_hash: MagicMock, looker_client: LookerClient
-):
+) -> None:
     """User is on branch A, checkout branch B and test.
 
     The manager should create a new temp branch based on branch B, checkout the temp
@@ -282,7 +284,7 @@ async def test_manage_with_ref_not_present_in_local_repo(
     mock_get_imports: AsyncMock,
     remote_repo: Repository,
     looker_client: LookerClient,
-):
+) -> None:
     # Create a commit on an external branch directly on the GitHub remote
     content_file = remote_repo.get_contents("README.md", ref="master")
 

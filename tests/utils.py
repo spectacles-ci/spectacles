@@ -1,17 +1,18 @@
-from typing import Dict, Any
-from pathlib import Path
 import json
-from spectacles.types import JsonDict
+from pathlib import Path
+from typing import Any, Dict, List, Union
+
+from spectacles.models import JsonDict
 
 
-def load_resource(filename) -> JsonDict:
+def load_resource(filename: str) -> Union[List[JsonDict], JsonDict]:
     """Helper method to load a JSON file from tests/resources and parse it."""
     path = Path(__file__).parent / "resources" / filename
     with path.open() as file:
-        return json.load(file)
+        return json.load(file)  # type: ignore[no-any-return]
 
 
-def build_validation(validator) -> Dict[str, Any]:
+def build_validation(validator: str) -> Dict[str, Any]:
     """Builds and returns a fake validator response object."""
     if validator == "lookml":
         return {
