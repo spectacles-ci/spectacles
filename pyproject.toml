@@ -59,6 +59,7 @@ pytest = "^7.4.4"
 pytest-asyncio = "^0.23.3"
 pytest-randomly = "^3.15.0"
 respx = "^0.20.2"
+tox = "^4.12.1"
 types-colorama = "^0.4.15.20240106"
 types-jsonschema = "^4.21.0.20240118"
 types-PyYAML = "^6.0.12.12"
@@ -72,6 +73,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.pytest.ini_options]
 python_files = "tests/*.py"
 asyncio_mode = "auto"
+pythonpath = ["."]
 
 [tool.mypy]
 mypy_path = "./spectacles:./tests"
