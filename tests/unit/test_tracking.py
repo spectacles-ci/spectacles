@@ -13,7 +13,7 @@ def test_anonymise_project() -> None:
     assert hashed_url == "6e72a69d5c5cca8f0400338441c022e4"
 
 
-@patch("analytics.track")
+@patch("segment.analytics.track")
 def test_track_invocation_start_sql(mock_track: MagicMock) -> None:
     invocation_id = tracking.track_invocation_start(
         "https://organisation.looker.com", "sql", "123456", "test_project"
@@ -31,7 +31,7 @@ def test_track_invocation_start_sql(mock_track: MagicMock) -> None:
     assert invocation_id == "123456"
 
 
-@patch("analytics.track")
+@patch("segment.analytics.track")
 def test_track_invocation_start_assert(mock_track: MagicMock) -> None:
     invocation_id = tracking.track_invocation_start(
         "https://organisation.looker.com", "assert", "123456", "test_project"
@@ -49,7 +49,7 @@ def test_track_invocation_start_assert(mock_track: MagicMock) -> None:
     assert invocation_id == "123456"
 
 
-@patch("analytics.track")
+@patch("segment.analytics.track")
 def test_track_invocation_start_connect(mock_track: MagicMock) -> None:
     invocation_id = tracking.track_invocation_start(
         "https://organisation.looker.com", "assert", "123456"
@@ -67,7 +67,7 @@ def test_track_invocation_start_connect(mock_track: MagicMock) -> None:
     assert invocation_id == "123456"
 
 
-@patch("analytics.track")
+@patch("segment.analytics.track")
 def test_track_invocation_end_sql(mock_track: MagicMock) -> None:
     tracking.track_invocation_end(
         "https://organisation.looker.com", "sql", "123456", "test_project"
@@ -84,7 +84,7 @@ def test_track_invocation_end_sql(mock_track: MagicMock) -> None:
     )
 
 
-@patch("analytics.track")
+@patch("segment.analytics.track")
 def test_track_invocation_end_assert(mock_track: MagicMock) -> None:
     tracking.track_invocation_end(
         "https://organisation.looker.com", "assert", "123456", "test_project"
@@ -101,7 +101,7 @@ def test_track_invocation_end_assert(mock_track: MagicMock) -> None:
     )
 
 
-@patch("analytics.track")
+@patch("segment.analytics.track")
 def test_track_invocation_end_connect(mock_track: MagicMock) -> None:
     tracking.track_invocation_end("https://organisation.looker.com", "assert", "123456")
     mock_track.assert_called_once_with(
