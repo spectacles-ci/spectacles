@@ -2,7 +2,7 @@ import hashlib
 import uuid
 from typing import Optional
 
-import analytics
+import segment.analytics as analytics
 
 analytics.write_key = "QnqzXWlqkmgDSm7X2qFDrxx3LGCW7Rba"
 
