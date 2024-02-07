@@ -951,6 +951,13 @@ class LookerClient:
                 return (
                     "-- SQL could not be generated because of errors with this query."
                 )
+            elif (
+                e.response.status_code == 400
+                and "Must query at least one dimension or measure" in response.text
+            ):
+                return (
+                    "-- SQL could not be generated because of errors with this query."
+                )
             else:
                 raise LookerApiError(
                     name="unable-to-retrieve-compiled-sql",
