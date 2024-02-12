@@ -1,3 +1,4 @@
+import json
 import time
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Tuple
@@ -929,7 +930,9 @@ class LookerClient:
         return result  # type: ignore[no-any-return]
 
     @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
-    async def run_query(self, query_id: str) -> str:
+    async def run_query(
+        self, query_id: str, explore: str, model: str, dimension: Optional[str] = None
+    ) -> str:
         """Returns the compiled SQL for a given query ID.
 
         The corresponding Looker API endpoint allows us to run queries with a variety
@@ -959,14 +962,25 @@ class LookerClient:
                     "-- SQL could not be generated because of errors with this query."
                 )
             else:
+                detail = (
+                    f"Failed to retrieve compiled SQL for "
+                    f"{'dimension' if dimension else 'explore'} "
+                    f"'{model}/{explore}{'/' + dimension if dimension else ''}' "
+                    f"with query '{query_id}'. "
+                    "Please try again."
+                )
+                try:
+                    response_json = response.json()
+                    if "message" in response_json:
+                        message = response_json["message"]
+                        detail += f' Received the following from Looker: "{message}"'
+                except json.JSONDecodeError:
+                    pass
                 raise LookerApiError(
                     name="unable-to-retrieve-compiled-sql",
                     title="Couldn't retrieve compiled SQL.",
                     status=response.status_code,
-                    detail=(
-                        f"Failed to retrieve compiled SQL for query '{query_id}'. "
-                        "Please try again."
-                    ),
+                    detail=detail,
                     response=response,
                 ) from e
 
