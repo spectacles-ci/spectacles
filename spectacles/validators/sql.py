@@ -150,7 +150,9 @@ class SqlValidator:
             query = await self.client.create_query(
                 explore.model_name, explore.name, dimensions, fields=["id"]
             )
-            sql = await self.client.run_query(query["id"])
+            sql = await self.client.run_query(
+                query["id"], explore=explore.name, model=explore.model_name
+            )
 
         return CompiledSql.from_explore(explore, sql)
 
@@ -162,7 +164,12 @@ class SqlValidator:
             [dimension.name],
             fields=["id"],
         )
-        sql = await self.client.run_query(query["id"])
+        sql = await self.client.run_query(
+            query["id"],
+            explore=dimension.explore_name,
+            model=dimension.model_name,
+            dimension=dimension.name,
+        )
         return CompiledSql.from_dimension(dimension, sql)
 
     async def search(
