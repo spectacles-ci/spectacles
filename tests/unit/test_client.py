@@ -84,7 +84,7 @@ def client_kwargs() -> Dict[str, Dict[str, Any]]:
         lookml_validation={"project": "project_name"},
         cached_lookml_validation={"project": "project_name"},
         all_folders={},
-        run_query={"query_id": 13041},
+        run_query={"query_id": 13041, "model": "model_name", "explore": "explore_name"},
     )
 
 
