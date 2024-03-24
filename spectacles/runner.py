@@ -79,7 +79,7 @@ class LookerBranchManager:
             self.branch = ref
 
         if ephemeral is None:
-            if self.commit:
+            if self.commit or self.pin_imports:
                 self.ephemeral = True
             else:
                 self.ephemeral = False
