@@ -533,6 +533,12 @@ def _build_validator_subparser(
         env_var="LOOKER_GIT_BRANCH",
         help="The branch of your project that Spectacles will use to run queries.",
     )
+    base_subparser.add_argument(
+        "--use-personal-branch",
+        action=EnvVarStoreTrueAction,
+        env_var="SPECTACLES_USE_PERSONAL_BRANCH",
+        help="Use the user's personal branch instead of creating a temporary branch for the tests.",
+    )
     group = base_subparser.add_mutually_exclusive_group()
     group.add_argument(
         "--remote-reset",
@@ -556,12 +562,6 @@ def _build_validator_subparser(
         default=[],
         help="Pin locally imported Looker projects to a specific ref (Git branch or commit) during validation. \
             Provide these arguments in project_name:ref format.",
-    )
-    group.add_argument(
-        "--use-personal-branch",
-        action=EnvVarStoreTrueAction,
-        env_var="SPECTACLES_USE_PERSONAL_BRANCH",
-        help="Use the user's personal branch instead of creating a temporary branch for the tests.",
     )
     return base_subparser
 

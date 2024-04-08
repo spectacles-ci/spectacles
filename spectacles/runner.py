@@ -172,6 +172,7 @@ class LookerBranchManager:
                         project,
                         pin_imports=self.pin_imports,
                         skip_imports=self.skip_imports,
+                        use_personal_branch=self.use_personal_branch,
                     )
                     await manager(ref=import_ref, ephemeral=True).__aenter__()
                     self.import_managers.append(manager)
@@ -261,6 +262,7 @@ class LookerBranchManager:
 
     async def checkout_personal_branch(self, ref: str) -> str:
         """Updates the user's personal branch to the git ref."""
+        await self.update_workspace("dev")
         if not self.personal_branch:
             self.personal_branch = await self.get_personal_branch()
         await self.client.checkout_branch(self.project, self.personal_branch)
