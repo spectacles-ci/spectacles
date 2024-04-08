@@ -326,6 +326,7 @@ def main() -> None:
                 chunk_size=args.chunk_size,
                 pin_imports=pin_imports,
                 ignore_hidden=args.ignore_hidden,
+                use_personal_branch=args.use_personal_branch,
             )
         )
     elif args.command == "assert":
@@ -341,6 +342,7 @@ def main() -> None:
                 api_version=args.api_version,
                 remote_reset=args.remote_reset,
                 pin_imports=pin_imports,
+                use_personal_branch=args.use_personal_branch,
             )
         )
     elif args.command == "content":
@@ -360,6 +362,7 @@ def main() -> None:
                 exclude_personal=args.exclude_personal,
                 folders=[restore_dash(arg) for arg in args.folders],
                 pin_imports=pin_imports,
+                use_personal_branch=args.use_personal_branch,
             )
         )
     elif args.command == "lookml":
@@ -375,6 +378,7 @@ def main() -> None:
                 remote_reset=args.remote_reset,
                 severity=args.severity,
                 pin_imports=pin_imports,
+                use_personal_branch=args.use_personal_branch,
             )
         )
 
@@ -552,6 +556,12 @@ def _build_validator_subparser(
         default=[],
         help="Pin locally imported Looker projects to a specific ref (Git branch or commit) during validation. \
             Provide these arguments in project_name:ref format.",
+    )
+    group.add_argument(
+        "--use-personal-branch",
+        action=EnvVarStoreTrueAction,
+        env_var="SPECTACLES_USE_PERSONAL_BRANCH",
+        help="Use the user's personal branch instead of creating a temporary branch for the tests.",
     )
     return base_subparser
 
@@ -779,6 +789,7 @@ async def run_lookml(
     remote_reset: bool,
     severity: str,
     pin_imports: Dict[str, str],
+    use_personal_branch: bool,
 ) -> None:
     # Don't trust env to ignore .netrc credentials
     async_client = httpx.AsyncClient(trust_env=False)
@@ -786,7 +797,7 @@ async def run_lookml(
         client = LookerClient(
             async_client, base_url, client_id, client_secret, port, api_version
         )
-        runner = Runner(client, project, remote_reset, pin_imports)
+        runner = Runner(client, project, remote_reset, pin_imports, use_personal_branch)
 
         results = await runner.validate_lookml(ref, severity)
     finally:
@@ -837,6 +848,7 @@ async def run_content(
     exclude_personal: bool,
     folders: List[str],
     pin_imports: Dict[str, str],
+    use_personal_branch: bool,
 ) -> None:
     # Don't trust env to ignore .netrc credentials
     async_client = httpx.AsyncClient(trust_env=False)
@@ -844,7 +856,7 @@ async def run_content(
         client = LookerClient(
             async_client, base_url, client_id, client_secret, port, api_version
         )
-        runner = Runner(client, project, remote_reset, pin_imports)
+        runner = Runner(client, project, remote_reset, pin_imports, use_personal_branch)
 
         results = await runner.validate_content(
             ref,
@@ -896,6 +908,7 @@ async def run_assert(
     api_version: float,
     remote_reset: bool,
     pin_imports: Dict[str, str],
+    use_personal_branch: bool,
 ) -> None:
     # Don't trust env to ignore .netrc credentials
     async_client = httpx.AsyncClient(trust_env=False)
@@ -903,7 +916,7 @@ async def run_assert(
         client = LookerClient(
             async_client, base_url, client_id, client_secret, port, api_version
         )
-        runner = Runner(client, project, remote_reset, pin_imports)
+        runner = Runner(client, project, remote_reset, pin_imports, use_personal_branch)
 
         results = await runner.validate_data_tests(ref, filters)
     finally:
@@ -956,6 +969,7 @@ async def run_sql(
     runtime_threshold: int,
     chunk_size: int,
     pin_imports: Dict[str, str],
+    use_personal_branch: bool,
     ignore_hidden: bool,
 ) -> None:
     """Runs and validates the SQL for each selected LookML dimension."""
@@ -965,7 +979,7 @@ async def run_sql(
         client = LookerClient(
             async_client, base_url, client_id, client_secret, port, api_version
         )
-        runner = Runner(client, project, remote_reset, pin_imports)
+        runner = Runner(client, project, remote_reset, pin_imports, use_personal_branch)
 
         results = await runner.validate_sql(
             ref,

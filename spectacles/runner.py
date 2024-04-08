@@ -316,11 +316,16 @@ class Runner:
         project: str,
         remote_reset: bool = False,
         pin_imports: Optional[Dict[str, str]] = None,
+        use_personal_branch: bool = False,
     ):
         self.project = project
         self.client = client
         self.branch_manager = LookerBranchManager(
-            client, project, remote_reset, pin_imports=pin_imports or {}
+            client,
+            project,
+            remote_reset,
+            pin_imports=pin_imports or {},
+            use_personal_branch=use_personal_branch,
         )
 
     async def validate_sql(
