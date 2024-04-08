@@ -43,6 +43,7 @@ class LookerBranchManager:
         client: LookerClient,
         project: str,
         remote_reset: bool = False,
+        use_personal_branch: bool = False,
         pin_imports: Optional[Dict[str, str]] = None,
         skip_imports: Optional[List[str]] = None,
     ):
@@ -57,6 +58,8 @@ class LookerBranchManager:
         self.commit: Optional[str] = None
         self.branch: Optional[str] = None
         self.is_temp_branch: bool = False
+        self.use_personal_branch: bool = use_personal_branch
+        self.personal_branch: Optional[str] = None
         self.import_managers: List[LookerBranchManager] = []
         self.skip_imports: List[str] = [] if skip_imports is None else skip_imports
 
@@ -106,7 +109,9 @@ class LookerBranchManager:
         # A branch was passed, so we check it out in dev mode.
         if self.branch:
             await self.update_workspace("dev")
-            if self.ephemeral:
+            if self.use_personal_branch:
+                self.branch = await self.checkout_personal_branch(self.branch)
+            elif self.ephemeral:
                 self.branch = await self.checkout_temp_branch("origin/" + self.branch)
             else:
                 await self.client.checkout_branch(self.project, self.branch)
@@ -115,7 +120,10 @@ class LookerBranchManager:
         # A commit was passed, so we non-destructively create a temporary branch we can
         # hard reset to the commit.
         elif self.commit:
-            self.branch = await self.checkout_temp_branch(self.commit)
+            if self.use_personal_branch:
+                self.branch = await self.checkout_personal_branch(self.commit)
+            else:
+                self.branch = await self.checkout_temp_branch(self.commit)
         # Neither branch nor commit were passed, so go to production.
         else:
             if self.init_state.workspace == "production":
@@ -125,7 +133,9 @@ class LookerBranchManager:
                 prod_state = await self.get_project_state()
             self.branch = prod_state.branch
             self.commit = prod_state.commit
-            if self.ephemeral:
+            if self.use_personal_branch:
+                self.branch = await self.checkout_personal_branch(prod_state.commit)
+            elif self.ephemeral:
                 self.branch = await self.checkout_temp_branch(prod_state.commit)
 
         logger.debug(
@@ -249,6 +259,22 @@ class LookerBranchManager:
         else:
             return [p["name"] for p in manifest["imports"] if not p["is_remote"]]
 
+    async def checkout_personal_branch(self, ref: str) -> str:
+        """Updates the user's personal branch to the git ref."""
+        if not self.personal_branch:
+            self.personal_branch = await self.get_personal_branch()
+        await self.client.checkout_branch(self.project, self.personal_branch)
+        await self.client.hard_reset_branch(self.project, self.personal_branch, ref)
+        return self.personal_branch
+
+    async def get_personal_branch(self) -> str:
+        """Finds the name of the user's personal branch."""
+        branches = await self.client.get_all_branches(self.project)
+        for branch in branches:
+            if branch["personal"] and not branch["readonly"]:
+                return str(branch["name"])
+        raise ValueError("Personal branch not found")
+
     async def checkout_temp_branch(self, ref: str) -> str:
         """Creates a temporary branch off a commit or off production."""
         # Save the dev mode state so we have somewhere to delete the temp branch
@@ -294,7 +320,7 @@ class Runner:
         self.project = project
         self.client = client
         self.branch_manager = LookerBranchManager(
-            client, project, remote_reset, pin_imports or {}
+            client, project, remote_reset, pin_imports=pin_imports or {}
         )
 
     async def validate_sql(

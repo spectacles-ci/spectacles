@@ -12,7 +12,8 @@ from spectacles.runner import Runner
 async def cleanup_tmp_branches(looker_client: LookerClient) -> None:
     for project in ("eye_exam", "looker-demo"):
         await looker_client.update_workspace("dev")
-        branches = await looker_client.get_all_branches(project)
+        branches_json = await looker_client.get_all_branches(project)
+        branches = [branch["name"] for branch in branches_json]
 
         to_delete = []
         dev_branch = None
