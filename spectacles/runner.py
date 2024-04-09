@@ -136,10 +136,11 @@ class LookerBranchManager:
                 prod_state = await self.get_project_state()
             self.branch = prod_state.branch
             self.commit = prod_state.commit
-            if self.use_personal_branch:
-                self.branch = await self.checkout_personal_branch(prod_state.commit)
-            elif self.ephemeral:
-                self.branch = await self.checkout_temp_branch(prod_state.commit)
+            if self.ephemeral:
+                if self.use_personal_branch:
+                    self.branch = await self.checkout_personal_branch(prod_state.commit)
+                else:
+                    self.branch = await self.checkout_temp_branch(prod_state.commit)
 
         logger.debug(
             f"Set project '{self.project}' to branch '{self.branch}' @ "
