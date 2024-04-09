@@ -109,10 +109,13 @@ class LookerBranchManager:
         # A branch was passed, so we check it out in dev mode.
         if self.branch:
             await self.update_workspace("dev")
-            if self.use_personal_branch:
-                self.branch = await self.checkout_personal_branch(self.branch)
-            elif self.ephemeral:
-                self.branch = await self.checkout_temp_branch("origin/" + self.branch)
+            if self.ephemeral:
+                if self.use_personal_branch:
+                    await self.checkout_personal_branch("origin/" + self.branch)
+                else:
+                    self.branch = await self.checkout_temp_branch(
+                        "origin/" + self.branch
+                    )
             else:
                 await self.client.checkout_branch(self.project, self.branch)
                 if self.remote_reset:
@@ -266,6 +269,7 @@ class LookerBranchManager:
         if not self.personal_branch:
             self.personal_branch = await self.get_personal_branch()
         await self.client.checkout_branch(self.project, self.personal_branch)
+        await self.client.reset_to_remote(self.project)
         await self.client.hard_reset_branch(self.project, self.personal_branch, ref)
         return self.personal_branch
 
