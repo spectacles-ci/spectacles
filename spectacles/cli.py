@@ -539,6 +539,13 @@ def _build_validator_subparser(
         env_var="SPECTACLES_USE_PERSONAL_BRANCH",
         help="Use the user's personal branch instead of creating a temporary branch for the tests.",
     )
+    base_subparser.add_argument(
+        "--pin-imports",
+        nargs="+",
+        default=[],
+        help="Pin locally imported Looker projects to a specific ref (Git branch or commit) during validation. \
+            Provide these arguments in project_name:ref format.",
+    )
     group = base_subparser.add_mutually_exclusive_group()
     group.add_argument(
         "--remote-reset",
@@ -555,13 +562,6 @@ def _build_validator_subparser(
         help="The commit of your project that Spectacles will test against. \
             In order to test a specific commit, Spectacles will create a new branch \
             for the tests and then delete the branch when it is finished.",
-    )
-    group.add_argument(
-        "--pin-imports",
-        nargs="+",
-        default=[],
-        help="Pin locally imported Looker projects to a specific ref (Git branch or commit) during validation. \
-            Provide these arguments in project_name:ref format.",
     )
     return base_subparser
 
