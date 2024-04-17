@@ -17,6 +17,7 @@ from spectacles.validators import (
     LookMLValidator,
     SqlValidator,
 )
+from spectacles.validators.data_test import QUERY_SLOT_LIMIT
 from spectacles.validators.sql import (
     DEFAULT_CHUNK_SIZE,
     DEFAULT_QUERY_CONCURRENCY,
@@ -444,6 +445,7 @@ class Runner:
         self,
         ref: Optional[str] = None,
         filters: Optional[List[str]] = None,
+        query_slot_limit: int = QUERY_SLOT_LIMIT,
     ) -> JsonDict:
         if filters is None:
             filters = ["*/*"]
@@ -462,7 +464,7 @@ class Runner:
                 f"{'explore' if explore_count == 1 else 'explores'}"
             )
             tests = await validator.get_tests(project)
-            await validator.validate(tests)
+            await validator.validate(tests, query_slot_limit)
 
         results = project.get_results(validator="data_test")
         return results

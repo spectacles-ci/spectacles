@@ -27,6 +27,7 @@ from spectacles.logger import GLOBAL_LOGGER as logger
 from spectacles.logger import set_file_handler
 from spectacles.runner import Runner
 from spectacles.utils import log_duration
+from spectacles.validators.data_test import QUERY_SLOT_LIMIT
 
 __version__ = importlib.metadata.version("spectacles")
 
@@ -709,6 +710,16 @@ def _build_assert_subparser(
     _build_validator_subparser(subparser_action, subparser)
     _build_select_subparser(subparser_action, subparser)
 
+    subparser.add_argument(
+        "--concurrency",
+        type=int,
+        default=QUERY_SLOT_LIMIT,
+        help=(
+            "Specify the number of concurrent queries you want to have running "
+            f"against your data warehouse. The default is {QUERY_SLOT_LIMIT}."
+        ),
+    )
+
 
 def _build_content_subparser(
     subparser_action: argparse._SubParsersAction,  # type: ignore[type-arg]
@@ -896,6 +907,7 @@ async def run_assert(
     api_version: float,
     remote_reset: bool,
     pin_imports: Dict[str, str],
+    concurrency: int,
 ) -> None:
     # Don't trust env to ignore .netrc credentials
     async_client = httpx.AsyncClient(trust_env=False)
@@ -905,7 +917,9 @@ async def run_assert(
         )
         runner = Runner(client, project, remote_reset, pin_imports)
 
-        results = await runner.validate_data_tests(ref, filters)
+        results = await runner.validate_data_tests(
+            ref, filters, query_slot_limit=concurrency
+        )
     finally:
         await async_client.aclose()
 
