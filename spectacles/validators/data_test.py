@@ -94,9 +94,11 @@ class DataTestValidator:
 
         return selected_tests
 
-    async def validate(self, tests: List[DataTest]) -> List[DataTestError]:
+    async def validate(
+        self, tests: List[DataTest], query_slot_limit: int = QUERY_SLOT_LIMIT
+    ) -> List[DataTestError]:
         data_test_errors: List[DataTestError] = []
-        query_slot = asyncio.Semaphore(QUERY_SLOT_LIMIT)
+        query_slot = asyncio.Semaphore(query_slot_limit)
 
         async def run_test(test: DataTest, query_slot: asyncio.Semaphore) -> None:
             async with query_slot:
