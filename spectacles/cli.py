@@ -342,6 +342,7 @@ def main() -> None:
                 api_version=args.api_version,
                 remote_reset=args.remote_reset,
                 pin_imports=pin_imports,
+                concurrency=args.concurrency,
             )
         )
     elif args.command == "content":
