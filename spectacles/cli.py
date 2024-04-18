@@ -17,7 +17,11 @@ from yaml.parser import ParserError
 
 import spectacles.printer as printer
 import spectacles.tracking as tracking
-from spectacles.client import DEFAULT_API_VERSION, LookerClient
+from spectacles.client import (
+    DEFAULT_API_VERSION,
+    LOOKML_VALIDATION_TIMEOUT,
+    LookerClient,
+)
 from spectacles.exceptions import (
     GenericValidationError,
     LookerApiError,
@@ -377,6 +381,7 @@ def main() -> None:
                 remote_reset=args.remote_reset,
                 severity=args.severity,
                 pin_imports=pin_imports,
+                timeout=args.timeout,
             )
         )
 
@@ -604,6 +609,12 @@ def _build_lookml_subparser(
             "validator to fail. The default is 'warning'."
         ),
     )
+    subparser.add_argument(
+        "--timeout",
+        type=int,
+        default=LOOKML_VALIDATION_TIMEOUT,
+        help="Specify the timeout for the LookML validation in seconds.",
+    )
     _build_validator_subparser(subparser_action, subparser)
 
 
@@ -791,6 +802,7 @@ async def run_lookml(
     remote_reset: bool,
     severity: str,
     pin_imports: Dict[str, str],
+    timeout: int = LOOKML_VALIDATION_TIMEOUT,
 ) -> None:
     # Don't trust env to ignore .netrc credentials
     async_client = httpx.AsyncClient(trust_env=False)
@@ -800,7 +812,7 @@ async def run_lookml(
         )
         runner = Runner(client, project, remote_reset, pin_imports)
 
-        results = await runner.validate_lookml(ref, severity)
+        results = await runner.validate_lookml(ref, severity, timeout)
     finally:
         await async_client.aclose()
 
