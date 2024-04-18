@@ -1,6 +1,6 @@
 from typing import Any, Dict, Optional
 
-from spectacles.client import LookerClient
+from spectacles.client import LOOKML_VALIDATION_TIMEOUT, LookerClient
 from spectacles.exceptions import LookMLError
 
 # Define constants for severity levels
@@ -31,11 +31,16 @@ class LookMLValidator:
     def __init__(self, client: LookerClient):
         self.client = client
 
-    async def validate(self, project: str, severity: str = "warning") -> Dict[str, Any]:
+    async def validate(
+        self,
+        project: str,
+        severity: str = "warning",
+        timeout: int = LOOKML_VALIDATION_TIMEOUT,
+    ) -> Dict[str, Any]:
         severity_level: int = NAME_TO_LEVEL[severity]
         validation_results = await self.client.cached_lookml_validation(project)
         if not validation_results or validation_results.get("stale"):
-            validation_results = await self.client.lookml_validation(project)
+            validation_results = await self.client.lookml_validation(project, timeout)
         errors = []
         lookml_url: Optional[str] = None
         for error in validation_results["errors"]:
