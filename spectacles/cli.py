@@ -27,7 +27,7 @@ from spectacles.logger import GLOBAL_LOGGER as logger
 from spectacles.logger import set_file_handler
 from spectacles.runner import Runner
 from spectacles.utils import log_duration
-from spectacles.validators.data_test import QUERY_SLOT_LIMIT
+from spectacles.validators.data_test import DATA_TEST_CONCURRENCY
 
 __version__ = importlib.metadata.version("spectacles")
 
@@ -714,10 +714,10 @@ def _build_assert_subparser(
     subparser.add_argument(
         "--concurrency",
         type=int,
-        default=QUERY_SLOT_LIMIT,
+        default=DATA_TEST_CONCURRENCY,
         help=(
             "Specify the number of concurrent queries you want to have running "
-            f"against your data warehouse. The default is {QUERY_SLOT_LIMIT}."
+            f"against your data warehouse. The default is {DATA_TEST_CONCURRENCY}."
         ),
     )
 
@@ -918,9 +918,7 @@ async def run_assert(
         )
         runner = Runner(client, project, remote_reset, pin_imports)
 
-        results = await runner.validate_data_tests(
-            ref, filters, query_slot_limit=concurrency
-        )
+        results = await runner.validate_data_tests(ref, filters, concurrency)
     finally:
         await async_client.aclose()
 
