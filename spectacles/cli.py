@@ -27,6 +27,7 @@ from spectacles.logger import GLOBAL_LOGGER as logger
 from spectacles.logger import set_file_handler
 from spectacles.runner import Runner
 from spectacles.utils import log_duration
+from spectacles.validators.data_test import DATA_TEST_CONCURRENCY
 
 __version__ = importlib.metadata.version("spectacles")
 
@@ -343,6 +344,7 @@ def main() -> None:
                 remote_reset=args.remote_reset,
                 pin_imports=pin_imports,
                 use_personal_branch=args.use_personal_branch,
+                concurrency=args.concurrency,
             )
         )
     elif args.command == "content":
@@ -719,6 +721,16 @@ def _build_assert_subparser(
     _build_validator_subparser(subparser_action, subparser)
     _build_select_subparser(subparser_action, subparser)
 
+    subparser.add_argument(
+        "--concurrency",
+        type=int,
+        default=DATA_TEST_CONCURRENCY,
+        help=(
+            "Specify the number of concurrent queries you want to have running "
+            f"against your data warehouse. The default is {DATA_TEST_CONCURRENCY}."
+        ),
+    )
+
 
 def _build_content_subparser(
     subparser_action: argparse._SubParsersAction,  # type: ignore[type-arg]
@@ -909,6 +921,7 @@ async def run_assert(
     remote_reset: bool,
     pin_imports: Dict[str, str],
     use_personal_branch: bool,
+    concurrency: int,
 ) -> None:
     # Don't trust env to ignore .netrc credentials
     async_client = httpx.AsyncClient(trust_env=False)
@@ -918,7 +931,7 @@ async def run_assert(
         )
         runner = Runner(client, project, remote_reset, pin_imports, use_personal_branch)
 
-        results = await runner.validate_data_tests(ref, filters)
+        results = await runner.validate_data_tests(ref, filters, concurrency)
     finally:
         await async_client.aclose()
 

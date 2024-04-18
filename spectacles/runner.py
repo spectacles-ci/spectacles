@@ -17,6 +17,7 @@ from spectacles.validators import (
     LookMLValidator,
     SqlValidator,
 )
+from spectacles.validators.data_test import DATA_TEST_CONCURRENCY
 from spectacles.validators.sql import (
     DEFAULT_CHUNK_SIZE,
     DEFAULT_QUERY_CONCURRENCY,
@@ -490,6 +491,7 @@ class Runner:
         self,
         ref: Optional[str] = None,
         filters: Optional[List[str]] = None,
+        concurrency: int = DATA_TEST_CONCURRENCY,
     ) -> JsonDict:
         if filters is None:
             filters = ["*/*"]
@@ -508,7 +510,7 @@ class Runner:
                 f"{'explore' if explore_count == 1 else 'explores'}"
             )
             tests = await validator.get_tests(project)
-            await validator.validate(tests)
+            await validator.validate(tests, concurrency)
 
         results = project.get_results(validator="data_test")
         return results
