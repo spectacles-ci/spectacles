@@ -4,7 +4,7 @@ import re
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Set, Tuple
 
-from spectacles.client import LookerClient
+from spectacles.client import LOOKML_VALIDATION_TIMEOUT, LookerClient
 from spectacles.exceptions import LookerApiError, SpectaclesException, SqlError
 from spectacles.logger import GLOBAL_LOGGER as logger
 from spectacles.lookml import CompiledSql, Explore, build_project
@@ -17,6 +17,7 @@ from spectacles.validators import (
     LookMLValidator,
     SqlValidator,
 )
+from spectacles.validators.data_test import DATA_TEST_CONCURRENCY
 from spectacles.validators.sql import (
     DEFAULT_CHUNK_SIZE,
     DEFAULT_QUERY_CONCURRENCY,
@@ -486,6 +487,7 @@ class Runner:
         self,
         ref: Optional[str] = None,
         filters: Optional[List[str]] = None,
+        concurrency: int = DATA_TEST_CONCURRENCY,
     ) -> JsonDict:
         if filters is None:
             filters = ["*/*"]
@@ -504,16 +506,21 @@ class Runner:
                 f"{'explore' if explore_count == 1 else 'explores'}"
             )
             tests = await validator.get_tests(project)
-            await validator.validate(tests)
+            await validator.validate(tests, concurrency)
 
         results = project.get_results(validator="data_test")
         return results
 
-    async def validate_lookml(self, ref: Optional[str], severity: str) -> JsonDict:
+    async def validate_lookml(
+        self,
+        ref: Optional[str],
+        severity: str,
+        timeout: int = LOOKML_VALIDATION_TIMEOUT,
+    ) -> JsonDict:
         async with self.branch_manager(ref=ref):
             validator = LookMLValidator(self.client)
             print_header(f"Validating LookML in project {self.project} [{severity}]")
-            results = await validator.validate(self.project, severity)
+            results = await validator.validate(self.project, severity, timeout)
         return results
 
     async def validate_content(

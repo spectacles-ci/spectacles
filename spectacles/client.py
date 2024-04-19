@@ -15,6 +15,7 @@ from spectacles.models import JsonDict
 
 DEFAULT_API_VERSION = 4.0
 TIMEOUT_SEC = 300
+LOOKML_VALIDATION_TIMEOUT = 7200
 MAX_ASYNC_CONNECTIONS = 200
 DEFAULT_MAX_TRIES = 3
 BACKOFF_EXCEPTIONS = (
@@ -862,10 +863,14 @@ class LookerClient:
         return result  # type: ignore[no-any-return]
 
     @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
-    async def lookml_validation(self, project: str) -> JsonDict:
-        logger.debug(f"Validating LookML for project '{project}'")
+    async def lookml_validation(
+        self, project: str, timeout: int = LOOKML_VALIDATION_TIMEOUT
+    ) -> JsonDict:
+        logger.debug(
+            f"Validating LookML for project '{project}' with timeout {timeout} seconds."
+        )
         url = utils.compose_url(self.api_url, path=["projects", project, "validate"])
-        response = await self.post(url=url, timeout=7200)
+        response = await self.post(url=url, timeout=timeout)
 
         try:
             response.raise_for_status()

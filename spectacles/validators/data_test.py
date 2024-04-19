@@ -6,7 +6,9 @@ from spectacles.client import LookerClient
 from spectacles.exceptions import DataTestError, SpectaclesException
 from spectacles.lookml import Explore, Project
 
-QUERY_SLOT_LIMIT = 15  # This is the per-user query limit in Looker for most instances
+DATA_TEST_CONCURRENCY = (
+    15  # This is the per-user query limit in Looker for most instances
+)
 
 
 @dataclass
@@ -94,9 +96,11 @@ class DataTestValidator:
 
         return selected_tests
 
-    async def validate(self, tests: List[DataTest]) -> List[DataTestError]:
+    async def validate(
+        self, tests: List[DataTest], concurrency: int = DATA_TEST_CONCURRENCY
+    ) -> List[DataTestError]:
         data_test_errors: List[DataTestError] = []
-        query_slot = asyncio.Semaphore(QUERY_SLOT_LIMIT)
+        query_slot = asyncio.Semaphore(concurrency)
 
         async def run_test(test: DataTest, query_slot: asyncio.Semaphore) -> None:
             async with query_slot:
