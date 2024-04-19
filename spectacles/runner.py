@@ -110,9 +110,11 @@ class LookerBranchManager:
         if self.branch:
             await self.update_workspace("dev")
             if self.ephemeral:
-                await self.checkout_ephemeral_branch(
-                    "origin/" + self.branch, self.use_personal_branch, False
+                new_branch = await self.checkout_ephemeral_branch(
+                    "origin/" + self.branch
                 )
+                if not self.use_personal_branch:
+                    self.branch = new_branch
             else:
                 await self.client.checkout_branch(self.project, self.branch)
                 if self.remote_reset:
@@ -120,7 +122,7 @@ class LookerBranchManager:
         # A commit was passed, so we non-destructively create a temporary branch we can
         # hard reset to the commit.
         elif self.commit:
-            await self.checkout_ephemeral_branch(self.commit, self.use_personal_branch)
+            self.branch = await self.checkout_ephemeral_branch(self.commit)
         # Neither branch nor commit were passed, so go to production.
         else:
             if self.init_state.workspace == "production":
@@ -131,9 +133,7 @@ class LookerBranchManager:
             self.branch = prod_state.branch
             self.commit = prod_state.commit
             if self.ephemeral:
-                await self.checkout_ephemeral_branch(
-                    prod_state.commit, self.use_personal_branch
-                )
+                self.branch = await self.checkout_ephemeral_branch(prod_state.commit)
 
         logger.debug(
             f"Set project '{self.project}' to branch '{self.branch}' @ "
@@ -295,17 +295,13 @@ class LookerBranchManager:
         self.is_temp_branch = True
         return name
 
-    async def checkout_ephemeral_branch(
-        self, ref: str, use_personal_branch: bool, update_self_branch: bool = True
-    ) -> None:
+    async def checkout_ephemeral_branch(self, ref: str) -> str:
         """Either check out temp or personal branch and hard-reset."""
-        if use_personal_branch:
-            if update_self_branch:
-                self.branch = await self.checkout_personal_branch(ref)
-            else:
-                await self.checkout_personal_branch(ref)
+        if self.use_personal_branch:
+            branch = await self.checkout_personal_branch(ref)
         else:
-            self.branch = await self.checkout_temp_branch(ref)
+            branch = await self.checkout_temp_branch(ref)
+        return branch
 
 
 class Runner:
