@@ -145,7 +145,8 @@ async def test_manage_current_branch_with_ref(
     branch_info = await looker_client.get_active_branch(LOOKER_PROJECT)
     assert branch_info["name"] == starting_branch
     assert branch_info["ref"][:6] != commit
-    all_branches = await looker_client.get_all_branches(LOOKER_PROJECT)
+    all_branches_json = await looker_client.get_all_branches(LOOKER_PROJECT)
+    all_branches = [branch["name"] for branch in all_branches_json]
     assert temp_branch not in all_branches
 
 
@@ -211,7 +212,8 @@ async def test_manage_other_branch_with_import_projects(
     assert active_branch == starting_branch
     active_branch = await looker_client.get_active_branch_name(dependent_project)
     assert active_branch == dependent_project_manager.init_state.branch
-    all_branches = await looker_client.get_all_branches(dependent_project)
+    all_branches_json = await looker_client.get_all_branches(dependent_project)
+    all_branches = [branch["name"] for branch in all_branches_json]
     assert temp_branch not in all_branches
 
 
@@ -269,7 +271,8 @@ async def test_manage_with_ref_import_projects(
     assert branch_info["ref"][:6] != commit
 
     await looker_client.update_workspace("dev")
-    all_branches = set(await looker_client.get_all_branches(dependent_project))
+    all_branches_json = await looker_client.get_all_branches(dependent_project)
+    all_branches = {branch["name"] for branch in all_branches_json}
     # Confirm that no temp branches still remain
     temp_branches = set(
         import_manager.branch for import_manager in manager.import_managers

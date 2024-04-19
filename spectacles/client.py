@@ -258,7 +258,7 @@ class LookerClient:
         self.workspace = workspace
 
     @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
-    async def get_all_branches(self, project: str) -> List[str]:
+    async def get_all_branches(self, project: str) -> List[JsonDict]:
         """Returns a list of git branches in the project repository.
 
         Args:
@@ -283,7 +283,7 @@ class LookerClient:
                 response=response,
             ) from error
 
-        return [branch["name"] for branch in response.json()]
+        return response.json()  # type: ignore[no-any-return]
 
     @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
     async def checkout_branch(self, project: str, branch: str) -> None:

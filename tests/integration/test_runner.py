@@ -12,7 +12,8 @@ from spectacles.runner import Runner
 async def cleanup_tmp_branches(looker_client: LookerClient) -> None:
     for project in ("eye_exam", "looker-demo"):
         await looker_client.update_workspace("dev")
-        branches = await looker_client.get_all_branches(project)
+        branches_json = await looker_client.get_all_branches(project)
+        branches = [branch["name"] for branch in branches_json]
 
         to_delete = []
         dev_branch = None
@@ -80,15 +81,21 @@ async def test_validate_data_tests_should_work(
     assert len(result["errors"]) > 0
 
 
+@pytest.mark.parametrize("use_personal_branch", [True, False])
 @patch("spectacles.runner.time_hash", side_effect=tuple(string.ascii_lowercase))
 async def test_incremental_sql_with_equal_explores_should_not_error(
-    mock_time_hash: MagicMock, looker_client: LookerClient
+    mock_time_hash: MagicMock, looker_client: LookerClient, use_personal_branch: bool
 ) -> None:
     """Case where all explores compile to the same SQL.
 
     We expect all explores to be skipped, returning no errors.
     """
-    runner = Runner(looker_client, "eye_exam", remote_reset=True)
+    runner = Runner(
+        looker_client,
+        "eye_exam",
+        remote_reset=True,
+        use_personal_branch=use_personal_branch,
+    )
     result = await runner.validate_sql(
         incremental=True,
         ref="pytest-incremental-equal",
@@ -99,15 +106,21 @@ async def test_incremental_sql_with_equal_explores_should_not_error(
     assert len(result["errors"]) == 0
 
 
+@pytest.mark.parametrize("use_personal_branch", [True, False])
 @patch("spectacles.runner.time_hash", side_effect=tuple(string.ascii_lowercase))
 async def test_incremental_sql_with_diff_explores_and_valid_sql_should_not_error(
-    mock_time_hash: MagicMock, looker_client: LookerClient
+    mock_time_hash: MagicMock, looker_client: LookerClient, use_personal_branch: bool
 ) -> None:
     """Case where one explore differs in SQL and has valid SQL.
 
     We expect the differing explore to be tested and return no errors.
     """
-    runner = Runner(looker_client, "eye_exam", remote_reset=True)
+    runner = Runner(
+        looker_client,
+        "eye_exam",
+        remote_reset=True,
+        use_personal_branch=use_personal_branch,
+    )
     result = await runner.validate_sql(
         incremental=True,
         ref="pytest-incremental-valid-diff",
@@ -122,15 +135,21 @@ async def test_incremental_sql_with_diff_explores_and_valid_sql_should_not_error
     assert len(result["errors"]) == 0
 
 
+@pytest.mark.parametrize("use_personal_branch", [True, False])
 @patch("spectacles.runner.time_hash", side_effect=tuple(string.ascii_lowercase))
 async def test_incremental_sql_with_diff_explores_and_invalid_sql_should_error(
-    mock_time_hash: MagicMock, looker_client: LookerClient
+    mock_time_hash: MagicMock, looker_client: LookerClient, use_personal_branch: bool
 ) -> None:
     """Case where one explore differs in SQL and has one SQL error.
 
     We expect the differing explore to be tested and return one error.
     """
-    runner = Runner(looker_client, "eye_exam", remote_reset=True)
+    runner = Runner(
+        looker_client,
+        "eye_exam",
+        remote_reset=True,
+        use_personal_branch=use_personal_branch,
+    )
     result = await runner.validate_sql(
         incremental=True,
         ref="pytest-incremental-invalid-diff",
@@ -145,16 +164,22 @@ async def test_incremental_sql_with_diff_explores_and_invalid_sql_should_error(
     assert len(result["errors"]) == 1
 
 
+@pytest.mark.parametrize("use_personal_branch", [True, False])
 @patch("spectacles.runner.time_hash", side_effect=tuple(string.ascii_lowercase))
 async def test_incremental_sql_with_diff_explores_and_invalid_diff_sql_should_error(
-    mock_time_hash: MagicMock, looker_client: LookerClient
+    mock_time_hash: MagicMock, looker_client: LookerClient, use_personal_branch: bool
 ) -> None:
     """Case where one explore differs in SQL and has two SQL errors, one present in
     the target branch, one not present in the target branch.
 
     We expect the differing explore to be tested and return one error.
     """
-    runner = Runner(looker_client, "eye_exam", remote_reset=True)
+    runner = Runner(
+        looker_client,
+        "eye_exam",
+        remote_reset=True,
+        use_personal_branch=use_personal_branch,
+    )
     result = await runner.validate_sql(
         incremental=True,
         ref="pytest-incremental-invalid-equal",
@@ -169,9 +194,10 @@ async def test_incremental_sql_with_diff_explores_and_invalid_diff_sql_should_er
     assert len(result["errors"]) == 1
 
 
+@pytest.mark.parametrize("use_personal_branch", [True, False])
 @patch("spectacles.runner.time_hash", side_effect=tuple(string.ascii_lowercase))
 async def test_incremental_sql_with_diff_explores_and_invalid_existing_sql_should_error(
-    mock_time_hash: MagicMock, looker_client: LookerClient
+    mock_time_hash: MagicMock, looker_client: LookerClient, use_personal_branch: bool
 ) -> None:
     """Case where the target branch has many errors, one of which is fixed on the base
     branch.
@@ -179,7 +205,12 @@ async def test_incremental_sql_with_diff_explores_and_invalid_existing_sql_shoul
     We expect the differing explore to be tested and return no errors, since the
     remaining errors already exist for the target.
     """
-    runner = Runner(looker_client, "eye_exam", remote_reset=True)
+    runner = Runner(
+        looker_client,
+        "eye_exam",
+        remote_reset=True,
+        use_personal_branch=use_personal_branch,
+    )
     result = await runner.validate_sql(
         incremental=True,
         target="pytest-incremental-dirty-prod",
