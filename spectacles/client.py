@@ -993,3 +993,24 @@ class LookerClient:
         logger.debug("Retrieved compiled SQL for query %s", query_id)
 
         return result
+
+    @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
+    async def get_user_id(self) -> int:
+        """Retrieve the user ID for the current authenticated user."""
+        logger.info("Getting user ID for current user.")
+        url = utils.compose_url(base_url=self.api_url, path=["user"])
+        response = await self.get(url=url, timeout=TIMEOUT_SEC)
+        try:
+            response.raise_for_status()
+        except httpx.HTTPStatusError:
+            raise LookerApiError(
+                name="unable-to-get-user-id",
+                title="Couldn't get user ID for provided credentials",
+                status=response.status_code,
+                detail=(
+                    f"Unable to get user ID for client ID {self.client_id}. "
+                    "Please try again."
+                ),
+                response=response,
+            )
+        return int(response.json()["id"])

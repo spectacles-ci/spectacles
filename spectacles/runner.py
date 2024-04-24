@@ -262,22 +262,19 @@ class LookerBranchManager:
         """Updates the user's personal branch to the git ref."""
         await self.update_workspace("dev")
         if not self.personal_branch:
-            self.personal_branch = await self.get_personal_branch()
-        await self.client.checkout_branch(self.project, self.personal_branch)
-        await self.client.reset_to_remote(self.project)
+            self.personal_branch = (
+                "z__spectacles_" + str(await self.client.get_user_id()) + "_3"
+            )
+        try:
+            await self.client.checkout_branch(self.project, self.personal_branch)
+        except LookerApiError as error:
+            logger.debug(
+                f"Error checking out personal branch: {error.looker_api_response}"
+            )
+            await self.client.create_branch(self.project, self.personal_branch)
         await self.client.hard_reset_branch(self.project, self.personal_branch, ref)
+        await self.client.reset_to_remote(self.project)
         return self.personal_branch
-
-    async def get_personal_branch(self) -> str:
-        """Finds the name of the user's personal branch."""
-        branches = await self.client.get_all_branches(self.project)
-        for branch in branches:
-            if branch["personal"] and not branch["readonly"]:
-                return str(branch["name"])
-        raise ValueError(
-            f"Personal branch not found for client ID {self.client.client_id} "
-            f"in project '{self.project}'"
-        )
 
     async def checkout_temp_branch(self, ref: str) -> str:
         """Creates a temporary branch off a commit or off production."""
