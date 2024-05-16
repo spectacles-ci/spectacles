@@ -35,10 +35,6 @@ from spectacles.validators.data_test import DATA_TEST_CONCURRENCY
 
 __version__ = importlib.metadata.version("spectacles")
 
-# How long to wait when the network is inactive
-# https://www.python-httpx.org/advanced/timeouts/#fine-tuning-the-configuration
-DEFAULT_HTTP_TIMEOUT = httpx.Timeout(30)
-
 
 class ConfigFileAction(argparse.Action):
     """Parses an arbitrary config file and assigns its values as arg defaults."""
@@ -795,7 +791,7 @@ async def run_connect(
 ) -> None:
     """Tests the connection and credentials for the Looker API."""
     # Don't trust env to ignore .netrc credentials
-    async_client = httpx.AsyncClient(timeout=DEFAULT_HTTP_TIMEOUT, trust_env=False)
+    async_client = httpx.AsyncClient(trust_env=False)
     try:
         LookerClient(
             async_client, base_url, client_id, client_secret, port, api_version
@@ -820,7 +816,7 @@ async def run_lookml(
     timeout: int,
 ) -> None:
     # Don't trust env to ignore .netrc credentials
-    async_client = httpx.AsyncClient(timeout=DEFAULT_HTTP_TIMEOUT, trust_env=False)
+    async_client = httpx.AsyncClient(trust_env=False)
     try:
         client = LookerClient(
             async_client, base_url, client_id, client_secret, port, api_version
@@ -879,7 +875,7 @@ async def run_content(
     use_personal_branch: bool,
 ) -> None:
     # Don't trust env to ignore .netrc credentials
-    async_client = httpx.AsyncClient(timeout=DEFAULT_HTTP_TIMEOUT, trust_env=False)
+    async_client = httpx.AsyncClient(trust_env=False)
     try:
         client = LookerClient(
             async_client, base_url, client_id, client_secret, port, api_version
@@ -940,7 +936,7 @@ async def run_assert(
     concurrency: int,
 ) -> None:
     # Don't trust env to ignore .netrc credentials
-    async_client = httpx.AsyncClient(timeout=DEFAULT_HTTP_TIMEOUT, trust_env=False)
+    async_client = httpx.AsyncClient(trust_env=False)
     try:
         client = LookerClient(
             async_client, base_url, client_id, client_secret, port, api_version
@@ -1003,7 +999,7 @@ async def run_sql(
 ) -> None:
     """Runs and validates the SQL for each selected LookML dimension."""
     # Don't trust env to ignore .netrc credentials
-    async_client = httpx.AsyncClient(timeout=DEFAULT_HTTP_TIMEOUT, trust_env=False)
+    async_client = httpx.AsyncClient(trust_env=False)
     try:
         client = LookerClient(
             async_client, base_url, client_id, client_secret, port, api_version
