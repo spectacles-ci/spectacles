@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Optional, Tuple
 import backoff
 import httpx
 from aiocache import Cache, cached, serializers
-from httpx import ConnectError, HTTPStatusError, RemoteProtocolError, TimeoutException
+from httpx import HTTPStatusError, NetworkError, RemoteProtocolError, TimeoutException
 
 import spectacles.utils as utils
 from spectacles.exceptions import LookerApiError, SpectaclesException
@@ -20,8 +20,8 @@ MAX_ASYNC_CONNECTIONS = 200
 DEFAULT_MAX_TRIES = 3
 BACKOFF_EXCEPTIONS = (
     TimeoutException,
+    NetworkError,
     HTTPStatusError,
-    ConnectError,
     LookerApiError,
     RemoteProtocolError,
 )
