@@ -339,7 +339,9 @@ class LookerClient:
                 response=response,
             ) from error
 
-    @backoff.on_exception(backoff.expo, TimeoutException, max_tries=DEFAULT_MAX_TRIES)
+    @backoff.on_exception(
+        backoff.expo, (TimeoutException, NetworkError), max_tries=DEFAULT_MAX_TRIES
+    )
     async def get_manifest(self, project: str) -> JsonDict:
         """Gets all the dependent LookML projects defined in the manifest file.
 
