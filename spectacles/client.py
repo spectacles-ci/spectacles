@@ -34,11 +34,17 @@ BACKOFF_EXCEPTIONS = NETWORK_EXCEPTIONS + STATUS_EXCEPTIONS
 
 
 def giveup_unless_bad_gateway(exception: Exception) -> bool:
-    """Give up retries if a status error encountered with any code besides 502."""
+    """Give up retries if a status error encountered with any code besides 502/504."""
     if isinstance(exception, LookerApiError):
-        return exception.status != HTTPStatus.BAD_GATEWAY
+        return exception.status not in (
+            HTTPStatus.BAD_GATEWAY,
+            HTTPStatus.GATEWAY_TIMEOUT,
+        )
     elif isinstance(exception, HTTPStatusError):
-        return exception.response.status_code != HTTPStatus.BAD_GATEWAY
+        return exception.response.status_code not in (
+            HTTPStatus.BAD_GATEWAY,
+            HTTPStatus.GATEWAY_TIMEOUT,
+        )
     else:
         return False
 
