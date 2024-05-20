@@ -48,7 +48,7 @@ typing-extensions = "^4.9.0"
 
 [tool.poetry.group.dev.dependencies]
 bandit = "^1.7.7"
-black = "^23.12.1"
+black = ">=23.12.1,<25.0.0"
 flake8 = "^7.0.0"
 isort = "^5.13.2"
 jsonschema = "^4.21.1"
