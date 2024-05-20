@@ -1,12 +1,13 @@
 import json
 import time
 from dataclasses import dataclass
+from http import HTTPStatus
 from typing import Any, Dict, List, Optional, Tuple
 
 import backoff
 import httpx
 from aiocache import Cache, cached, serializers
-from httpx import ConnectError, HTTPStatusError, RemoteProtocolError, TimeoutException
+from httpx import HTTPStatusError, NetworkError, RemoteProtocolError, TimeoutException
 
 import spectacles.utils as utils
 from spectacles.exceptions import LookerApiError, SpectaclesException
@@ -17,14 +18,35 @@ DEFAULT_API_VERSION = 4.0
 TIMEOUT_SEC = 300
 LOOKML_VALIDATION_TIMEOUT = 7200
 MAX_ASYNC_CONNECTIONS = 200
-DEFAULT_MAX_TRIES = 3
-BACKOFF_EXCEPTIONS = (
+
+DEFAULT_RETRIES = 3
+DEFAULT_NETWORK_RETRIES = 10
+NETWORK_EXCEPTIONS = (
+    NetworkError,
     TimeoutException,
-    HTTPStatusError,
-    ConnectError,
-    LookerApiError,
     RemoteProtocolError,
 )
+STATUS_EXCEPTIONS = (
+    HTTPStatusError,
+    LookerApiError,
+)
+BACKOFF_EXCEPTIONS = NETWORK_EXCEPTIONS + STATUS_EXCEPTIONS
+
+
+def giveup_unless_bad_gateway(exception: Exception) -> bool:
+    """Give up retries if a status error encountered with any code besides 502/504."""
+    if isinstance(exception, LookerApiError):
+        return exception.status not in (
+            HTTPStatus.BAD_GATEWAY,
+            HTTPStatus.GATEWAY_TIMEOUT,
+        )
+    elif isinstance(exception, HTTPStatusError):
+        return exception.response.status_code not in (
+            HTTPStatus.BAD_GATEWAY,
+            HTTPStatus.GATEWAY_TIMEOUT,
+        )
+    else:
+        return False
 
 
 @dataclass(frozen=True)  # Token is immutable
@@ -170,7 +192,12 @@ class LookerClient:
     async def delete(self, url: str, *args: Any, **kwargs: Any) -> httpx.Response:
         return await self.request("DELETE", url, *args, **kwargs)
 
-    @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
+    @backoff.on_exception(
+        backoff.expo,
+        BACKOFF_EXCEPTIONS,
+        giveup=giveup_unless_bad_gateway,
+        max_tries=DEFAULT_NETWORK_RETRIES,
+    )
     def get_looker_release_version(self) -> str:
         """Gets the version number of connected Looker instance.
 
@@ -201,7 +228,12 @@ class LookerClient:
 
         return response.json()["looker_release_version"]  # type: ignore[no-any-return]
 
-    @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
+    @backoff.on_exception(
+        backoff.expo,
+        BACKOFF_EXCEPTIONS,
+        giveup=giveup_unless_bad_gateway,
+        max_tries=DEFAULT_NETWORK_RETRIES,
+    )
     async def get_workspace(self) -> str:
         """Gets the session workspace.
 
@@ -229,7 +261,12 @@ class LookerClient:
             ) from error
         return response.json()["workspace_id"]  # type: ignore[no-any-return]
 
-    @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
+    @backoff.on_exception(
+        backoff.expo,
+        BACKOFF_EXCEPTIONS,
+        giveup=giveup_unless_bad_gateway,
+        max_tries=DEFAULT_NETWORK_RETRIES,
+    )
     async def update_workspace(self, workspace: str) -> None:
         """Updates the session workspace.
 
@@ -257,7 +294,12 @@ class LookerClient:
             ) from error
         self.workspace = workspace
 
-    @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
+    @backoff.on_exception(
+        backoff.expo,
+        BACKOFF_EXCEPTIONS,
+        giveup=giveup_unless_bad_gateway,
+        max_tries=DEFAULT_NETWORK_RETRIES,
+    )
     async def get_all_branches(self, project: str) -> List[JsonDict]:
         """Returns a list of git branches in the project repository.
 
@@ -285,7 +327,12 @@ class LookerClient:
 
         return response.json()  # type: ignore[no-any-return]
 
-    @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
+    @backoff.on_exception(
+        backoff.expo,
+        BACKOFF_EXCEPTIONS,
+        giveup=giveup_unless_bad_gateway,
+        max_tries=DEFAULT_NETWORK_RETRIES,
+    )
     async def checkout_branch(self, project: str, branch: str) -> None:
         """Checks out a new git branch. Only works in dev workspace.
 
@@ -312,7 +359,12 @@ class LookerClient:
                 response=response,
             ) from error
 
-    @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
+    @backoff.on_exception(
+        backoff.expo,
+        BACKOFF_EXCEPTIONS,
+        giveup=giveup_unless_bad_gateway,
+        max_tries=DEFAULT_NETWORK_RETRIES,
+    )
     async def reset_to_remote(self, project: str) -> None:
         """Reset a project development branch to the revision of the project that is on the remote.
 
@@ -339,6 +391,12 @@ class LookerClient:
                 response=response,
             ) from error
 
+    @backoff.on_exception(
+        backoff.expo,
+        BACKOFF_EXCEPTIONS,
+        giveup=giveup_unless_bad_gateway,
+        max_tries=DEFAULT_NETWORK_RETRIES,
+    )
     async def get_manifest(self, project: str) -> JsonDict:
         """Gets all the dependent LookML projects defined in the manifest file.
 
@@ -371,7 +429,12 @@ class LookerClient:
 
         return manifest  # type: ignore[no-any-return]
 
-    @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
+    @backoff.on_exception(
+        backoff.expo,
+        BACKOFF_EXCEPTIONS,
+        giveup=giveup_unless_bad_gateway,
+        max_tries=DEFAULT_NETWORK_RETRIES,
+    )
     async def get_active_branch(self, project: str) -> JsonDict:
         """Gets the active branch for the user in the given project.
 
@@ -405,13 +468,23 @@ class LookerClient:
 
         return response.json()  # type: ignore[no-any-return]
 
-    @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
+    @backoff.on_exception(
+        backoff.expo,
+        BACKOFF_EXCEPTIONS,
+        giveup=giveup_unless_bad_gateway,
+        max_tries=DEFAULT_NETWORK_RETRIES,
+    )
     async def get_active_branch_name(self, project: str) -> str:
         """Helper method to return only the branch name."""
         full_response = await self.get_active_branch(project)
         return full_response["name"]  # type: ignore[no-any-return]
 
-    @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
+    @backoff.on_exception(
+        backoff.expo,
+        BACKOFF_EXCEPTIONS,
+        giveup=giveup_unless_bad_gateway,
+        max_tries=DEFAULT_NETWORK_RETRIES,
+    )
     async def create_branch(
         self, project: str, branch: str, ref: Optional[str] = None
     ) -> None:
@@ -455,7 +528,12 @@ class LookerClient:
                 response=response,
             ) from error
 
-    @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
+    @backoff.on_exception(
+        backoff.expo,
+        BACKOFF_EXCEPTIONS,
+        giveup=giveup_unless_bad_gateway,
+        max_tries=DEFAULT_NETWORK_RETRIES,
+    )
     async def hard_reset_branch(self, project: str, branch: str, ref: str) -> None:
         """Hard resets a branch to the ref prodvided.
 
@@ -490,7 +568,12 @@ class LookerClient:
                 response=response,
             ) from error
 
-    @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
+    @backoff.on_exception(
+        backoff.expo,
+        BACKOFF_EXCEPTIONS,
+        giveup=giveup_unless_bad_gateway,
+        max_tries=DEFAULT_NETWORK_RETRIES,
+    )
     async def delete_branch(self, project: str, branch: str) -> None:
         """Deletes a branch in the given project.
 
@@ -519,7 +602,12 @@ class LookerClient:
                 response=response,
             ) from error
 
-    @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
+    @backoff.on_exception(
+        backoff.expo,
+        BACKOFF_EXCEPTIONS,
+        giveup=giveup_unless_bad_gateway,
+        max_tries=DEFAULT_NETWORK_RETRIES,
+    )
     async def all_lookml_tests(self, project: str) -> List[JsonDict]:
         """Gets all LookML/data tests for a given project.
 
@@ -552,7 +640,12 @@ class LookerClient:
 
         return response.json()  # type: ignore[no-any-return]
 
-    @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
+    @backoff.on_exception(
+        backoff.expo,
+        BACKOFF_EXCEPTIONS,
+        giveup=giveup_unless_bad_gateway,
+        max_tries=DEFAULT_NETWORK_RETRIES,
+    )
     async def run_lookml_test(
         self, project: str, model: Optional[str] = None, test: Optional[str] = None
     ) -> List[JsonDict]:
@@ -609,7 +702,12 @@ class LookerClient:
 
         return response.json()  # type: ignore[no-any-return]
 
-    @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
+    @backoff.on_exception(
+        backoff.expo,
+        BACKOFF_EXCEPTIONS,
+        giveup=giveup_unless_bad_gateway,
+        max_tries=DEFAULT_NETWORK_RETRIES,
+    )
     async def get_lookml_models(
         self, fields: Optional[List[str]] = None
     ) -> List[JsonDict]:
@@ -642,7 +740,12 @@ class LookerClient:
 
         return response.json()  # type: ignore[no-any-return]
 
-    @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
+    @backoff.on_exception(
+        backoff.expo,
+        BACKOFF_EXCEPTIONS,
+        giveup=giveup_unless_bad_gateway,
+        max_tries=DEFAULT_NETWORK_RETRIES,
+    )
     async def get_lookml_dimensions(
         self, model: str, explore: str
     ) -> List[Dict[str, Any]]:
@@ -672,7 +775,12 @@ class LookerClient:
         return response.json()["fields"]["dimensions"]  # type: ignore[no-any-return]
 
     @cached(cache=Cache.MEMORY, serializer=serializers.PickleSerializer())  # type: ignore
-    @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=5)
+    @backoff.on_exception(
+        backoff.expo,
+        BACKOFF_EXCEPTIONS,
+        giveup=giveup_unless_bad_gateway,
+        max_tries=DEFAULT_NETWORK_RETRIES,
+    )
     async def create_query(
         self,
         model: str,
@@ -738,7 +846,12 @@ class LookerClient:
         )
         return result  # type: ignore[no-any-return]
 
-    @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=5)
+    @backoff.on_exception(
+        backoff.expo,
+        BACKOFF_EXCEPTIONS,
+        giveup=giveup_unless_bad_gateway,
+        max_tries=DEFAULT_NETWORK_RETRIES,
+    )
     async def create_query_task(self, query_id: str) -> str:
         """Runs a previously created query asynchronously and returns the query task ID.
 
@@ -782,7 +895,12 @@ class LookerClient:
         logger.debug("Query %s is running under query task %s", query_id, query_task_id)
         return query_task_id  # type: ignore[no-any-return]
 
-    @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
+    @backoff.on_exception(
+        backoff.expo,
+        BACKOFF_EXCEPTIONS,
+        giveup=giveup_unless_bad_gateway,
+        max_tries=DEFAULT_NETWORK_RETRIES,
+    )
     async def get_query_task_multi_results(
         self, query_task_ids: Tuple[str, ...]
     ) -> JsonDict:
@@ -826,7 +944,12 @@ class LookerClient:
         result = response.json()
         return result  # type: ignore[no-any-return]
 
-    @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
+    @backoff.on_exception(
+        backoff.expo,
+        BACKOFF_EXCEPTIONS,
+        giveup=giveup_unless_bad_gateway,
+        max_tries=DEFAULT_NETWORK_RETRIES,
+    )
     async def cancel_query_task(self, query_task_id: str) -> None:
         """Cancels a query task.
 
@@ -862,7 +985,13 @@ class LookerClient:
         result = response.json()
         return result  # type: ignore[no-any-return]
 
-    @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
+    @backoff.on_exception(
+        backoff.expo,
+        # Omit retries on timeouts because timeout is already very long
+        STATUS_EXCEPTIONS + (NetworkError,),
+        giveup=giveup_unless_bad_gateway,
+        max_tries=DEFAULT_NETWORK_RETRIES,
+    )
     async def lookml_validation(
         self, project: str, timeout: int = LOOKML_VALIDATION_TIMEOUT
     ) -> JsonDict:
@@ -886,7 +1015,13 @@ class LookerClient:
         result = response.json()
         return result  # type: ignore[no-any-return]
 
-    @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
+    @backoff.on_exception(
+        backoff.expo,
+        # Omit retries on timeouts because timeout is already very long
+        STATUS_EXCEPTIONS + (NetworkError,),
+        giveup=giveup_unless_bad_gateway,
+        max_tries=DEFAULT_NETWORK_RETRIES,
+    )
     async def cached_lookml_validation(self, project: str) -> Optional[JsonDict]:
         logger.debug(f"Getting cached LookML validation results for '{project}'")
         url = utils.compose_url(self.api_url, path=["projects", project, "validate"])
@@ -914,7 +1049,12 @@ class LookerClient:
         return result  # type: ignore[no-any-return]
 
     @cached(cache=Cache.MEMORY, serializer=serializers.PickleSerializer())  # type: ignore
-    @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
+    @backoff.on_exception(
+        backoff.expo,
+        BACKOFF_EXCEPTIONS,
+        giveup=giveup_unless_bad_gateway,
+        max_tries=DEFAULT_NETWORK_RETRIES,
+    )
     async def all_folders(self) -> List[JsonDict]:
         logger.debug("Getting information about all folders")
         url = utils.compose_url(self.api_url, path=["folders"])
@@ -934,7 +1074,12 @@ class LookerClient:
         result = response.json()
         return result  # type: ignore[no-any-return]
 
-    @backoff.on_exception(backoff.expo, BACKOFF_EXCEPTIONS, max_tries=DEFAULT_MAX_TRIES)
+    @backoff.on_exception(
+        backoff.expo,
+        BACKOFF_EXCEPTIONS,
+        giveup=giveup_unless_bad_gateway,
+        max_tries=DEFAULT_NETWORK_RETRIES,
+    )
     async def run_query(
         self, query_id: str, explore: str, model: str, dimension: Optional[str] = None
     ) -> str:

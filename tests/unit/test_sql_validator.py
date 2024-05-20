@@ -373,7 +373,7 @@ async def test_get_query_results_handles_exceptions_raised_within(
     with pytest.raises(LookerApiError):
         await asyncio.gather(task)
 
-    assert mocked_api["get_query_results"].call_count == 3
+    assert mocked_api["get_query_results"].call_count == 1
 
 
 @pytest.mark.parametrize("fail_fast", (True, False))
