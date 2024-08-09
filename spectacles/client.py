@@ -1,3 +1,4 @@
+import asyncio
 import json
 import time
 from dataclasses import dataclass
@@ -77,8 +78,11 @@ def backoff_with_exceptions(func: Callable[..., Any]) -> Callable[..., Any]:
         NETWORK_EXCEPTIONS,
         max_tries=DEFAULT_NETWORK_RETRIES,
     )
-    def wrapper(*args: Any, **kwargs: Any) -> Any:
-        return func(*args, **kwargs)
+    async def wrapper(*args: Any, **kwargs: Any) -> Any:
+        if asyncio.iscoroutinefunction(func):
+            return await func(*args, **kwargs)
+        else:
+            return func(*args, **kwargs)
 
     return wrapper
 
