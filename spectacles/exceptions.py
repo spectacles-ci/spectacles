@@ -25,8 +25,7 @@ class SpectaclesException(Exception):
         return {k: v for k, v in self.__dict__.items() if not k.startswith("_")}
 
 
-class LookMlNotFound(SpectaclesException):
-    ...
+class LookMlNotFound(SpectaclesException): ...
 
 
 class LookerApiError(SpectaclesException):
