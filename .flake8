@@ -3,5 +3,5 @@ exclude = .git,__pycache__,docs,build,dist
 builtins = unicode
 tee = True
 select = C,E,F,W,B,B950
-ignore = E203,E501,W503
+ignore = E203,E501,W503,E701
 max-line-length = 88

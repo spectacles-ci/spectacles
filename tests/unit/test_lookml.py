@@ -92,8 +92,7 @@ def test_comparison_to_mismatched_type_object_should_fail(
 ) -> None:
     lookml_obj = request.getfixturevalue(obj_name)
 
-    class SomethingElse:
-        ...
+    class SomethingElse: ...
 
     assert lookml_obj != 1
     assert lookml_obj != "foo"
