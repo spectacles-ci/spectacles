@@ -139,20 +139,26 @@ class ContentValidator:
         content_type: str,
     ) -> List[ContentError]:
         content_errors: List[ContentError] = []
+        if not project.is_complete_project:
+            logger.debug(
+                f"Project is not complete -- showing errors for all models/explores"
+            )
+            create_if_missing = True
+
         for error in result["errors"]:
             model_name = error["model_name"]
             explore_name = error["explore_name"]
-            model: Optional[Model] = project.get_model(model_name)
+            model: Optional[Model] = project.get_model(
+                model_name, create_if_missing=create_if_missing
+            )
             if model:
-                explore: Optional[Explore] = model.get_explore(name=explore_name)
+                explore: Optional[Explore] = model.get_explore(
+                    name=explore_name, create_if_missing=create_if_missing
+                )
             else:
                 explore = None
             # Skip errors that are not associated with selected explores or existing models
-            if not project.is_complete_project:
-                logger.debug(
-                    f"Project is not complete -- showing errors for all models/explores"
-                )
-            if explore or model or not project.is_complete_project:
+            if explore or model:
                 content_id = result[content_type]["id"]
                 folder = result[content_type].get("folder")
                 folder_name: Optional[str] = folder.get("name") if folder else None
@@ -178,9 +184,9 @@ class ContentValidator:
                 )
                 if explore and content_error not in explore.errors:
                     explore.errors.append(content_error)
+                    content_errors.append(content_error)
                 elif model and content_error not in model.errors:
                     model.errors.append(content_error)
-
-                content_errors.append(content_error)
+                    content_errors.append(content_error)
 
         return content_errors

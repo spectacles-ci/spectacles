@@ -277,10 +277,15 @@ class Model(LookMlObject):
         for explore in self.explores:
             explore.queried = value
 
-    def get_explore(self, name: str) -> Optional[Explore]:
-        return next(
+    def get_explore(
+        self, name: str, create_if_missing: bool = False
+    ) -> Optional[Explore]:
+        explore = next(
             (explore for explore in self.explores if explore.name == name), None
         )
+        if not explore and create_if_missing:
+            explore = Explore(name=name, model_name=self.name)
+            self.explores.append(explore)
 
     def get_errored_explores(self) -> Generator[Explore, None, None]:
         for explore in self.explores:
@@ -382,15 +387,21 @@ class Project(LookMlObject):
         for model in self.models:
             model.queried = value
 
-    def get_model(self, name: str) -> Optional[Model]:
-        return next((model for model in self.models if model.name == name), None)
+    def get_model(self, name: str, create_if_missing: bool = False) -> Optional[Model]:
+        models = next((model for model in self.models if model.name == name), None)
+        if models is None and create_if_missing:
+            models = Model(name=name, project_name=self.name, explores=[])
+            self.models.append(models)
+        return models
 
-    def get_explore(self, model: str, name: str) -> Optional[Explore]:
-        model_object = self.get_model(model)
+    def get_explore(
+        self, model: str, name: str, create_if_missing: bool = False
+    ) -> Optional[Explore]:
+        model_object = self.get_model(model, create_if_missing)
         if not model_object:
             return None
         else:
-            return model_object.get_explore(name)
+            return model_object.get_explore(name, create_if_missing)
 
     def get_results(
         self,
