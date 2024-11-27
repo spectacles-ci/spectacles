@@ -608,7 +608,7 @@ class Runner:
 
     @staticmethod
     def _incremental_results(base: JsonDict, target: JsonDict) -> JsonDict:
-        """Returns a new result with only the additional errors in `additional`."""
+        """Returns a new result with only the additional errors in `target`."""
         diff: JsonDict = {
             "validator": "content",
             # Start with models and explores we know passed for the base ref
