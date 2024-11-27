@@ -534,7 +534,7 @@ async def build_project(
     else:
         # Create a project with only the models specified in the filters
         logger.debug("Building project with only the filtered models")
-        models = Dict[str, Model]
+        models: Dict[str, Model] = {}
         for filter in filters:
             model, explore = filter.split("/")
             if model not in models:
