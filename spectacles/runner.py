@@ -355,6 +355,7 @@ class Runner:
     ) -> JsonDict:
         if filters is None:
             filters = ["*/*"]
+        get_full_project = any("*" in f for f in filters)
         validator = SqlValidator(self.client, concurrency, runtime_threshold)
         ephemeral = True if incremental else None
         # Create explore-level tests for the desired ref
@@ -367,6 +368,7 @@ class Runner:
                 filters=filters,
                 include_dimensions=True,
                 ignore_hidden_fields=ignore_hidden_fields,
+                get_full_project=get_full_project,
             )
             base_explores: Set[CompiledSql] = set()
             if incremental:
@@ -564,6 +566,8 @@ class Runner:
                 logger.debug(
                     "Incremental mode is enabled, initializing and empty project"
                 )
+                # Incremental content validation doesn't require knowing anything about the project hierarchy
+                # we can initialize and empty project and pass it to the validator
                 project = Project(name=self.project, models=[])
 
             await validator.validate(project)
