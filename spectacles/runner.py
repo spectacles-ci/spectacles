@@ -595,6 +595,7 @@ class Runner:
                     name=self.project,
                     filters=filters,
                     include_all_explores=True,
+                    get_full_project=get_full_project,
                 )
                 await validator.validate(target_project)
                 target_results = target_project.get_results(
