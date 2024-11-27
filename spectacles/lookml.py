@@ -507,28 +507,39 @@ async def build_project(
     include_dimensions: bool = False,
     ignore_hidden_fields: bool = False,
     include_all_explores: bool = False,
+    get_full_project: bool = True,
 ) -> Project:
     """Creates an object (tree) representation of a LookML project."""
     if filters is None:
         filters = ["*/*"]
 
-    models = []
-    fields = ["name", "project_name", "explores"]
-    for lookmlmodel in await client.get_lookml_models(fields=fields):
-        model = Model.from_json(lookmlmodel)
-        if model.project_name == name:
-            models.append(model)
+    if get_full_project:
+        models = []
+        fields = ["name", "project_name", "explores"]
+        for lookmlmodel in await client.get_lookml_models(fields=fields):
+            model = Model.from_json(lookmlmodel)
+            if model.project_name == name:
+                models.append(model)
 
-    if not models:
-        raise LookMlNotFound(
-            name="project-models-not-found",
-            title="No configured models found for the specified project.",
-            detail=(
-                f"Go to {client.base_url}/projects and confirm "
-                "a) at least one model exists for the project and "
-                "b) it has an active configuration."
-            ),
-        )
+        if not models:
+            raise LookMlNotFound(
+                name="project-models-not-found",
+                title="No configured models found for the specified project.",
+                detail=(
+                    f"Go to {client.base_url}/projects and confirm "
+                    "a) at least one model exists for the project and "
+                    "b) it has an active configuration."
+                ),
+            )
+    else:
+        models = Dict[str, Model]
+        for filter in filters:
+            model, explore = filter.split("/")
+            if model not in models:
+                models[model] = Model(name=model, project_name=name, explores=[])
+            if explore not in models[model].explores:
+                models[model].explores.append(Explore(name=explore, model_name=model))
+        return Project(name=name, models=models.values())
 
     # Prune to selected explores for non-content validators
     if not include_all_explores:
