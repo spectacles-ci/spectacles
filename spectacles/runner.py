@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 from spectacles.client import LOOKML_VALIDATION_TIMEOUT, LookerClient
 from spectacles.exceptions import LookerApiError, SpectaclesException, SqlError
 from spectacles.logger import GLOBAL_LOGGER as logger
-from spectacles.lookml import CompiledSql, Explore, build_project
+from spectacles.lookml import CompiledSql, Explore, build_project, Project
 from spectacles.models import JsonDict, SkipReason
 from spectacles.printer import print_header
 from spectacles.utils import time_hash
@@ -543,22 +543,29 @@ class Runner:
                 exclude_personal,
                 folders,
             )
-            logger.info(
-                "Building LookML project hierarchy for project "
-                f"'{self.project}' @ {self.branch_manager.ref}"
-            )
-            project = await build_project(
-                self.client,
-                name=self.project,
-                filters=filters,
-                include_all_explores=True,
-            )
-            explore_count = project.count_explores()
-            print_header(
-                f"Validating content based on {explore_count} "
-                f"{'explore' if explore_count == 1 else 'explores'}"
-                + (" [incremental mode] " if incremental else "")
-            )
+            if not incremental:
+                logger.info(
+                    "Building LookML project hierarchy for project "
+                    f"'{self.project}' @ {self.branch_manager.ref}"
+                )
+                project = await build_project(
+                    self.client,
+                    name=self.project,
+                    filters=filters,
+                    include_all_explores=True,
+                )
+                explore_count = project.count_explores()
+                print_header(
+                    f"Validating content based on {explore_count} "
+                    f"{'explore' if explore_count == 1 else 'explores'}"
+                    + (" [incremental mode] " if incremental else "")
+                )
+            else:
+                logger.debug(
+                    "Incremental mode is enabled, initializing and empty project"
+                )
+                project = Project(name=self.project)
+
             await validator.validate(project)
             results = project.get_results(validator="content", filters=filters)
 
