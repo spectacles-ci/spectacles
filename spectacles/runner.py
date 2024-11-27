@@ -540,7 +540,7 @@ class Runner:
         logger.debug(
             f"Validating content. ref={ref}, filters={filters}, incremental={incremental}",
         )
-        if filters is not None or filters != ["*/*"]:
+        if filters is not None or filters == ["*/*"]:
             # Only build the full project from the API if we're using a wildcard filter and not in incremental mode
             get_full_project = any("*" in f for f in filters) or (not incremental)
             logger.debug(f"get_full_project = {get_full_project}")
