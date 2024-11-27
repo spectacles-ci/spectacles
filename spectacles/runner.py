@@ -564,7 +564,7 @@ class Runner:
                 logger.debug(
                     "Incremental mode is enabled, initializing and empty project"
                 )
-                project = Project(name=self.project)
+                project = Project(name=self.project, models=[])
 
             await validator.validate(project)
             results = project.get_results(validator="content", filters=filters)
