@@ -141,9 +141,6 @@ class ContentValidator:
         content_errors: List[ContentError] = []
         create_if_missing = False
         if not project.is_complete_project:
-            logger.debug(
-                f"Project is not complete -- showing errors for all models/explores"
-            )
             create_if_missing = True
 
         for error in result["errors"]:
