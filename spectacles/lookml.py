@@ -521,6 +521,7 @@ async def build_project(
     """Creates an object (tree) representation of a LookML project."""
     if filters is None:
         filters = ["*/*"]
+    is_complete_project = False
 
     if get_full_project:
         models = []
@@ -540,8 +541,7 @@ async def build_project(
                     "b) it has an active configuration."
                 ),
             )
-        else:
-            project.is_complete_project = True
+        is_complete_project = True
 
     else:
         # Create a project with only the models specified in the filters
@@ -581,4 +581,6 @@ async def build_project(
     else:
         project = Project(name, [m for m in models if len(m.explores) > 0])
 
+    # Indicates whether the project has all of the models/explores or just the selected ones
+    project.is_complete_project = is_complete_project
     return project
