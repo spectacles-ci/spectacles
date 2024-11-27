@@ -543,6 +543,7 @@ class Runner:
         if filters is not None:
             # Only build the full project from the API if we're using a wildcard filter and not in incremental mode
             get_full_project = any("*" in f for f in filters) or (not incremental)
+            logger.debug(f"get_full_project = {get_full_project}")
 
         if folders is None:
             folders = []
