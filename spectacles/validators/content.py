@@ -133,7 +133,10 @@ class ContentValidator:
             )
 
     def _get_errors_from_result(
-        self, project: Project, result: Dict[str, Any], content_type: str
+        self,
+        project: Project,
+        result: Dict[str, Any],
+        content_type: str,
     ) -> List[ContentError]:
         content_errors: List[ContentError] = []
         for error in result["errors"]:
@@ -145,7 +148,11 @@ class ContentValidator:
             else:
                 explore = None
             # Skip errors that are not associated with selected explores or existing models
-            if explore or model:
+            if not project.is_complete_project:
+                logger.debug(
+                    f"Project is not complete -- showing errors for all models/explores"
+                )
+            if explore or model or not project.is_complete_project:
                 content_id = result[content_type]["id"]
                 folder = result[content_type].get("folder")
                 folder_name: Optional[str] = folder.get("name") if folder else None

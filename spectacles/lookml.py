@@ -307,6 +307,7 @@ class Project(LookMlObject):
     def __init__(self, name: str, models: Sequence[Model]) -> None:
         self.name = name
         self.models = models
+        self._is_complete = False
 
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, Project):
@@ -343,6 +344,14 @@ class Project(LookMlObject):
                         yield dimension
                 else:
                     yield dimension
+
+    @property
+    def is_complete_project(self) -> bool:
+        return self._is_complete
+
+    @is_complete_project.setter
+    def is_complete_project(self, value: bool) -> None:
+        self._is_complete = value
 
     @property
     def errored(self) -> Optional[bool]:
@@ -531,6 +540,9 @@ async def build_project(
                     "b) it has an active configuration."
                 ),
             )
+        else:
+            project.is_complete_project = True
+
     else:
         # Create a project with only the models specified in the filters
         logger.debug("Building project with only the filtered models")

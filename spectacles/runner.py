@@ -355,7 +355,10 @@ class Runner:
     ) -> JsonDict:
         if filters is None:
             filters = ["*/*"]
-        get_full_project = any("*" in f for f in filters)
+        else:
+            # Only build the full project from the API if we're using a wildcard filter and not in incremental mode
+            get_full_project = any("*" in f for f in filters) or incremental
+
         validator = SqlValidator(self.client, concurrency, runtime_threshold)
         ephemeral = True if incremental else None
         # Create explore-level tests for the desired ref
@@ -534,8 +537,10 @@ class Runner:
         exclude_personal: bool = False,
         folders: Optional[List[str]] = None,
     ) -> JsonDict:
-        if filters is None:
-            filters = ["*/*"]
+        if filters is not None:
+            # Only build the full project from the API if we're using a wildcard filter and not in incremental mode
+            get_full_project = any("*" in f for f in filters) or (not incremental)
+
         if folders is None:
             folders = []
 
@@ -545,30 +550,23 @@ class Runner:
                 exclude_personal,
                 folders,
             )
-            if not incremental:
-                logger.info(
-                    "Building LookML project hierarchy for project "
-                    f"'{self.project}' @ {self.branch_manager.ref}"
-                )
-                project = await build_project(
-                    self.client,
-                    name=self.project,
-                    filters=filters,
-                    include_all_explores=True,
-                )
-                explore_count = project.count_explores()
-                print_header(
-                    f"Validating content based on {explore_count} "
-                    f"{'explore' if explore_count == 1 else 'explores'}"
-                    + (" [incremental mode] " if incremental else "")
-                )
-            else:
-                logger.debug(
-                    "Incremental mode is enabled, initializing and empty project"
-                )
-                # Incremental content validation doesn't require knowing anything about the project hierarchy
-                # we can initialize and empty project and pass it to the validator
-                project = Project(name=self.project, models=[])
+            logger.info(
+                "Building LookML project hierarchy for project "
+                f"'{self.project}' @ {self.branch_manager.ref}"
+            )
+            project = await build_project(
+                self.client,
+                name=self.project,
+                filters=filters,
+                include_all_explores=True,
+                get_full_project=get_full_project,
+            )
+            explore_count = project.count_explores()
+            print_header(
+                f"Validating content based on {explore_count} "
+                f"{'explore' if explore_count == 1 else 'explores'}"
+                + (" [incremental mode] " if incremental else "")
+            )
 
             await validator.validate(project)
             results = project.get_results(validator="content", filters=filters)
