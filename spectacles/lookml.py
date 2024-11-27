@@ -564,7 +564,7 @@ async def build_project(
                 models[model] = Model(name=model, project_name=name, explores=[])
             if explore not in models[model].explores:
                 models[model].explores.append(Explore(name=explore, model_name=model))
-        project = Project(name=name, models=models.values())
+        project = Project(name=name, models=list(models.values()))
         models = project.models
 
     # Prune to selected explores for non-content validators
