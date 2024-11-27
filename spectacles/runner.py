@@ -538,7 +538,7 @@ class Runner:
         folders: Optional[List[str]] = None,
     ) -> JsonDict:
         logger.debug(
-            "Validating content", ref=ref, filters=filters, incremental=incremental
+            f"Validating content. ref={ref}, filters={filters}, incremental={incremental}",
         )
         if filters is not None:
             # Only build the full project from the API if we're using a wildcard filter and not in incremental mode
