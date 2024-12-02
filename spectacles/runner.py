@@ -565,7 +565,6 @@ class Runner:
                 name=self.project,
                 filters=filters,
                 include_all_explores=True,
-                get_full_project=get_full_project,
             )
             explore_count = project.count_explores()
             print_header(
@@ -573,7 +572,6 @@ class Runner:
                 f"{'explore' if explore_count == 1 else 'explores'}"
                 + (" [incremental mode] " if incremental else "")
             )
-
             await validator.validate(project)
             results = project.get_results(validator="content", filters=filters)
 
