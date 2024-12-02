@@ -474,7 +474,7 @@ def _build_base_subparser() -> ArgumentParser:
         "--do-not-track",
         action=EnvVarStoreTrueAction,
         env_var="SPECTACLES_DO_NOT_TRACK",
-        help="[LEGACY] This argument is no longer used.",
+        help="[DEPRECATED] Tracking is disabled by default, this argument is unused.",
     )
 
     return base_subparser
