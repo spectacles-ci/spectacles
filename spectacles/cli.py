@@ -16,7 +16,6 @@ import yaml
 from yaml.parser import ParserError
 
 import spectacles.printer as printer
-import spectacles.tracking as tracking
 from spectacles.client import (
     DEFAULT_API_VERSION,
     LOOKML_VALIDATION_TIMEOUT,
@@ -292,13 +291,6 @@ def main() -> None:
 
     set_file_handler(args.log_dir)
 
-    if not args.do_not_track:
-        invocation_id = tracking.track_invocation_start(
-            args.base_url,
-            args.command,
-            project=args.project if args.command != "connect" else None,
-        )
-
     if args.command == "connect":
         asyncio.run(
             run_connect(
@@ -387,14 +379,6 @@ def main() -> None:
                 use_personal_branch=args.use_personal_branch,
                 timeout=args.timeout,
             )
-        )
-
-    if not args.do_not_track:
-        tracking.track_invocation_end(
-            args.base_url,
-            args.command,
-            invocation_id,  # pyright: ignore[reportUnboundVariable, reportPossiblyUnboundVariable]
-            args.project if args.command != "connect" else None,
         )
 
 
@@ -490,7 +474,7 @@ def _build_base_subparser() -> ArgumentParser:
         "--do-not-track",
         action=EnvVarStoreTrueAction,
         env_var="SPECTACLES_DO_NOT_TRACK",
-        help="Disables anonymised event tracking.",
+        help="[DEPRECATED] Tracking is disabled by default, this argument is unused.",
     )
 
     return base_subparser
