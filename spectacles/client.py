@@ -717,6 +717,7 @@ class LookerClient:
         try:
             response.raise_for_status()
         except httpx.HTTPStatusError as error:
+            logger.debug(f"Error response: {response.text}")
             raise LookerApiError(
                 name="unable-to-get-dimension-lookml",
                 title="Couldn't retrieve dimensions.",
