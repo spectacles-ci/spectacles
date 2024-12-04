@@ -343,9 +343,7 @@ def test_parse_args_with_mutually_exclusive_args_commit_ref(
 @patch("sys.argv", new=["spectacles", "sql"])
 @patch("spectacles.cli.Runner")
 @patch("spectacles.cli.LookerClient", autospec=True)
-@patch("spectacles.cli.tracking")
 def test_main_with_sql_validator(
-    mock_tracking: MagicMock,
     mock_client: MagicMock,
     mock_runner: MagicMock,
     env: None,
@@ -355,11 +353,6 @@ def test_main_with_sql_validator(
     mock_runner.return_value.validate_sql = AsyncMock(return_value=validation)
     with pytest.raises(SystemExit):
         main()
-    mock_tracking.track_invocation_start.assert_called_once_with(
-        "BASE_URL_ENV_VAR", "sql", project="PROJECT_ENV_VAR"
-    )
-    # TODO: Uncomment the below assertion once #262 is fixed
-    # mock_tracking.track_invocation_end.assert_called_once()
     mock_runner.assert_called_once()
     assert "ecommerce.orders passed" in caplog.text
     assert "ecommerce.sessions passed" in caplog.text
@@ -369,9 +362,7 @@ def test_main_with_sql_validator(
 @patch("sys.argv", new=["spectacles", "content"])
 @patch("spectacles.cli.Runner")
 @patch("spectacles.cli.LookerClient", autospec=True)
-@patch("spectacles.cli.tracking")
 def test_main_with_content_validator(
-    mock_tracking: MagicMock,
     mock_client: MagicMock,
     mock_runner: MagicMock,
     env: None,
@@ -381,11 +372,6 @@ def test_main_with_content_validator(
     mock_runner.return_value.validate_content = AsyncMock(return_value=validation)
     with pytest.raises(SystemExit):
         main()
-    mock_tracking.track_invocation_start.assert_called_once_with(
-        "BASE_URL_ENV_VAR", "content", project="PROJECT_ENV_VAR"
-    )
-    # TODO: Uncomment the below assertion once #262 is fixed
-    # mock_tracking.track_invocation_end.assert_called_once()
     mock_runner.assert_called_once()
     assert "ecommerce.orders passed" in caplog.text
     assert "ecommerce.sessions passed" in caplog.text
@@ -395,9 +381,7 @@ def test_main_with_content_validator(
 @patch("sys.argv", new=["spectacles", "assert"])
 @patch("spectacles.cli.Runner", autospec=True)
 @patch("spectacles.cli.LookerClient", autospec=True)
-@patch("spectacles.cli.tracking")
 def test_main_with_assert_validator(
-    mock_tracking: MagicMock,
     mock_client: MagicMock,
     mock_runner: MagicMock,
     env: None,
@@ -407,11 +391,6 @@ def test_main_with_assert_validator(
     mock_runner.return_value.validate_data_tests = AsyncMock(return_value=validation)
     with pytest.raises(SystemExit):
         main()
-    mock_tracking.track_invocation_start.assert_called_once_with(
-        "BASE_URL_ENV_VAR", "assert", project="PROJECT_ENV_VAR"
-    )
-    # TODO: Uncomment the below assertion once #262 is fixed
-    # mock_tracking.track_invocation_end.assert_called_once()
     mock_runner.assert_called_once()
     assert "ecommerce.orders passed" in caplog.text
     assert "ecommerce.sessions passed" in caplog.text
@@ -421,9 +400,7 @@ def test_main_with_assert_validator(
 @patch("sys.argv", new=["spectacles", "lookml"])
 @patch("spectacles.cli.Runner", autospec=True)
 @patch("spectacles.cli.LookerClient", autospec=True)
-@patch("spectacles.cli.tracking")
 def test_main_with_lookml_validator(
-    mock_tracking: MagicMock,
     mock_client: MagicMock,
     mock_runner: MagicMock,
     env: None,
@@ -433,11 +410,6 @@ def test_main_with_lookml_validator(
     mock_runner.return_value.validate_lookml = AsyncMock(return_value=validation)
     with pytest.raises(SystemExit):
         main()
-    mock_tracking.track_invocation_start.assert_called_once_with(
-        "BASE_URL_ENV_VAR", "lookml", project="PROJECT_ENV_VAR"
-    )
-    # TODO: Uncomment the below assertion once #262 is fixed
-    # mock_tracking.track_invocation_end.assert_called_once()
     mock_runner.assert_called_once()
     assert "eye_exam/eye_exam.model.lkml" in caplog.text
     assert "Could not find a field named 'users__fail.first_name'" in caplog.text
@@ -445,33 +417,8 @@ def test_main_with_lookml_validator(
 
 @patch("sys.argv", new=["spectacles", "connect"])
 @patch("spectacles.cli.run_connect")
-@patch("spectacles.cli.tracking")
-def test_main_with_connect(
-    mock_tracking: MagicMock, mock_run_connect: AsyncMock, env: None
-) -> None:
+def test_main_with_connect(mock_run_connect: AsyncMock, env: None) -> None:
     main()
-    mock_tracking.track_invocation_start.assert_called_once_with(
-        "BASE_URL_ENV_VAR", "connect", project=None
-    )
-    mock_tracking.track_invocation_end.assert_called_once()
-    mock_run_connect.assert_called_once_with(
-        base_url="BASE_URL_ENV_VAR",
-        client_id="CLIENT_ID_ENV_VAR",
-        client_secret="CLIENT_SECRET_ENV_VAR",
-        port=8080,
-        api_version=4.0,
-    )
-
-
-@patch("sys.argv", new=["spectacles", "connect", "--do-not-track"])
-@patch("spectacles.cli.run_connect")
-@patch("spectacles.cli.tracking")
-def test_main_with_do_not_track(
-    mock_tracking: MagicMock, mock_run_connect: AsyncMock, env: None
-) -> None:
-    main()
-    mock_tracking.track_invocation_start.assert_not_called()
-    mock_tracking.track_invocation_end.assert_not_called()
     mock_run_connect.assert_called_once_with(
         base_url="BASE_URL_ENV_VAR",
         client_id="CLIENT_ID_ENV_VAR",
