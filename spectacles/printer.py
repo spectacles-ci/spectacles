@@ -51,7 +51,7 @@ def print_header(
     logger.info(f"{header}\n")
 
 
-def print_looker_ci_warning():
+def print_looker_ci_warning() -> None:
     print_header(
         green(bold("Looker Continuous Integration Is Now In Public Preview")),
         LINE_WIDTH + COLOR_CODE_LENGTH * 2,
