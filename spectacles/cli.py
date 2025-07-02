@@ -267,6 +267,8 @@ def main() -> None:
     parser = create_parser()
     args = parser.parse_args(inputs)
 
+    no_looker_ci_warning = getattr(args, "no_looker_ci_warning", False)
+
     branch = getattr(args, "branch", None)
     commit_ref = getattr(args, "commit_ref", None)
     ref = branch or commit_ref
@@ -381,6 +383,10 @@ def main() -> None:
             )
         )
 
+    # print out announcement about Looker CI Public Preview
+    if not no_looker_ci_warning:
+        printer.print_looker_ci_warning()
+
 
 def create_parser() -> ArgumentParser:
     """Creates the top-level argument parser.
@@ -469,6 +475,12 @@ def _build_base_subparser() -> ArgumentParser:
         env_var="SPECTACLES_LOG_DIR",
         default="logs",
         help="The directory that Spectacles will write logs to.",
+    )
+    base_subparser.add_argument(
+        "--no-looker-ci-warning",
+        action=EnvVarStoreTrueAction,
+        env_var="SPECTACLES_NO_LOOKER_CI_WARNING",
+        help="Flag to suppress the announcement about Looker CI's Public Preview.",
     )
     base_subparser.add_argument(
         "--do-not-track",

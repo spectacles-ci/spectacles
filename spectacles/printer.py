@@ -51,6 +51,27 @@ def print_header(
     logger.info(f"{header}\n")
 
 
+def print_looker_ci_warning() -> None:
+    print_header(
+        green(bold("Looker Continuous Integration Is Now In Public Preview")),
+        LINE_WIDTH + COLOR_CODE_LENGTH * 2,
+    )
+    logger.info(
+        bold(
+            "You can now run continuous integration checks directly in your Looker instance.\n\n"
+            "Read about the Looker Continuous Integration Public Preview here:\n\n"
+            "https://cloud.google.com/looker/docs/continuous-integration\n"
+        )
+    )
+    logger.info(
+        dim(
+            "You can hide this announcement with the --no-looker-ci-warning flag or by\n"
+            "setting the SPECTACLES_NO_LOOKER_CI_WARNING environment variable to True."
+        )
+    )
+    logger.info("\n" + "".center(LINE_WIDTH, "=") + "\n")
+
+
 def print_content_error(
     model: str,
     explore: str,
