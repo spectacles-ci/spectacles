@@ -163,3 +163,24 @@ async def test_bad_http_status_should_cause_backoff_and_retry(
     )
     await looker_client.run_lookml_test(project=project)
     assert mocked_api["run_lookml_test"].call_count == 3
+
+
+@patch("spectacles.client.LookerClient.request")
+async def test_read_timeout_should_cause_backoff_and_retry(
+    mock_request: AsyncMock,
+    looker_client: LookerClient,
+    client_kwargs: Dict[str, Dict[str, Any]],
+) -> None:
+    response = httpx.Response(
+        200,
+        request=httpx.Request("POST", "https://spectacles.looker.com"),
+        json={"errors": []}
+    )
+    mock_request.side_effect = (
+        httpx.ReadTimeout("Read timeout occurred"),
+        httpx.ReadTimeout("Read timeout occurred"),
+        response
+    )
+    client_method = getattr(looker_client, 'lookml_validation')
+    await client_method(**client_kwargs['lookml_validation'])
+    assert mock_request.call_count == 3
