@@ -8,7 +8,7 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 import backoff
 import httpx
 from aiocache import Cache, cached, serializers
-from httpx import HTTPStatusError, NetworkError, RemoteProtocolError, TimeoutException
+from httpx import HTTPStatusError, NetworkError, RemoteProtocolError, TimeoutException, ReadTimeout
 
 import spectacles.utils as utils
 from spectacles.exceptions import LookerApiError, SpectaclesException
@@ -919,6 +919,7 @@ class LookerClient:
         + (
             NetworkError,
             RemoteProtocolError,
+            ReadTimeout,
         ),
         giveup=giveup_unless_bad_gateway,
         max_tries=DEFAULT_RETRIES,
