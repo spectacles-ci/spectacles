@@ -11,9 +11,9 @@ from aiocache import Cache, cached, serializers
 from httpx import (
     HTTPStatusError,
     NetworkError,
+    ReadTimeout,
     RemoteProtocolError,
     TimeoutException,
-    ReadTimeout,
 )
 
 import spectacles.utils as utils

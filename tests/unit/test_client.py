@@ -174,13 +174,13 @@ async def test_read_timeout_should_cause_backoff_and_retry(
     response = httpx.Response(
         200,
         request=httpx.Request("POST", "https://spectacles.looker.com"),
-        json={"errors": []}
+        json={"errors": []},
     )
     mock_request.side_effect = (
         httpx.ReadTimeout("Read timeout occurred"),
         httpx.ReadTimeout("Read timeout occurred"),
-        response
+        response,
     )
-    client_method = getattr(looker_client, 'lookml_validation')
-    await client_method(**client_kwargs['lookml_validation'])
+    client_method = getattr(looker_client, "lookml_validation")
+    await client_method(**client_kwargs["lookml_validation"])
     assert mock_request.call_count == 3
