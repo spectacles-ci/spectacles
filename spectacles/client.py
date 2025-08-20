@@ -8,7 +8,13 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 import backoff
 import httpx
 from aiocache import Cache, cached, serializers
-from httpx import HTTPStatusError, NetworkError, RemoteProtocolError, TimeoutException, ReadTimeout
+from httpx import (
+    HTTPStatusError,
+    NetworkError,
+    RemoteProtocolError,
+    TimeoutException,
+    ReadTimeout,
+)
 
 import spectacles.utils as utils
 from spectacles.exceptions import LookerApiError, SpectaclesException
