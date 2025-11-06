@@ -326,6 +326,7 @@ def main() -> None:
                 pin_imports=pin_imports,
                 ignore_hidden=args.ignore_hidden,
                 use_personal_branch=args.use_personal_branch,
+                result_format="json_bi" if args.new_result_format else "json_detail",
             )
         )
     elif args.command == "assert":
@@ -704,6 +705,11 @@ def _build_sql_subparser(
         action="store_true",
         help=("Exclude hidden fields from validation."),
     )
+    subparser.add_argument(
+        "--new-result-format",
+        action="store_true",
+        help="Whether to use the json_bi result format (instead of json_detail).",
+    )
     _build_validator_subparser(subparser_action, subparser)
     _build_select_subparser(subparser_action, subparser)
 
@@ -992,6 +998,7 @@ async def run_sql(
     pin_imports: Dict[str, str],
     use_personal_branch: bool,
     ignore_hidden: bool,
+    result_format: str,
 ) -> None:
     """Runs and validates the SQL for each selected LookML dimension."""
     # Don't trust env to ignore .netrc credentials
@@ -1013,6 +1020,7 @@ async def run_sql(
             runtime_threshold,
             chunk_size,
             ignore_hidden,
+            result_format,
         )
     finally:
         await async_client.aclose()

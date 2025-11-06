@@ -352,6 +352,7 @@ class Runner:
         runtime_threshold: int = DEFAULT_RUNTIME_THRESHOLD,
         chunk_size: int = DEFAULT_CHUNK_SIZE,
         ignore_hidden_fields: bool = False,
+        result_format: str = "json_detail",
     ) -> JsonDict:
         if filters is None:
             filters = ["*/*"]
@@ -444,7 +445,13 @@ class Runner:
         )
 
         async with self.branch_manager(ref=ref):
-            await validator.search(explores, fail_fast, chunk_size, profile=profile)
+            await validator.search(
+                explores,
+                fail_fast,
+                chunk_size,
+                profile=profile,
+                result_format=result_format,
+            )
 
         # Create dimension tests for the desired ref when explores errored
         if not fail_fast and incremental:

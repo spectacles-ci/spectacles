@@ -568,9 +568,11 @@ async def test_get_query_results_gives_up_after_retrying_expired_queries(
     assert query.explore.errored
 
 
+@pytest.mark.parametrize("result_format", ("json_detail", "json_bi"))
 @pytest.mark.parametrize("fail_fast", (True, False))
 async def test_search_works_with_passing_query(
     fail_fast: bool,
+    result_format: str,
     mocked_api: respx.MockRouter,
     validator: SqlValidator,
     explore: Explore,
@@ -591,30 +593,43 @@ async def test_search_works_with_passing_query(
         params={"fields": "id", "cache": "false"},
         name="create_query_task",
     ).respond(200, json={"id": query_task_id})
-    mocked_api.get("query_tasks/multi_results", name="get_query_results").respond(
-        200,
-        json={
-            query_task_id: {
-                "status": "complete",
-                "data": {
-                    "id": query_task_id,
-                    "runtime": 460.0,
-                    "sql": "SELECT * FROM users",
-                },
-            }
-        },
-    )
+    if result_format == "json_detail":
+        mocked_api.get("query_tasks/multi_results", name="get_query_results").respond(
+            200,
+            json={
+                query_task_id: {
+                    "status": "complete",
+                    "data": {
+                        "id": query_task_id,
+                        "runtime": 460.0,
+                        "sql": "SELECT * FROM users",
+                    },
+                }
+            },
+        )
+    if result_format == "json_bi":
+        mocked_api.get("query_tasks/multi_results", name="get_query_results").respond(
+            200,
+            json={
+                query_task_id: {
+                    "status": "complete",
+                    "data": {"metadata": {"sql": "select 1", "fields": {}}, "rows": []},
+                }
+            },
+        )
 
-    await validator.search(explores, fail_fast)
+    await validator.search(explores, fail_fast, result_format=result_format)
 
     mocked_api["create_query"].calls.assert_called_once()
     mocked_api["create_query_task"].calls.assert_called_once()
     mocked_api["get_query_results"].calls.assert_called_once()
 
 
+@pytest.mark.parametrize("result_format", ("json_detail", "json_bi"))
 @pytest.mark.parametrize("fail_fast", (True, False))
 async def test_search_works_with_error_query(
     fail_fast: bool,
+    result_format: str,
     mocked_api: respx.MockRouter,
     validator: SqlValidator,
     explore: Explore,
@@ -650,64 +665,101 @@ async def test_search_works_with_error_query(
         )
     )
 
-    mocked_api.get("query_tasks/multi_results", name="get_query_results").mock(
-        side_effect=(
-            httpx.Response(
-                200,
-                json={
-                    "abcdef1": {
-                        "status": "error",
-                        "data": {
-                            "id": "abcdef1",
-                            "runtime": 2.0,
-                            "sql": "SELECT * FROM users",
-                            "errors": [
-                                {
-                                    "message": message,
-                                    "sql_error_loc": {"line": 1, "column": 1},
-                                }
-                            ],
+    if result_format == "json_detail":
+        mocked_api.get("query_tasks/multi_results", name="get_query_results").mock(
+            side_effect=(
+                httpx.Response(
+                    200,
+                    json={
+                        "abcdef1": {
+                            "status": "error",
+                            "data": {
+                                "id": "abcdef1",
+                                "runtime": 2.0,
+                                "sql": "SELECT * FROM users",
+                                "errors": [
+                                    {
+                                        "message": message,
+                                        "sql_error_loc": {"line": 1, "column": 1},
+                                    }
+                                ],
+                            },
+                        }
+                    },
+                ),
+                httpx.Response(
+                    200,
+                    json={
+                        "abcdef2": {
+                            "status": "error",
+                            "data": {
+                                "id": "abcdef2",
+                                "runtime": 1.0,
+                                "sql": "SELECT age FROM users",
+                                "errors": [
+                                    {
+                                        "message": message,
+                                        "sql_error_loc": {"line": 1, "column": 1},
+                                    }
+                                ],
+                            },
                         },
-                    }
-                },
-            ),
-            httpx.Response(
-                200,
-                json={
-                    "abcdef2": {
-                        "status": "error",
-                        "data": {
-                            "id": "abcdef2",
-                            "runtime": 1.0,
-                            "sql": "SELECT age FROM users",
-                            "errors": [
-                                {
-                                    "message": message,
-                                    "sql_error_loc": {"line": 1, "column": 1},
-                                }
-                            ],
+                        "abcdef3": {
+                            "status": "error",
+                            "data": {
+                                "id": "abcdef3",
+                                "runtime": 1.0,
+                                "sql": "SELECT user_id FROM users",
+                                "errors": [
+                                    {
+                                        "message": message,
+                                        "sql_error_loc": {"line": 1, "column": 1},
+                                    }
+                                ],
+                            },
                         },
                     },
-                    "abcdef3": {
-                        "status": "error",
-                        "data": {
-                            "id": "abcdef3",
-                            "runtime": 1.0,
-                            "sql": "SELECT user_id FROM users",
-                            "errors": [
-                                {
-                                    "message": message,
-                                    "sql_error_loc": {"line": 1, "column": 1},
-                                }
-                            ],
-                        },
-                    },
-                },
-            ),
+                ),
+            )
         )
-    )
+    elif result_format == "json_bi":
+        mocked_api.get("query_tasks/multi_results", name="get_query_results").mock(
+            side_effect=(
+                httpx.Response(
+                    200,
+                    json={
+                        "abcdef1": {
+                            "status": "error",
+                            "data": {
+                                "metadata": {"sql": "select 1", "fields": {}},
+                                "rows": [{"looker_error": message}],
+                            },
+                        }
+                    },
+                ),
+                httpx.Response(
+                    200,
+                    json={
+                        "abcdef2": {
+                            "status": "error",
+                            "data": {
+                                "metadata": {"sql": "select 1", "fields": {}},
+                                "rows": [{"looker_error": message}],
+                            },
+                        },
+                        "abcdef3": {
+                            "status": "error",
+                            "data": {
+                                "metadata": {"sql": "select 1", "fields": {}},
+                                "rows": [{"looker_error": message}],
+                            },
+                        },
+                    },
+                ),
+            )
+        )
 
-    await validator.search(explores, fail_fast)
+    await validator.search(explores, fail_fast, result_format=result_format)
 
     if fail_fast:
         mocked_api["create_query"].calls.assert_called_once()

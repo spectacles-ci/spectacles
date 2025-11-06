@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from enum import Enum
 from typing import Annotated, Any, Dict, Literal, Optional, Tuple, TypeVar, Union
 
@@ -10,6 +12,13 @@ T = TypeVar("T")
 class SkipReason(str, Enum):
     NO_DIMENSIONS = "no_dimensions"
     UNMODIFIED = "unmodified"
+
+
+class JsonBiMetadata(BaseModel):
+    """Query metadata for the json_bi result format."""
+
+    fields: JsonDict
+    sql: str
 
 
 class ErrorSqlLocation(BaseModel):
@@ -45,12 +54,23 @@ class CompletedQueryResult(BaseModel):
         id: str
         runtime: float
 
+    class QueryResultDataJsonBi(BaseModel):
+        metadata: JsonBiMetadata
+        rows: list[JsonDict]
+
     status: Literal["complete"]
-    data: QueryResultData
+    data: Union[QueryResultData, QueryResultDataJsonBi]
 
     @property
-    def runtime(self) -> float:
-        return self.data.runtime
+    def runtime(self) -> float | None:
+        if isinstance(self.data, self.QueryResultData):
+            return self.data.runtime
+        else:
+            return None
+
+
+class ErrorRow(BaseModel):
+    looker_error: str
 
 
 class ErrorQueryResult(BaseModel):
@@ -66,16 +86,30 @@ class ErrorQueryResult(BaseModel):
         sql: Optional[str]
         errors: Optional[Tuple[QueryError, ...]]
 
+    class JsonBiError(BaseModel):
+        metadata: JsonBiMetadata
+        rows: list[ErrorRow]
+
+        @property
+        def errors(self) -> Tuple[QueryError, ...]:
+            return tuple(QueryError(message=row.looker_error) for row in self.rows)
+
     status: Literal["error"]
-    data: Union[ErrorData, MultiErrorData]
+    data: Union[ErrorData, MultiErrorData, JsonBiError]
 
     @property
-    def runtime(self) -> float:
-        return self.data.runtime
+    def runtime(self) -> float | None:
+        if isinstance(self.data, (self.ErrorData, self.MultiErrorData)):
+            return self.data.runtime
+        else:
+            return None
 
     @property
     def sql(self) -> Optional[str]:
-        return self.data.sql
+        if isinstance(self.data, (self.ErrorData, self.MultiErrorData)):
+            return self.data.sql
+        elif isinstance(self.data, self.JsonBiError):
+            return self.data.metadata.sql
 
     @property
     def errors(self) -> Tuple[QueryError, ...]:
@@ -87,6 +121,10 @@ class ErrorQueryResult(BaseModel):
             )
         elif isinstance(self.data, self.MultiErrorData):
             if self.data.errors is None:
+                raise TypeError("No errors contained in this query result")
+            return self.data.errors
+        elif isinstance(self.data, self.JsonBiError):
+            if not self.data.rows:
                 raise TypeError("No errors contained in this query result")
             return self.data.errors
         else:

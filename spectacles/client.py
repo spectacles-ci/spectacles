@@ -795,7 +795,9 @@ class LookerClient:
         return result  # type: ignore[no-any-return]
 
     @backoff_with_exceptions
-    async def create_query_task(self, query_id: str) -> str:
+    async def create_query_task(
+        self, query_id: str, result_format: str = "json_detail"
+    ) -> str:
         """Runs a previously created query asynchronously and returns the query task ID.
 
         If a ClientError or TimeoutError is received, attempts to retry.
@@ -811,7 +813,7 @@ class LookerClient:
         """
         # Using old-style string formatting so that strings are formatted lazily
         logger.debug("Starting query %s", query_id)
-        body = {"query_id": query_id, "result_format": "json_detail"}
+        body = {"query_id": query_id, "result_format": result_format}
         params = {"fields": ["id"]}
         url = utils.compose_url(self.api_url, path=["query_tasks"], params=params)
 
