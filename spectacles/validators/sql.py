@@ -178,7 +178,7 @@ class SqlValidator:
         fail_fast: bool,
         chunk_size: int = DEFAULT_CHUNK_SIZE,
         profile: bool = False,
-        result_format: str = "json_detail",
+        result_format: str = "json_bi",
     ) -> None:
         queries_to_run: asyncio.Queue[Optional[Query]] = asyncio.Queue()
         running_queries: asyncio.Queue[str] = asyncio.Queue()
@@ -262,7 +262,7 @@ class SqlValidator:
         queries_to_run: asyncio.Queue[Optional[Query]],
         running_queries: asyncio.Queue[str],
         query_slot: asyncio.Semaphore,
-        result_format: str = "json_detail",
+        result_format: str = "json_bi",
     ) -> None:
         try:
             # End execution if a sentinel is received from the queue

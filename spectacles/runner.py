@@ -352,7 +352,7 @@ class Runner:
         runtime_threshold: int = DEFAULT_RUNTIME_THRESHOLD,
         chunk_size: int = DEFAULT_CHUNK_SIZE,
         ignore_hidden_fields: bool = False,
-        result_format: str = "json_detail",
+        result_format: str = "json_bi",
     ) -> JsonDict:
         if filters is None:
             filters = ["*/*"]

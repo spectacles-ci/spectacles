@@ -796,7 +796,7 @@ class LookerClient:
 
     @backoff_with_exceptions
     async def create_query_task(
-        self, query_id: str, result_format: str = "json_detail"
+        self, query_id: str, result_format: str = "json_bi"
     ) -> str:
         """Runs a previously created query asynchronously and returns the query task ID.
 

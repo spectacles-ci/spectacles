@@ -326,7 +326,9 @@ def main() -> None:
                 pin_imports=pin_imports,
                 ignore_hidden=args.ignore_hidden,
                 use_personal_branch=args.use_personal_branch,
-                result_format="json_bi" if args.new_result_format else "json_detail",
+                result_format=(
+                    "json_detail" if args.use_legacy_result_format else "json_bi"
+                ),
             )
         )
     elif args.command == "assert":
@@ -706,9 +708,9 @@ def _build_sql_subparser(
         help=("Exclude hidden fields from validation."),
     )
     subparser.add_argument(
-        "--new-result-format",
+        "--use-legacy-result-format",
         action="store_true",
-        help="Whether to use the json_bi result format (instead of json_detail).",
+        help="Whether to use the json_detail result format (instead of default json_bi).",
     )
     _build_validator_subparser(subparser_action, subparser)
     _build_select_subparser(subparser_action, subparser)
