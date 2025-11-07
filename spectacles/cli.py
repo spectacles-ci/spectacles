@@ -684,7 +684,8 @@ def _build_sql_subparser(
         action="store_true",
         help=(
             "After validation, display queries that took longer than the runtime "
-            "threshold (5 seconds by default) to complete."
+            "threshold (5 seconds by default) to complete. Must use the legacy "
+            "result format (--use-legacy-result-format) if enabling profiler."
         ),
     )
     subparser.add_argument(

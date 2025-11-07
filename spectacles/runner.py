@@ -356,6 +356,16 @@ class Runner:
     ) -> JsonDict:
         if filters is None:
             filters = ["*/*"]
+        if profile and result_format == "json_bi":
+            raise SpectaclesException(
+                name="profiling-incompatible-with-json-bi",
+                title="Profiling incompatible with json_bi result format",
+                description=(
+                    "Profiling query runtimes is incompatible with the "
+                    "json_bi result format. Please use the legacy json_detail "
+                    "result format if enabling profiling."
+                ),
+            )
         validator = SqlValidator(self.client, concurrency, runtime_threshold)
         ephemeral = True if incremental else None
         # Create explore-level tests for the desired ref
