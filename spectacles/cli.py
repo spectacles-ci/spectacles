@@ -710,7 +710,7 @@ def _build_sql_subparser(
     subparser.add_argument(
         "--use-legacy-result-format",
         action="store_true",
-        help="Whether to use the json_detail result format (instead of default json_bi).",
+        help="Use the deprecated json_detail result format when creating queries with the Looker API (instead of the default, json_bi).",
     )
     _build_validator_subparser(subparser_action, subparser)
     _build_select_subparser(subparser_action, subparser)
