@@ -63,7 +63,7 @@ def client_kwargs() -> Dict[str, Dict[str, Any]]:
             "explore": "explore_name",
             "dimensions": ["dimension_a", "dimension_b"],
         },
-        create_query_task={"query_id": 13041},
+        create_query_task={"query_id": 13041, "result_format": "json_bi"},
         get_query_task_multi_results={"query_task_ids": ["ajsdkgj", "askkwk"]},
         create_branch={
             "project": "project_name",

@@ -352,9 +352,20 @@ class Runner:
         runtime_threshold: int = DEFAULT_RUNTIME_THRESHOLD,
         chunk_size: int = DEFAULT_CHUNK_SIZE,
         ignore_hidden_fields: bool = False,
+        result_format: str = "json_bi",
     ) -> JsonDict:
         if filters is None:
             filters = ["*/*"]
+        if profile and result_format == "json_bi":
+            raise SpectaclesException(
+                name="profiling-incompatible-with-json-bi",
+                title="Profiling incompatible with json_bi result format",
+                detail=(
+                    "Profiling query runtimes is incompatible with the "
+                    "json_bi result format. Please use the legacy json_detail "
+                    "result format if enabling profiling (--use-legacy-result-format)."
+                ),
+            )
         validator = SqlValidator(self.client, concurrency, runtime_threshold)
         ephemeral = True if incremental else None
         # Create explore-level tests for the desired ref
@@ -444,7 +455,13 @@ class Runner:
         )
 
         async with self.branch_manager(ref=ref):
-            await validator.search(explores, fail_fast, chunk_size, profile=profile)
+            await validator.search(
+                explores,
+                fail_fast,
+                chunk_size,
+                profile=profile,
+                result_format=result_format,
+            )
 
         # Create dimension tests for the desired ref when explores errored
         if not fail_fast and incremental:

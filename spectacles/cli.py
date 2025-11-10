@@ -326,6 +326,9 @@ def main() -> None:
                 pin_imports=pin_imports,
                 ignore_hidden=args.ignore_hidden,
                 use_personal_branch=args.use_personal_branch,
+                result_format=(
+                    "json_detail" if args.use_legacy_result_format else "json_bi"
+                ),
             )
         )
     elif args.command == "assert":
@@ -681,7 +684,8 @@ def _build_sql_subparser(
         action="store_true",
         help=(
             "After validation, display queries that took longer than the runtime "
-            "threshold (5 seconds by default) to complete."
+            "threshold (5 seconds by default) to complete. Must use the legacy "
+            "result format (--use-legacy-result-format) if enabling profiler."
         ),
     )
     subparser.add_argument(
@@ -703,6 +707,11 @@ def _build_sql_subparser(
         "--ignore-hidden",
         action="store_true",
         help=("Exclude hidden fields from validation."),
+    )
+    subparser.add_argument(
+        "--use-legacy-result-format",
+        action="store_true",
+        help="Use the deprecated json_detail result format when creating queries with the Looker API (instead of the default, json_bi).",
     )
     _build_validator_subparser(subparser_action, subparser)
     _build_select_subparser(subparser_action, subparser)
@@ -992,6 +1001,7 @@ async def run_sql(
     pin_imports: Dict[str, str],
     use_personal_branch: bool,
     ignore_hidden: bool,
+    result_format: str,
 ) -> None:
     """Runs and validates the SQL for each selected LookML dimension."""
     # Don't trust env to ignore .netrc credentials
@@ -1013,6 +1023,7 @@ async def run_sql(
             runtime_threshold,
             chunk_size,
             ignore_hidden,
+            result_format,
         )
     finally:
         await async_client.aclose()

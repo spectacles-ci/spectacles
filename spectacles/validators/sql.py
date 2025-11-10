@@ -178,6 +178,7 @@ class SqlValidator:
         fail_fast: bool,
         chunk_size: int = DEFAULT_CHUNK_SIZE,
         profile: bool = False,
+        result_format: str = "json_bi",
     ) -> None:
         queries_to_run: asyncio.Queue[Optional[Query]] = asyncio.Queue()
         running_queries: asyncio.Queue[str] = asyncio.Queue()
@@ -185,7 +186,12 @@ class SqlValidator:
 
         workers = (
             asyncio.create_task(
-                self._run_query(queries_to_run, running_queries, query_slot),
+                self._run_query(
+                    queries_to_run,
+                    running_queries,
+                    query_slot,
+                    result_format,
+                ),
                 name="run_query",
             ),
             asyncio.create_task(
@@ -256,6 +262,7 @@ class SqlValidator:
         queries_to_run: asyncio.Queue[Optional[Query]],
         running_queries: asyncio.Queue[str],
         query_slot: asyncio.Semaphore,
+        result_format: str = "json_bi",
     ) -> None:
         try:
             # End execution if a sentinel is received from the queue
@@ -276,7 +283,9 @@ class SqlValidator:
                         "Query.query_id cannot be None, "
                         "run Query.create to get a query ID"
                     )
-                task_id = await self.client.create_query_task(query.query_id)
+                task_id = await self.client.create_query_task(
+                    query.query_id, result_format
+                )
                 self._task_to_query[task_id] = query
                 running_queries.put_nowait(task_id)
 
@@ -336,7 +345,10 @@ class SqlValidator:
                     ):
                         query = self._task_to_query[task_id]
                         query.runtime = query_result.runtime
-                        if query_result.runtime > self.runtime_threshold:
+                        if (
+                            query_result.runtime
+                            and query_result.runtime > self.runtime_threshold
+                        ):
                             self._long_running_queries.append(query)
                         if query_result.status == "complete":
                             query_slot.release()

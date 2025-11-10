@@ -230,5 +230,7 @@ async def test_validate_sql_with_query_profiler_should_work(
     looker_client: LookerClient, caplog: pytest.LogCaptureFixture
 ) -> None:
     runner = Runner(looker_client, "eye_exam")
-    await runner.validate_sql(fail_fast=True, profile=True, runtime_threshold=0)
+    await runner.validate_sql(
+        fail_fast=True, profile=True, runtime_threshold=0, result_format="json_detail"
+    )
     assert "Query profiler results" in caplog.text
