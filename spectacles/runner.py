@@ -363,7 +363,7 @@ class Runner:
                 detail=(
                     "Profiling query runtimes is incompatible with the "
                     "json_bi result format. Please use the legacy json_detail "
-                    "result format if enabling profiling."
+                    "result format if enabling profiling (--use-legacy-result-format)."
                 ),
             )
         validator = SqlValidator(self.client, concurrency, runtime_threshold)
