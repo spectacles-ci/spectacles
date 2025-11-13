@@ -18,7 +18,7 @@ class JsonBiMetadata(BaseModel):
     """Query metadata for the json_bi result format."""
 
     fields: JsonDict
-    sql: str | None
+    sql: Optional[str]
 
 
 class ErrorSqlLocation(BaseModel):
