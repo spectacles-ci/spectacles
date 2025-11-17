@@ -58,22 +58,15 @@ async def test_compile_explore_compiles_sql(
     dimension: Dimension,
     validator: SqlValidator,
 ) -> None:
-    query_id = 12345
     sql = "SELECT * FROM users"
     explore.dimensions = [dimension]
-    mocked_api.post("queries", params={"fields": "id"}, name="create_query").respond(
-        200, json={"id": query_id}
-    )
-    mocked_api.get(f"queries/{query_id}/run/sql", name="run_query").respond(
-        200, text=sql
-    )
+    mocked_api.post("queries/run/sql", name="run_inline_query").respond(200, text=sql)
     compiled = await validator.compile_explore(explore)
     assert compiled.explore_name == explore.name
     assert compiled.model_name == explore.model_name
     assert compiled.sql == sql
     assert compiled.dimension_name is None
-    mocked_api["create_query"].calls.assert_called_once()
-    mocked_api["run_query"].calls.assert_called_once()
+    mocked_api["run_inline_query"].calls.assert_called_once()
 
 
 async def test_compile_dimension_compiles_sql(
@@ -81,21 +74,14 @@ async def test_compile_dimension_compiles_sql(
     dimension: Dimension,
     validator: SqlValidator,
 ) -> None:
-    query_id = 12345
     sql = "SELECT * FROM users"
-    mocked_api.post("queries", params={"fields": "id"}, name="create_query").respond(
-        200, json={"id": query_id}
-    )
-    mocked_api.get(f"queries/{query_id}/run/sql", name="run_query").respond(
-        200, text=sql
-    )
+    mocked_api.post("queries/run/sql", name="run_inline_query").respond(200, text=sql)
     compiled = await validator.compile_dimension(dimension)
     assert compiled.explore_name == dimension.explore_name
     assert compiled.model_name == dimension.model_name
     assert compiled.sql == sql
     assert compiled.dimension_name is dimension.name
-    mocked_api["create_query"].calls.assert_called_once()
-    mocked_api["run_query"].calls.assert_called_once()
+    mocked_api["run_inline_query"].calls.assert_called_once()
 
 
 async def test_run_query_works(
