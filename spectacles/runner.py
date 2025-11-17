@@ -405,19 +405,12 @@ class Runner:
                         ),
                     )
                 logger.debug("Compiling SQL for Explores at the target ref")
-                target_project = await build_project(
-                    self.client,
-                    name=self.project,
-                    filters=filters,
-                    include_dimensions=True,
-                    ignore_hidden_fields=ignore_hidden_fields,
-                )
                 target_explores: Set[CompiledSql] = set()
 
                 compiled_explores = await asyncio.gather(
                     *(
                         validator.compile_explore(explore)
-                        for explore in target_project.iter_explores()
+                        for explore in project.iter_explores()
                     )
                 )
                 target_explores = set(compiled_explores)
