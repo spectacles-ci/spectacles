@@ -1084,9 +1084,7 @@ class LookerClient:
     ) -> str:
         """Runs a query inline and returns the result in the specified format."""
         logger.debug(f"Running inline query for {model}/{explore}")
-        url = utils.compose_url(
-            self.api_url, path=["queries", "run", result_format]
-        )
+        url = utils.compose_url(self.api_url, path=["queries", "run", result_format])
         response = await self.post(url=url, json=query_body, timeout=TIMEOUT_SEC)
         try:
             response.raise_for_status()
