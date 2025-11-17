@@ -146,28 +146,35 @@ class SqlValidator:
             sql = ""
         else:
             dimensions = [dimension.name for dimension in explore.dimensions]
-            # Create a query that includes all dimensions
-            query = await self.client.create_query(
-                explore.model_name, explore.name, dimensions, fields=["id"]
-            )
-            sql = await self.client.run_query(
-                query["id"], explore=explore.name, model=explore.model_name
+            query_body = {
+                "model": explore.model_name,
+                "view": explore.name,
+                "fields": dimensions,
+                "limit": 0,
+                "filter_expression": "1=2",
+            }
+            sql = await self.client.run_inline_query(
+                query_body=query_body,
+                result_format="sql",
+                model=explore.model_name,
+                explore=explore.name,
             )
 
         return CompiledSql.from_explore(explore, sql)
 
     async def compile_dimension(self, dimension: Dimension) -> CompiledSql:
-        # Create a query for the dimension
-        query = await self.client.create_query(
-            dimension.model_name,
-            dimension.explore_name,
-            [dimension.name],
-            fields=["id"],
-        )
-        sql = await self.client.run_query(
-            query["id"],
-            explore=dimension.explore_name,
+        query_body = {
+            "model": dimension.model_name,
+            "view": dimension.explore_name,
+            "fields": [dimension.name],
+            "limit": 0,
+            "filter_expression": "1=2",
+        }
+        sql = await self.client.run_inline_query(
+            query_body=query_body,
+            result_format="sql",
             model=dimension.model_name,
+            explore=dimension.explore_name,
             dimension=dimension.name,
         )
         return CompiledSql.from_dimension(dimension, sql)

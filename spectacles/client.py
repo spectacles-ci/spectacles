@@ -1072,3 +1072,54 @@ class LookerClient:
         logger.debug("Retrieved compiled SQL for query %s", query_id)
 
         return result
+
+    @backoff_with_exceptions
+    async def run_inline_query(
+        self,
+        query_body: Dict[str, Any],
+        result_format: str,
+        model: str,
+        explore: str,
+        dimension: Optional[str] = None,
+    ) -> str:
+        """Runs a query inline and returns the result in the specified format."""
+        logger.debug(f"Running inline query for {model}/{explore}")
+        url = utils.compose_url(self.api_url, path=["queries", "run", result_format])
+        response = await self.post(url=url, json=query_body, timeout=TIMEOUT_SEC)
+        try:
+            response.raise_for_status()
+        except httpx.HTTPStatusError as e:
+            if e.response.status_code == 404:
+                return (
+                    "-- SQL could not be generated because of errors with this query."
+                )
+            elif e.response.status_code == 400 and (
+                "Must query at least one dimension or measure" in response.text
+                or "View Not Found" in response.text
+            ):
+                return (
+                    "-- SQL could not be generated because of errors with this query."
+                )
+            else:
+                detail = (
+                    f"Failed to retrieve compiled SQL for "
+                    f"{'dimension' if dimension else 'explore'} "
+                    f"'{model}/{explore}{'/' + dimension if dimension else ''}'. "
+                    "Please try again."
+                )
+                try:
+                    response_json = response.json()
+                    if "message" in response_json:
+                        message = response_json["message"]
+                        detail += f' Received the following from Looker: "{message}"'
+                except json.JSONDecodeError:
+                    pass
+                raise LookerApiError(
+                    name="unable-to-get-sql",
+                    title="Couldn't get compiled SQL.",
+                    status=e.response.status_code,
+                    detail=detail,
+                    response=e.response,
+                ) from e
+
+        return response.text
