@@ -37,6 +37,18 @@ class ContentValidator:
             else []
         )
 
+        # Check if filtered folders exist
+        if self.include_folders:
+            self.all_folders = await self.client.all_folders()
+            if not any(
+                folder["id"] in self.include_folders for folder in self.all_folders
+            ):
+                raise SpectaclesException(
+                    name="folder-id-input-does-not-exist",
+                    title="One of the folders input doesn't exist.",
+                    detail=f"Folder {self.include_folders} is not a valid folder number.",
+                )
+
         def is_folder_selected(folder_id: Optional[str]) -> bool:
             if folder_id in self.excluded_folders:
                 return False
@@ -44,7 +56,7 @@ class ContentValidator:
                 return True
 
         result = await self.client.content_validation(
-            project_names=[project.name], space_ids=self.include_folders
+            project_names=[project.name], folder_ids=self.include_folders
         )
         project.queried = True
 

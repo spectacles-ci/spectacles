@@ -902,14 +902,14 @@ class LookerClient:
     async def content_validation(
         self,
         project_names: Optional[List[str]] = None,
-        space_ids: Optional[List[str]] = None,
+        folder_ids: Optional[List[str]] = None,
     ) -> JsonDict:
         logger.debug("Validating all content in Looker")
         params = {}
         if project_names:
             params["project_names"] = project_names
-        if space_ids:
-            params["space_ids"] = space_ids
+        if folder_ids:
+            params["space_ids"] = folder_ids
 
         url = utils.compose_url(
             self.api_url, path=["content_validation"], params=params
