@@ -36,21 +36,17 @@ class ContentValidator:
             if self.exclude_folders
             else []
         )
-        self.included_folders: List[str] = (
-            await self._get_all_subfolders(self.include_folders)
-            if self.include_folders
-            else []
-        )
+
 
         def is_folder_selected(folder_id: Optional[str]) -> bool:
             if folder_id in self.excluded_folders:
                 return False
-            if self.included_folders and folder_id not in self.included_folders:
-                return False
             else:
                 return True
 
-        result = await self.client.content_validation()
+        result = await self.client.content_validation(
+            project_names=[project.name], space_ids=self.include_folders
+        )
         project.queried = True
 
         content_errors: List[ContentError] = []
