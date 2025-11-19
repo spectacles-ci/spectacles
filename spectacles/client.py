@@ -899,9 +899,21 @@ class LookerClient:
         # No raise_for_status() here because Looker API seems to give a 404
         # if you try to cancel a finished query which can happen as part of cleanup
 
-    async def content_validation(self) -> JsonDict:
+    async def content_validation(
+        self,
+        project_names: Optional[List[str]] = None,
+        folder_ids: Optional[List[str]] = None,
+    ) -> JsonDict:
         logger.debug("Validating all content in Looker")
-        url = utils.compose_url(self.api_url, path=["content_validation"])
+        params = {}
+        if project_names:
+            params["project_names"] = project_names
+        if folder_ids:
+            params["space_ids"] = folder_ids
+
+        url = utils.compose_url(
+            self.api_url, path=["content_validation"], params=params
+        )
         response = await self.get(
             url=url, timeout=3600
         )  # 1 hour timeout for content validation
