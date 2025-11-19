@@ -1,6 +1,5 @@
 import pytest
-
-from unittest.mock import AsyncMock
+import respx
 
 from spectacles.client import LookerClient
 from spectacles.lookml import Project
@@ -32,13 +31,11 @@ def test_get_tile_type_with_bad_keys_should_raise_key_error(
 async def test_validate_should_pass_project_and_folders_to_client(
     validator: ContentValidator,
     project: Project,
-    looker_client: LookerClient,
+    mocked_api: respx.MockRouter,
 ) -> None:
-    looker_client.content_validation = AsyncMock(
-        return_value={"content_with_errors": []}
-    )
-    looker_client.all_folders = AsyncMock(
-        return_value=[
+    mocked_api.get("folders", name="all_folders").respond(
+        200,
+        json=[
             {
                 "id": "1",
                 "is_personal": False,
@@ -51,9 +48,12 @@ async def test_validate_should_pass_project_and_folders_to_client(
                 "is_personal_descendant": False,
                 "parent_id": "1",
             },
-        ]
+        ],
     )
+    mocked_api.get(
+        "content_validation",
+        params={"project_names": [project.name], "space_ids": ["1"]},
+        name="content_validation",
+    ).respond(200, json={"content_with_errors": []})
     await validator.validate(project)
-    looker_client.content_validation.assert_called_once_with(
-        project_names=[project.name], space_ids=["1"]
-    )
+    mocked_api["content_validation"].calls.assert_called_once()

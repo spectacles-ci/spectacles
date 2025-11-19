@@ -37,7 +37,6 @@ class ContentValidator:
             else []
         )
 
-
         def is_folder_selected(folder_id: Optional[str]) -> bool:
             if folder_id in self.excluded_folders:
                 return False

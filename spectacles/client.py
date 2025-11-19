@@ -900,7 +900,9 @@ class LookerClient:
         # if you try to cancel a finished query which can happen as part of cleanup
 
     async def content_validation(
-        self, project_names: Optional[List[str]] = None, space_ids: Optional[List[str]] = None
+        self,
+        project_names: Optional[List[str]] = None,
+        space_ids: Optional[List[str]] = None,
     ) -> JsonDict:
         logger.debug("Validating all content in Looker")
         params = {}
@@ -909,7 +911,9 @@ class LookerClient:
         if space_ids:
             params["space_ids"] = space_ids
 
-        url = utils.compose_url(self.api_url, path=["content_validation"], params=params)
+        url = utils.compose_url(
+            self.api_url, path=["content_validation"], params=params
+        )
         response = await self.get(
             url=url, timeout=3600
         )  # 1 hour timeout for content validation
