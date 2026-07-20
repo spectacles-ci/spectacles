@@ -17,7 +17,6 @@ def test_expired_access_token_should_be_expired() -> None:
         access_token="abc123",
         token_type="Bearer",
         expires_in=3600,
-        refresh_token=None,
         expires_at=time.time() - 1,
     )
     assert token.expired
