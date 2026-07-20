@@ -61,8 +61,8 @@ class AccessToken:
     access_token: str
     token_type: str
     expires_in: int
-    refresh_token: Optional[str]
     expires_at: float
+    refresh_token: Optional[str] = None
 
     def __str__(self) -> str:
         return self.access_token
@@ -147,6 +147,7 @@ class LookerClient:
         self.client_secret: str = client_secret
         self.api_version: float = api_version
         self.access_token: Optional[AccessToken] = None
+        self.refresh_token: Optional[str] = None
         self.workspace: str = "production"
 
         self.authenticate()
@@ -184,6 +185,7 @@ class LookerClient:
         if "expires_at" not in result:
             # Calculate the expiration time with a one-minute buffer
             result["expires_at"] = time.time() + result["expires_in"] - 60
+        self.refresh_token = result.pop("refresh_token", None)
         self.access_token = AccessToken(**result)
         self.async_client.headers = httpx.Headers(
             {"Authorization": f"token {self.access_token}"}
