@@ -364,13 +364,19 @@ class SqlValidator:
                             queries_to_run.task_done()
                         else:
                             query_slot.release()
-                            query.errored = True
+
+                            errors = query_result.get_valid_errors()
+                            query.errored = bool(errors)
+
+                            if not errors:
+                                for dimension in query.dimensions:
+                                    dimension.queried = True
 
                             # Fail fast, assign the error(s) to its explore
-                            if fail_fast:
+                            elif fail_fast:
                                 explore = query.explore
                                 explore.queried = True
-                                for error in query_result.get_valid_errors():
+                                for error in errors:
                                     line_number = (
                                         error.sql_error_loc.line
                                         if error.sql_error_loc
@@ -397,7 +403,7 @@ class SqlValidator:
                             elif len(query.dimensions) == 1:
                                 dimension = query.dimensions[0]
                                 dimension.queried = True
-                                for error in query_result.get_valid_errors():
+                                for error in errors:
                                     line_number = (
                                         error.sql_error_loc.line
                                         if error.sql_error_loc

@@ -124,8 +124,6 @@ class ErrorQueryResult(BaseModel):
                 raise TypeError("No errors contained in this query result")
             return self.data.errors
         elif isinstance(self.data, self.JsonBiError):
-            if not self.data.rows:
-                raise TypeError("No errors contained in this query result")
             return self.data.errors
         else:
             raise TypeError("Unexpected type for ErrorQueryResult.data")
