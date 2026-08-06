@@ -574,7 +574,7 @@ class Runner:
 
         if incremental and (self.branch_manager.branch or self.branch_manager.commit):
             logger.debug("Starting another content validation against the target ref")
-            async with self.branch_manager(ref=target):
+            async with self.branch_manager(ref=target, ephemeral=True):
                 logger.debug(
                     "Building LookML project hierarchy for project "
                     f"'{self.project}' @ {self.branch_manager.ref}"
