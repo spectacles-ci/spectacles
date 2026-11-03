@@ -9,7 +9,7 @@ import re
 import sys
 from argparse import ArgumentParser, Namespace
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Sequence, Union, cast
+from typing import Any, Callable, Dict, List, Optional, Sequence, Set, Union, cast
 
 import httpx
 import yaml
@@ -38,6 +38,8 @@ __version__ = importlib.metadata.version("spectacles")
 class ConfigFileAction(argparse.Action):
     """Parses an arbitrary config file and assigns its values as arg defaults."""
 
+    known_config_params: Set[str] = set()
+
     def __call__(
         self,
         parser: ArgumentParser,
@@ -55,6 +57,7 @@ class ConfigFileAction(argparse.Action):
 
         """
         config = self.parse_config(path=values)  # type: ignore
+        valid_config: Dict[str, Any] = {}
         for dest, value in config.items():
             for action in parser._actions:
                 if dest == action.dest:
@@ -66,14 +69,17 @@ class ConfigFileAction(argparse.Action):
                         action.env_var
                     ):
                         setattr(namespace, dest, value)
+                    valid_config[dest] = value
                     break
             else:
+                if dest in self.known_config_params:
+                    continue
                 raise SpectaclesException(
                     name="invalid-config-file-param",
                     title="Invalid configuration file parameter.",
                     detail=f"Parameter '{dest}' in {values} is not valid.",
                 )
-        parser.set_defaults(**config)
+        parser.set_defaults(**valid_config)
 
     def parse_config(self, path: str) -> Dict[str, Any]:
         """Base method for parsing an arbitrary config format."""
@@ -409,6 +415,18 @@ def create_parser() -> ArgumentParser:
     _build_sql_subparser(subparser_action, base_subparser)
     _build_assert_subparser(subparser_action, base_subparser)
     _build_content_subparser(subparser_action, base_subparser)
+
+    command_parsers = subparser_action.choices.values()
+    known_config_params = {
+        action.dest
+        for command_parser in command_parsers
+        for action in command_parser._actions
+    }
+    for command_parser in command_parsers:
+        for action in command_parser._actions:
+            if isinstance(action, ConfigFileAction):
+                action.known_config_params = known_config_params
+
     return parser
 
 
