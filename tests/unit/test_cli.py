@@ -428,6 +428,33 @@ def test_main_with_connect(mock_run_connect: AsyncMock, env: None) -> None:
     )
 
 
+@patch("spectacles.cli.run_connect")
+@patch("spectacles.cli.YamlConfigAction.parse_config")
+def test_main_with_connect_validator_config(
+    mock_parse_config: MagicMock, mock_run_connect: AsyncMock, clean_env: None
+) -> None:
+    mock_parse_config.return_value = {
+        "base_url": "BASE_URL_CONFIG",
+        "client_id": "CLIENT_ID_CONFIG",
+        "client_secret": "CLIENT_SECRET_CONFIG",
+        "port": 8080,
+        "api_version": 4.0,
+        "project": "spectacles",
+        "branch": "main",
+        "explores": ["*/*"],
+    }
+    with patch("sys.argv", ["spectacles", "connect", "--config-file", "config.yml"]):
+        main()
+
+    mock_run_connect.assert_called_once_with(
+        base_url="BASE_URL_CONFIG",
+        client_id="CLIENT_ID_CONFIG",
+        client_secret="CLIENT_SECRET_CONFIG",
+        port=8080,
+        api_version=4.0,
+    )
+
+
 def test_process_pin_imports_with_no_refs() -> None:
     output = process_pin_imports([])
     assert output == {}
